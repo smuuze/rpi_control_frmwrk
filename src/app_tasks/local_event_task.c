@@ -1,0 +1,144 @@
+/*! \file *********************************************************************
+
+ *****************************************************************************/
+
+#include "config.h"  // immer als erstes einbinden!
+#include "specific.h"
+#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
+
+#include "system_interface.h"
+#include "local_event_task.h"
+
+#include "specific.h"
+#include "local_context.h"
+#include "io_output_controller.h"
+#include "local_rtc_driver.h"
+
+#define noTRACES
+#include <traces.H>
+
+#define EVENT_TIMEOUT_MS	200
+#define EVENT_QEUE_MAX_SIZE	10
+
+typedef struct EVENT_QEUE_ELEMENT {
+	SYSTEM_EVENT event_id;
+	u32 timestamp;
+} EVENT_QEUE_ELEMENT_TYPE;
+
+
+static EVENT_QEUE_ELEMENT_TYPE _event_qeue[EVENT_QEUE_MAX_SIZE];
+
+static u8 _event_counter = 0;
+
+
+static IO_OUTPUT_DESCRIPTOR io_event_output_pin = {
+	0, //u8 id;
+	IO_TYPE_SYSTEM,
+	0, //u8 actual_pin_state;
+	0, //u8 next_pin_state;
+	0, //u32 reference_time;
+	0, //u32 duration;
+	0, //u32 toggle_period;
+	&specific_system_output_event_set, //IO_OUTPUT_SET_PIN set_pin;
+	0 //struct IO_OUTPUT_DESCRIPTOR* _next;
+};
+
+void local_event_mcu_task_init(void) {
+
+	GET_SYSTEM(SYS_OUTPUT).system_event_output_01 = io_output_controller_register_output(&io_event_output_pin);
+	io_output_controller_set_output(GET_SYSTEM(SYS_OUTPUT).system_event_output_01, IO_OUTPUT_STATE_OFF, 0, 0);
+
+	u8 i = 0;
+	for ( ; i < EVENT_QEUE_MAX_SIZE; i++) {
+		_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
+		_event_qeue[i].timestamp = 0;
+	}
+}
+
+u8 local_event_mcu_task_is_runable(void) {
+
+	PASS(); // local_event_mcu_task_is_runable() ---
+
+	u32 rtc_time = local_rtc_timer_gettime_u32();
+	TRACE_long(rtc_time); //
+
+	u32 ms_time = i_system.time.now_u32();
+	TRACE_long(ms_time); //
+
+
+	if (_event_counter != 0) {
+		return 1;
+	}
+
+	return 0;
+}
+
+void local_event_mcu_task_run(void) {
+
+	u8 i = 0;
+	for ( ; i < EVENT_QEUE_MAX_SIZE; i++) {
+
+		if (_event_qeue[i].event_id == SYS_EVT_NO_EVENT) {
+			continue;
+		}
+
+		if (i_system.time.isup_u32(_event_qeue[i].timestamp, EVENT_TIMEOUT_MS) != 0) {
+			_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
+			_event_counter--;
+			continue;
+		}
+
+		switch (_event_qeue[i].event_id) {
+			default: break;
+			case SYS_EVT_INPUT_CHANGED:
+				io_output_controller_set_output(GET_SYSTEM(SYS_OUTPUT).system_event_output_01, IO_OUTPUT_STATE_ON, EVENT_TIMEOUT_MS, 0);
+				break;
+
+		}
+
+		_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
+	}
+}
+
+void local_event_mcu_task_background_run(void) {
+
+}
+
+void local_event_mcu_task_sleep(void) {
+
+}
+
+void local_event_mcu_task_wakeup(void) {
+
+}
+
+void local_event_mcu_task_finish(void) {
+
+}
+
+void local_event_mcu_task_terminate(void) {
+
+}
+
+void local_event_add(SYSTEM_EVENT event) {
+
+	if (_event_counter == EVENT_QEUE_MAX_SIZE) {
+		PASS(); // local_event_add() - Event qeue is full
+	}
+
+	TRACE_byte((u8)event); // local_event_add()
+
+	u8 i = 0;
+	for ( ; i < EVENT_QEUE_MAX_SIZE; i++) {
+		if (_event_qeue[i].event_id == SYS_EVT_NO_EVENT) {
+			_event_qeue[i].event_id = event;
+			_event_qeue[i].timestamp = i_system.time.now_u32();
+			_event_counter++;
+			return;
+		}
+	}
+}
+
+SYSTEM_EVENT local_event_get_next(void) {
+	return SYS_EVT_NO_EVENT;
+}
