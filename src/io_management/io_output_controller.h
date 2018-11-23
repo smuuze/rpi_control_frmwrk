@@ -2,6 +2,7 @@
 #define _IO_CONTROLLER_H_
 
 #include "iterator_interface.h"
+#include "mcu_task_interface.h"
 
 /*!
  *
@@ -90,7 +91,7 @@ void io_output_controller_task_init(void);
  *
  * @return
  */
-u8 io_output_controller_task_is_runable(void);
+MACU_TASK_INTERFACE_TASK_STATE io_output_controller_task_get_state(void);
 
 /*!
  *

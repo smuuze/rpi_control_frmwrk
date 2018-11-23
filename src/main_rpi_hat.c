@@ -75,14 +75,14 @@ void main_init(void) {
 	wdt_enable(WDTO_8S);
 	watchdog();
 
-	// Baudrate erstmal auf 9600 Baud setzen
-	INIT_PASS(); // Initialization - First-Time Debus-Init
-	debus_host_com_init();
-
-	cli();
-	debus_init();
-	debus_start_receive_mode_init();
-	sei();
+//	// Baudrate erstmal auf 9600 Baud setzen
+//	INIT_PASS(); // Initialization - First-Time Debus-Init
+//	debus_host_com_init();
+//
+//	cli();
+//	debus_init();
+//	debus_start_receive_mode_init();
+//	sei();
 
 	#ifdef  RTOS_TIMER
 	{
@@ -96,11 +96,11 @@ void main_init(void) {
 		watchdog();
 	}
 
-	INIT_PASS(); // Initialization - Second-Time Debus-Init
-	cli();
-	debus_init();
-	debus_start_receive_mode_init();
-	sei();
+//	INIT_PASS(); // Initialization - Second-Time Debus-Init
+//	cli();
+//	debus_init();
+//	debus_start_receive_mode_init();
+//	sei();
 
 	cli();
 	initialization();

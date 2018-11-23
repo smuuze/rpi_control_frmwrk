@@ -1,5 +1,12 @@
 //--------------------------------------------------------------------------------------------------------------
-//       Hardwarebeschreibung   :  Bluetooth Demoboard
+//       Hardwarebeschreibung   :  Evaluation Board
+//					Microcontroller :	ATMega1284P
+//					Versorgungsspannung :	3 Volt 
+//					Taktfrequenz :		14,7456 MHz
+//					Weitere IC's :		FTDI
+//					PCB Anschluesse :	40 Pin GPIO-Heder
+//								12 Pol Phönix Kontaktstecker
+//								Mini USB
 //--------------------------------------------------------------------------------------------------------------
 //
 
@@ -38,10 +45,10 @@
  DEF_GPIO_2( EXT_INPUT_2 	, A	, 1	, INPUT_PULLUP | INVERTED 	, INPUT_PULLUP | INVERTED	) //
  DEF_GPIO_2( EXT_INPUT_3	, A	, 2	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
  DEF_GPIO_2( EXT_INPUT_4   	, A	, 3	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( SWITCH_IN_2   	, A	, 4	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( SWITCH_IN_1   	, A	, 5	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( LED_3        	, A	, 6	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
- DEF_GPIO_2( LED_6   		, A	, 7	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( EVENT_IRQ	   	, A	, 4	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( EXT_5V   		, A	, 5	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( SPI1_CE        	, A	, 6	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( UNUSED_A7 		, A	, 7	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //    Port B (0x05)
@@ -62,10 +69,10 @@
 
  DEF_GPIO_2( I2C0_SCL      	, C	, 0	, OUTPUT_ON			, OUTPUT_ON			) //
  DEF_GPIO_2( I2C0_SDA     	, C	, 1	, OUTPUT_ON 			, OUTPUT_ON			) //
- DEF_GPIO_2( LED_8 		, C	, 2	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
- DEF_GPIO_2( LED_5       	, C	, 3	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
- DEF_GPIO_2( LED_2         	, C	, 4	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
- DEF_GPIO_2( LED_9      	, C	, 5	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( EXT_3V 		, C	, 2	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( EXT_RESET       	, C	, 3	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( UNUSED_C4         	, C	, 4	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( UNUSED_C5      	, C	, 5	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
  DEF_GPIO_2( TOSC1        	, C	, 6 	, OUTPUT_OFF 			, OUTPUT_OFF 			) //
  DEF_GPIO_2( TOSC2        	, C	, 7 	, OUTPUT_OFF 			, OUTPUT_OFF 			) //
 
@@ -75,23 +82,24 @@
 
  DEF_GPIO_2( UART0_RXD      	, D	, 0	, INPUT_PULLUP			, INPUT_PULLUP			) //
  DEF_GPIO_2( UART0_TXD     	, D	, 1	, OUTPUT_ON	 		, OUTPUT_ON			) //
- DEF_GPIO_2( GPIO_17 		, D	, 2	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
- DEF_GPIO_2( GPIO_27       	, D	, 3	, OUTPUT_OFF			, OUTPUT_ON			) //
- DEF_GPIO_2( GPIO_22         	, D	, 4	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
- DEF_GPIO_2( LED_7     		, D	, 5	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
- DEF_GPIO_2( LED_4     		, D	, 6	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
- DEF_GPIO_2( LED_1      	, D	, 7	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( UART1_RXD 		, D	, 2	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( UART1_TXD       	, D	, 3	, OUTPUT_OFF			, OUTPUT_ON			) //
+ DEF_GPIO_2( SPI1_SCK         	, D	, 4	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( UNUSED_D5 		, D	, 5	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( GPIO_27     	, D	, 6	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( IS_BUSY      	, D	, 7	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //   GPIO - Aliases
- GPIO_ALIAS( LED_GRN      	, D,7 , OUTPUT_OFF | INVERTED	)
- GPIO_ALIAS( LED_RED      	, C,4 , OUTPUT_OFF | INVERTED	)
- GPIO_ALIAS( LED_YELLOW      	, A,6 , OUTPUT_OFF | INVERTED	)
- //GPIO_ALIAS( BEEPER      	, D,4 , OUTPUT_OFF | INVERTED	)
- GPIO_ALIAS( UART0_SEND485      , C,3 , OUTPUT_OFF | INVERTED	)
- GPIO_ALIAS( EVENT_IRQ	        , D,4 , OUTPUT_OFF | INVERTED	)
- GPIO_ALIAS( IS_BUSY	        , D,2 , OUTPUT_OFF | INVERTED	)
+ GPIO_ALIAS( LED_GRN      	, D, 7 , OUTPUT_OFF | INVERTED	)
+ GPIO_ALIAS( LED_RED      	, C, 4 , OUTPUT_OFF | INVERTED	)
+ GPIO_ALIAS( LED_YELLOW      	, A, 6 , OUTPUT_OFF | INVERTED	)
+ 
+ GPIO_ALIAS( UART1_SEND485      , D, 4 , OUTPUT_OFF | INVERTED	)
+ 
+ GPIO_ALIAS( SPI1_MOSI	        , D, 2 , OUTPUT_OFF | INVERTED	)
+ GPIO_ALIAS( SPI1_MISO	        , D, 3 , OUTPUT_OFF | INVERTED	)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #define PCMSK_D        (NF_CL_DAT_PCMSK | PWR_DETECT_PCMASK)

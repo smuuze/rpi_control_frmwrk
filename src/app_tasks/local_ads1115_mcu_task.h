@@ -17,7 +17,7 @@ void local_ads1115_mcu_task_init(void);
 /*!
  *
  */
-u8 local_ads1115_mcu_task_is_runable(void);
+MACU_TASK_INTERFACE_TASK_STATE local_ads1115_mcu_task_get_state(void);
 
 /*!
  *

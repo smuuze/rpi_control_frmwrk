@@ -68,6 +68,11 @@ static TRX_DRIVER_CONFIGURATION driver_cfg;
 /*!
  *
  */
+static MACU_TASK_INTERFACE_TASK_STATE task_state = MCU_TASK_TERMINATED;
+
+/*!
+ *
+ */
 static ADS1115_TASK_STATE actual_task_state = ADS1115_TASK_STATE_INIT_ADC;
 
 /*!
@@ -112,11 +117,20 @@ void local_ads1115_mcu_task_init(void) {
 
 	actual_task_state = ADS1115_TASK_STATE_IDLE;
 	task_run_interval_reference = i_system.time.now_u16();
+
+	task_state = MCU_TASK_SLEEPING;
 }
 
 
-u8 local_ads1115_mcu_task_is_runable(void) {
-	return 1;
+MACU_TASK_INTERFACE_TASK_STATE local_ads1115_mcu_task_get_state(void) {
+
+	if (task_state == MCU_TASK_SLEEPING) {
+		if (i_system.time.isup_u16(task_run_interval_reference, ADS1115_TASK_RUN_INTERVAL_MS) != 0) {
+			task_state = MCU_TASK_RUNNING;
+		}
+	}
+
+	return task_state;
 }
 
 
@@ -136,14 +150,10 @@ void local_ads1115_mcu_task_run(void) {
 
 		case ADS1115_TASK_STATE_IDLE :
 
-			if (i_system.time.isup_u16(task_run_interval_reference, ADS1115_TASK_RUN_INTERVAL_MS) == 0) {
-				break;
-			}
-
 			task_run_interval_reference = i_system.time.now_u16();
 			actual_task_state = ADS1115_TASK_STATE_INIT_ADC;
 
-			TRACE_word(task_run_interval_reference); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_IDLE - startting measurement
+			TRACE_word(task_run_interval_reference); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_IDLE - startting measurement ---
 
 			// no break;
 
@@ -165,7 +175,7 @@ void local_ads1115_mcu_task_run(void) {
 			p_com_driver->set_N_bytes(ADS1115_WRITE_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();	// write reset commands to conversion register
 
-			actual_task_state = ADS1115_TASK_STATE_INIT_MEASSUREMENT_CHAN; PASS(); // -----------------
+			actual_task_state = ADS1115_TASK_STATE_INIT_MEASSUREMENT_CHAN;
 			// no break;
 
 		case ADS1115_TASK_STATE_INIT_MEASSUREMENT_CHAN:
@@ -188,7 +198,7 @@ void local_ads1115_mcu_task_run(void) {
 			p_com_driver->set_address(ADS1115_BUS_ADDRESS_01);
 			p_com_driver->start_tx();
 
-			actual_task_state = ADS1115_TASK_STATE_WAIT_FOR_COMPLETION; PASS(); // -----------------
+			actual_task_state = ADS1115_TASK_STATE_WAIT_FOR_COMPLETION;
 			// no break;
 
 		case ADS1115_TASK_STATE_WAIT_FOR_COMPLETION :
@@ -202,7 +212,7 @@ void local_ads1115_mcu_task_run(void) {
 			p_com_driver->start_rx(ADS1115_STATUS_ANSWER_LENGTH);
 
 			operation_refrence_time = i_system.time.now_u16();
-			actual_task_state = ADS1115_TASK_STATE_START_MEASSUREMENT_CHAN; PASS(); // -----------------
+			actual_task_state = ADS1115_TASK_STATE_START_MEASSUREMENT_CHAN;
 			// no break;
 
 		case ADS1115_TASK_STATE_START_MEASSUREMENT_CHAN :
@@ -216,7 +226,7 @@ void local_ads1115_mcu_task_run(void) {
 					p_com_driver->stop_rx();
 					p_com_driver->clear_buffer();
 
-					actual_task_state = ADS1115_TASK_STATE_INIT_ADC; PASS(); // -----------------
+					actual_task_state = ADS1115_TASK_STATE_INIT_ADC;
 					break;
 				}
 
@@ -238,7 +248,7 @@ void local_ads1115_mcu_task_run(void) {
 			p_com_driver->start_tx();
 
 			operation_refrence_time = i_system.time.now_u16();
-			actual_task_state = ADS1115_TASK_STATE_GET_DATA_CHAN; PASS(); // -----------------
+			actual_task_state = ADS1115_TASK_STATE_GET_DATA_CHAN;
 			// no break;
 
 		case ADS1115_TASK_STATE_GET_DATA_CHAN :
@@ -256,7 +266,7 @@ void local_ads1115_mcu_task_run(void) {
 			p_com_driver->start_rx(ADS1115_MEASUREMENT_ANSWER_LENGTH);
 
 			operation_refrence_time = i_system.time.now_u16();
-			actual_task_state = ADS1115_TASK_STATE_PROCESS_DATA_CHAN; PASS(); // -----------------
+			actual_task_state = ADS1115_TASK_STATE_PROCESS_DATA_CHAN;
 			// no break;
 
 		case ADS1115_TASK_STATE_PROCESS_DATA_CHAN :
@@ -270,7 +280,7 @@ void local_ads1115_mcu_task_run(void) {
 					p_com_driver->stop_rx();
 					p_com_driver->clear_buffer();
 
-					actual_task_state = ADS1115_TASK_STATE_IDLE; PASS(); // -----------------
+					actual_task_state = ADS1115_TASK_STATE_IDLE;
 					break;
 				}
 
@@ -310,7 +320,7 @@ void local_ads1115_mcu_task_run(void) {
 			}
 
 			if (++adc_channel_index < 4) {
-				actual_task_state = ADS1115_TASK_STATE_INIT_ADC; PASS(); // -----------------
+				actual_task_state = ADS1115_TASK_STATE_INIT_ADC;
 
 			} else {
 
@@ -318,7 +328,9 @@ void local_ads1115_mcu_task_run(void) {
 				actual_task_state = ADS1115_TASK_STATE_IDLE;
 				task_run_interval_reference = i_system.time.now_u16();
 
-				TRACE_word(task_run_interval_reference); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_PROCESS_DATA_CHAN - measurement complete
+				task_state = MCU_TASK_SLEEPING;
+
+				TRACE_word(task_run_interval_reference); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_PROCESS_DATA_CHAN - measurement complete -----
 			}
 
 			break;

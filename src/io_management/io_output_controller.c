@@ -119,12 +119,12 @@ void io_output_controller_task_init(void) {
 
 }
 
-u8 io_output_controller_task_is_runable(void) {
+MACU_TASK_INTERFACE_TASK_STATE io_output_controller_task_get_state(void) {
 
 	if (output_is_active != 0) {
-		return 1;
+		return MCU_TASK_RUNNING;
 	} else {
-		return 0;
+		return MCU_TASK_SLEEPING;
 	}
 }
 

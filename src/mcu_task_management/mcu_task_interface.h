@@ -2,20 +2,55 @@
 #define _MCU_TASK_INTERFACE_H_
 
 
+/*!
+ *
+ */
+typedef enum {
+	MCU_TASK_SLEEPING = 0,  //!< MCU_TASK_SLEEPING
+	MCU_TASK_IDLE = 1,      //!< MCU_TASK_IDLE
+	MCU_TASK_RUNNING = 2,   //!< MCU_TASK_RUNNING
+	MCU_TASK_TERMINATED = 3,//!< MCU_TASK_TERMINATED
+} MACU_TASK_INTERFACE_TASK_STATE;
+
+/*!
+ *
+ */
 typedef void (*MCU_TASK_INTERFACE_INIT_CALLBACK)	(void);
 
-typedef u8 (*MCU_TASK_INTERFACE_IS_RUNABLE_CALLBACK) 	(void);
+/*!
+ *
+ * @return
+ */
+typedef MACU_TASK_INTERFACE_TASK_STATE (*MCU_TASK_INTERFACE_IS_RUNABLE_CALLBACK) 	(void);
 
+/*!
+ *
+ */
 typedef void (*MCU_TASK_INTERFACE_RUN_CALLBACK)		(void);
 
+/*!
+ *
+ */
 typedef void (*MCU_TASK_INTERFACE_BG_RUN_CALLBACK)	(void);
 
+/*!
+ *
+ */
 typedef void (*MCU_TASK_INTERFACE_SLEEP_CALLBACK)	(void);
 
+/*!
+ *
+ */
 typedef void (*MCU_TASK_INTERFACE_WAKEUP_CALLBACK)	(void);
 
+/*!
+ *
+ */
 typedef void (*MCU_TASK_INTERFACE_FINISH_CALLBACK)	(void);
 
+/*!
+ *
+ */
 typedef void (*MCU_TASK_INTERFACE_TERMINATE_CALLBACK)	(void);
 
 
@@ -32,7 +67,7 @@ typedef struct MCU_TASK_INTERFACE {
 	u16 last_run_time;
 
 	MCU_TASK_INTERFACE_INIT_CALLBACK		init;
-	MCU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable;
+	MCU_TASK_INTERFACE_IS_RUNABLE_CALLBACK		get_sate;
 	MCU_TASK_INTERFACE_RUN_CALLBACK			run;
 	MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run;
 	MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep;

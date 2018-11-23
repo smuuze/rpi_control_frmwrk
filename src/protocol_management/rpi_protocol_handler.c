@@ -360,25 +360,25 @@ void rpi_protocol_task_init(void) {
 	PASS(); // rpi_protocol_task_init()
 }
 
-u8 rpi_protocol_task_is_runable(void) {
+MACU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 
 	if (p_com_driver == 0) {
-		return 0;
+		return MCU_TASK_SLEEPING;
 	}
 
 	if (p_com_driver->bytes_available() != 0 && rpi_status_is_set(RPI_STATUS_CMD_BUSY) == 0) {
-		PASS(); // rpi_protocol_task_is_runable() - RX Complete
-		return 1;
+		PASS(); // rpi_protocol_task_get_state() - RX Complete
+		return MCU_TASK_RUNNING;
 	}
 
 	if (rpi_status_is_set(RPI_STATUS_ANSW_READY) && p_com_driver->is_ready_for_tx()) {
 		PASS(); // rpi_protocol_task_is_runable() - TX Complete and new answer pending
-		return 1;
+		return MCU_TASK_RUNNING;
 	}
 
 	if (rpi_protocol_debus_interface.arrival_time != 0 || rpi_protocol_spi_interface.arrival_time != 0) {
 		PASS(); // rpi_protocol_task_is_runable() - There is a command operation pending
-		return 1;
+		return MCU_TASK_RUNNING;
 	}
 
 	return 0;

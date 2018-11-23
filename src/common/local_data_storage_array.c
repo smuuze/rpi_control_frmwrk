@@ -19,6 +19,10 @@ static u32 division(u32 divident, u32 divisor) {
 	return result;
 }
 
+#define div_u32(divident, divisor)		division((u32)divident, (u32) divisor)
+#define div_u16(divident, divisor)		(u16)division((u32)divident, (u32) divisor)
+#define div_u8(divident, divisor)		(u8)division((u32)divident, (u32) divisor)
+
 // -------------------------------------------------------------------
 // I8 functions
 // -------------------------------------------------------------------
@@ -118,8 +122,7 @@ u8 local_data_storage_array_get_mean_u8(LOCAL_DATA_STORAGE_ARRAY_U8_TYPE* p_cont
 		mean += (u16)p_context->p_buffer[i];
 	}
 
-	mean = division(mean, len);
-	return (u8)mean;
+	return div_u8(mean, len);
 }
 
 u8 local_data_storage_array_get_max_u8(LOCAL_DATA_STORAGE_ARRAY_U8_TYPE* p_context) {
@@ -182,8 +185,7 @@ u16 local_data_storage_array_get_mean_u16(LOCAL_DATA_STORAGE_ARRAY_U16_TYPE* p_c
 		mean += (u32)p_context->p_buffer[i];
 	}
 
-	mean = division(mean, len);
-	return (u16)mean;
+	return div_u16(mean, len);
 }
 
 u16 local_data_storage_array_get_max_u16(LOCAL_DATA_STORAGE_ARRAY_U16_TYPE* p_context) {
@@ -236,8 +238,8 @@ u32 local_data_storage_array_get_mean_u32(LOCAL_DATA_STORAGE_ARRAY_U32_TYPE* p_c
 		mean += p_context->p_buffer[i];
 	}
 
-	mean = division(mean, len);
-	return mean;
+
+	return div_u32(mean, len);
 }
 
 u32 local_data_storage_array_get_max_u32(LOCAL_DATA_STORAGE_ARRAY_U32_TYPE* p_context) {

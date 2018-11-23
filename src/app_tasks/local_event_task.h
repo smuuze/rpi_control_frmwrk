@@ -2,6 +2,7 @@
 #define _LOCAL_EVENT_MCU_TASK_H_
 
 #include "system_interface.h"
+#include "mcu_task_interface.h"
 
 /*!
  *
@@ -11,7 +12,7 @@ void local_event_mcu_task_init(void);
 /*!
  *
  */
-u8 local_event_mcu_task_is_runable(void);
+MACU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void);
 
 /*!
  *

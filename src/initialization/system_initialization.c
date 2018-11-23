@@ -10,6 +10,6 @@
 
 void system_initialization(void) {
 
-	//local_rtc_timer_init();
+	local_rtc_timer_init();
 }
 

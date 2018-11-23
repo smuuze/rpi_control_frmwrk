@@ -2,6 +2,7 @@
 #define _IO_BUTTON_WATCHER_H_
 
 #include "iterator_interface.h"
+#include "mcu_task_interface.h"
 
 /*!
  * Timespan that the button will be in pressed state, until the down state is activated
@@ -83,7 +84,7 @@ void io_input_controller_task_init(void);
  *
  * @return
  */
-u8 io_input_controller_task_is_runable(void);
+MACU_TASK_INTERFACE_TASK_STATE io_input_controller_task_get_state(void);
 
 /*!
  *

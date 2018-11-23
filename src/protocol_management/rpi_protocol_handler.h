@@ -10,6 +10,7 @@
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "trx_driver_interface.h"
+#include "mcu_task_interface.h"
 
 #ifndef RPI_PROTOCOL_HANDLER_DRIVER_CFG
 #define RPI_PROTOCOL_HANDLER_DRIVER_CFG			DRIVER_SPI_OP_MODE_SLAVE, 		/*	u8 op_mode; 		*/ \
@@ -59,7 +60,7 @@ void rpi_protocol_task_init(void);
  *
  * @return
  */
-u8 rpi_protocol_task_is_runable(void);
+MACU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void);
 
 /*!
  *

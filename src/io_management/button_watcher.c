@@ -170,8 +170,8 @@ void io_input_controller_task_init(void) {
 
 }
 
-u8 io_input_controller_task_is_runable(void) {
-	return 1;
+MACU_TASK_INTERFACE_TASK_STATE io_input_controller_task_get_state(void) {
+	return MCU_TASK_RUNNING;
 }
 
 void io_input_controller_task_run(void) {

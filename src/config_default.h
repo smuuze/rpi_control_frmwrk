@@ -209,21 +209,21 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK		local_event_add
 #define config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK		local_event_get_next
 
-#define config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE		ux8 msticker_get_time_ux8(void);
-#define config_SYSTEM_INTERFACE_GET_TIME_U16_PROTOTYPE		ux16 msticker_get_time_ux16(void);
-#define config_SYSTEM_INTERFACE_GET_TIME_U32_PROTOTYPE		ux32 msticker_get_time_ux32(void);
+#define config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE		u8 local_rtc_timer_gettime_u8(void); /*ux8 msticker_get_time_ux8(void);*/
+#define config_SYSTEM_INTERFACE_GET_TIME_U16_PROTOTYPE		u8 local_rtc_timer_gettime_u16(void); /*ux16 msticker_get_time_ux16(void);*/
+#define config_SYSTEM_INTERFACE_GET_TIME_U32_PROTOTYPE		u8 local_rtc_timer_gettime_u32(void); /*ux32 msticker_get_time_ux32(void);*/
 
-#define config_SYSTEM_INTERFACE_GET_TIME_U8_CALLBACK		msticker_get_time_ux8
-#define config_SYSTEM_INTERFACE_GET_TIME_U16_CALLBACK		msticker_get_time_ux16
-#define config_SYSTEM_INTERFACE_GET_TIME_U32_CALLBACK		msticker_get_time_ux32
+#define config_SYSTEM_INTERFACE_GET_TIME_U8_CALLBACK		local_rtc_timer_gettime_u8 /*msticker_get_time_ux8*/
+#define config_SYSTEM_INTERFACE_GET_TIME_U16_CALLBACK		local_rtc_timer_gettime_u16 /*msticker_get_time_ux16*/
+#define config_SYSTEM_INTERFACE_GET_TIME_U32_CALLBACK		local_rtc_timer_gettime_u32 /*msticker_get_time_ux32*/
 
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U8_PROTOTYPE		ux8 mstimer_time_is_up_ux8(const ux8 reference_time, const ux8 time_interval);
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U16_PROTOTYPE	ux8 mstimer_time_is_up_ux16(const ux16 reference_time, const ux16 time_interval);
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U32_PROTOTYPE	ux8 mstimer_time_is_up_ux32(const ux32 reference_time, const ux32 time_interval);
+#define config_SYSTEM_INTERFACE_IS_TIME_UP_U8_PROTOTYPE		u8 local_rtc_timer_istimeup_u8(u8 time_reference, u8 time_interval); /*ux8 mstimer_time_is_up_ux8(const ux8 reference_time, const ux8 time_interval);*/
+#define config_SYSTEM_INTERFACE_IS_TIME_UP_U16_PROTOTYPE	u8 local_rtc_timer_istimeup_u16(u16 time_reference, u16 time_interval); /*ux8 mstimer_time_is_up_ux16(const ux16 reference_time, const ux16 time_interval);*/
+#define config_SYSTEM_INTERFACE_IS_TIME_UP_U32_PROTOTYPE	u8 local_rtc_timer_istimeup_u32(u32 time_reference, u32 time_interval); /*ux8 mstimer_time_is_up_ux32(const ux32 reference_time, const ux32 time_interval);*/
 
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U8_CALLBACK		mstimer_time_is_up_ux8
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U16_CALLBACK		mstimer_time_is_up_ux16
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK		mstimer_time_is_up_ux32
+#define config_SYSTEM_INTERFACE_IS_TIME_UP_U8_CALLBACK		local_rtc_timer_istimeup_u8 /*mstimer_time_is_up_ux8*/
+#define config_SYSTEM_INTERFACE_IS_TIME_UP_U16_CALLBACK		local_rtc_timer_istimeup_u16 /*mstimer_time_is_up_ux16*/
+#define config_SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK		local_rtc_timer_istimeup_u32 /*mstimer_time_is_up_ux32*/
 
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_PROTOTYPE	static u8 local_progmem_get_byte(u8* addr);
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE	static u16 local_progmem_get_word(u8* addr);

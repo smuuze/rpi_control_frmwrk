@@ -100,6 +100,8 @@ void mcu_task_controller_schedule(void) {
 
 	MCU_TASK_INTERFACE* act_task = _first_task;
 
+	u8 system_is_on_idle = 1;
+
 	while (act_task != 0) {
 
 		if (_has_task_interval_passed(act_task) == 0) {
@@ -108,7 +110,7 @@ void mcu_task_controller_schedule(void) {
 
 		_update_last_run_time(act_task);
 
-		if (act_task->is_runable() == 0) {
+		if (act_task->get_sate() == MCU_TASK_SLEEPING) {
 			TRACE_byte(act_task->identifier); // mcu_task_controller_schedule() - Task is not runnable xxxxxxxxxxxxxxxx
 			goto SKIP_TASK;
 		}
@@ -117,6 +119,7 @@ void mcu_task_controller_schedule(void) {
 
 		//act_task->last_run_time = i_system.time.now_u16();
 		act_task->run();
+		system_is_on_idle = 0;
 
 		PASS(); // mcu_task_controller_schedule() - Task complete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -124,7 +127,9 @@ void mcu_task_controller_schedule(void) {
 		act_task = act_task->next_task;
 	}
 
-	//mcu_idle_task.run();
+	if (system_is_on_idle != 0) {
+		//mcu_idle_task.run();
+	}
 }
 
 void mcu_task_controller_sleep(void) {

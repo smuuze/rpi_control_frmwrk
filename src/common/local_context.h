@@ -67,12 +67,14 @@ typedef struct {
 typedef struct {
 	i8 maximal;
 	i8 minimal;
+	i8 mean;
 	i8 actual;
 } T_SYSTEM_DATA_TEMPERATURE;
 
 typedef struct {
 	u8 maximal;
 	u8 minimal;
+	u8 mean;
 	u8 actual;
 } T_SYSTEM_DATA_HUMIDTY;
 

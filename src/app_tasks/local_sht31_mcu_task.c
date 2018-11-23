@@ -34,12 +34,12 @@
 //-----------------------------------------------------------------------------
 
 
-#define SHT31_TASK_RUN_INTERVAL_MS		60000 /* once in a minute */
-#define SHT32_TASK_10MIN_INTERVAL_MS		600000
+#define SHT31_TASK_RUN_INTERVAL_MS		60000 	/* once in a minute */
+#define SHT32_TASK_MAXMIN_INTERVAL_MS		900000	/* every 15 minutes*/
 #define SHT31_TASK_COMMAND_BUFFER_LENGHT	5
 #define SHT31_TASK_ANSWER_BUFFER_LENGTH		6
 
-#define SHT31_TASK_NUMBER_OF_HISTORY_VALUES	10
+#define SHT31_TASK_NUMBER_OF_HISTORY_VALUES	96 /* for the last 24 Hours */
 
 
 /*!
@@ -51,6 +51,7 @@ typedef enum {
 	SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT,//!< SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT
 	SHT31_TASK_STATE_GET_TEMP_HUM_DATA,          //!< SHT31_TASK_STATE_GET_TEMP_HUM_DATA
 	SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA,      //!< SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA
+	SHT31_TASK_STATE_CANCEL_OPERATION
 } SHT31_TASK_STATE;
 
 /*!
@@ -66,25 +67,26 @@ static TRX_DRIVER_CONFIGURATION driver_cfg;
 /*!
  *
  */
-static SHT31_TASK_STATE actual_task_state = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
+static SHT31_TASK_STATE operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
 
 /*!
  *
  */
-static u16 task_run_interval_reference = 0;
-static u32 task_run_interval_reference_10min = 0;
+static MACU_TASK_INTERFACE_TASK_STATE task_state = MCU_TASK_TERMINATED;
 
 /*!
  *
  */
-static u16 operation_refrence_time = 0;
+static u32 task_run_interval_reference_actual = 0;
+static u32 task_run_interval_reference_maxmin = 0;
 
+/*!
+ *
+ */
+static u32 operation_refrence_time = 0;
 
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(sht31_temp, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(sht31_hum, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
-
-BUILD_LOCAL_DATA_STORAGE_ARRAY_I8(sht31_temp_24hour, 30)
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(sht31_hum_24hour, 30)
+BUILD_LOCAL_DATA_STORAGE_ARRAY_I8(sht31_temp_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
+BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(sht31_hum_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
 
 void local_sht31_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 
@@ -96,10 +98,7 @@ void local_sht31_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 	GET_SYSTEM(data).temperature.maximal = 0;
 	GET_SYSTEM(data).temperature.minimal = 127;
 
-	sht31_temp_data_storage_array_init();
 	sht31_temp_24hour_data_storage_array_init();
-
-	sht31_hum_data_storage_array_init();
 	sht31_hum_24hour_data_storage_array_init();
 }
 
@@ -107,17 +106,33 @@ void local_sht31_mcu_task_init(void) {
 
 	PASS(); // local_sht31_mcu_task_init()
 
-	actual_task_state = SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR;
-	task_run_interval_reference = i_system.time.now_u16();
-	task_run_interval_reference_10min = i_system.time.now_u32();
+	operation_stage = SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR;
+	task_run_interval_reference_actual = 0; //i_system.time.now_u16();
+	task_run_interval_reference_maxmin = 0;//i_system.time.now_u32();
 
 	GET_SYSTEM(data).temperature.minimal = SHT31_MAXIMUM_MEASSUREABLE_TEMPERATURE;
 	GET_SYSTEM(data).humidity.minimal = SHT31_MAXIMUM_MEASSUREABLE_HUMIDITY;
+
+	task_state = MCU_TASK_SLEEPING;
+
+	GPIO_17_OFF();
 }
 
 
-u8 local_sht31_mcu_task_is_runable(void) {
-	return 1;
+MACU_TASK_INTERFACE_TASK_STATE local_sht31_mcu_task_get_state(void) {
+
+	if (task_state == MCU_TASK_SLEEPING) {
+		if (i_system.time.isup_u32(task_run_interval_reference_actual, SHT31_TASK_RUN_INTERVAL_MS) != 0) {
+			task_state = MCU_TASK_RUNNING;
+			GPIO_17_ON();
+
+		} else {
+
+			GPIO_17_OFF();
+		}
+	}
+
+	return task_state;
 }
 
 
@@ -128,21 +143,22 @@ void local_sht31_mcu_task_run(void) {
 
 	u32 calculation_temp = 0;
 
-	switch (actual_task_state) {
+	u32 actual_time = i_system.time.now_u32();
+	TRACE_long(actual_time); // local_sht31_mcu_task_run() -----------------
+
+	switch (operation_stage) {
 
 		default:
 
-			actual_task_state = SHT31_TASK_STATE_IDLE; PASS(); // -----------------
+			operation_stage = SHT31_TASK_STATE_IDLE;
 			// no break;
 
 		case SHT31_TASK_STATE_IDLE :
 
-			if (i_system.time.isup_u16(task_run_interval_reference, SHT31_TASK_RUN_INTERVAL_MS) == 0) {
-				break;
-			}
+			task_run_interval_reference_actual = i_system.time.now_u32();
+			operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
 
-			task_run_interval_reference = i_system.time.now_u16();
-			actual_task_state = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT; PASS(); // -----------------
+			PASS(); // local_sht31_mcu_task_run() - Going to start measurement ----
 
 			// no break;
 
@@ -153,7 +169,7 @@ void local_sht31_mcu_task_run(void) {
 				break;
 			}
 
-			if (i_system.time.isup_u16(task_run_interval_reference, SHT31_STARTUP_TIME_MS) == 0) {
+			if (i_system.time.isup_u32(task_run_interval_reference_actual, SHT31_STARTUP_TIME_MS) == 0) {
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Wait for Start-Up of Sensor
 				break;
 			}
@@ -167,8 +183,8 @@ void local_sht31_mcu_task_run(void) {
 			p_com_driver->set_N_bytes(SHT31_MEASUREMENT_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();
 
-			task_run_interval_reference = i_system.time.now_u16();
-			actual_task_state = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT; PASS(); // -----------------
+			task_run_interval_reference_actual = i_system.time.now_u32();
+			operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
 
 			// no break;
 
@@ -176,16 +192,20 @@ void local_sht31_mcu_task_run(void) {
 
 			if (p_com_driver->is_ready_for_tx() == 0) {
 
+				task_state = MCU_TASK_IDLE;
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT - check if driver is ready for RX
 
-				if (i_system.time.isup_u16(task_run_interval_reference, SHT31_OPERATION_TIMEOUT_MS) != 0) {
+				if (i_system.time.isup_u32(task_run_interval_reference_actual, SHT31_OPERATION_TIMEOUT_MS) != 0) {
+
 					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT - Waiting for Driver to be Ready has FAILED !!! ---
 					p_com_driver->stop_tx();
-					actual_task_state = SHT31_TASK_STATE_IDLE;
+					operation_stage = SHT31_TASK_STATE_CANCEL_OPERATION;
 				}
 
 				break;
 			}
+
+			task_state = MCU_TASK_RUNNING;
 
 			SHT31_SET_COMMAND(SHT31_COMMAND_NO_CLK_STRECHTING_LOW_REPEATABILITY, command_buffer);
 
@@ -193,8 +213,9 @@ void local_sht31_mcu_task_run(void) {
 			p_com_driver->set_N_bytes(SHT31_MEASUREMENT_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();
 
-			operation_refrence_time = i_system.time.now_u16();
-			actual_task_state = SHT31_TASK_STATE_GET_TEMP_HUM_DATA; PASS(); // -----------------
+			operation_refrence_time = i_system.time.now_u32();
+			operation_stage = SHT31_TASK_STATE_GET_TEMP_HUM_DATA;
+			task_state = MCU_TASK_IDLE;
 
 			// no break;
 
@@ -204,25 +225,28 @@ void local_sht31_mcu_task_run(void) {
 
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA - Waiting for communication-driver
 
-				if (i_system.time.isup_u16(task_run_interval_reference, SHT31_OPERATION_TIMEOUT_MS) != 0) {
+				if (i_system.time.isup_u32(task_run_interval_reference_actual, SHT31_OPERATION_TIMEOUT_MS) != 0) {
+
 					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA -Waiting for Driver to be Ready has FAILED !!! ---
 					p_com_driver->stop_tx();
-					actual_task_state = SHT31_TASK_STATE_IDLE;
+					operation_stage = SHT31_TASK_STATE_CANCEL_OPERATION;
 				}
 
 				break;
 			}
 
-			if (i_system.time.isup_u16(operation_refrence_time, SHT31_MEASUREMENT_TIME_LOW_REPEATABILITY_MS) == 0) {
+			if (i_system.time.isup_u32(operation_refrence_time, SHT31_MEASUREMENT_TIME_LOW_REPEATABILITY_MS) == 0) {
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA - Wait for meassurement to be done
 				break;
 			}
 
+			task_state = MCU_TASK_RUNNING;
+
 			p_com_driver->set_address(SHT31_BUS_ADDRESS_1);
 			p_com_driver->start_rx(SHT31_MEASRUEMENT_ANSWER_LENGTH);
 
-			operation_refrence_time = i_system.time.now_u16();
-			actual_task_state = SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA; PASS(); // -----------------
+			operation_refrence_time = i_system.time.now_u32();
+			operation_stage = SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA;
 
 			// no break;
 
@@ -230,14 +254,16 @@ void local_sht31_mcu_task_run(void) {
 
 			if (p_com_driver->bytes_available() < SHT31_MEASRUEMENT_ANSWER_LENGTH) {
 
-				if (i_system.time.isup_u16(operation_refrence_time, SHT31_OPERATION_TIMEOUT_MS) != 0) {
+				task_state = MCU_TASK_IDLE;
+
+				if (i_system.time.isup_u32(operation_refrence_time, SHT31_OPERATION_TIMEOUT_MS) != 0) {
 					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA - Timeout on waiting for data
 
 					p_com_driver->stop_tx();
 					p_com_driver->stop_rx();
 					p_com_driver->clear_buffer();
 
-					actual_task_state = SHT31_TASK_STATE_IDLE; PASS(); // -----------------
+					operation_stage = SHT31_TASK_STATE_CANCEL_OPERATION;
 					break;
 				}
 
@@ -245,68 +271,70 @@ void local_sht31_mcu_task_run(void) {
 				break;
 			}
 
-			PASS(); ///----- Temperature -----------------------------------------------------
+			task_state = MCU_TASK_RUNNING;
+
+			PASS(); ///----- Temperature ----------------------------------------------------
 
 			p_com_driver->get_N_bytes(SHT31_MEASRUEMENT_ANSWER_LENGTH, answer_buffer);
 
 			GET_SYSTEM(data).adc.temperature = (answer_buffer[SHT31_INDEX_OF_TEMPERATURE_MSB_IN_ANSWER] << 8 ) | answer_buffer[SHT31_INDEX_OF_TEMPERATURE_LSB_IN_ANSWER];
-			TRACE_word(GET_SYSTEM(data).adc.temperature); // actual raw-value of temperature
-
-			sht31_temp_data_storage_array_add_value(GET_SYSTEM(data).adc.temperature);
-			GET_SYSTEM(data).adc.temperature = sht31_temp_data_storage_array_get_mean();
-
-			TRACE_word(GET_SYSTEM(data).adc.temperature); // actual mean-value of temperature
+			TRACE_word(GET_SYSTEM(data).adc.temperature); // local_sht31_mcu_task_run() - actual raw-value of temperature
 
 			calculation_temp = (u32)GET_SYSTEM(data).adc.temperature * (u32)SHT31_TEMPERATURE_FIXPOINT_FACTOR_M;
 			calculation_temp = calculation_temp >> 16;
 
 			GET_SYSTEM(data).temperature.actual = (i8)((i32)calculation_temp - SHT31_TEMPERATURE_FIXPOINT_FACTOR_B);
-
-			TRACE_word(GET_SYSTEM(data).adc.temperature); // actual raw-value of temperature
-			TRACE_byte(GET_SYSTEM(data).temperature.actual); // actual temperature in °C
-
-			if (i_system.time.isup_u32(task_run_interval_reference_10min, SHT32_TASK_10MIN_INTERVAL_MS) == 0) {
-				sht31_temp_24hour_data_storage_array_add_value(GET_SYSTEM(data).temperature.actual);
-				GET_SYSTEM(data).temperature.maximal = sht31_temp_24hour_data_storage_array_get_max();
-				GET_SYSTEM(data).temperature.minimal = sht31_temp_24hour_data_storage_array_get_min();
-			}
-
-			TRACE_byte(GET_SYSTEM(data).temperature.maximal); // maximum temperature in °C
-			TRACE_byte(GET_SYSTEM(data).temperature.minimal); // minimum temperature in °C
+			TRACE_byte(GET_SYSTEM(data).temperature.actual); // local_sht31_mcu_task_run() - actual temperature in °C
 
 			PASS(); ///----- Humidity -----------------------------------------------------
 
 			GET_SYSTEM(data).adc.humidity = (answer_buffer[SHT31_INDEX_OF_HUMIDITY_MSB_IN_ANSWER] << 8 ) | answer_buffer[SHT31_INDEX_OF_HUMIDITY_LSB_IN_ANSWER];
-			TRACE_N(2, &GET_SYSTEM(data).adc.humidity); // raw value of humidity
-
-			sht31_hum_data_storage_array_add_value(GET_SYSTEM(data).adc.temperature);
-			GET_SYSTEM(data).adc.humidity = sht31_hum_data_storage_array_get_mean();
-
-			TRACE_N(2, &GET_SYSTEM(data).adc.humidity); // mean value of humidity
+			TRACE_N(2, &GET_SYSTEM(data).adc.humidity); // local_sht31_mcu_task_run() - raw value of humidity
 
 			calculation_temp = (u32)GET_SYSTEM(data).adc.humidity * (u32)SHT31_HUMIDITY_FIXPOINT_FACTOR_M;
 			calculation_temp = calculation_temp >> 16;
 
 			GET_SYSTEM(data).humidity.actual = calculation_temp;
+			TRACE_byte(GET_SYSTEM(data).humidity.actual); // local_sht31_mcu_task_run() - actual relative humidity in %
 
-			TRACE_N(2, &GET_SYSTEM(data).adc.humidity); // raw value of humidity
-			TRACE_byte(GET_SYSTEM(data).humidity.actual); // actual relative humidity in %
+			PASS(); ///----- Max Min Values -----------------------------------------------
 
-			if (i_system.time.isup_u32(task_run_interval_reference_10min, SHT32_TASK_10MIN_INTERVAL_MS) == 0) {
+			if (i_system.time.isup_u32(task_run_interval_reference_maxmin, SHT32_TASK_MAXMIN_INTERVAL_MS) == 0) {
+				task_run_interval_reference_maxmin = i_system.time.now_u32();
+
+				sht31_temp_24hour_data_storage_array_add_value(GET_SYSTEM(data).temperature.actual);
+				GET_SYSTEM(data).temperature.maximal = sht31_temp_24hour_data_storage_array_get_max();
+				GET_SYSTEM(data).temperature.minimal = sht31_temp_24hour_data_storage_array_get_min();
+				GET_SYSTEM(data).temperature.mean = sht31_temp_24hour_data_storage_array_get_mean();
+
+				TRACE_byte(GET_SYSTEM(data).temperature.maximal); // local_sht31_mcu_task_run() - maximum temperature in °C
+				TRACE_byte(GET_SYSTEM(data).temperature.minimal); // local_sht31_mcu_task_run() - minimum temperature in °C
+				TRACE_byte(GET_SYSTEM(data).temperature.mean); // local_sht31_mcu_task_run() - minimum temperature in °C
+
 				sht31_hum_24hour_data_storage_array_add_value(GET_SYSTEM(data).humidity.actual);
 				GET_SYSTEM(data).humidity.maximal = sht31_hum_24hour_data_storage_array_get_max();
 				GET_SYSTEM(data).humidity.minimal = sht31_hum_24hour_data_storage_array_get_min();
+				GET_SYSTEM(data).humidity.mean = sht31_hum_24hour_data_storage_array_get_mean();
+
+				TRACE_byte(GET_SYSTEM(data).humidity.maximal); // maximum humidity in °C
+				TRACE_byte(GET_SYSTEM(data).humidity.minimal); // minimum humidity in °C
+				TRACE_byte(GET_SYSTEM(data).humidity.mean); // minimum humidity in °C
 			}
 
-			TRACE_byte(GET_SYSTEM(data).humidity.maximal); // maximum humidity in °C
-			TRACE_byte(GET_SYSTEM(data).humidity.minimal); // minimum humidity in °C
+			operation_stage = SHT31_TASK_STATE_IDLE;
+			task_run_interval_reference_actual = i_system.time.now_u32();
+			task_state = MCU_TASK_SLEEPING;
 
-			if (i_system.time.isup_u32(task_run_interval_reference_10min, SHT32_TASK_10MIN_INTERVAL_MS) == 0) {
-				task_run_interval_reference_10min = i_system.time.now_u32();
-			}
+			TRACE_word(task_run_interval_reference_actual); // local_sht31_mcu_task_run() - Measurement has been finished ----
 
-			actual_task_state = SHT31_TASK_STATE_IDLE; PASS(); // -----------------
-			task_run_interval_reference = i_system.time.now_u16();
+			break;
+
+		case SHT31_TASK_STATE_CANCEL_OPERATION :
+
+			operation_stage = SHT31_TASK_STATE_IDLE;
+			task_run_interval_reference_actual = i_system.time.now_u32();
+			task_state = MCU_TASK_SLEEPING;
+
 			break;
 	}
 }

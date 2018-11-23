@@ -55,22 +55,15 @@ void local_event_mcu_task_init(void) {
 	}
 }
 
-u8 local_event_mcu_task_is_runable(void) {
+MACU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void) {
 
 	PASS(); // local_event_mcu_task_is_runable() ---
 
-	u32 rtc_time = local_rtc_timer_gettime_u32();
-	TRACE_long(rtc_time); //
-
-	u32 ms_time = i_system.time.now_u32();
-	TRACE_long(ms_time); //
-
-
 	if (_event_counter != 0) {
-		return 1;
+		return MCU_TASK_RUNNING;
 	}
 
-	return 0;
+	return MCU_TASK_SLEEPING;
 }
 
 void local_event_mcu_task_run(void) {

@@ -12,6 +12,10 @@
 #define noTRACES
 #include <traces.H>
 
+#ifndef config_HAS_LED_MATRIX
+#define config_HAS_LED_MATRIX 0
+#endif
+
 #if config_HAS_LED_MATRIX == 1
 #include "local_led_mcu_task.h"
 static MCU_TASK_INTERFACE led_mcu_task = {
@@ -44,7 +48,7 @@ static MCU_TASK_INTERFACE ads1115_mcu_task = {
 	0, 					// u16 new_run_timeout,
 	0, 					// u16 last_run_time,
 	&local_ads1115_mcu_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&local_ads1115_mcu_task_is_runable, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&local_ads1115_mcu_task_get_state, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
 	&local_ads1115_mcu_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
 	0,					// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
 	0, 					// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
@@ -65,7 +69,7 @@ static MCU_TASK_INTERFACE sht31_mcu_task = {
 	0, 					// u16 new_run_timeout,
 	0, 					// u16 last_run_time,
 	&local_sht31_mcu_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&local_sht31_mcu_task_is_runable, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&local_sht31_mcu_task_get_state, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
 	&local_sht31_mcu_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
 	0,					// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
 	0, 					// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
@@ -104,7 +108,7 @@ static MCU_TASK_INTERFACE button_watch_task = {
 	0, 					// u16 new_run_timeout,
 	0, 					// u16 last_run_time,
 	&io_input_controller_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&io_input_controller_task_is_runable, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&io_input_controller_task_get_state, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
 	&io_input_controller_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
 	&io_input_controller_task_background_run,// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
 	0, 					// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
@@ -123,7 +127,7 @@ static MCU_TASK_INTERFACE io_output_controller_task = {
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
 	&io_output_controller_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&io_output_controller_task_is_runable, 		// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&io_output_controller_task_get_state, 		// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
 	&io_output_controller_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
 	&io_output_controller_task_background_run,	// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
 	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
@@ -142,7 +146,7 @@ static MCU_TASK_INTERFACE rpi_protocol_task = {
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
 	&rpi_protocol_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&rpi_protocol_task_is_runable, 			// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&rpi_protocol_task_get_state, 			// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
 	&rpi_protocol_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
 	0,						// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
 	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
@@ -161,7 +165,7 @@ static MCU_TASK_INTERFACE event_task = {
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
 	&local_event_mcu_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&local_event_mcu_task_is_runable, 		// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&local_event_mcu_task_get_state, 		// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
 	&local_event_mcu_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
 	local_event_mcu_task_background_run,		// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
 	local_event_mcu_task_sleep, 			// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
@@ -180,7 +184,7 @@ void task_initialization(void) {
 	mcu_task_controller_register_task(&button_watch_task);
 	mcu_task_controller_register_task(&rpi_protocol_task);
 	mcu_task_controller_register_task(&sht31_mcu_task);
-	mcu_task_controller_register_task(&ads1115_mcu_task);
+	//mcu_task_controller_register_task(&ads1115_mcu_task);
 	mcu_task_controller_register_task(&cmd_mcu_task);
 
 	#if config_HAS_LED_MATRIX == 1
