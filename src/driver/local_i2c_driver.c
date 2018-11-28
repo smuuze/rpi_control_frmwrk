@@ -7,7 +7,6 @@
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "utils/stdmacros.h"
-#include RTOS_H
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -51,12 +50,10 @@
 #define LOCAL_I2C_TX_TRACE_N(n,v)
 #endif
 
-#define TRACES
+
+#define noTRACES
 #include <traces.h>
 
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-///----- status codes -----
 
 //----- General status codes -----
 #define LOCAL_I2C_STATE_WAKEUP					0x01	// -not used yet, since only master mode is implemented- status before the decision of master or slavemode is done
@@ -126,31 +123,6 @@
 #define I2C_DRIVER_BITRATE_PRESCALER_16			0x02
 #define I2C_DRIVER_BITRATE_PRESCALER_64			0x03
 
-
-//#define ENABLE_LOCAL_I2C_INTERFACE()		TWCR = (1 << TWEN) | (1 << TWIE)	// enable interface and release i2c pins, disable interrupt, no signal request
-//#define LOCAL_I2C_STARTSIGNAL()			TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN) | (1 << TWIE)	// send START or REPEATED START signal, enable I2C and interrupts, clear TWINT flag
-//#define LOCAL_I2C_STOPSIGNAL()			TWCR = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN)		// send STOP signal, enable I2C and interrupts, clear TWINT flag
-//#define I2C_DRIVER_START_DATA_TRANSFER()		TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE)			// MTM
-//#define LOCAL_I2C_SEND_SLAR_ACK()		TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE) | (1<<TWEA)	// MRM
-//#define LOCAL_I2C_SEND_SLAR_NACK()		TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWIE)			// MRM
-//
-////---- diverse definitions -----
-//
-//
-//#define LOCAL_I2C_STATEMASK	(TWSR & 0xF8)	// I2C status (masked)
-//
-//#define DEFAULT_DATA_CONTENT()	(TWDR = 0xFF)
-//#define LOCAL_I2C_R_W_BIT	0	// Bit position for R/W bit in "address byte"
-//#define LOCAL_I2C_ADR_BITS	1	// Bit position for LSB of the slave address bits in the init byte
-//
-//#define LOCAL_I2C_DRIVER_OP_MODE_MASTER		1	// not used yet, since only master mode is implemented
-//#define LOCAL_I2C_DRIVER_OP_MODE_SLAVE		2	// -"-
-
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
 //----- Bufferbuilding -----
 BUILD_LOCAL_MSG_BUFFER(, __local_i2c_tx_buffer, LOCAL_I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)	// build transmissionbuffer
 BUILD_LOCAL_MSG_BUFFER(, __local_i2c_rx_buffer, LOCAL_I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)	// build receivingbuffer
@@ -163,11 +135,6 @@ BUILD_MODULE_STATUS_FAST_VOLATILE(i2c_driver_status, 2)
 
 #define LOCAL_I2C_STATUS_RX_ACTIVE		0
 #define LOCAL_I2C_STATUS_TX_ACTIVE		1
-
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-
-
 
 
 /// Bitrate of I2C bus - needs to be looked over for correct setting before letting loose
@@ -191,6 +158,7 @@ static u8 _i2c_rx_counter = 0;
 void local_i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	(void) p_cfg;
+
 	PASS();	// local_i2c_driver_cfg()
 
 	__local_i2c_rx_buffer_init();
@@ -202,11 +170,7 @@ void local_i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 }
 
 void local_i2c_driver_power_off(void) {
-
 	PASS(); // local_i2c_driver_power_off()
-
-	__local_i2c_rx_buffer_clear_all();
-	__local_i2c_tx_buffer_clear_all();
 }
 
 u8 local_i2c_driver_bytes_available (void) {

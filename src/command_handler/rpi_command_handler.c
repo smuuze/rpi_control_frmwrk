@@ -7,8 +7,6 @@
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "utils/stdmacros.h"
-#include <fakertos.h>
-#include RTOS_H
 
 #include "command_handler_interface.h"
 #include "command_buffer_interface.h"
@@ -19,7 +17,7 @@
 #include "button_watcher.h"
 #include "io_output_controller.h"
 
-#define noTRACES
+#define TRACES
 #include <traces.h>
 
 static PROTOCOL_INTERFACE* p_act_protocol;

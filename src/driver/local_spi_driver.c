@@ -7,7 +7,6 @@
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "utils/stdmacros.h"
-#include RTOS_H
 
 #include <avr/io.h>
 #include <avr/interrupt.h>

@@ -2,6 +2,7 @@
 #define _COMMAND_CONTROLLER_H_
 
 #include "command_handler_interface.h"
+#include "mcu_task_interface.h"
 
 /*!
  *
@@ -23,6 +24,12 @@ u8 command_controller_cmd_is_pending(void);
  *
  */
 void command_controller_handle_command(void);
+
+/*!
+ *
+ * @return
+ */
+MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void);
 
 /*!
  *

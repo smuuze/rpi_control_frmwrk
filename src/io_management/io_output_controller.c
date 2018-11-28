@@ -11,7 +11,7 @@
 #include "system_interface.h"
 #include "io_output_controller.h"
 
-#define noTRACES
+#define TRACES
 #include <traces.h>
 
 /*!
@@ -119,7 +119,7 @@ void io_output_controller_task_init(void) {
 
 }
 
-MACU_TASK_INTERFACE_TASK_STATE io_output_controller_task_get_state(void) {
+MCU_TASK_INTERFACE_TASK_STATE io_output_controller_task_get_state(void) {
 
 	if (output_is_active != 0) {
 		return MCU_TASK_RUNNING;

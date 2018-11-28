@@ -5,7 +5,7 @@
 
 //#include <atomic.h>
 
-#define MUTEX_INVALID_ID 	0xFF
+#define MUTEX_INVALID_ID 	0x00
 #define MUTEX_ID_FIRST_VALUE	0x01
 #define MUTEX_ID_LAST_VALUE	0xFE
 

@@ -8,10 +8,10 @@
  * @param divisor
  * @return
  */
-static u32 division(u32 divident, u32 divisor) {
+static u32 division_unsigned(u32 divident, u32 divisor) {
 	u32 result = 0;
 
-	while (divident > divisor) {
+	while (divident >= divisor) {
 		divident -= divisor;
 		result += 1;
 	}
@@ -19,9 +19,28 @@ static u32 division(u32 divident, u32 divisor) {
 	return result;
 }
 
-#define div_u32(divident, divisor)		division((u32)divident, (u32) divisor)
-#define div_u16(divident, divisor)		(u16)division((u32)divident, (u32) divisor)
-#define div_u8(divident, divisor)		(u8)division((u32)divident, (u32) divisor)
+
+/*!
+ *
+ * @param divident
+ * @param divisor
+ * @return
+ */
+static i32 division_signed(i32 divident, i32 divisor) {
+	i32 result = 0;
+
+	while (divident >= divisor) {
+		divident -= divisor;
+		result += 1;
+	}
+
+	return result;
+}
+
+#define div_u32(divident, divisor)		division_unsigned((u32)divident, (u32) divisor)
+#define div_u16(divident, divisor)		(u16)division_unsigned((u32)divident, (u32) divisor)
+#define div_u8(divident, divisor)		(u8)division_unsigned((u32)divident, (u32) divisor)
+#define div_i8(divident, divisor)		(i8)division_signed((i32)divident, (i32) divisor)
 
 // -------------------------------------------------------------------
 // I8 functions
@@ -58,7 +77,7 @@ i8 local_data_storage_array_get_mean_i8(LOCAL_DATA_STORAGE_ARRAY_I8_TYPE* p_cont
 		mean += (i16)p_context->p_buffer[i];
 	}
 
-	mean = division(mean, len);
+	mean = div_i8(mean, len);
 	return (i8)mean;
 }
 

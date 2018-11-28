@@ -55,7 +55,7 @@ void local_event_mcu_task_init(void) {
 	}
 }
 
-MACU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void) {
+MCU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void) {
 
 	PASS(); // local_event_mcu_task_is_runable() ---
 

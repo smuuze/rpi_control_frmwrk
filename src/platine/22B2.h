@@ -75,7 +75,7 @@
 
  DEF_GPIO_2( UART0_RXD      	, D	, 0	, INPUT_PULLUP			, INPUT_PULLUP			) //
  DEF_GPIO_2( UART0_TXD     	, D	, 1	, OUTPUT_ON	 		, OUTPUT_ON			) //
- DEF_GPIO_2( GPIO_17 		, D	, 2	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( GPIO_17 		, D	, 2	, OUTPUT_ON			, OUTPUT_OFF			) //
  DEF_GPIO_2( GPIO_27       	, D	, 3	, OUTPUT_OFF			, OUTPUT_ON			) //
  DEF_GPIO_2( GPIO_22         	, D	, 4	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
  DEF_GPIO_2( LED_7     		, D	, 5	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
@@ -91,7 +91,7 @@
  //GPIO_ALIAS( BEEPER      	, D,4 , OUTPUT_OFF | INVERTED	)
  GPIO_ALIAS( UART0_SEND485      , C,3 , OUTPUT_OFF | INVERTED	)
  GPIO_ALIAS( EVENT_IRQ	        , D,4 , OUTPUT_OFF | INVERTED	)
- GPIO_ALIAS( IS_BUSY	        , D,2 , OUTPUT_OFF | INVERTED	)
+ GPIO_ALIAS( IS_BUSY	        , D,2 , OUTPUT_OFF		)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #define PCMSK_D        (NF_CL_DAT_PCMSK | PWR_DETECT_PCMASK)

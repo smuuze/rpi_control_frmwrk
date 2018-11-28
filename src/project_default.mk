@@ -82,7 +82,7 @@ CSRCS += $(COMMON_INC_PATH)/local_data_storage_array.c
 
 # Framework-Spezifische Quelldateien ------------------------------------
 
-CSRCS += $(PRD5A_DERIVATE_PATH)/timer.c
+##CSRCS += $(PRD5A_DERIVATE_PATH)/timer.c
 
 
 
@@ -90,7 +90,7 @@ CSRCS += $(PRD5A_DERIVATE_PATH)/timer.c
 
 CSRCS += $(APP_PATH)/specific.c
 
-CSRCS += $(APP_PATH)/db_comms.c
+#CSRCS += $(APP_PATH)/db_comms.c
 CSRCS += $(COMMON_INC_PATH)/local_msg_buffer.c
 
 # -----------------------------------------------------------------------
@@ -107,10 +107,6 @@ CSRCS += $(APP_PATH)/driver/local_rtc_driver.c
 
 ifdef MIT_LOCAL_FAKERTOS
 CSRCS += $(APP_PATH)/driver/local_usart_driver.c
-endif
-
-ifdef MIT_LOCAL_FAKERTOS
-CSRCS += $(APP_PATH)/fakertos/fakertos.c
 endif
 
 # -----------------------------------------------------------------------
@@ -156,6 +152,7 @@ CSRCS += $(APP_TASK_INC_PATH)/local_sht31_mcu_task.c
 CSRCS += $(APP_TASK_INC_PATH)/local_cmd_mcu_task.c
 CSRCS += $(APP_TASK_INC_PATH)/local_led_mcu_task.c
 CSRCS += $(APP_TASK_INC_PATH)/local_event_task.c
+CSRCS += $(APP_TASK_INC_PATH)/local_debus_mcu_task.c
 
 # -----------------------------------------------------------------------
 
@@ -197,7 +194,6 @@ IARSRCS +=
 DEBUS_INTERFACE_CFG += HOST
 DEBUS_INTERFACE_CFG += AES
 DEBUS_INTERFACE_CFG += SIO0
-DEBUS_INTERFACE_CFG += FAKERTOS
 
 ifdef MIT_COPRO
 DEBUS_INTERFACE_CFG += COPRO1_SSM

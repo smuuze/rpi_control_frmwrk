@@ -9,7 +9,6 @@
 #include "debusapi.H"
 
 #include "utils/stdmacros.h"
-#include RTOS_H
 
 #include "system_interface.h"
 #include "local_context.h"
@@ -26,7 +25,7 @@
 #include "cfg_driver_interface.h"
 #include "driver_specific_spi.h"
 
-#define noTRACES
+#define TRACES
 #include <traces.h>
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(rpi_status, 2)
@@ -218,7 +217,7 @@ static void _com_driver_command_handler(void) {
 
 		TRACE_byte(rpi_protocol_spi_interface.command_length); // _com_driver_command_handler() - Command-Length
 
-		rpi_protocol_spi_interface.arrival_time = msticker_get_time_ux16();
+		rpi_protocol_spi_interface.arrival_time = i_system.time.now_u16();
 		io_output_controller_set_output(GET_SYSTEM(SYS_OUTPUT).system_busy_output_01, IO_OUTPUT_STATE_ON, 0, 0);
 		RPI_COMMAND_BUFFER_clear_all();
 	}
@@ -321,7 +320,7 @@ static void _com_driver_answer_handler(void) {
 	rpi_status_unset(RPI_STATUS_ANSW_READY);
 
 	#ifdef TRACES_ENABLED
-	rpi_protocol_spi_interface.arrival_time = msticker_get_time_ux16() - rpi_protocol_spi_interface.arrival_time;
+	rpi_protocol_spi_interface.arrival_time = i_system.time.now_u16() - rpi_protocol_spi_interface.arrival_time;
 	TRACE_word(rpi_protocol_spi_interface.arrival_time); // _com_driver_answer_handler() - Time past since command has arrived and processed
 	#endif
 
@@ -360,7 +359,7 @@ void rpi_protocol_task_init(void) {
 	PASS(); // rpi_protocol_task_init()
 }
 
-MACU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
+MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 
 	if (p_com_driver == 0) {
 		return MCU_TASK_SLEEPING;
@@ -393,7 +392,7 @@ void rpi_protocol_task_run(void) {
 
 	// --- only for debugging ---EVENT_IRQ_ON(); // --- only for debugging ---
 
-	if (rpi_protocol_debus_interface.arrival_time != 0 && mstimer_time_is_up_ux16(rpi_protocol_debus_interface.arrival_time, RPI_PROTOCOL_COMMAND_READ_TIMEOUT_MS)) {
+	if (rpi_protocol_debus_interface.arrival_time != 0 && i_system.time.isup_u16(rpi_protocol_debus_interface.arrival_time, RPI_PROTOCOL_COMMAND_READ_TIMEOUT_MS)) {
 
 		PASS(); // rpi_protocol_task_run() - Timeout on receiving command over DEBUS
 		rpi_status_unset(RPI_STATUS_CMD_BUSY);
@@ -401,7 +400,7 @@ void rpi_protocol_task_run(void) {
 		rpi_protocol_debus_interface.arrival_time = 0;
 	}
 
-	if (rpi_protocol_spi_interface.arrival_time != 0 && mstimer_time_is_up_ux16(rpi_protocol_spi_interface.arrival_time, RPI_PROTOCOL_COMMAND_READ_TIMEOUT_MS)) {
+	if (rpi_protocol_spi_interface.arrival_time != 0 && i_system.time.isup_u16(rpi_protocol_spi_interface.arrival_time, RPI_PROTOCOL_COMMAND_READ_TIMEOUT_MS)) {
 
 		PASS(); // rpi_protocol_task_run() - Timeout on receiving command over SPI
 		rpi_status_unset(RPI_STATUS_CMD_BUSY);
@@ -440,7 +439,7 @@ void rpi_protocol_handler_debus_handler(void) {
 		return;
 	}
 
-	rpi_protocol_debus_interface.arrival_time = msticker_get_time_ux16();
+	rpi_protocol_debus_interface.arrival_time = i_system.time.now_u16();
 	TRACE_byte(rpi_protocol_debus_interface.command_length); // rpi_protocol_handler_debus_handler() - Command-Length
 
 	rpi_protocol_debus_interface.command_code = debus_get_byte();

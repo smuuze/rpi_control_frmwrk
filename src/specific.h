@@ -7,6 +7,16 @@
 
 /*!
  *
+ */
+void specific_i2c_power_down(void);
+
+/*!
+ *
+ */
+void specific_spi_power_down(void);
+
+/*!
+ *
  * @return
  */
 u8 specific_onboard_button_01_pinstate(void);

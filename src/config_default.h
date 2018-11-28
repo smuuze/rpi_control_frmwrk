@@ -101,15 +101,13 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 
 #ifndef config_FAKERTOS_TASKYIELD_FCT_PROTO
 #define config_FAKERTOS_TASKYIELD_FCT_PROTO		\
-	void debus_task_schedule(void);			\
 	void mcu_task_controller_background_run(void);
 #endif
 
 #define config_FAKERTOS_TASKYIELD_INIT
 
 #ifndef config_FAKERTOS_TASKYIELD_FUNCTION
-#define config_FAKERTOS_TASKYIELD_FUNCTION		debus_task_schedule();	\
-							mcu_task_controller_background_run();
+#define config_FAKERTOS_TASKYIELD_FUNCTION		mcu_task_controller_background_run();
 #endif
 
 
@@ -198,6 +196,16 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #ifndef DEBUS_DEVICE_AES_ENCRYPTION
 #define DEBUS_DEVICE_AES_ENCRYPTION 1
 #endif
+
+
+///-----------------------------------------------------------------------------
+/// Driver Interface
+
+#define config_I2C_POWER_DOWN_PROTOTYPE				void specific_i2c_power_down(void);
+#define config_I2C_POWER_DOWN_FUNCTION_REF			&specific_spi_power_down
+
+#define config_SPI_POWER_DOWN_PROTOTYPE				void specific_spi_power_down(void);
+#define config_SPI_POWER_DOWN_FUNCTION_REF			&specific_spi_power_down
 
 ///-----------------------------------------------------------------------------
 /// System Interface

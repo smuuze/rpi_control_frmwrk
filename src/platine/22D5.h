@@ -1,11 +1,11 @@
 //--------------------------------------------------------------------------------------------------------------
 //       Hardwarebeschreibung   :  Evaluation Board
 //					Microcontroller :	ATMega1284P
-//					Versorgungsspannung :	3 Volt 
+//					Versorgungsspannung :	3 Volt
 //					Taktfrequenz :		14,7456 MHz
 //					Weitere IC's :		FTDI
 //					PCB Anschluesse :	40 Pin GPIO-Heder
-//								12 Pol Phönix Kontaktstecker
+//								12 Pol Phoenix Kontaktstecker
 //								Mini USB
 //--------------------------------------------------------------------------------------------------------------
 //
@@ -41,10 +41,10 @@
 //   Port A (0x02
 //---------  Name		, Port	, Bit	, STARTUP			, SLEEPMODE
 
- DEF_GPIO_2( EXT_INPUT_1	, A	, 0	, INPUT_PULLUP | INVERTED 	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( EXT_INPUT_2 	, A	, 1	, INPUT_PULLUP | INVERTED 	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( EXT_INPUT_3	, A	, 2	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( EXT_INPUT_4   	, A	, 3	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
+ DEF_GPIO_2( EXT_OUTPUT_4      	, A	, 0	, OUTPUT_OFF			, OUTPUT_OFF			) //
+ DEF_GPIO_2( EXT_OUTPUT_3     	, A	, 1	, OUTPUT_OFF			, OUTPUT_OFF			) //
+ DEF_GPIO_2( EXT_OUTPUT_2 	, A	, 2	, OUTPUT_OFF			, OUTPUT_OFF			) //
+ DEF_GPIO_2( EXT_OUTPUT_1     	, A	, 3	, OUTPUT_OFF			, OUTPUT_OFF			) //
  DEF_GPIO_2( EVENT_IRQ	   	, A	, 4	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
  DEF_GPIO_2( EXT_5V   		, A	, 5	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
  DEF_GPIO_2( SPI1_CE        	, A	, 6	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
@@ -54,10 +54,10 @@
 //    Port B (0x05)
 //---------  Name		, Port	, Bit	, BOOTLOADER			, SLEEPMODE
 
- DEF_GPIO_2( EXT_OUTPUT_4      	, B	, 0	, OUTPUT_OFF			, OUTPUT_OFF			) //
- DEF_GPIO_2( EXT_OUTPUT_3     	, B	, 1	, OUTPUT_OFF			, OUTPUT_OFF			) //
- DEF_GPIO_2( EXT_OUTPUT_2 	, B	, 2	, OUTPUT_OFF			, OUTPUT_OFF			) //
- DEF_GPIO_2( EXT_OUTPUT_1     	, B	, 3	, OUTPUT_OFF			, OUTPUT_OFF			) //
+ DEF_GPIO_2( EXT_INPUT_1	, B	, 0	, INPUT_PULLUP | INVERTED 	, INPUT_PULLUP | INVERTED	) //
+ DEF_GPIO_2( EXT_INPUT_2 	, B	, 1	, INPUT_PULLUP | INVERTED 	, INPUT_PULLUP | INVERTED	) //
+ DEF_GPIO_2( EXT_INPUT_3	, B	, 2	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
+ DEF_GPIO_2( EXT_INPUT_4   	, B	, 3	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
  DEF_GPIO_2( SPI0_CE	        , B	, 4	, INPUT_PULLUP			, INPUT_PULLUP			) // Anpassung fuer Kleverkey
  DEF_GPIO_2( SPI0_MOSI      	, B	, 5	, INPUT_PULLUP			, INPUT_PULLUP			) //
  DEF_GPIO_2( SPI0_MISO     	, B	, 6	, OUTPUT_ON			, OUTPUT_ON			) //
@@ -95,9 +95,9 @@
  GPIO_ALIAS( LED_GRN      	, D, 7 , OUTPUT_OFF | INVERTED	)
  GPIO_ALIAS( LED_RED      	, C, 4 , OUTPUT_OFF | INVERTED	)
  GPIO_ALIAS( LED_YELLOW      	, A, 6 , OUTPUT_OFF | INVERTED	)
- 
+
  GPIO_ALIAS( UART1_SEND485      , D, 4 , OUTPUT_OFF | INVERTED	)
- 
+
  GPIO_ALIAS( SPI1_MOSI	        , D, 2 , OUTPUT_OFF | INVERTED	)
  GPIO_ALIAS( SPI1_MISO	        , D, 3 , OUTPUT_OFF | INVERTED	)
 

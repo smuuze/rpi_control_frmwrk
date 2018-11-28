@@ -2,7 +2,7 @@
 #define   _config_H_
 
 #define noTRACEAKTIV         // Schaltet generell meine TRACES EIN/AUS
-#define noTRACES_ENABLED
+#define TRACES_ENABLED
 #define noTRACE_FAKE_RTOS_TIME_STAMP 2	// Trace-Ausgaben mit Timestamp (Anzahl-Bytes 1..4)
 
 ///-----------------------------------------------------------------------------
@@ -54,13 +54,11 @@
 #define noCOPRO1_ENCRYPTION           32
 
 #define ASSERT_LOOP_INDICATION_ON() \
-        BEEPER_ON();                \
         LED_RED_ON();               \
         LED_GRN_ON();               \
         LED_YELLOW_OFF()
 
-#define ASSERT_LOOP_INDICATION_AFTER_3_SECONDS() \
-        BEEPER_OFF()
+#define ASSERT_LOOP_INDICATION_AFTER_3_SECONDS()
 
 // ================================================================================
 #define HOSTFIFO_BUFFER_SIZE 	512	//Eventuell auch kleiner möglich

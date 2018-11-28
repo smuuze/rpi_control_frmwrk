@@ -119,7 +119,10 @@ void mcu_task_controller_schedule(void) {
 
 		//act_task->last_run_time = i_system.time.now_u16();
 		act_task->run();
-		system_is_on_idle = 0;
+
+		if (act_task->get_sate() != MCU_TASK_SLEEPING) {
+			system_is_on_idle = 0;
+		}
 
 		PASS(); // mcu_task_controller_schedule() - Task complete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -128,7 +131,7 @@ void mcu_task_controller_schedule(void) {
 	}
 
 	if (system_is_on_idle != 0) {
-		//mcu_idle_task.run();
+		mcu_idle_task.run();
 	}
 }
 

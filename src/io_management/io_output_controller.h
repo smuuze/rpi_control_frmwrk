@@ -91,7 +91,7 @@ void io_output_controller_task_init(void);
  *
  * @return
  */
-MACU_TASK_INTERFACE_TASK_STATE io_output_controller_task_get_state(void);
+MCU_TASK_INTERFACE_TASK_STATE io_output_controller_task_get_state(void);
 
 /*!
  *

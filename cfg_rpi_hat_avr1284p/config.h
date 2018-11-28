@@ -78,7 +78,7 @@
 //-------------------------------------------------------------------------
 
 #define config_HAS_ONBOARD_BUTTONS				1
-#define config_HAS_LED_MATRIX					1
+#define config_HAS_LED_MATRIX					0
 
 //-------------------------------------------------------------------------
 // Mus zuletzt eingebunden werden. Alles was oben nicht definiert wurde, wird

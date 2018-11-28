@@ -162,7 +162,7 @@ u32 local_rtc_timer_gettime_u32(void) {
 }
 
 u8 local_rtc_timer_istimeup_u8(u8 time_reference, u8 time_interval) {
-	return local_rtc_timer_gettime_u8() - time_reference > time_interval ? 1 : 0;
+	return ((local_rtc_timer_gettime_u8() - time_reference) > time_interval) ? 1 : 0;
 }
 
 u8 local_rtc_timer_istimeup_u16(u16 time_reference, u16 time_interval) {

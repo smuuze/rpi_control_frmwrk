@@ -14,6 +14,10 @@
 #include "local_ads1115_mcu_task.h"
 #include "local_sht31_mcu_task.h"
 
+config_I2C_POWER_DOWN_PROTOTYPE
+config_SPI_POWER_DOWN_PROTOTYPE
+
+
 /*!
  *
  */
@@ -42,7 +46,7 @@ TRX_DRIVER_INTERFACE spi_driver = {
 TRX_DRIVER_INTERFACE local_i2c_driver = {
 	I2C,					//	TRX_DRIVER_INTERFACE_TYPE type;;
 	&local_i2c_driver_configure, 		//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
-	&local_i2c_driver_power_off, 		//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
+	config_I2C_POWER_DOWN_FUNCTION_REF,	//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
 	&local_i2c_driver_bytes_available, 	//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
 	&local_i2c_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
 	&local_i2c_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;

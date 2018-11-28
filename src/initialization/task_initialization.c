@@ -89,7 +89,7 @@ static MCU_TASK_INTERFACE cmd_mcu_task = {
 	0, 					// u16 new_run_timeout,
 	0, 					// u16 last_run_time,
 	&command_controller_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&command_controller_cmd_is_pending, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&command_controller_task_get_state, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
 	&command_controller_handle_command, 	// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
 	&command_controller_background_run,	// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
 	0, 					// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
@@ -107,7 +107,7 @@ static MCU_TASK_INTERFACE button_watch_task = {
 	15,					// const ux16 WORST_CASE_EXECUTION_TIME;
 	0, 					// u16 new_run_timeout,
 	0, 					// u16 last_run_time,
-	&io_input_controller_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
+	&io_input_controller_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK	init,
 	&io_input_controller_task_get_state, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
 	&io_input_controller_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
 	&io_input_controller_task_background_run,// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
@@ -175,6 +175,25 @@ static MCU_TASK_INTERFACE event_task = {
 	0						// next-task
 };
 
+#include "local_debus_mcu_task.h"
+static MCU_TASK_INTERFACE debus_task = {
+
+	0, 						// u8 identifier,
+	25, 						// const u16 SCHEDULE_INTERVAL,
+	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&debus_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
+	&debus_task_get_state, 				// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&debus_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
+	debus_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
+	0						// next-task
+};
+
 void task_initialization(void) {
 
 	PASS(); // task_initialization()
@@ -184,8 +203,9 @@ void task_initialization(void) {
 	mcu_task_controller_register_task(&button_watch_task);
 	mcu_task_controller_register_task(&rpi_protocol_task);
 	mcu_task_controller_register_task(&sht31_mcu_task);
-	//mcu_task_controller_register_task(&ads1115_mcu_task);
+	mcu_task_controller_register_task(&ads1115_mcu_task);
 	mcu_task_controller_register_task(&cmd_mcu_task);
+	mcu_task_controller_register_task(&debus_task);
 
 	#if config_HAS_LED_MATRIX == 1
 	mcu_task_controller_register_task(&led_mcu_task);

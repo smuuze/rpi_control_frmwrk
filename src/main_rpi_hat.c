@@ -12,16 +12,14 @@
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "utils/stdmacros.h"
-#include RTOS_H
+//#include RTOS_H
+//#include <fakertos.h>
 
 #include <ctype.h>
 #include <string.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
-#include <fakertos.h>
 
-#include "cpu/avr/iardebus/debusapi.h" // GCC/frmwrk/cpu/avr/iardebus/
-#include "db_comms.h"
 
 #include "local_msg_buffer.h"
 #include "local_i2c_driver.h"
@@ -29,6 +27,7 @@
 
 #include "initialization.h"
 #include "mcu_task_controller.h"
+#include "local_debus_mcu_task.h"
 
 #define noTRACES
 #include <traces.H>
@@ -66,6 +65,16 @@
 #define INIT_TRACE_N(num,byte)
 #endif
 
+#ifndef  RTOS_TIMER
+
+config_FAKERTOS_TASKYIELD_FCT_PROTO
+
+void task_yield(void) {
+	config_FAKERTOS_TASKYIELD_FUNCTION
+}
+
+#endif
+
 void main_init(void) {
 
 	INIT_PASS(); // Initialization - First-Time Debus-Init
@@ -75,14 +84,9 @@ void main_init(void) {
 	wdt_enable(WDTO_8S);
 	watchdog();
 
-//	// Baudrate erstmal auf 9600 Baud setzen
-//	INIT_PASS(); // Initialization - First-Time Debus-Init
-//	debus_host_com_init();
-//
-//	cli();
-//	debus_init();
-//	debus_start_receive_mode_init();
-//	sei();
+	// Baudrate erstmal auf 9600 Baud setzen
+	INIT_PASS(); // Initialization - First-Time Debus-Init
+	debus_host_com_init();
 
 	#ifdef  RTOS_TIMER
 	{
@@ -91,16 +95,6 @@ void main_init(void) {
 		fakertos_timer_init();
 	}
 	#endif  // #ifdef RTOS_TIMER
-
-	while (debus_tx_busy()) {
-		watchdog();
-	}
-
-//	INIT_PASS(); // Initialization - Second-Time Debus-Init
-//	cli();
-//	debus_init();
-//	debus_start_receive_mode_init();
-//	sei();
 
 	cli();
 	initialization();

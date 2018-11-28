@@ -84,7 +84,7 @@ void io_input_controller_task_init(void);
  *
  * @return
  */
-MACU_TASK_INTERFACE_TASK_STATE io_input_controller_task_get_state(void);
+MCU_TASK_INTERFACE_TASK_STATE io_input_controller_task_get_state(void);
 
 /*!
  *

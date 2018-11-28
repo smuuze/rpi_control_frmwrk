@@ -7,8 +7,6 @@
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "utils/stdmacros.h"
-#include <fakertos.h>
-#include RTOS_H
 
 #include "command_controller.h"
 #include "command_handler_interface.h"
@@ -95,6 +93,15 @@ void command_controller_handle_command(void) {
 
 	_act_cmd_handler = 0;
 }
+
+MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void) {
+	if (command_controller_cmd_is_pending() != 0) {
+		return MCU_TASK_RUNNING;
+	} else {
+		return MCU_TASK_SLEEPING;
+	}
+}
+
 
 void command_controller_background_run(void) {
 

@@ -5,6 +5,15 @@
 #define noTRACES
 #include <traces.h>
 
+void specific_i2c_power_down(void) {
+	I2C0_SCL_ON();
+	I2C0_SDA_ON();
+}
+
+void specific_spi_power_down(void) {
+
+}
+
 
 u8 specific_onboard_button_01_pinstate(void) {
 	return SWITCH_IN_1_PIN();
