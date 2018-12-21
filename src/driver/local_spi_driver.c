@@ -26,7 +26,7 @@
 #include <traces.h>
 
 #define noSPI_RX_TRACES
-#define SPI_TX_TRACES
+#define noSPI_TX_TRACES
 
 #if defined TRACES_ENABLED && defined SPI_RX_TRACES
 #define SPI_RX_PASS()			PASS()
@@ -57,7 +57,7 @@
 #define SPI_TX_TRACE_N(n,v)
 #endif
 
-BUILD_MUTEX(local_spi_driver_mutex)
+BUILD_MUTEX(spi_mutex)
 
 BUILD_LOCAL_MSG_BUFFER(static, __spi_tx_buffer, LOCAL_SPI_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
 BUILD_LOCAL_MSG_BUFFER(static, __spi_rx_buffer, LOCAL_SPI_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)
@@ -67,6 +67,16 @@ BUILD_MODULE_STATUS_FAST(spi_driver_status, 2)
 #define SPI_DRIVER_STATUS_RX_ACTIVE	0
 #define SPI_DRIVER_STATUS_TX_ACTIVE	1
 
+void spi_driver_initialize(void) {
+
+	PASS(); // spi_driver_initialize()
+
+	SPI0_DISABLE_INTERFACE();
+
+	__spi_rx_buffer_init();
+	__spi_tx_buffer_init();
+}
+
 /*!
  *
  */
@@ -74,10 +84,9 @@ void spi_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	PASS(); // spi_driver_configure()
 
-	__spi_rx_buffer_init();
-	__spi_tx_buffer_init();
+	//spi_driver_status_clear_all();
 
-	spi_driver_status_clear_all();
+	SPI0_ENABLE_INTERFACE();
 
 	SPI0_CLEAR_CONFIG();
 	SPI0_SET_MODE(p_cfg->module.spi.op_mode);
@@ -100,11 +109,9 @@ void spi_driver_power_off(void) {
 	PASS(); // spi_driver_power_off()
 
 	SPI0_SET_ENABLED(DRIVER_SPI_DISABLED);
+	//spi_driver_status_clear_all();
 
-	spi_driver_status_clear_all();
-
-	__spi_rx_buffer_clear_all();
-	__spi_tx_buffer_clear_all();
+	SPI0_DISABLE_INTERFACE();
 }
 
 
@@ -151,11 +158,11 @@ u8 spi_driver_set_N_bytes(u8 num_bytes, const u8* p_buffer_from) {
 }
 
 u8 spi_driver_is_ready_for_tx(void) {
-	return spi_driver_status_is_set(SPI_DRIVER_STATUS_TX_ACTIVE) != 0 ? 0 : 1;
+	return spi_driver_status_is_set(SPI_DRIVER_STATUS_TX_ACTIVE) == 0 ? 1 : 0;
 }
 
 u8 spi_driver_is_ready_for_rx(void) {
-	return spi_driver_status_is_set(SPI_DRIVER_STATUS_RX_ACTIVE) != 0 ? 0 : 1;
+	return spi_driver_status_is_set(SPI_DRIVER_STATUS_RX_ACTIVE) == 0 ? 1 : 0;
 }
 
 
@@ -195,6 +202,8 @@ void spi_driver_start_tx(void) {
 		return;
 	}
 
+	SPI_TX_TRACE_byte(__spi_tx_buffer_bytes_available()); // spi_driver_start_tx() - Bytes to transmit
+
 	u8 byte = __spi_tx_buffer_get_byte();
 	SPI0_SET_BYTE(byte);
 }
@@ -222,19 +231,22 @@ void spi_driver_set_address (u8 addr) {
 }
 
 u8 spi_driver_mutex_request(void) {
-	if (local_spi_driver_mutex_is_requested() != 0) {
+
+	if (spi_mutex_is_requested() != 0) {
 		return MUTEX_INVALID_ID;
 	}
 
-	return local_spi_driver_mutex_request();
+	return spi_mutex_request();
 }
 
 void spi_driver_mutex_release(u8 m_id) {
-	local_spi_driver_mutex_release(m_id);
+	spi_mutex_release(m_id);
 }
 
 
 ISR(SPI_STC_vect) {
+
+	PASS(); // ISR(SPI_STC_vect) -----------------------------------------------------------------
 
 	u8 rx_byte = SPI0_GET_BYTE();
 
@@ -242,6 +254,8 @@ ISR(SPI_STC_vect) {
 
 		u8 tx_byte = __spi_tx_buffer_get_byte();
 		SPI0_SET_BYTE(tx_byte);
+
+		SPI_RX_TRACE_byte(tx_byte); // ISR(SPI_STC_vect) - new byte transmitted
 
 		if (__spi_tx_buffer_bytes_available() == 0) {
 			spi_driver_stop_tx();
@@ -252,6 +266,7 @@ ISR(SPI_STC_vect) {
 	}
 
 	if (spi_driver_status_is_set(SPI_DRIVER_STATUS_RX_ACTIVE)) {
+		SPI_RX_TRACE_byte(rx_byte); // ISR(SPI_STC_vect) - new byte received
 		__spi_rx_buffer_add_byte(rx_byte);
 	}
 }

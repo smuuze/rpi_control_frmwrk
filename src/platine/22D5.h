@@ -26,11 +26,11 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //      Konfiguration fuer RTOS Timer
-#define RTOS_TIMER                      1
-#define RTOS_TCOMP                      B
+//#define RTOS_TIMER                      1
+//#define RTOS_TCOMP                      B
 
-#define MSTICKER_OCTIMER        RTOS_TIMER
-#define MSTICKER_OCCHANNEL      RTOS_TCOMP
+//#define MSTICKER_OCTIMER        RTOS_TIMER
+//#define MSTICKER_OCCHANNEL      RTOS_TCOMP
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //      Konfiguration fuer Beeper Timer

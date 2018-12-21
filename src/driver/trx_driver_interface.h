@@ -13,6 +13,10 @@ typedef enum {
 
 /*
  */
+typedef void (*TRX_DRIVER_INTERFACE_INITIALIZE_CALLBACK)	(void);
+
+/*
+ */
 typedef void (*TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK)		(TRX_DRIVER_CONFIGURATION* p_configuration);
 
 /*
@@ -83,6 +87,10 @@ typedef void (*TRX_DRIVER_INTERFACE_RELEASE_MUTEX_CALLBACK)	(u8 m_id);
 typedef struct TRX_DRIVER_INTERFACE {
 
 	TRX_DRIVER_INTERFACE_TYPE type;
+
+	/* Shall only be called once during boot time
+	 */
+	TRX_DRIVER_INTERFACE_INITIALIZE_CALLBACK initialize;
 
 	/* call this function with your config-parameters before any operation takes place
 	 * you can call this function again before your operation is started, if this module is used as a master

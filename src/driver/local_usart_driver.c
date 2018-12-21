@@ -7,7 +7,6 @@
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "utils/stdmacros.h"
-#include RTOS_H
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -123,7 +122,7 @@ BUILD_VOLATILE_MODULE_STATUS(u8, local_usart_status)
 #define LOCAL_USART_STATUS_TX_ACTIVE		(1 << 1)
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
+/*
 /// Bitrate of I2C bus - needs to be looked over for correct setting before letting loose
 #define f_cpu	7372800		// 14745600 without prescaling
 
@@ -136,7 +135,7 @@ BUILD_VOLATILE_MODULE_STATUS(u8, local_usart_status)
 	#else
 		#define	LOCAL_USART_BITRATE()	(TWBR = 0x0A)		// standard minimum setting if not otherwise modified
 #endif
-
+*/
 /*!-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 static u16 remote_usart_rx_bytes = 0;

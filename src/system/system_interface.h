@@ -10,23 +10,22 @@ typedef enum {
 
 } SYSTEM_EVENT;
 
-/*!
- *
- * @return
- */
-typedef u8  (*SYSTEM_INTERFACE_GET_TIME_U8_CALLBACK)	(void);
-typedef u16 (*SYSTEM_INTERFACE_GET_TIME_U16_CALLBACK)	(void);
-typedef u32 (*SYSTEM_INTERFACE_GET_TIME_U32_CALLBACK)	(void);
+// --------------------------------------------------------------------------------------------------------------------
 
 /*!
  *
- * @param ref_time
- * @param time_interval
  * @return
  */
-typedef u8 (*SYSTEM_INTERFACE_IS_TIME_UP_U8_CALLBACK)	(u8 ref_time, u8 time_interval);
-typedef u8 (*SYSTEM_INTERFACE_IS_TIME_UP_u16_CALLBACK)	(u16 ref_time, u16 time_interval);
-typedef u8 (*SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK)	(u32 ref_time, u32 time_interval);
+typedef u8  (*SYSTEM_INTERFACE_GET_TIME_U8_CALLBACK)		(void);
+typedef u16 (*SYSTEM_INTERFACE_GET_TIME_U16_CALLBACK)		(void);
+typedef u32 (*SYSTEM_INTERFACE_GET_TIME_U32_CALLBACK)		(void);
+
+/*!
+ *
+ */
+typedef u8 (*SYSTEM_INTERFACE_IS_TIME_UP_U8_CALLBACK)		(u8 ref_time, u8 time_interval);
+typedef u8 (*SYSTEM_INTERFACE_IS_TIME_UP_u16_CALLBACK)		(u16 ref_time, u16 time_interval);
+typedef u8 (*SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK)		(u32 ref_time, u32 time_interval);
 
 /*!
  *
@@ -41,7 +40,11 @@ typedef struct {
 	SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK 	isup_u32;
 } SYSTEM_INTERFACE_TIME;
 
-/* */
+// --------------------------------------------------------------------------------------------------------------------
+
+/*!
+ *
+ */
 typedef void (*SYSTEM_INTERFACE_ADD_EVENT_CALLBACK)		(SYSTEM_EVENT evt);
 typedef SYSTEM_EVENT (*SYSTEM_INTERFACE_GET_EVENT_CALLBACK)	(void);
 
@@ -53,7 +56,36 @@ typedef struct {
 	SYSTEM_INTERFACE_GET_EVENT_CALLBACK 	get_next;
 } SYSTEM_INTERFACE_EVENT;
 
+// --------------------------------------------------------------------------------------------------------------------
 
+/*!
+ *
+ */
+typedef enum {
+	PIN_LEVEL_LOW = 0x00,  //!< PIN_LEVEL_LOW
+	PIN_LEVEL_HIGH = 0x01, //!< PIN_LEVEL_HIGH
+	PIN_LEVEL_HIGH_Z = 0x2,//!< PIN_LEVEL_HIGH_Z
+} SYSTEM_INTERFACE_IO_PIN_LEVEL;
+
+/*!
+ *
+ */
+typedef u8   (*SYSTEM_INTERFACE_IO_REGISTER_PIN_CALLBACK)				(u8 pin_cfg);
+typedef void (*SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK)				(u8 pin_num, u8 direction);
+typedef void (*SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK)				(u8 pin_num, SYSTEM_INTERFACE_IO_PIN_LEVEL level);
+typedef SYSTEM_INTERFACE_IO_PIN_LEVEL (*SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK)	(u8 pin_num);
+
+/*!
+ *
+ */
+typedef struct {
+	SYSTEM_INTERFACE_IO_REGISTER_PIN_CALLBACK 	register_pin;
+	SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK 	set_direction;
+	SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK 	set_level;
+	SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK 	get_level;
+} SYSTEM_INTERFACE_IO;
+
+// --------------------------------------------------------------------------------------------------------------------
 
 typedef u8   (*SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK)	(u8* addr);
 typedef u16  (*SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK)	(u8* addr);
@@ -71,9 +103,14 @@ typedef struct {
 	SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	get_N_bytes;
 } SYSTEM_INTERFACE_MEMORY_PROGMEM;
 
+/*!
+ *
+ */
 typedef struct {
 	SYSTEM_INTERFACE_MEMORY_PROGMEM	progmem;
 } SYSTEM_INTERFACE_MEMORY;
+
+// --------------------------------------------------------------------------------------------------------------------
 
 /*!
  *

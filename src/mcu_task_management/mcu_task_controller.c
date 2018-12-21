@@ -102,6 +102,8 @@ void mcu_task_controller_schedule(void) {
 
 	u8 system_is_on_idle = 1;
 
+	PASS(); // mcu_task_controller_schedule() ------------------------------------------------------------------------------------
+
 	while (act_task != 0) {
 
 		if (_has_task_interval_passed(act_task) == 0) {
@@ -120,17 +122,20 @@ void mcu_task_controller_schedule(void) {
 		//act_task->last_run_time = i_system.time.now_u16();
 		act_task->run();
 
-		if (act_task->get_sate() != MCU_TASK_SLEEPING) {
-			system_is_on_idle = 0;
-		}
-
 		PASS(); // mcu_task_controller_schedule() - Task complete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 		SKIP_TASK :
+
+		if (act_task->get_sate() != MCU_TASK_SLEEPING) {
+			PASS(); // mcu_task_controller_schedule() - Task is still active
+			system_is_on_idle = 0;
+		}
+
 		act_task = act_task->next_task;
 	}
 
 	if (system_is_on_idle != 0) {
+		PASS(); // mcu_task_controller_schedule() xxxxxxx SYSTEM GOING TO SLEEP xxxxxxxxxx
 		mcu_idle_task.run();
 	}
 }
@@ -206,7 +211,7 @@ static inline void _update_last_run_time(MCU_TASK_INTERFACE* p_task) {
 		return;
 	}
 
-	PASS(); // _update_last_run_time() ------------------------------------------------------------------------------------------
+	//PASS(); // _update_last_run_time() ------------------------------------------------------------------------------------------
 
 	u16 actual_time_ms = i_system.time.now_u16();
 //	p_task->new_run_timeout = p_task->SCHEDULE_INTERVAL;

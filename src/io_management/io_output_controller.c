@@ -11,7 +11,7 @@
 #include "system_interface.h"
 #include "io_output_controller.h"
 
-#define TRACES
+#define noTRACES
 #include <traces.h>
 
 /*!
@@ -55,6 +55,8 @@ u8 io_output_controller_register_output(IO_OUTPUT_DESCRIPTOR* p_new_output) {
 	_output_list_last->duration = 0;
 	_output_list_last->toggle_period = 0;
 	_output_list_last->_next = 0;
+
+	output_is_active = 1;
 
 	return _output_list_last->id;
 }

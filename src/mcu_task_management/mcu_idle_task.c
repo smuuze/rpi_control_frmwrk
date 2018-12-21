@@ -12,7 +12,7 @@
 #include "system_interface.h"
 
 #ifndef config_SLEEP_MODE
-#define config_SLEEP_MODE	SLEEP_MODE_IDLE
+#define config_SLEEP_MODE	SLEEP_MODE_PWR_SAVE
 #endif
 
 #define noTRACES
@@ -37,6 +37,8 @@ void mcu_idle_task_run(void) {
 	sleep_cpu();
 
 	sleep_disable();
+
+	sei();
 }
 
 void mcu_idle_task_background_run(void) {

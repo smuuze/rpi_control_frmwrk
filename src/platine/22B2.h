@@ -34,12 +34,12 @@
 //   Port A (0x02
 //---------  Name		, Port	, Bit	, STARTUP			, SLEEPMODE
 
- DEF_GPIO_2( EXT_INPUT_1	, A	, 0	, INPUT_PULLUP | INVERTED 	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( EXT_INPUT_2 	, A	, 1	, INPUT_PULLUP | INVERTED 	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( EXT_INPUT_3	, A	, 2	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( EXT_INPUT_4   	, A	, 3	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( SWITCH_IN_2   	, A	, 4	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
- DEF_GPIO_2( SWITCH_IN_1   	, A	, 5	, INPUT_PULLUP | INVERTED	, INPUT_PULLUP | INVERTED	) //
+ DEF_GPIO_2( EXT_INPUT_1	, A	, 0	, INPUT_HIGH_Z  		, INPUT_HIGH_Z 			) //
+ DEF_GPIO_2( EXT_INPUT_2 	, A	, 1	, INPUT_HIGH_Z  		, INPUT_HIGH_Z 			) //
+ DEF_GPIO_2( EXT_INPUT_3	, A	, 2	, INPUT_HIGH_Z 			, INPUT_HIGH_Z 			) //
+ DEF_GPIO_2( EXT_INPUT_4   	, A	, 3	, INPUT_HIGH_Z 			, INPUT_HIGH_Z 			) //
+ DEF_GPIO_2( SWITCH_IN_2   	, A	, 4	, INPUT_HIGH_Z 			, INPUT_HIGH_Z 			) //
+ DEF_GPIO_2( SWITCH_IN_1   	, A	, 5	, INPUT_HIGH_Z			, INPUT_HIGH_Z 			) //
  DEF_GPIO_2( LED_3        	, A	, 6	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
  DEF_GPIO_2( LED_6   		, A	, 7	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
 
@@ -51,17 +51,17 @@
  DEF_GPIO_2( EXT_OUTPUT_3     	, B	, 1	, OUTPUT_OFF			, OUTPUT_OFF			) //
  DEF_GPIO_2( EXT_OUTPUT_2 	, B	, 2	, OUTPUT_OFF			, OUTPUT_OFF			) //
  DEF_GPIO_2( EXT_OUTPUT_1     	, B	, 3	, OUTPUT_OFF			, OUTPUT_OFF			) //
- DEF_GPIO_2( SPI0_CE	        , B	, 4	, INPUT_PULLUP			, INPUT_PULLUP			) // Anpassung fuer Kleverkey
- DEF_GPIO_2( SPI0_MOSI      	, B	, 5	, INPUT_PULLUP			, INPUT_PULLUP			) //
- DEF_GPIO_2( SPI0_MISO     	, B	, 6	, OUTPUT_ON			, OUTPUT_ON			) //
+ DEF_GPIO_2( SPI0_CE	        , B	, 4	, INPUT_HIGH_Z			, INPUT_HIGH_Z			) //
+ DEF_GPIO_2( SPI0_MOSI      	, B	, 5	, INPUT_HIGH_Z			, INPUT_HIGH_Z			) //
+ DEF_GPIO_2( SPI0_MISO     	, B	, 6	, INPUT_HIGH_Z			, INPUT_HIGH_Z			) //
  DEF_GPIO_2( SPI0_SCK      	, B	, 7	, INPUT_HIGH_Z			, INPUT_HIGH_Z			) //
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //   Port C (0x08)
 //---------  Name        	Port	, Bit	, BOOTLOADER			, SLEEPMODE
 
- DEF_GPIO_2( I2C0_SCL      	, C	, 0	, OUTPUT_ON			, OUTPUT_ON			) //
- DEF_GPIO_2( I2C0_SDA     	, C	, 1	, OUTPUT_ON 			, OUTPUT_ON			) //
+ DEF_GPIO_2( I2C0_SCL      	, C	, 0	, INPUT_HIGH_Z			, INPUT_HIGH_Z			) //
+ DEF_GPIO_2( I2C0_SDA     	, C	, 1	, INPUT_HIGH_Z 			, INPUT_HIGH_Z			) //
  DEF_GPIO_2( LED_8 		, C	, 2	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
  DEF_GPIO_2( LED_5       	, C	, 3	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
  DEF_GPIO_2( LED_2         	, C	, 4	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
@@ -73,11 +73,11 @@
 //   Port D (0x0B)
 //---------  Name        	Port	, Bit	, BOOTLOADER			, SLEEPMODE
 
- DEF_GPIO_2( UART0_RXD      	, D	, 0	, INPUT_PULLUP			, INPUT_PULLUP			) //
- DEF_GPIO_2( UART0_TXD     	, D	, 1	, OUTPUT_ON	 		, OUTPUT_ON			) //
- DEF_GPIO_2( GPIO_17 		, D	, 2	, OUTPUT_ON			, OUTPUT_OFF			) //
- DEF_GPIO_2( GPIO_27       	, D	, 3	, OUTPUT_OFF			, OUTPUT_ON			) //
- DEF_GPIO_2( GPIO_22         	, D	, 4	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
+ DEF_GPIO_2( UART0_RXD      	, D	, 0	, INPUT_HIGH_Z			, INPUT_HIGH_Z			) //
+ DEF_GPIO_2( UART0_TXD     	, D	, 1	, INPUT_HIGH_Z	 		, INPUT_HIGH_Z			) //
+ DEF_GPIO_2( GPIO_17 		, D	, 2	, INPUT_HIGH_Z			, INPUT_HIGH_Z			) //
+ DEF_GPIO_2( GPIO_27       	, D	, 3	, INPUT_HIGH_Z			, INPUT_HIGH_Z			) //
+ DEF_GPIO_2( GPIO_22         	, D	, 4	, INPUT_HIGH_Z			, INPUT_HIGH_Z			) //
  DEF_GPIO_2( LED_7     		, D	, 5	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
  DEF_GPIO_2( LED_4     		, D	, 6	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
  DEF_GPIO_2( LED_1      	, D	, 7	, OUTPUT_OFF | INVERTED		, OUTPUT_OFF | INVERTED		) //
@@ -91,7 +91,7 @@
  //GPIO_ALIAS( BEEPER      	, D,4 , OUTPUT_OFF | INVERTED	)
  GPIO_ALIAS( UART0_SEND485      , C,3 , OUTPUT_OFF | INVERTED	)
  GPIO_ALIAS( EVENT_IRQ	        , D,4 , OUTPUT_OFF | INVERTED	)
- GPIO_ALIAS( IS_BUSY	        , D,2 , OUTPUT_OFF		)
+ GPIO_ALIAS( IS_READY	        , D,2 , INPUT_HIGH_Z		)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #define PCMSK_D        (NF_CL_DAT_PCMSK | PWR_DETECT_PCMASK)

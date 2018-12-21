@@ -44,8 +44,8 @@
 // (SIO_FOR_HOST = 'V') // Host-Interface kommuniziert ueber virt. SIOV
 // (SIO_FOR_HOST = 'W') // Host-Interface kommuniziert ueber virt. SIOW
 // (SIO_FOR_HOST = '-') // Bootloader kommuniziert ger nicht
-#define SIO_FOR_HOST    		0
-#define DEFAULT_BAUD_SELECTOR		BD_115200
+#define SIO_FOR_HOST    		'-'
+//#define DEFAULT_BAUD_SELECTOR		BD_115200
 
 #define I2C_CLK_LIMIT 225000
 
@@ -75,8 +75,9 @@
 
 //-------------------------------------------------------------------------
 
-#define config_HAS_ONBOARD_BUTTONS				1
-#define config_HAS_LED_MATRIX					1
+#define config_HAS_ONBOARD_BUTTONS				0
+#define config_HAS_LED_MATRIX					0
+#define config_HAS_DEBUS_INTERACE				0
 
 //-------------------------------------------------------------------------
 // Mus zuletzt eingebunden werden. Alles was oben nicht definiert wurde, wird

@@ -104,7 +104,6 @@ void local_ads1115_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 	PASS(); // local_ads1115_module_init()
 
 	p_com_driver = p_driver;
-	p_com_driver->configure(&driver_cfg);
 
 	GET_SYSTEM(data).temperature.maximal = 0;
 	GET_SYSTEM(data).temperature.minimal = 127;
@@ -163,6 +162,8 @@ void local_ads1115_mcu_task_run(void) {
 				PASS(); // local_ads1115_mcu_task_run() - Can't get Mutex of communication-driver
 				break;
 			}
+
+			p_com_driver->configure(&driver_cfg);
 
 			task_run_interval_reference = i_system.time.now_u16();
 			actual_task_state = ADS1115_TASK_STATE_INIT_ADC;
@@ -361,15 +362,7 @@ void local_ads1115_mcu_task_run(void) {
 
 			}
 
-			adc_channel_index = 0;
-			actual_task_state = ADS1115_TASK_STATE_IDLE;
-			task_run_interval_reference = i_system.time.now_u16();
-
-			task_state = MCU_TASK_SLEEPING;
-			TRACE_word(task_run_interval_reference); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_PROCESS_DATA_CHAN - measurement complete -----
-
-			p_com_driver->mutex_rel(com_driver_mutex_id);
-			break;
+			// no break;
 
 		case ADS1115_TASK_STATE_CANCEL_OPERATION :
 
@@ -378,9 +371,11 @@ void local_ads1115_mcu_task_run(void) {
 			task_run_interval_reference = i_system.time.now_u16();
 
 			task_state = MCU_TASK_SLEEPING;
-			TRACE_word(task_run_interval_reference); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_PROCESS_DATA_CHAN - measurement canceled -----
+			TRACE_word(task_run_interval_reference); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_PROCESS_DATA_CHAN - measurement complete -----
 
+			p_com_driver->shut_down();
 			p_com_driver->mutex_rel(com_driver_mutex_id);
+
 			break;
 	}
 }

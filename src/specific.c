@@ -50,10 +50,12 @@ void specific_system_output_event_set(u8 state) {
 
 void specific_system_output_busy_set(u8 state) {
 
+	IS_READY_as_OUTPUT();
+
 	if (state != 0) {
-		IS_BUSY_ON();
+		IS_READY_ON();
 	} else {
-		IS_BUSY_OFF();
+		IS_READY_OFF();
 	}
 }
 

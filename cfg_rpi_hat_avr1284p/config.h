@@ -2,7 +2,7 @@
 #define   _config_H_
 
 #define noTRACEAKTIV         // Schaltet generell meine TRACES EIN/AUS
-#define TRACES_ENABLED
+#define noTRACES_ENABLED
 #define noTRACE_FAKE_RTOS_TIME_STAMP 2	// Trace-Ausgaben mit Timestamp (Anzahl-Bytes 1..4)
 
 ///-----------------------------------------------------------------------------
@@ -44,8 +44,10 @@
 // (SIO_FOR_HOST = 'V') // Host-Interface kommuniziert ueber virt. SIOV
 // (SIO_FOR_HOST = 'W') // Host-Interface kommuniziert ueber virt. SIOW
 // (SIO_FOR_HOST = '-') // Bootloader kommuniziert ger nicht
-#define SIO_FOR_HOST    		0
+#define SIO_FOR_HOST    		'-'
 #define DEFAULT_BAUD_SELECTOR		BD_115200
+
+#define HOST_DRIVER			'S'
 
 #define I2C_CLK_LIMIT 225000
 
@@ -79,6 +81,9 @@
 
 #define config_HAS_ONBOARD_BUTTONS				1
 #define config_HAS_LED_MATRIX					0
+
+//-------------------------------------------------------------------------
+
 
 //-------------------------------------------------------------------------
 // Mus zuletzt eingebunden werden. Alles was oben nicht definiert wurde, wird

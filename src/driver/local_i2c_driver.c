@@ -106,6 +106,12 @@
 
 #define I2C_DRIVER_GET_DATA_REGISTER()			TWDR
 
+#define I2C_DRIVER_DISABLE_INTERFACE()			I2C0_SCL_as_INPUT(); I2C0_SCL_OFF();	\
+							I2C0_SDA_as_INPUT(); I2C0_SDA_OFF()
+
+#define I2C_DRIVER_ENABLE_INTERFACE()			I2C0_SCL_as_OUTPUT(); I2C0_SCL_ON();	\
+							I2C0_SDA_as_OUTPUT(); I2C0_SDA_OFF()
+
 //----- BITRATE SETTINGS ---------------
 
 /*
@@ -128,7 +134,7 @@ BUILD_LOCAL_MSG_BUFFER(, __local_i2c_tx_buffer, LOCAL_I2C_DRIVER_MAX_NUM_BYTES_T
 BUILD_LOCAL_MSG_BUFFER(, __local_i2c_rx_buffer, LOCAL_I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)	// build receivingbuffer
 
 
-BUILD_MUTEX(i2c_driver_mutex)
+BUILD_MUTEX(i2c_mutex)
 
 //----- RX / TX activ status -----
 BUILD_MODULE_STATUS_FAST_VOLATILE(i2c_driver_status, 2)
@@ -155,25 +161,34 @@ BUILD_MODULE_STATUS_FAST_VOLATILE(i2c_driver_status, 2)
 static u8 _i2c_slave_address = 0;
 static u8 _i2c_rx_counter = 0;
 
-void local_i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
+void i2c_driver_initialize(void) {
+
+	PASS();	// i2c_driver_initialize()
+
+	__local_i2c_rx_buffer_init();
+	__local_i2c_tx_buffer_init();
+}
+
+void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	(void) p_cfg;
 
 	PASS();	// local_i2c_driver_cfg()
 
-	__local_i2c_rx_buffer_init();
-	__local_i2c_tx_buffer_init();
+	I2C_DRIVER_ENABLE_INTERFACE();
 
   	I2C_DRIVER_SET_BITARTE(I2C_DRIVER_BITRATE_1KHZ_PRESCALER_64);
 	I2C_DRIVER_SET_BITRATE_PRESCALER(I2C_DRIVER_BITRATE_PRESCALER_64);
 	//TWBR = 0x05;
 }
 
-void local_i2c_driver_power_off(void) {
+void i2c_driver_power_off(void) {
 	PASS(); // local_i2c_driver_power_off()
+
+	I2C_DISABLE_INTERFACE();
 }
 
-u8 local_i2c_driver_bytes_available (void) {
+u8 i2c_driver_bytes_available (void) {
 
 	#if defined TRACES_ENABLED && defined LOCAL_I2C_RX_TRACES
 	{
@@ -187,7 +202,7 @@ u8 local_i2c_driver_bytes_available (void) {
 	return __local_i2c_rx_buffer_bytes_available();
 }
 
-u8 local_i2c_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
+u8 i2c_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 
 	PASS();	// local_i2c_driver_get_N_bytes()
 
@@ -203,7 +218,7 @@ u8 local_i2c_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 	return num_bytes_available;
 }
 
-u8 local_i2c_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+u8 i2c_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 
 	if (num_bytes > __local_i2c_tx_buffer_size()) {
 		num_bytes = __local_i2c_tx_buffer_size();
@@ -218,7 +233,7 @@ u8 local_i2c_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 	return num_bytes;
 }
 
-u8 local_i2c_driver_is_ready_for_tx (void) {
+u8 i2c_driver_is_ready_for_tx (void) {
 
 	if (i2c_driver_status_is_set(LOCAL_I2C_STATUS_TX_ACTIVE) != 0) {
 		return 0;
@@ -231,7 +246,7 @@ u8 local_i2c_driver_is_ready_for_tx (void) {
 	}
 }
 
-u8 local_i2c_driver_is_ready_for_rx(void) {
+u8 i2c_driver_is_ready_for_rx(void) {
 
 	if (i2c_driver_status_is_set(LOCAL_I2C_STATUS_TX_ACTIVE) != 0) {
 		return 0;
@@ -244,7 +259,7 @@ u8 local_i2c_driver_is_ready_for_rx(void) {
 	}
 }
 
-void local_i2c_driver_start_rx (u16 num_of_rx_bytes) {
+void i2c_driver_start_rx (u16 num_of_rx_bytes) {
 
 	TRACE_byte(num_of_rx_bytes); // local_i2c_driver_start_rx()
 
@@ -257,7 +272,7 @@ void local_i2c_driver_start_rx (u16 num_of_rx_bytes) {
 	I2C_DRIVER_SEND_START_CONDITION();
 }
 
-void local_i2c_driver_stop_rx (void) {
+void i2c_driver_stop_rx (void) {
 
 	PASS(); // local_i2c_driver_stop_rx()
 
@@ -268,7 +283,7 @@ void local_i2c_driver_stop_rx (void) {
 	__local_i2c_rx_buffer_stop_write();
 }
 
-void local_i2c_driver_start_tx (void) {
+void i2c_driver_start_tx (void) {
 
 	PASS(); // local_i2c_driver_start_tx()
 
@@ -281,7 +296,7 @@ void local_i2c_driver_start_tx (void) {
 	I2C_DRIVER_SEND_START_CONDITION();
 }
 
-void local_i2c_driver_stop_tx (void) {
+void i2c_driver_stop_tx (void) {
 
 	LOCAL_I2C_TX_PASS(); // local_i2c_driver_stop_tx()
 
@@ -291,28 +306,28 @@ void local_i2c_driver_stop_tx (void) {
 	i2c_driver_status_unset(LOCAL_I2C_STATUS_TX_ACTIVE);
 }
 
-void local_i2c_driver_clear_buffer (void) {
+void i2c_driver_clear_buffer (void) {
 
 	__local_i2c_rx_buffer_clear_all();
 	__local_i2c_tx_buffer_clear_all();
 }
 
-void local_i2c_driver_set_address (u8 addr) {
+void i2c_driver_set_address (u8 addr) {
 
 	TRACE_byte(addr); // local_i2c_driver_set_address()
 	_i2c_slave_address = addr << 1;
 }
 
-u8 local_i2c_driver_mutex_request(void) {
-	if (i2c_driver_mutex_is_requested() != 0) {
+u8 i2c_driver_mutex_request(void) {
+	if (i2c_mutex_is_requested() != 0) {
 		return MUTEX_INVALID_ID;
 	}
 
-	return i2c_driver_mutex_request();
+	return i2c_mutex_request();
 }
 
-void local_i2c_driver_mutex_release(u8 m_id) {
-	i2c_driver_mutex_release(m_id);
+void i2c_driver_mutex_release(u8 m_id) {
+	i2c_mutex_release(m_id);
 }
 
 ISR(TWI_vect) {

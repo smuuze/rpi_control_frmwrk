@@ -17,7 +17,7 @@
 #include "button_watcher.h"
 #include "io_output_controller.h"
 
-#define TRACES
+#define noTRACES
 #include <traces.h>
 
 static PROTOCOL_INTERFACE* p_act_protocol;
@@ -264,6 +264,7 @@ u8 rpi_cmd_get_temperature(void) {
 	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).temperature.actual);
 	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).temperature.maximal);
 	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).temperature.minimal);
+	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).temperature.mean);
 	p_act_protocol->answ_buffer->stop_write();
 
 	p_act_protocol->set_finished(CMD_NO_ERR);
@@ -278,6 +279,7 @@ u8 rpi_cmd_get_humidity(void) {
 	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).humidity.actual);
 	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).humidity.maximal);
 	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).humidity.minimal);
+	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).humidity.mean);
 	p_act_protocol->answ_buffer->stop_write();
 
 	p_act_protocol->set_finished(CMD_NO_ERR);

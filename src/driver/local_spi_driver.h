@@ -15,6 +15,11 @@
 /*!
  *
  */
+void spi_driver_initialize(void);
+
+/*!
+ *
+ */
 void spi_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg);
 
 /*!

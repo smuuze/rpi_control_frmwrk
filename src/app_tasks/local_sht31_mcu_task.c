@@ -26,7 +26,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACES
+#define noTRACES
 #include <traces.h>
 
 //-----------------------------------------------------------------------------
@@ -96,7 +96,6 @@ void local_sht31_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 	PASS(); // local_sht31_module_init()
 
 	p_com_driver = p_driver;
-	p_com_driver->configure(&driver_cfg);
 
 	GET_SYSTEM(data).temperature.maximal = 0;
 	GET_SYSTEM(data).temperature.minimal = 127;
@@ -164,6 +163,8 @@ void local_sht31_mcu_task_run(void) {
 				PASS(); // local_sht31_mcu_task_run() - Can't get Mutex of communication-driver
 				break;
 			}
+
+			p_com_driver->configure(&driver_cfg);
 
 			task_run_interval_reference_actual = i_system.time.now_u16();
 			operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
@@ -331,14 +332,7 @@ void local_sht31_mcu_task_run(void) {
 				TRACE_byte(GET_SYSTEM(data).humidity.mean); // mean humidity in %
 			}
 
-			operation_stage = SHT31_TASK_STATE_IDLE;
-			task_run_interval_reference_actual = i_system.time.now_u16();
-			task_state = MCU_TASK_SLEEPING;
-
-			TRACE_word(task_run_interval_reference_actual); // local_sht31_mcu_task_run() - Measurement has been finished ----
-
-			p_com_driver->mutex_rel(com_driver_mutex_id);
-			break;
+			//no break;
 
 		case SHT31_TASK_STATE_CANCEL_OPERATION :
 
@@ -346,7 +340,11 @@ void local_sht31_mcu_task_run(void) {
 			task_run_interval_reference_actual = i_system.time.now_u16();
 			task_state = MCU_TASK_SLEEPING;
 
+			TRACE_word(task_run_interval_reference_actual); // local_sht31_mcu_task_run() - Measurement has been finished ----
+
+			p_com_driver->shut_down();
 			p_com_driver->mutex_rel(com_driver_mutex_id);
+
 			break;
 	}
 }

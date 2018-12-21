@@ -9,4 +9,4 @@
 # v1.14 Programmierkarten (DESFire)
 # v1.22 BPA9
 
-VERSION_STRING    = v1.12
+VERSION_STRING    = v1.13

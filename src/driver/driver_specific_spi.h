@@ -59,4 +59,14 @@
 
 #define SPI0_IS_TRX_COMPLETE()				(SPSR & (1<<SPIF)) != 0 ? 1 : 0
 
+#define SPI0_ENABLE_INTERFACE()				SPI0_CE_as_INPUT(); SPI0_CE_ON();		\
+							SPI0_MOSI_as_INPUT(); SPI0_MOSI_ON();		\
+							SPI0_MISO_as_OUTPUT(); SPI0_MISO_ON();		\
+							SPI0_SCK_as_INPUT(); SPI0_SCK_ON();
+
+#define SPI0_DISABLE_INTERFACE()			SPI0_CE_as_INPUT(); SPI0_CE_OFF();		\
+							SPI0_MOSI_as_INPUT(); SPI0_MOSI_OFF();		\
+							SPI0_MISO_as_INPUT(); SPI0_MISO_OFF();		\
+							SPI0_SCK_as_INPUT(); SPI0_SCK_OFF();
+
 #endif // _DRIVER_SPECIFIC_SPI

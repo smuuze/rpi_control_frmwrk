@@ -104,10 +104,7 @@ INC_PATH += $(DRIVER_INC_PATH)
 CSRCS += $(APP_PATH)/driver/local_i2c_driver.c
 CSRCS += $(APP_PATH)/driver/local_spi_driver.c
 CSRCS += $(APP_PATH)/driver/local_rtc_driver.c
-
-ifdef MIT_LOCAL_FAKERTOS
-CSRCS += $(APP_PATH)/driver/local_usart_driver.c
-endif
+#CSRCS += $(APP_PATH)/driver/local_usart_driver.c
 
 # -----------------------------------------------------------------------
 
@@ -152,7 +149,11 @@ CSRCS += $(APP_TASK_INC_PATH)/local_sht31_mcu_task.c
 CSRCS += $(APP_TASK_INC_PATH)/local_cmd_mcu_task.c
 CSRCS += $(APP_TASK_INC_PATH)/local_led_mcu_task.c
 CSRCS += $(APP_TASK_INC_PATH)/local_event_task.c
+
+ifdef DEBUS_INTERFACE_CFG
+DEFS += -D HAS_DEBUS_INTERFACE=1
 CSRCS += $(APP_TASK_INC_PATH)/local_debus_mcu_task.c
+endif
 
 # -----------------------------------------------------------------------
 
@@ -191,6 +192,8 @@ ASSRCS += $(COMMON_PATH)/format_and_conversion/algo.S
 
 IARSRCS +=
 
+ifdef DEBUS_INTERFACE_CFG
+
 DEBUS_INTERFACE_CFG += HOST
 DEBUS_INTERFACE_CFG += AES
 DEBUS_INTERFACE_CFG += SIO0
@@ -204,6 +207,9 @@ endif
 
 #$(info DEBUS_INTERFACE_CFG: $(DEBUS_INTERFACE_CFG))
 include $(SERV_PATH)/debus/debus_interface.mk
+
+endif
+
 
 # (gemeinsame) WebConfig - Beschreibung fuer verschiedene Konfigurationen
 # die Sparversion

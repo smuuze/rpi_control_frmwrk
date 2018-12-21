@@ -217,9 +217,9 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK		local_event_add
 #define config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK		local_event_get_next
 
-#define config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE		u8 local_rtc_timer_gettime_u8(void); /*ux8 msticker_get_time_ux8(void);*/
-#define config_SYSTEM_INTERFACE_GET_TIME_U16_PROTOTYPE		u8 local_rtc_timer_gettime_u16(void); /*ux16 msticker_get_time_ux16(void);*/
-#define config_SYSTEM_INTERFACE_GET_TIME_U32_PROTOTYPE		u8 local_rtc_timer_gettime_u32(void); /*ux32 msticker_get_time_ux32(void);*/
+#define config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE		u8  local_rtc_timer_gettime_u8(void); /*ux8 msticker_get_time_ux8(void);*/
+#define config_SYSTEM_INTERFACE_GET_TIME_U16_PROTOTYPE		u16 local_rtc_timer_gettime_u16(void); /*ux16 msticker_get_time_ux16(void);*/
+#define config_SYSTEM_INTERFACE_GET_TIME_U32_PROTOTYPE		u32 local_rtc_timer_gettime_u32(void); /*ux32 msticker_get_time_ux32(void);*/
 
 #define config_SYSTEM_INTERFACE_GET_TIME_U8_CALLBACK		local_rtc_timer_gettime_u8 /*msticker_get_time_ux8*/
 #define config_SYSTEM_INTERFACE_GET_TIME_U16_CALLBACK		local_rtc_timer_gettime_u16 /*msticker_get_time_ux16*/
@@ -242,6 +242,15 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK	local_progmem_get_word
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK	local_progmem_get_long
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	local_progmem_get_N_bytes
+
+///-----------------------------------------------------------------------------
+
+#define config_IS_READY_ENABLE					IS_READY_as_OUTPUT();		\
+								IS_READY_OFF()
+#define config_IS_READY_IDLE					IS_READY_as_OUTPUT();		\
+								IS_READY_ON();
+#define config_IS_READY_DISABLE					IS_READY_as_INPUT();		\
+								IS_READY_OFF()
 
 ///-----------------------------------------------------------------------------
 
