@@ -1,5 +1,5 @@
-#ifndef _IO_CONTROLLER_H_
-#define _IO_CONTROLLER_H_
+#ifndef _IO_OUTPUT_CONTROLLER_H_
+#define _IO_OUTPUT_CONTROLLER_H_
 
 #include "iterator_interface.h"
 #include "mcu_task_interface.h"
@@ -10,8 +10,11 @@
  */
 typedef void (*IO_OUTPUT_SET_PIN) 	(u8 is_on);
 
-#define IO_OUTPUT_STATE_ON		1
-#define IO_OUTPUT_STATE_OFF		0
+#define IO_OUTPUT_STATE_DISABLED	0xFF
+#define IO_OUTPUT_STATE_ON			0x01
+#define IO_OUTPUT_STATE_OFF			0x00
+
+#define IO_OUTPUT_ID_INVALID		0xFF
 
 typedef enum {
 	IO_TYPE_UNDEFINED,
@@ -25,6 +28,8 @@ typedef enum {
 typedef struct IO_OUTPUT_DESCRIPTOR {
 
 	u8 id;
+	u8 pin_id;
+
 	IO_TYPE type;
 
 	u8 actual_pin_state;
@@ -124,4 +129,4 @@ void io_output_controller_iterator_get_element(ITERATOR_INTERFACE* p_iterator, I
  */
 void io_output_controller_iterator_get_next(ITERATOR_INTERFACE* p_iterator, IO_TYPE type_filter);
 
-#endif // _MCU_TASK_CONTROLLER_H_
+#endif // _IO_OUTPUT_CONTROLLER_H_

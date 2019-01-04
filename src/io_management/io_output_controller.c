@@ -161,8 +161,8 @@ void io_output_controller_task_run(void) {
 
 			TRACE_byte(act_output->id); // io_output_controller_task_run() changing pin-state
 
-			act_output->set_pin(act_output->next_pin_state);
 			act_output->actual_pin_state = act_output->next_pin_state;
+			i_system.io.set_level(act_output->pin_id, act_output->actual_pin_state); //act_output->set_pin(act_output->next_pin_state);
 
 			if (act_output->actual_pin_state == IO_OUTPUT_STATE_ON) {
 
@@ -179,6 +179,10 @@ void io_output_controller_task_run(void) {
 				act_output->reference_time = 0;
 				act_output->toggle_period = 0;
 				act_output->duration = 0;
+				
+				if (act_output->actual_pin_state == IO_OUTPUT_STATE_DISABLED) {
+
+				} 
 			}
 
 			if (act_output->duration != 0) {

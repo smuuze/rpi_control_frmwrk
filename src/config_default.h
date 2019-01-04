@@ -2,14 +2,14 @@
 //       ZENTRALE DEFAULT WERTE FUER SWITCHES
 //-------------------------------------------------------------------------
 //
-// Diese Datei wird über die config.h von allen Projekten eingebunden.
+// Diese Datei wird ï¿½ber die config.h von allen Projekten eingebunden.
 // ALLE Schalter werden hier auf eine Voreinstellung gesetzt, sofern sie
 // noch nicht bekannt sind, wenn dies hier eingelesen wird.
 //
-// Wenn ein neuer Schalter gebraucht wird, wird dieser zuerst hier eingefügt
+// Wenn ein neuer Schalter gebraucht wird, wird dieser zuerst hier eingefï¿½gt
 // und auf einen 'neutralen' Wert gesetzt. Das ist normalerweise die Einstellung,
 // die den selben Code wie bisher erzeugt. In dem Projekt, das die neue
-// Funktion benötigt, kann dieser neue Schalter dann auf einen anderen Wert
+// Funktion benï¿½tigt, kann dieser neue Schalter dann auf einen anderen Wert
 // gesetzt werden. Das muss aber in config.h passieren, BEVOR diese
 // Datei eingebunden wird.
 
@@ -154,7 +154,7 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 ///-----------------------------------------------------------------------------
 
 ///-----------------------------------------------------------------------------
-/// 0x21BAxxxx => Ist die Bezeichnung für die allgemeongültige, PRLxA\CRLxA Konfigueration.
+/// 0x21BAxxxx => Ist die Bezeichnung fï¿½r die allgemeongï¿½ltige, PRLxA\CRLxA Konfigueration.
 #ifndef CONFIG_MEM_SCHEME
   #define KONFIGVERSION 2
   #define CONFIG_MEM_SCHEME    (0x21BA*65536+KONFIGVERSION)
@@ -243,6 +243,15 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK	local_progmem_get_long
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	local_progmem_get_N_bytes
 
+#define config_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE void gpio_driver_set_direction(u8 pin_num, SYSTEM_INTERFACE_GPIO_DIRECTION direction);
+#define config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_PROTOTYPE void gpio_driver_set_level(u8 pin_num, SYSTEM_INTERFACE_IO_PIN_LEVEL level);
+#define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE SYSTEM_INTERFACE_IO_PIN_LEVEL gpio_driver_get_level(u8 pin_num);
+
+#define config_INTERFACE_IO_SET_PIN_DIR_CALLBACK gpio_driver_set_direction
+#define config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK gpio_driver_set_level
+#define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK gpio_driver_get_level
+
+
 ///-----------------------------------------------------------------------------
 
 #define config_IS_READY_ENABLE					IS_READY_as_OUTPUT();		\
@@ -289,7 +298,7 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define EE_DOORGROOPID_SIZE 0
 #endif
 ///-----------------------------------------------------------------------------
-/// -- Projekt abhängige EEPROM Belegung. Zur besseren Kontrolle der EEPROM
+/// -- Projekt abhï¿½ngige EEPROM Belegung. Zur besseren Kontrolle der EEPROM
 ///    Belegung, sollen alle Platzreservierungen hier aufgelistet werden!
 //DoorLoxx
 #define EE_MAXIMUM_LAST_REFRESH_TIME	0x610

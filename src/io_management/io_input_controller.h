@@ -1,8 +1,9 @@
-#ifndef _IO_BUTTON_WATCHER_H_
-#define _IO_BUTTON_WATCHER_H_
+#ifndef _IO_INPUT_CONTROLLER_H_
+#define _IO_INPUT_CONTROLLER_H_
 
 #include "iterator_interface.h"
 #include "mcu_task_interface.h"
+#include "system_interface.h"
 
 /*!
  * Timespan that the button will be in pressed state, until the down state is activated
@@ -28,6 +29,7 @@ typedef u8 (*IO_BUTTON_WATCHER_PIN_STATE_CALLBACK) 	(void);
 typedef struct IO_INPUT_DESCRIPTOR_T {
 
 	u8 id;
+	u8 pin_id;
 
 	u8 down;
 	u8 pressed;
@@ -37,7 +39,7 @@ typedef struct IO_INPUT_DESCRIPTOR_T {
 	u16 __press_time;
 	u16 __release_time;
 
-	IO_BUTTON_WATCHER_PIN_STATE_CALLBACK __pin_state;
+	SYSTEM_INTERFACE_GPIO_LEVEL idle_state;
 
 	struct IO_INPUT_DESCRIPTOR_T* __next_button;
 
@@ -136,4 +138,4 @@ void io_input_controller_iterator_get_element(ITERATOR_INTERFACE* p_iterator, IO
 void io_input_controller_iterator_get_next(ITERATOR_INTERFACE* p_iterator);
 
 
-#endif // _IO_BUTTON_WATCHER_H_
+#endif // _IO_INPUT_CONTROLLER_H_

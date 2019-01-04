@@ -102,6 +102,8 @@ static void _set_finished_spi(u8 err_code);
 BUILD_LOCAL_MSG_BUFFER( , RPI_COMMAND_BUFFER, 32)
 BUILD_LOCAL_MSG_BUFFER( , RPI_ANSWER_BUFFER,  32)
 
+IO_CONTROLLER_BUILD_INOUT(IS_READY, config_IS_READY_PIN_ID)	
+
 /*!
  *
  */
@@ -399,7 +401,8 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	PASS(); // rpi_protocol_init()
 
-	config_IS_READY_IDLE;
+	//config_IS_READY_IDLE; // OUTPUT_ON
+	IS_READY_drive_high();
 
 	//GET_SYSTEM(SYS_OUTPUT).system_busy_output_01 = io_output_controller_register_output(&io_event_output_pin);
 	//io_output_controller_set_output(GET_SYSTEM(SYS_OUTPUT).system_busy_output_01, IO_OUTPUT_STATE_ON, 0, 0);
@@ -430,7 +433,8 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 	actual_task_state = MCU_TASK_SLEEPING;
 	actual_state = RPI_STATE_SLEEP;
 
-	config_IS_READY_DISABLE;
+	//config_IS_READY_DISABLE; // INPUT_HIGH_Z
+	IS_READY_no_drive();
 
 	//io_output_controller_set_output(GET_SYSTEM(SYS_OUTPUT).system_busy_output_01, IO_OUTPUT_STATE_OFF, 0, 0);
 }
@@ -442,7 +446,8 @@ void rpi_protocol_task_init(void) {
 
 MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 
-	if (IS_READY_PIN() != 0) {
+	//if (IS_READY_PIN() != 0) {
+	if (IS_READY_is_high_level()) {
 		actual_task_state = MCU_TASK_RUNNING;
 	}
 
@@ -471,7 +476,8 @@ void rpi_protocol_task_run(void) {
 		default : //break;
 		case RPI_STATE_SLEEP : PASS(); //
 
-			if (IS_READY_PIN() == 0) {
+			//if (IS_READY_PIN() == 0) {
+			if (IS_READY_is_low_level()) {
 				PASS(); // rpi_protocol_task_run() - RPI_STATE_SLEEP - No request - FALSE ALARM
 				actual_task_state = RPI_STATE_SLEEP;
 				break;
@@ -507,7 +513,8 @@ void rpi_protocol_task_run(void) {
 				}
 			}
 
-			if (IS_READY_PIN() == 0) {
+			//if (IS_READY_PIN() == 0) {
+			if (IS_READY_is_low_level()) {
 				PASS(); // rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST - Ready Pin low !!! ---
 			}
 
@@ -528,7 +535,8 @@ void rpi_protocol_task_run(void) {
 			actual_state = RPI_STATE_START_DATA_EXCHANGE;
 			operation_timeout_ms = i_system.time.now_u16();
 
-			config_IS_READY_ENABLE;
+			//config_IS_READY_ENABLE; // OUTPUT_OFF
+			IS_READY_drive_low();
 
 
 		case RPI_STATE_START_DATA_EXCHANGE: PASS(); //
@@ -635,7 +643,8 @@ void rpi_protocol_task_run(void) {
 			cmd_receiver_state = RPI_CMD_RECEIVER_IDLE;
 			actual_state = RPI_STATE_FINISH;
 
-			config_IS_READY_IDLE;
+			//config_IS_READY_IDLE; // OUTPUT_ON
+			IS_READY_drive_high();
 
 			break; // Leave Task and let IO-Controller set Ouputs
 
@@ -647,13 +656,15 @@ void rpi_protocol_task_run(void) {
 			p_com_driver->shut_down();
 
 			actual_state = RPI_STATE_WAIT_FOR_RELEASE;
-			config_IS_READY_DISABLE;
+			//config_IS_READY_DISABLE; // INPUT_HIGH_Z
+			IS_READY_no_drive();
 
 			break; // Leave Task and let IO-Controller set Ouputs
 
 		case RPI_STATE_WAIT_FOR_RELEASE : PASS(); //
 
-			if (IS_READY_PIN() != 0) {
+			//if (IS_READY_PIN() != 0) {
+			if (IS_READY_is_high_level()) {
 				PASS(); // rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_RELEASE - Request Still pending
 				actual_state = RPI_PREPARE_FOR_REQUEST;
 				break;

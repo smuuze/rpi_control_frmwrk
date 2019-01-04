@@ -8,6 +8,7 @@
 
 #include "utils/stdmacros.h"
 
+#include "local_gpio_driver.h"
 #include "system_interface.h"
 #include "button_watcher.h"
 
@@ -81,9 +82,9 @@ void io_input_controller_check_state(IO_INPUT_DESCRIPTOR* p_button_state) {
 
 	//PASS(); // io_input_controller_check_state() ----------------
 
-	u8 pin_state = p_button_state->__pin_state();
+	SYSTEM_INTERFACE_IO_PIN_LEVEL pin_state = i_system.io.get_level(p_button_state->pin_id); //p_button_state->__pin_state();
 
-	if (pin_state != 0) {
+	if (pin_state != p_button_state->idle_state) {
 
 		if (p_button_state->down == 0) {
 
