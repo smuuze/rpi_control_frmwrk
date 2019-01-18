@@ -2,7 +2,7 @@
 #define   _config_H_
 
 #define noTRACEAKTIV         // Schaltet generell meine TRACES EIN/AUS
-#define noTRACES_ENABLED
+#define TRACES_ENABLED
 #define noTRACE_FAKE_RTOS_TIME_STAMP 2	// Trace-Ausgaben mit Timestamp (Anzahl-Bytes 1..4)
 
 ///-----------------------------------------------------------------------------

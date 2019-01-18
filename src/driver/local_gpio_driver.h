@@ -1,12 +1,44 @@
 #ifndef _LOCAL_GPIO_DRIVER_H_
 #define _LOCAL_GPIO_DRIVER_H_
 
+#include "system_interface.h"
 
+/*!
+ *
+ */
+void gpio_driver_init(void);
 
-void gpio_driver_set_direction(u8 pin_num, SYSTEM_INTERFACE_GPIO_DIRECTION direction);
+/*!
+ *
+ * @param p_pin_descr
+ */
+void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
-void gpio_driver_set_level(u8 pin_num, SYSTEM_INTERFACE_IO_PIN_LEVEL level);
+/*!
+ *
+ * @param pin_num
+ * @param direction
+ */
+void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, SYSTEM_INTERFACE_GPIO_DIRECTION direction);
 
-SYSTEM_INTERFACE_IO_PIN_LEVEL gpio_driver_get_level(u8 pin_num);
+/*!
+ *
+ * @param pin_num
+ * @param level
+ */
+void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, SYSTEM_INTERFACE_GPIO_LEVEL level);
+
+/*!
+ *
+ * @param p_pin_descr
+ */
+void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+
+/*!
+ *
+ * @param pin_num
+ * @return
+ */
+SYSTEM_INTERFACE_GPIO_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 #endif

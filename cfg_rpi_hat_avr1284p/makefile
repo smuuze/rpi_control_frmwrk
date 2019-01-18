@@ -40,6 +40,7 @@ MIT_BLUETOOTH = TRUE
 APP_PATH = ../src
 BASE_PATH    = ../../../..
 
+CSRCS += ../src/platine/pin_map_171006.c
 CSRCS += ../src/main_rpi_hat.c
 
 # main config selector

@@ -29,7 +29,9 @@ typedef u8 (*IO_BUTTON_WATCHER_PIN_STATE_CALLBACK) 	(void);
 typedef struct IO_INPUT_DESCRIPTOR_T {
 
 	u8 id;
-	u8 pin_id;
+
+	const GPIO_DRIVER_PIN_DESCRIPTOR* pin_descriptor;
+	SYSTEM_INTERFACE_GPIO_LEVEL actual_pin_state;
 
 	u8 down;
 	u8 pressed;
@@ -38,8 +40,6 @@ typedef struct IO_INPUT_DESCRIPTOR_T {
 	u32 __down_time;
 	u16 __press_time;
 	u16 __release_time;
-
-	SYSTEM_INTERFACE_GPIO_LEVEL idle_state;
 
 	struct IO_INPUT_DESCRIPTOR_T* __next_button;
 

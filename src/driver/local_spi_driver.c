@@ -14,6 +14,7 @@
 
 #include "local_msg_buffer.h"
 #include "local_spi_driver.h"
+#include "io_controller.h"
 
 #include "cfg_driver_interface.h"
 
@@ -64,6 +65,11 @@ BUILD_LOCAL_MSG_BUFFER(static, __spi_rx_buffer, LOCAL_SPI_DRIVER_MAX_NUM_BYTES_R
 
 BUILD_MODULE_STATUS_FAST(spi_driver_status, 2)
 
+IO_CONTROLLER_BUILD_INOUT(SPI_CE, HOST_SPI_CE)
+IO_CONTROLLER_BUILD_INOUT(SPI_SCK, HOST_SPI_SCK)
+IO_CONTROLLER_BUILD_INOUT(SPI_MOSI, HOST_SPI_MOSI)
+IO_CONTROLLER_BUILD_INOUT(SPI_MISO, HOST_SPI_MISO)
+
 #define SPI_DRIVER_STATUS_RX_ACTIVE	0
 #define SPI_DRIVER_STATUS_TX_ACTIVE	1
 
@@ -71,7 +77,10 @@ void spi_driver_initialize(void) {
 
 	PASS(); // spi_driver_initialize()
 
-	SPI0_DISABLE_INTERFACE();
+	SPI_CE_init();
+	SPI_SCK_init();
+	SPI_MOSI_init();
+	SPI_MISO_init();
 
 	__spi_rx_buffer_init();
 	__spi_tx_buffer_init();
@@ -86,7 +95,10 @@ void spi_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	//spi_driver_status_clear_all();
 
-	SPI0_ENABLE_INTERFACE();
+	SPI_CE_pull_up();
+	SPI_SCK_pull_up();
+	SPI_MOSI_pull_up();
+	//SPI_MISO_drive_high();
 
 	SPI0_CLEAR_CONFIG();
 	SPI0_SET_MODE(p_cfg->module.spi.op_mode);
@@ -108,10 +120,13 @@ void spi_driver_power_off(void) {
 
 	PASS(); // spi_driver_power_off()
 
-	SPI0_SET_ENABLED(DRIVER_SPI_DISABLED);
+	SPI_SET_DISABLED(DRIVER_SPI_ENABLED);
 	//spi_driver_status_clear_all();
 
-	SPI0_DISABLE_INTERFACE();
+	SPI_CE_no_pull();
+	SPI_SCK_no_pull();
+	SPI_MOSI_no_pull();
+	//SPI_MISO_no_drive();
 }
 
 

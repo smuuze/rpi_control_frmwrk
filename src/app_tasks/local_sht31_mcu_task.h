@@ -2,6 +2,7 @@
 #define _LOCAL_SHT31_MCU_TASK_H_
 
 #include "trx_driver_interface.h"
+#include "mcu_task_interface.h"
 
 /*!
  *

@@ -7,7 +7,7 @@
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "local_context.h"
-#include "io_output_controller.h"
+#include "io_controller.h"
 
 #define noTRACES
 #include <traces.H>
@@ -125,62 +125,19 @@ static IO_OUTPUT_DESCRIPTOR led_09 = {
 
 #endif
 
-static IO_OUTPUT_DESCRIPTOR extern_output_01 = {
-	0, //u8 id;
-	IO_TYPE_USER,
-	0, //u8 actual_pin_state;
-	0, //u8 next_pin_state;
-	0, //u32 reference_time;
-	0, //u32 duration;
-	0, //u32 toggle_period;
-	&specific_set_output_01, //IO_OUTPUT_SET_PIN set_pin;
-	0 //struct IO_OUTPUT_DESCRIPTOR* _next;
-};
-
-static IO_OUTPUT_DESCRIPTOR extern_output_02 = {
-	0, //u8 id;
-	IO_TYPE_USER,
-	0, //u8 actual_pin_state;
-	0, //u8 next_pin_state;
-	0, //u32 reference_time;
-	0, //u32 duration;
-	0, //u32 toggle_period;
-	&specific_set_output_02, //IO_OUTPUT_SET_PIN set_pin;
-	0 //struct IO_OUTPUT_DESCRIPTOR* _next;
-};
-
-static IO_OUTPUT_DESCRIPTOR extern_output_03 = {
-	0, //u8 id;
-	IO_TYPE_USER,
-	0, //u8 actual_pin_state;
-	0, //u8 next_pin_state;
-	0, //u32 reference_time;
-	0, //u32 duration;
-	0, //u32 toggle_period;
-	&specific_set_output_03, //IO_OUTPUT_SET_PIN set_pin;
-	0 //struct IO_OUTPUT_DESCRIPTOR* _next;
-};
-
-static IO_OUTPUT_DESCRIPTOR extern_output_04 = {
-	0, //u8 id;
-	IO_TYPE_USER,
-	0, //u8 actual_pin_state;
-	0, //u8 next_pin_state;
-	0, //u32 reference_time;
-	0, //u32 duration;
-	0, //u32 toggle_period;
-	&specific_set_output_04, //IO_OUTPUT_SET_PIN set_pin;
-	0 //struct IO_OUTPUT_DESCRIPTOR* _next;
-};
+IO_CONTROLLER_BUILD_OUTPUT(extern_output_01, EXTERN_OUTPUT_01)
+IO_CONTROLLER_BUILD_OUTPUT(extern_output_02, EXTERN_OUTPUT_02)
+IO_CONTROLLER_BUILD_OUTPUT(extern_output_03, EXTERN_OUTPUT_03)
+IO_CONTROLLER_BUILD_OUTPUT(extern_output_04, EXTERN_OUTPUT_04)
 
 void output_initialization(void) {
 
 	PASS(); // output_initialization()
 
-	GET_SYSTEM(SYS_OUTPUT).extern_output_01 = io_output_controller_register_output(&extern_output_01);
-	GET_SYSTEM(SYS_OUTPUT).extern_output_02 = io_output_controller_register_output(&extern_output_02);
-	GET_SYSTEM(SYS_OUTPUT).extern_output_03 = io_output_controller_register_output(&extern_output_03);
-	GET_SYSTEM(SYS_OUTPUT).extern_output_04 = io_output_controller_register_output(&extern_output_04);
+	extern_output_01_init();
+	extern_output_02_init();
+	extern_output_03_init();
+	extern_output_04_init();
 
 	#if config_HAS_LED_MATRIX == 1
 	GET_SYSTEM(SYS_SIGNAL).led_01 = io_output_controller_register_output(&led_01);

@@ -1,5 +1,5 @@
-#ifndef _IO_OUTPUT_CONTROLLER_H_
-#define _IO_OUTPUT_CONTROLLER_H_
+#ifndef _IO_VIRUTAL_CONTROLLER_H_
+#define _IO_VIRUTAL_CONTROLLER_H_
 
 #include "iterator_interface.h"
 #include "mcu_task_interface.h"

@@ -2,6 +2,7 @@
 #define _LOCAL_ADS1115_MCU_TASK_H_
 
 #include "trx_driver_interface.h"
+#include "mcu_task_interface.h"
 
 /*!
  *

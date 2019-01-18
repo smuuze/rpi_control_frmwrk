@@ -13,6 +13,7 @@
 #define noTRACES
 #include <traces.h>
 
+#include "time_management.h"
 
 u8 time_mgmnt_gettime_u8(void) {
 	return (u8)time_mgmnt_gettime_u32();

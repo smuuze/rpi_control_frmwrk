@@ -125,8 +125,6 @@ void local_rtc_timer_init(void) {
 	PASS(); // 5. Enable IRQs
 	RTC_TIMER_CLEAR_IRQ_FLAGS();
 	RTC_TIMER_SET_IRQ(RTC_TIMER_IRQ_COMPARE_A);
-
-	EVENT_IRQ_OFF();
 }
 
 /*
@@ -183,7 +181,4 @@ ISR(TIMER2_COMPA_vect) {
 		local_rtc_time += RTC_TIMER_INCREMENT_VALUE;
 		local_rtc_ticker = 0;
 	}
-
-	EVENT_IRQ_CPL();
-
 }

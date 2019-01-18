@@ -59,6 +59,10 @@
 #endif
 
 
+#ifndef config_INTERFACE_IO_INIT_PIN_PROTOTYPE
+#define config_INTERFACE_IO_INIT_PIN_PROTOTYPE
+#endif
+
 #ifndef config_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE
 #define config_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE
 #endif
@@ -134,18 +138,24 @@ static void __system_interface_progmem_get_N_bytes(u8* addr, u8* p_buffer_to, u8
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	__system_interface_progmem_get_N_bytes
 #endif
 
-#ifndef config_INTERFACE_IO_SET_PIN_DIR_CALLBACK
-void __system_interface_gpio_set_direction(u8 pin_num, SYSTEM_INTERFACE_GPIO_DIRECTION direction) { (void) pin_num; (void) direction; }
-#define config_INTERFACE_IO_SET_PIN_DIR_CALLBACK __system_interface_gpio_set_direction
+
+#ifndef config_SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK
+void __system_interface_gpio_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr}
+#define config_SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK __system_interface_gpio_init_pin
+#endif
+
+#ifndef config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK
+void __system_interface_gpio_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, SYSTEM_INTERFACE_GPIO_DIRECTION direction) { (void) p_pin_descr; (void) direction; }
+#define config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK __system_interface_gpio_set_direction
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK
-void __system_interface_gpio_set_level(u8 pin_num, SYSTEM_INTERFACE_IO_PIN_LEVEL level) { (void) pin_num; (void) level; }
+void __system_interface_gpio_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, SYSTEM_INTERFACE_IO_PIN_LEVEL level) { (void) p_pin_descr; (void) level; }
 #define config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK __system_interface_gpio_set_level
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK
-SYSTEM_INTERFACE_IO_PIN_LEVEL __system_interface_gpio_get_level(u8 pin_num) { (void) pin_num; return GPIO_LEVEL_HIGH_Z; }
+SYSTEM_INTERFACE_IO_PIN_LEVEL __system_interface_gpio_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; return GPIO_LEVEL_HIGH_Z; }
 #define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK __system_interface_gpio_get_level
 #endif
 
@@ -166,8 +176,10 @@ config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE
 config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_PROTOTYPE
 config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_PROTOTYPE
 
-config_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE
+config_SYSTEM_INTERFACE_IO_INIT_PIN_PROTOTYPE
+config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE
 config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_PROTOTYPE
+config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_PROTOTYPE
 config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
 
 
@@ -192,8 +204,10 @@ const SYSTEM_INTERFACE i_system = {
 		&config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK
 	},
 	{
-		config_INTERFACE_IO_SET_PIN_DIR_CALLBACK,
+		&config_SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK,
+		&config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK,
 		&config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK,
+		&config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK,
 		&config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK
 	}
 };

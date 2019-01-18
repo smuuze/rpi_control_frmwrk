@@ -243,13 +243,17 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK	local_progmem_get_long
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	local_progmem_get_N_bytes
 
-#define config_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE void gpio_driver_set_direction(u8 pin_num, SYSTEM_INTERFACE_GPIO_DIRECTION direction);
-#define config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_PROTOTYPE void gpio_driver_set_level(u8 pin_num, SYSTEM_INTERFACE_IO_PIN_LEVEL level);
-#define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE SYSTEM_INTERFACE_IO_PIN_LEVEL gpio_driver_get_level(u8 pin_num);
+#define config_SYSTEM_INTERFACE_IO_INIT_PIN_PROTOTYPE		void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+#define config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE 	void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, SYSTEM_INTERFACE_GPIO_DIRECTION direction);
+#define config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_PROTOTYPE 	void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, SYSTEM_INTERFACE_GPIO_LEVEL level);
+#define config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_PROTOTYPE	void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+#define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE 	SYSTEM_INTERFACE_GPIO_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
-#define config_INTERFACE_IO_SET_PIN_DIR_CALLBACK gpio_driver_set_direction
-#define config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK gpio_driver_set_level
-#define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK gpio_driver_get_level
+#define config_SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK		gpio_driver_init_pin
+#define config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK 	gpio_driver_set_direction
+#define config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK	gpio_driver_set_level
+#define config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK	gpio_driver_toggle_level
+#define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK 	gpio_driver_get_level
 
 
 ///-----------------------------------------------------------------------------

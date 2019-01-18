@@ -10,7 +10,7 @@
 
 #include "local_gpio_driver.h"
 #include "system_interface.h"
-#include "button_watcher.h"
+#include "io_input_controller.h"
 
 #define noTRACES
 #include <traces.H>
@@ -82,9 +82,9 @@ void io_input_controller_check_state(IO_INPUT_DESCRIPTOR* p_button_state) {
 
 	//PASS(); // io_input_controller_check_state() ----------------
 
-	SYSTEM_INTERFACE_IO_PIN_LEVEL pin_state = i_system.io.get_level(p_button_state->pin_id); //p_button_state->__pin_state();
+	SYSTEM_INTERFACE_GPIO_LEVEL level = i_system.io.get_level(p_button_state->pin_descriptor); //p_button_state->__pin_state();
 
-	if (pin_state != p_button_state->idle_state) {
+	if (level == GPIO_LEVEL_HIGH) {
 
 		if (p_button_state->down == 0) {
 

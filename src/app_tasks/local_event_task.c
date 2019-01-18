@@ -11,10 +11,10 @@
 
 #include "specific.h"
 #include "local_context.h"
-#include "io_output_controller.h"
+#include "io_controller.h"
 #include "local_rtc_driver.h"
 
-#define noTRACES
+#define TRACES
 #include <traces.H>
 
 #define EVENT_TIMEOUT_MS	200
@@ -25,41 +25,43 @@ typedef struct EVENT_QEUE_ELEMENT {
 	u32 timestamp;
 } EVENT_QEUE_ELEMENT_TYPE;
 
+/*!
+ *
+ */
+typedef enum {
+	EVENT_STATE_SLEEP,
+	EVENT_STATE_ACTIVATE,
+	EVENT_STATE_RESET_QEUE,
+	EVENT_STATE_IDLE,
+	EVENT_STATE_FINISH,
+} EVENT_HANDLER_STATE;
+
+static EVENT_HANDLER_STATE actual_task_state = EVENT_STATE_SLEEP;
 
 static EVENT_QEUE_ELEMENT_TYPE _event_qeue[EVENT_QEUE_MAX_SIZE];
 
 static u8 _event_counter = 0;
 
-
-static IO_OUTPUT_DESCRIPTOR io_event_output_pin = {
-	0, //u8 id;
-	IO_TYPE_SYSTEM,
-	0, //u8 actual_pin_state;
-	0, //u8 next_pin_state;
-	0, //u32 reference_time;
-	0, //u32 duration;
-	0, //u32 toggle_period;
-	&specific_system_output_event_set, //IO_OUTPUT_SET_PIN set_pin;
-	0 //struct IO_OUTPUT_DESCRIPTOR* _next;
-};
+IO_CONTROLLER_BUILD_INOUT(EVENT_GPIO, EVENT_OUTPUT)
 
 void local_event_mcu_task_init(void) {
 
-	GET_SYSTEM(SYS_OUTPUT).system_event_output_01 = io_output_controller_register_output(&io_event_output_pin);
-	io_output_controller_set_output(GET_SYSTEM(SYS_OUTPUT).system_event_output_01, IO_OUTPUT_STATE_OFF, 0, 0);
+	EVENT_GPIO_init();
 
 	u8 i = 0;
 	for ( ; i < EVENT_QEUE_MAX_SIZE; i++) {
 		_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
 		_event_qeue[i].timestamp = 0;
 	}
+
+	actual_task_state = EVENT_STATE_SLEEP;
 }
 
 MCU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void) {
 
-	PASS(); // local_event_mcu_task_is_runable() ---
+	if (_event_counter != 0 || actual_task_state != EVENT_STATE_SLEEP) {
 
-	if (_event_counter != 0) {
+		PASS(); // local_event_mcu_task_is_runable() ---
 		return MCU_TASK_RUNNING;
 	}
 
@@ -68,28 +70,67 @@ MCU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void) {
 
 void local_event_mcu_task_run(void) {
 
+	PASS(); // local_event_mcu_task_run() ---
+
+	static u16 operation_timeout = 0;
 	u8 i = 0;
-	for ( ; i < EVENT_QEUE_MAX_SIZE; i++) {
 
-		if (_event_qeue[i].event_id == SYS_EVT_NO_EVENT) {
-			continue;
-		}
+	switch (actual_task_state) {
 
-		if (i_system.time.isup_u32(_event_qeue[i].timestamp, EVENT_TIMEOUT_MS) != 0) {
-			_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
-			_event_counter--;
-			continue;
-		}
+		case EVENT_STATE_SLEEP :
 
-		switch (_event_qeue[i].event_id) {
-			default: break;
-			case SYS_EVT_INPUT_CHANGED:
-				io_output_controller_set_output(GET_SYSTEM(SYS_OUTPUT).system_event_output_01, IO_OUTPUT_STATE_ON, EVENT_TIMEOUT_MS, 0);
+			if (_event_counter == 0) {
 				break;
+			}
 
-		}
+			actual_task_state = EVENT_STATE_ACTIVATE;
+			// no break;
 
-		_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
+		case EVENT_STATE_ACTIVATE :
+
+			EVENT_GPIO_drive_high();
+
+			operation_timeout = i_system.time.now_u16();
+			actual_task_state = EVENT_STATE_ACTIVATE;
+
+			// no break;
+
+		case EVENT_STATE_RESET_QEUE :
+
+			for ( ; i < EVENT_QEUE_MAX_SIZE; i++) {
+
+				if (_event_qeue[i].event_id == SYS_EVT_NO_EVENT) {
+					continue;
+				}
+
+				if (i_system.time.isup_u32(_event_qeue[i].timestamp, EVENT_TIMEOUT_MS) != 0) {
+					_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
+					_event_counter--;
+					continue;
+				}
+
+				_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
+				_event_counter--;
+			}
+
+			actual_task_state = EVENT_STATE_ACTIVATE;
+			// no break;
+
+		case EVENT_STATE_IDLE :
+
+			if (i_system.time.isup_u16(operation_timeout, EVENT_TIMEOUT_MS) == 0) {
+				break;
+			}
+
+			EVENT_GPIO_no_drive();
+			actual_task_state = EVENT_STATE_FINISH;
+			// no break;
+
+		default:
+		case EVENT_STATE_FINISH :
+
+			actual_task_state = EVENT_STATE_SLEEP;
+			break;
 	}
 }
 

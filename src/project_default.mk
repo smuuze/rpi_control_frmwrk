@@ -104,6 +104,7 @@ INC_PATH += $(DRIVER_INC_PATH)
 CSRCS += $(APP_PATH)/driver/local_i2c_driver.c
 CSRCS += $(APP_PATH)/driver/local_spi_driver.c
 CSRCS += $(APP_PATH)/driver/local_rtc_driver.c
+CSRCS += $(APP_PATH)/driver/local_gpio_driver.c
 #CSRCS += $(APP_PATH)/driver/local_usart_driver.c
 
 # -----------------------------------------------------------------------
@@ -135,6 +136,13 @@ CSRCS += $(PROTOCOL_MANAGEMENT_INC_PATH)/rpi_protocol_handler.c
 
 # -----------------------------------------------------------------------
 
+TIME_MANAGEMENT_INC_PATH = ../src/time_management
+INC_PATH += $(TIME_MANAGEMENT_INC_PATH)
+
+CSRCS += $(TIME_MANAGEMENT_INC_PATH)/time_management.c
+
+# -----------------------------------------------------------------------
+
 MCU_TASK_MANAGEMENT_INC_PATH = ../src/mcu_task_management
 INC_PATH += $(MCU_TASK_MANAGEMENT_INC_PATH)
 
@@ -160,7 +168,7 @@ endif
 IO_CONTROLLER_INC_PATH = ../src/io_management
 INC_PATH += $(IO_CONTROLLER_INC_PATH)
 CSRCS += $(IO_CONTROLLER_INC_PATH)/io_output_controller.c
-CSRCS += $(IO_CONTROLLER_INC_PATH)/button_watcher.c
+CSRCS += $(IO_CONTROLLER_INC_PATH)/io_input_controller.c
 
 # -----------------------------------------------------------------------
 

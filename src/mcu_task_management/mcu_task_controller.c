@@ -124,12 +124,14 @@ void mcu_task_controller_schedule(void) {
 
 		PASS(); // mcu_task_controller_schedule() - Task complete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-		SKIP_TASK :
+		//SKIP_TASK :
 
 		if (act_task->get_sate() != MCU_TASK_SLEEPING) {
 			PASS(); // mcu_task_controller_schedule() - Task is still active
 			system_is_on_idle = 0;
 		}
+
+		SKIP_TASK :
 
 		act_task = act_task->next_task;
 	}

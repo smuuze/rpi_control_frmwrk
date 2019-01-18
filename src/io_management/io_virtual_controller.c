@@ -9,7 +9,7 @@
 #include "utils/stdmacros.h"
 
 #include "system_interface.h"
-#include "io_output_controller.h"
+#include "io_virtual_controller.h"
 
 #define noTRACES
 #include <traces.h>

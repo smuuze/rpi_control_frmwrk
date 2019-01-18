@@ -14,7 +14,7 @@
 #include "protocol_interface.h"
 
 #include "local_context.h"
-#include "button_watcher.h"
+#include "io_input_controller.h"
 #include "io_output_controller.h"
 
 #define noTRACES
@@ -218,6 +218,8 @@ u8 rpi_cmd_get_output_state(void) {
 
 u8 rpi_cmd_set_output(void) {
 
+
+
 	if (p_act_protocol->cmd_buffer->bytes_available() < 2) {
 
 		PASS(); // rpi_cmd_set_output() - No argument was given
@@ -226,30 +228,26 @@ u8 rpi_cmd_set_output(void) {
 		return CMD_ERR_INVARG;
 	}
 
-	u8 id = p_act_protocol->cmd_buffer->get_byte();
-	u8 state = p_act_protocol->cmd_buffer->get_byte();
-
-	TRACE_byte(id); // rpi_cmd_set_output()
-	TRACE_byte(state); // rpi_cmd_set_output()
-
-	u32 duration = 0;
-	u32 toggle_period = 0;
-
-	if (p_act_protocol->cmd_buffer->bytes_available() >= 4) {
-		duration = p_act_protocol->cmd_buffer->get_long();
-		TRACE_long(duration); // rpi_cmd_set_output() - Duration
-	}
-
-	if (p_act_protocol->cmd_buffer->bytes_available() >= 4) {
-		toggle_period = p_act_protocol->cmd_buffer->get_long();
-		TRACE_long(toggle_period); // rpi_cmd_set_output() - toggle-Period
-	}
-
 	u8 err_code = CMD_NO_ERR;
 
-	if (io_output_controller_set_output(id, state, duration, toggle_period) == 0) {
-		PASS(); // rpi_cmd_set_output() - Output not set - wrong ID !!!
-		err_code = CMD_ERR_INVARG;
+	while (p_act_protocol->cmd_buffer->bytes_available() >= 10) {
+
+		u8 id = p_act_protocol->cmd_buffer->get_byte();
+		u8 state = p_act_protocol->cmd_buffer->get_byte();
+
+		TRACE_byte(id); // rpi_cmd_set_output()
+		TRACE_byte(state); // rpi_cmd_set_output()
+
+		u32 duration = p_act_protocol->cmd_buffer->get_long();
+		TRACE_long(duration); // rpi_cmd_set_output() - Duration
+
+		u32 toggle_period = p_act_protocol->cmd_buffer->get_long();
+		TRACE_long(toggle_period); // rpi_cmd_set_output() - toggle-Period
+
+		if (io_output_controller_set_output(id, state, duration, toggle_period) == 0) {
+			PASS(); // rpi_cmd_set_output() - Output not set - wrong ID !!!
+			err_code = CMD_ERR_INVARG;
+		}
 	}
 
 	p_act_protocol->set_finished(err_code);

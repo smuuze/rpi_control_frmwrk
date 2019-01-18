@@ -6,8 +6,6 @@
 #include "specific.h"
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
-#include "button_watcher.h"
-#include "io_output_controller.h"
 #include "system_interface.h"
 
 #include "local_context.h"

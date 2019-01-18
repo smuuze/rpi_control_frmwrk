@@ -99,8 +99,8 @@ static MCU_TASK_INTERFACE cmd_mcu_task = {
 	0					// next-task
 };
 
-#include "button_watcher.h"
-static MCU_TASK_INTERFACE button_watch_task = {
+#include "io_input_controller.h"
+static MCU_TASK_INTERFACE io_input_controller_task = {
 
 	0, 					// u8 identifier,
 	25, 					// const u16 SCHEDULE_INTERVAL,
@@ -200,7 +200,7 @@ void task_initialization(void) {
 
 	mcu_task_controller_init();
 
-	mcu_task_controller_register_task(&button_watch_task);
+	mcu_task_controller_register_task(&io_input_controller_task);
 	mcu_task_controller_register_task(&rpi_protocol_task);
 	mcu_task_controller_register_task(&sht31_mcu_task);
 	mcu_task_controller_register_task(&ads1115_mcu_task);
@@ -212,7 +212,7 @@ void task_initialization(void) {
 	#endif
 
 
-	//mcu_task_controller_register_task(&event_task);
+	mcu_task_controller_register_task(&event_task);
 	mcu_task_controller_register_task(&io_output_controller_task);
 }
 

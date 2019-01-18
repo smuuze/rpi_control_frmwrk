@@ -4,10 +4,7 @@
 #define DRIVER_SPI_PADDING_BYTE				(0x00)
 
 #define DRIVER_SPI_ENABLED				(1 << 6)
-#define DRIVER_SPI_DISABLED				(0)
-
 #define DRIVER_SPI_INTERRUPT_ENABLED			(1 << 7)
-#define DRIVER_SPI_INTERRUPT_DISABLED			(0)
 
 #define DRIVER_SPI_OP_MODE_MASTER			(1 << 4)
 #define DRIVER_SPI_OP_MODE_SLAVE			(0)
@@ -37,6 +34,7 @@
 
 #define SPI0_SET_INTERRUPT(value)			SPCR |= value
 #define SPI0_SET_ENABLED(value)				SPCR |= value
+#define SPI_SET_DISABLED(value)				SPCR &= ~(value)
 #define SPI0_SET_DATA_ORDER(value)			SPCR |= value
 #define SPI0_SET_MODE(value)				if (value == DRIVER_SPI_OP_MODE_SLAVE) {	\
 								SPI0_CE_as_INPUT();			\
@@ -58,6 +56,8 @@
 #define SPI0_SET_BYTE(u8_byte)				SPDR = u8_byte
 
 #define SPI0_IS_TRX_COMPLETE()				(SPSR & (1<<SPIF)) != 0 ? 1 : 0
+
+#define SPI0_INIT_INTERFACE()				IO_CONTROLLER_BUILD_INOUT(name, pin_descr)
 
 #define SPI0_ENABLE_INTERFACE()				SPI0_CE_as_INPUT(); SPI0_CE_ON();		\
 							SPI0_MOSI_as_INPUT(); SPI0_MOSI_ON();		\

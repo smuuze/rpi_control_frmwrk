@@ -79,10 +79,7 @@ void main_init(void) {
 
 	INIT_PASS(); // Initialization - First-Time Debus-Init
 
-	INIT_PORTS_FOR_STARTUP();
-
-	wdt_enable(WDTO_8S);
-	watchdog();
+	//INIT_PORTS_FOR_STARTUP();
 
 	#if defined config_HAS_DEBUS_INTERACE && config_HAS_DEBUS_INTERACE != 0
 	{
@@ -103,6 +100,9 @@ void main_init(void) {
 	cli();
 	initialization();
 	sei();
+
+	wdt_enable(WDTO_8S);
+	watchdog();
 
 	INIT_PASS(); // Initialization done
 }
