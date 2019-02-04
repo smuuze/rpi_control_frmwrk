@@ -30,10 +30,12 @@ TRX_DRIVER_INTERFACE spi_driver = {
 	&spi_driver_get_N_bytes, 	//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
 	&spi_driver_set_N_bytes, 	//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
 	&spi_driver_start_rx, 		//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
+	&spi_driver_wait_for_rx,	//
 	&spi_driver_stop_rx, 		//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
 	&spi_driver_is_ready_for_tx,	//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
 	&spi_driver_is_ready_for_rx,	//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
 	&spi_driver_start_tx, 		//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
+	&spi_driver_wait_for_tx,	//
 	&spi_driver_stop_tx, 		//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
 	&spi_driver_clear_buffer, 	//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
 	&spi_driver_set_address,	//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
@@ -53,10 +55,12 @@ TRX_DRIVER_INTERFACE local_i2c_driver = {
 	&i2c_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
 	&i2c_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
 	&i2c_driver_start_rx, 		//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
+	&i2c_driver_wait_for_rx,	//
 	&i2c_driver_stop_rx, 		//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
 	&i2c_driver_is_ready_for_tx,	//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
 	&i2c_driver_is_ready_for_rx,	//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
 	&i2c_driver_start_tx, 		//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
+	&i2c_driver_wait_for_tx,	//
 	&i2c_driver_stop_tx, 		//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
 	&i2c_driver_clear_buffer, 	//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
 	&i2c_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
@@ -95,6 +99,7 @@ void protocol_initialization(void) {
 	rpi_protocol_init(&spi_driver);
 #endif
 
+	local_i2c_driver.initialize();
 	local_ads1115_module_init(&local_i2c_driver);
 	local_sht31_module_init(&local_i2c_driver);
 }

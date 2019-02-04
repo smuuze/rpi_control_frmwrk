@@ -14,10 +14,13 @@
 
 #include "rpi_command_handler.h"
 #include "local_msg_buffer.h"
+#include "time_management.h"
 
 #include "local_context.h"
 #include "local_i2c_driver.h"
 #include "asic_information_sht31.h"
+
+#include "cfg_driver_interface.h"
 
 #include "local_data_storage_array.h"
 #include "system_interface.h"
@@ -63,7 +66,7 @@ static TRX_DRIVER_CONFIGURATION driver_cfg;
 /*!
  *
  */
-static SHT31_TASK_STATE operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
+static SHT31_TASK_STATE operation_stage = SHT31_TASK_STATE_IDLE;
 
 /*!
  *
@@ -78,13 +81,21 @@ static u8 com_driver_mutex_id = 0;
 /*!
  *
  */
-static u16 task_run_interval_reference_actual = 0;
-static u32 task_run_interval_reference_maxmin = 0;
+//static u16 task_run_interval_reference_actual = 0;
+TIME_MGMN_BUILD_STATIC_TIMER_U16(task_timer)
 
 /*!
  *
  */
-static u32 operation_refrence_time = 0;
+//static u32 task_run_interval_reference_maxmin = 0;
+TIME_MGMN_BUILD_STATIC_TIMER_U32(task_timer_maxmin)
+
+/*!
+ *
+ */
+//static u32 operation_refrence_time = 0;
+TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
+
 
 BUILD_LOCAL_DATA_STORAGE_ARRAY_I8(sht31_temp_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
 BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(sht31_hum_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
@@ -92,6 +103,13 @@ BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(sht31_hum_24hour, SHT31_TASK_NUMBER_OF_HISTORY
 void local_sht31_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	PASS(); // local_sht31_module_init()
+
+	driver_cfg.module.i2c.answer_general_call = 0;
+	driver_cfg.module.i2c.bit_rate = DRIVER_I2C_BITRATE_1KHZ;
+	driver_cfg.module.i2c.enable_ack = 0;
+	driver_cfg.module.i2c.interrupt_enable = 1;
+	driver_cfg.module.i2c.is_master = 1;
+	driver_cfg.module.i2c.slave_addr = 0;
 
 	p_com_driver = p_driver;
 
@@ -106,9 +124,9 @@ void local_sht31_mcu_task_init(void) {
 
 	PASS(); // local_sht31_mcu_task_init()
 
-	operation_stage = SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR;
-	task_run_interval_reference_actual = 0; //i_system.time.now_u16();
-	task_run_interval_reference_maxmin = 0;//i_system.time.now_u32();
+	operation_stage = SHT31_TASK_STATE_IDLE;
+	task_timer_start(); // task_run_interval_reference_actual = 0; //i_system.time.now_u16();
+	task_timer_maxmin_start(); // task_run_interval_reference_maxmin = 0;//i_system.time.now_u32();
 
 	GET_SYSTEM(data).temperature.minimal = SHT31_MAXIMUM_MEASSUREABLE_TEMPERATURE;
 	GET_SYSTEM(data).humidity.minimal = SHT31_MAXIMUM_MEASSUREABLE_HUMIDITY;
@@ -122,13 +140,9 @@ void local_sht31_mcu_task_init(void) {
 MCU_TASK_INTERFACE_TASK_STATE local_sht31_mcu_task_get_state(void) {
 
 	if (task_state == MCU_TASK_SLEEPING) {
-		if (i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_TASK_RUN_INTERVAL_MS) != 0) {
+
+		if (task_timer_is_up(SHT31_TASK_RUN_INTERVAL_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_TASK_RUN_INTERVAL_MS) */ != 0) {
 			task_state = MCU_TASK_RUNNING;
-			GPIO_17_ON();
-
-		} else {
-
-			GPIO_17_OFF();
 		}
 	}
 
@@ -164,7 +178,7 @@ void local_sht31_mcu_task_run(void) {
 
 			p_com_driver->configure(&driver_cfg);
 
-			task_run_interval_reference_actual = i_system.time.now_u16();
+			task_timer_start(); // task_run_interval_reference_actual = i_system.time.now_u16();
 			operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
 
 			PASS(); // local_sht31_mcu_task_run() - Going to start measurement ----
@@ -178,7 +192,7 @@ void local_sht31_mcu_task_run(void) {
 				break;
 			}
 
-			if (i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_STARTUP_TIME_MS) == 0) {
+			if (task_timer_is_up(SHT31_STARTUP_TIME_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_STARTUP_TIME_MS) */ == 0) {
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Wait for Start-Up of Sensor
 				break;
 			}
@@ -186,13 +200,11 @@ void local_sht31_mcu_task_run(void) {
 			SHT31_SET_COMMAND(SHT31_COMMAND_CLEAR_STATUS_REGISTER, command_buffer);
 
 			p_com_driver->clear_buffer();
-
-			// clear status register
 			p_com_driver->set_address(SHT31_BUS_ADDRESS_1);
 			p_com_driver->set_N_bytes(SHT31_MEASUREMENT_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();
 
-			task_run_interval_reference_actual = i_system.time.now_u16();
+			task_timer_start(); // task_run_interval_reference_actual = i_system.time.now_u16();
 			operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
 
 			// no break;
@@ -204,7 +216,7 @@ void local_sht31_mcu_task_run(void) {
 				task_state = MCU_TASK_IDLE;
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT - check if driver is ready for RX
 
-				if (i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_OPERATION_TIMEOUT_MS) != 0) {
+				if (task_timer_is_up(SHT31_OPERATION_TIMEOUT_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_OPERATION_TIMEOUT_MS) */ != 0) {
 
 					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT - Waiting for Driver to be Ready has FAILED !!! ---
 					p_com_driver->stop_tx();
@@ -222,7 +234,7 @@ void local_sht31_mcu_task_run(void) {
 			p_com_driver->set_N_bytes(SHT31_MEASUREMENT_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();
 
-			operation_refrence_time = i_system.time.now_u32();
+			operation_timer_start(); //  operation_refrence_time = i_system.time.now_u32();
 			operation_stage = SHT31_TASK_STATE_GET_TEMP_HUM_DATA;
 			task_state = MCU_TASK_IDLE;
 
@@ -234,7 +246,7 @@ void local_sht31_mcu_task_run(void) {
 
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA - Waiting for communication-driver
 
-				if (i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_OPERATION_TIMEOUT_MS) != 0) {
+				if (task_timer_is_up(SHT31_OPERATION_TIMEOUT_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_OPERATION_TIMEOUT_MS) */ != 0) {
 
 					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA -Waiting for Driver to be Ready has FAILED !!! ---
 					p_com_driver->stop_tx();
@@ -244,7 +256,7 @@ void local_sht31_mcu_task_run(void) {
 				break;
 			}
 
-			if (i_system.time.isup_u32(operation_refrence_time, SHT31_MEASUREMENT_TIME_LOW_REPEATABILITY_MS) == 0) {
+			if (operation_timer_is_up(SHT31_MEASUREMENT_TIME_LOW_REPEATABILITY_MS) /* i_system.time.isup_u32(operation_refrence_time, SHT31_MEASUREMENT_TIME_LOW_REPEATABILITY_MS) */ == 0) {
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA - Wait for meassurement to be done
 				break;
 			}
@@ -254,7 +266,7 @@ void local_sht31_mcu_task_run(void) {
 			p_com_driver->set_address(SHT31_BUS_ADDRESS_1);
 			p_com_driver->start_rx(SHT31_MEASRUEMENT_ANSWER_LENGTH);
 
-			operation_refrence_time = i_system.time.now_u32();
+			operation_timer_start(); // operation_refrence_time = i_system.time.now_u32();
 			operation_stage = SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA;
 
 			// no break;
@@ -265,7 +277,7 @@ void local_sht31_mcu_task_run(void) {
 
 				task_state = MCU_TASK_IDLE;
 
-				if (i_system.time.isup_u32(operation_refrence_time, SHT31_OPERATION_TIMEOUT_MS) != 0) {
+				if (operation_timer_is_up(SHT31_OPERATION_TIMEOUT_MS) /* i_system.time.isup_u32(operation_refrence_time, SHT31_OPERATION_TIMEOUT_MS) */ != 0) {
 					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA - Timeout on waiting for data
 
 					p_com_driver->stop_tx();
@@ -308,8 +320,8 @@ void local_sht31_mcu_task_run(void) {
 
 			PASS(); ///----- Max Min Values -----------------------------------------------
 
-			if (i_system.time.isup_u32(task_run_interval_reference_maxmin, SHT32_TASK_MAXMIN_INTERVAL_MS) == 0) {
-				task_run_interval_reference_maxmin = i_system.time.now_u32();
+			if (task_timer_maxmin_is_up(SHT32_TASK_MAXMIN_INTERVAL_MS) /* i_system.time.isup_u32(task_run_interval_reference_maxmin, SHT32_TASK_MAXMIN_INTERVAL_MS) */ == 0) {
+				task_timer_maxmin_start();// task_run_interval_reference_maxmin = i_system.time.now_u32();
 
 				sht31_temp_24hour_data_storage_array_add_value(GET_SYSTEM(data).temperature.actual);
 				GET_SYSTEM(data).temperature.maximal = sht31_temp_24hour_data_storage_array_get_max();
@@ -335,10 +347,10 @@ void local_sht31_mcu_task_run(void) {
 		case SHT31_TASK_STATE_CANCEL_OPERATION :
 
 			operation_stage = SHT31_TASK_STATE_IDLE;
-			task_run_interval_reference_actual = i_system.time.now_u16();
+			task_timer_start(); // task_run_interval_reference_actual = i_system.time.now_u16();
 			task_state = MCU_TASK_SLEEPING;
 
-			TRACE_word(task_run_interval_reference_actual); // local_sht31_mcu_task_run() - Measurement has been finished ----
+			PASS(); // local_sht31_mcu_task_run() - Measurement has been finished ----
 
 			p_com_driver->shut_down();
 			p_com_driver->mutex_rel(com_driver_mutex_id);

@@ -28,6 +28,7 @@
 
 #define noSPI_RX_TRACES
 #define noSPI_TX_TRACES
+#define noSPI_ISR_TRACES
 
 #if defined TRACES_ENABLED && defined SPI_RX_TRACES
 #define SPI_RX_PASS()			PASS()
@@ -58,6 +59,21 @@
 #define SPI_TX_TRACE_N(n,v)
 #endif
 
+
+#if defined TRACES_ENABLED && defined SPI_ISR_TRACES
+#define SPI_ISR_PASS()			PASS()
+#define SPI_ISR_TRACE_byte(v)		TRACE_byte(v)
+#define SPI_ISR_TRACE_word(v)		TRACE_word(v)
+#define SPI_ISR_TRACE_long(v)		TRACE_long(v)
+#define SPI_ISR_TRACE_N(n,v)		TRACE_N(n,v)
+#else
+#define SPI_ISR_PASS()
+#define SPI_ISR_TRACE_byte(v)
+#define SPI_ISR_TRACE_word(v)
+#define SPI_ISR_TRACE_long(v)
+#define SPI_ISR_TRACE_N(n,v)
+#endif
+
 BUILD_MUTEX(spi_mutex)
 
 BUILD_LOCAL_MSG_BUFFER(static, __spi_tx_buffer, LOCAL_SPI_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
@@ -70,8 +86,15 @@ IO_CONTROLLER_BUILD_INOUT(SPI_SCK, HOST_SPI_SCK)
 IO_CONTROLLER_BUILD_INOUT(SPI_MOSI, HOST_SPI_MOSI)
 IO_CONTROLLER_BUILD_INOUT(SPI_MISO, HOST_SPI_MISO)
 
+SPI0_BUILD_CFG()
+
 #define SPI_DRIVER_STATUS_RX_ACTIVE	0
 #define SPI_DRIVER_STATUS_TX_ACTIVE	1
+
+/*!
+ *
+ */
+static volatile u8 _status_register = 0;
 
 void spi_driver_initialize(void) {
 
@@ -84,6 +107,28 @@ void spi_driver_initialize(void) {
 
 	__spi_rx_buffer_init();
 	__spi_tx_buffer_init();
+
+	SPI0_CLEAR_CONFIG();
+	SPI0_ENABLE_IRQ();
+	SPI0_ENABLE_MODULE();
+	SPI0_RESET_REGISTERS();
+
+	SPI0_DISABLE_MODULE();
+	SPI0_POWER_DOWN();
+
+	{
+		u8 temp = SPCR;
+		TRACE_byte(temp); // SPI - CONTROL-REGISTER
+
+		temp = SPSR;
+		TRACE_byte(temp); // SPI - STATUS-REGISTER
+
+		temp = PRR0;
+		TRACE_byte(temp); // SPI - PRR0-REGISTER
+
+		temp = PRR1;
+		TRACE_byte(temp); // SPI - PRR1-REGISTER
+	}
 }
 
 /*!
@@ -91,25 +136,109 @@ void spi_driver_initialize(void) {
  */
 void spi_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
-	PASS(); // spi_driver_configure()
+	PASS(); // spi_driver_configure() - Start ---
 
-	//spi_driver_status_clear_all();
+	SPI0_POWER_UP();
 
-	SPI_CE_pull_up();
-	SPI_SCK_pull_up();
-	SPI_MOSI_pull_up();
-	//SPI_MISO_drive_high();
+	PASS(); // spi_driver_configure() - Apply ---
 
-	SPI0_CLEAR_CONFIG();
-	SPI0_SET_MODE(p_cfg->module.spi.op_mode);
-	SPI0_SET_INTERRUPT(p_cfg->module.spi.interrupt_enable);
-	SPI0_SET_DATA_ORDER(p_cfg->module.spi.data_order);
-	SPI0_SET_CLOCK_POLARITY(p_cfg->module.spi.clk_polarity);
-	SPI0_SET_CLOCK_PHASE(p_cfg->module.spi.clk_phase);
-	SPI0_SET_CLOCK_RATE(p_cfg->module.spi.clk_divider);
-	SPI0_SET_BYTE(DRIVER_SPI_PADDING_BYTE);
+	if (p_cfg->module.spi.is_master != 0) {
 
-	SPI0_SET_ENABLED(DRIVER_SPI_ENABLED);
+		SPI0_ENABLE_MASTER_MODE(); PASS(); // spi_driver_configure()
+		SPI_CE_drive_high();
+		SPI_SCK_drive_high();
+		SPI_MOSI_no_drive();
+		SPI_MISO_no_pull();
+
+	} else {
+
+		SPI0_DISABLE_MASTER_MODE(); PASS(); // spi_driver_configure()
+		SPI_CE_pull_up();
+		SPI_SCK_pull_up();
+		SPI_MOSI_no_pull();
+		SPI_MISO_drive_low();
+	}
+
+	if (p_cfg->module.spi.data_order != 0) {
+		SPI0_ENABLE_DATA_ORDER_LSB(); PASS(); // spi_driver_configure()
+	} else {
+		SPI0_DISABLE_DATA_ORDER_LSB(); PASS(); // spi_driver_configure()
+	}
+
+	if (p_cfg->module.spi.clk_double_speed != 0) {
+		SPI0_ENABLE_DOUBLE_SPEED(); PASS(); // spi_driver_configure()
+	} else {
+		SPI0_DISABLE_DOUBLE_SPEED(); PASS(); // spi_driver_configure()
+	}
+
+	if (p_cfg->module.spi.interrupt_enable != 0) {
+		SPI0_ENABLE_IRQ();
+	} else {
+		SPI0_DISABLE_IRQ();
+	}
+
+	switch (p_cfg->module.spi.mode) {
+
+		default : // no break;
+		case DRIVER_SPI_MODE_0 :
+			SPI0_ENABLE_SPI_MODE_0(); PASS(); // spi_driver_configure()
+			break;
+
+		case DRIVER_SPI_MODE_1 :
+			SPI0_ENABLE_SPI_MODE_1(); PASS(); // spi_driver_configure()
+			break;
+
+		case DRIVER_SPI_MODE_2 :
+			SPI0_ENABLE_SPI_MODE_2(); PASS(); // spi_driver_configure()
+			break;
+
+		case DRIVER_SPI_MODE_3 :
+			SPI0_ENABLE_SPI_MODE_3(); PASS(); //spi_driver_configure()
+			break;
+	}
+
+	TRACE_byte(p_cfg->module.spi.clk_divider); // spi_driver_configure()
+	switch (p_cfg->module.spi.clk_divider) {
+
+		default : // no break;
+		case DRIVER_SPI_CLK_DEVIDER_4  :
+			SPI0_ENABLE_CLOCK_DEVIDER(DRIVER_SPI_CLK_DEVIDE_BY_4);  PASS(); // spi_driver_configure()
+			break;
+
+		case DRIVER_SPI_CLK_DEVIDER_8  :
+			SPI0_ENABLE_CLOCK_DEVIDER(DRIVER_SPI_CLK_DEVIDE_BY_8);  PASS(); // spi_driver_configure()
+			break;
+
+		case DRIVER_SPI_CLK_DEVIDER_16 :
+			SPI0_ENABLE_CLOCK_DEVIDER(DRIVER_SPI_CLK_DEVIDE_BY_16); PASS(); // spi_driver_configure()
+			break;
+
+		case DRIVER_SPI_CLK_DEVIDER_32 :
+			SPI0_ENABLE_CLOCK_DEVIDER(DRIVER_SPI_CLK_DEVIDE_BY_32); PASS(); // spi_driver_configure()
+			break;
+	}
+
+	SPI0_ENABLE_MODULE();
+	SPI0_RESET_REGISTERS();
+
+	{
+		u8 temp = SPCR;
+		TRACE_byte(temp); // SPI - CONTROL-REGISTER
+
+		temp = SPSR;
+		TRACE_byte(temp); // SPI - STATUS-REGISTER
+
+		temp = PRR0;
+		TRACE_byte(temp); // SPI - PRR0-REGISTER
+
+		temp = PRR1;
+		TRACE_byte(temp); // SPI - PRR1-REGISTER
+
+		temp = SREG;
+		TRACE_byte(temp); // Global Status-Register
+	}
+
+	PASS(); // spi_driver_configure() - End ---
 }
 
 
@@ -120,13 +249,13 @@ void spi_driver_power_off(void) {
 
 	PASS(); // spi_driver_power_off()
 
-	SPI_SET_DISABLED(DRIVER_SPI_ENABLED);
-	//spi_driver_status_clear_all();
+	SPI0_DISABLE_MODULE();
+	SPI0_POWER_DOWN();
 
-	SPI_CE_no_pull();
-	SPI_SCK_no_pull();
+	SPI_CE_pull_up();
+	SPI_SCK_pull_up();
 	SPI_MOSI_no_pull();
-	//SPI_MISO_no_drive();
+	SPI_MISO_no_pull();
 }
 
 
@@ -141,7 +270,10 @@ u8 spi_driver_bytes_available(void) {
 	}
 	#endif
 
-	return __spi_rx_buffer_bytes_available();
+	u8 bytes_available = __spi_rx_buffer_bytes_available();
+	TRACE_byte(bytes_available); // spi_driver_bytes_available()
+
+	return bytes_available;
 }
 
 
@@ -191,6 +323,48 @@ void spi_driver_start_rx(u16 num_of_rx_bytes) {
 	spi_driver_status_set(SPI_DRIVER_STATUS_RX_ACTIVE);
 }
 
+void spi_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+
+	if (num_bytes == 0) {
+		PASS(); // spi_driver_wait_for_rx() - Nothing to receive
+		return;
+	}
+
+	TRACE_byte(num_bytes); // spi_driver_wait_for_rx()
+
+	u8 bytes_received = 0;
+	u16 time_reference_ms = i_system.time.now_u16();
+
+	while (i_system.time.isup_u16(time_reference_ms, timeout_ms) == 0) {
+
+		if (SPI0_IS_TRX_COMPLETE() != 0) {
+
+			u8 rx_byte = SPI0_GET_BYTE();
+			__spi_rx_buffer_add_byte(rx_byte);
+			bytes_received += 1;
+
+			SPI_RX_TRACE_byte(rx_byte); // ISR(SPI_STC_vect) - new byte received
+
+			if (spi_driver_status_is_set(SPI_DRIVER_STATUS_TX_ACTIVE)) {
+
+				u8 tx_byte = __spi_tx_buffer_get_byte();
+				SPI0_SET_BYTE(tx_byte);
+
+				if (__spi_tx_buffer_bytes_available() == 0) {
+					spi_driver_stop_tx();
+				}
+
+			} else {
+				SPI0_SET_BYTE(DRIVER_SPI_PADDING_BYTE);
+			}
+
+			if (bytes_received >= num_bytes) {
+				break;
+			}
+		}
+	}
+}
+
 
 void spi_driver_stop_rx(void) {
 
@@ -214,13 +388,51 @@ void spi_driver_start_tx(void) {
 		SPI0_SET_BYTE(DRIVER_SPI_PADDING_BYTE);
 		spi_driver_stop_tx();
 
+	} else {
+
+		SPI_TX_TRACE_byte(__spi_tx_buffer_bytes_available()); // spi_driver_start_tx() - Bytes to transmit
+		u8 byte = __spi_tx_buffer_get_byte();
+		SPI0_SET_BYTE(byte);
+	}
+}
+
+void spi_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+
+	if (num_bytes > __spi_tx_buffer_bytes_available()) {
+		num_bytes = __spi_tx_buffer_bytes_available();
+	}
+
+	if (num_bytes == 0) {
+		PASS(); // spi_driver_wait_for_tx() - Nothing to transmit
 		return;
 	}
 
-	SPI_TX_TRACE_byte(__spi_tx_buffer_bytes_available()); // spi_driver_start_tx() - Bytes to transmit
+	TRACE_byte(num_bytes); // spi_driver_wait_for_tx()
 
-	u8 byte = __spi_tx_buffer_get_byte();
-	SPI0_SET_BYTE(byte);
+	u8 bytes_transmitted = 0;
+	u16 time_reference_ms = i_system.time.now_u16();
+
+	while (i_system.time.isup_u16(time_reference_ms, timeout_ms) == 0) {
+
+		if (SPI0_IS_TRX_COMPLETE() != 0) {
+
+			u8 rx_byte = SPI0_GET_BYTE();
+
+			if (spi_driver_status_is_set(SPI_DRIVER_STATUS_RX_ACTIVE)) {
+				__spi_rx_buffer_add_byte(rx_byte);
+				bytes_transmitted += 1;
+			}
+
+			u8 tx_byte = __spi_tx_buffer_get_byte();
+			SPI0_SET_BYTE(tx_byte);
+
+			SPI_TX_TRACE_byte(tx_byte); // ISR(SPI_STC_vect) - new byte transmitted
+
+			if (bytes_transmitted >= num_bytes) {
+				break;
+			}
+		}
+	}
 }
 
 
@@ -261,16 +473,19 @@ void spi_driver_mutex_release(u8 m_id) {
 
 ISR(SPI_STC_vect) {
 
-	PASS(); // ISR(SPI_STC_vect) -----------------------------------------------------------------
+	SPCR &= ~DRIVER_SPI_CFGMASK_IRQ_EN;
 
+	_status_register = SPI0_GET_STATUS();
 	u8 rx_byte = SPI0_GET_BYTE();
+
+	SPI_ISR_TRACE_byte(_status_register); // ISR(SPI_STC_vect) -----------------------------------------------------------------
 
 	if (spi_driver_status_is_set(SPI_DRIVER_STATUS_TX_ACTIVE)) {
 
 		u8 tx_byte = __spi_tx_buffer_get_byte();
 		SPI0_SET_BYTE(tx_byte);
 
-		SPI_RX_TRACE_byte(tx_byte); // ISR(SPI_STC_vect) - new byte transmitted
+		SPI_ISR_TRACE_byte(tx_byte); // ISR(SPI_STC_vect) - new byte transmitted
 
 		if (__spi_tx_buffer_bytes_available() == 0) {
 			spi_driver_stop_tx();
@@ -281,7 +496,7 @@ ISR(SPI_STC_vect) {
 	}
 
 	if (spi_driver_status_is_set(SPI_DRIVER_STATUS_RX_ACTIVE)) {
-		SPI_RX_TRACE_byte(rx_byte); // ISR(SPI_STC_vect) - new byte received
+		SPI_ISR_TRACE_byte(rx_byte); // ISR(SPI_STC_vect) - new byte received
 		__spi_rx_buffer_add_byte(rx_byte);
 	}
 }

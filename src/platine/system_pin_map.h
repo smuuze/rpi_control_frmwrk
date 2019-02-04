@@ -30,8 +30,8 @@ INCLUDE_GPIO(HOST_SPI_SCK)
 //----------------------------------------------------------------------------------------------------------------------------------
 //   Port C (0x08)
 //---------  Name , Port, Bit,	  Idle-State
-INCLUDE_GPIO(MCU_PIN_19)
-INCLUDE_GPIO(MCU_PIN_20)
+INCLUDE_GPIO(I2C_SCL)
+INCLUDE_GPIO(I2C_SDA)
 INCLUDE_GPIO(MCU_PIN_21)
 INCLUDE_GPIO(MCU_PIN_22)
 INCLUDE_GPIO(MCU_PIN_23)

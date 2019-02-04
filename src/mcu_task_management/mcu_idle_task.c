@@ -37,7 +37,7 @@
 #define SLEEP_DRIVER_PRR_USART1		(1 << PRUSART0)
 #define SLEEP_DRIVER_PRR_ADC		(1 << PRADC)
 
-#define SET_MODULE_POWER_SAFE(prr_module_mask)	PRR0 = (prr_module_mask)
+#define SET_MODULE_POWER_SAFE(prr_module_mask)	PRR0 |= (prr_module_mask)
 
 void mcu_idle_task_init(void) {
 	PASS(); // mcu_idle_task_init()
@@ -49,18 +49,18 @@ u8 mcu_idle_task_is_runable(void) {
 
 void mcu_idle_task_run(void) {
 
-	//SET_MODULE_POWER_SAFE(SLEEP_DRIVER_PRR_TWI | SLEEP_DRIVER_PRR_TIMER0 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_TIMER1 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_ADC);
+	//SET_MODULE_POWER_SAFE(SLEEP_DRIVER_PRR_TIMER0 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_TIMER1 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_ADC);
 	set_sleep_mode(config_SLEEP_MODE);
 
 	cli();
-
 	sleep_enable();
 	sleep_bod_disable();
 	sei();
+
 	sleep_cpu();
 
+	cli();
 	sleep_disable();
-
 	sei();
 }
 

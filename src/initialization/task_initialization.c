@@ -201,7 +201,7 @@ void task_initialization(void) {
 	mcu_task_controller_init();
 
 	mcu_task_controller_register_task(&io_input_controller_task);
-	mcu_task_controller_register_task(&rpi_protocol_task);
+	//mcu_task_controller_register_task(&rpi_protocol_task);
 	mcu_task_controller_register_task(&sht31_mcu_task);
 	mcu_task_controller_register_task(&ads1115_mcu_task);
 	mcu_task_controller_register_task(&cmd_mcu_task);

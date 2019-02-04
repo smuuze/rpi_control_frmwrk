@@ -64,6 +64,13 @@ u8 spi_driver_is_ready_for_rx(void);
  */
 void spi_driver_start_rx(u16 num_of_rx_bytes);
 
+/*!
+ *
+ * @param num_bytes
+ * @param timeout_ms
+ */
+void spi_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms);
+
 /*
  * stops any active rx-operation
  * internal buffer will left unchanged
@@ -75,6 +82,13 @@ void spi_driver_stop_rx(void);
  * if the tx-buffer is empty the module will go back to idle state
  */
 void spi_driver_start_tx(void);
+
+/*!
+ *
+ * @param num_bytes
+ * @param timeout_ms
+ */
+void spi_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms);
 
 /*
  * stops any active tx-operation, internal buffer will left unchanged

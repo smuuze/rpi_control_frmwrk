@@ -41,7 +41,16 @@ typedef void (*TRX_DRIVER_INTERFACE_START_RX_CALLBACK)		(u16 num_of_rx_bytes);
 
 /*
  */
+typedef void (*TRX_DRIVER_INTERFACE_WAIT_FOR_RX_CALLBACK)	(u8 num_byts_max, u16 timeout_ms);
+
+
+/*
+ */
 typedef void (*TRX_DRIVER_INTERFACE_START_TX_CALLBACK)		(void);
+
+/*
+ */
+typedef void (*TRX_DRIVER_INTERFACE_WAIT_FOR_TX_CALLBACK)	(u8 num_byts_max, u16 timeout_ms);
 
 /*
  */
@@ -128,6 +137,12 @@ typedef struct TRX_DRIVER_INTERFACE {
 	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
 
 	/*
+	 *
+	 */
+	TRX_DRIVER_INTERFACE_WAIT_FOR_RX_CALLBACK wait_for_rx;
+
+
+	/*
 	 * stops any active rx-operation
 	 * internal buffer will left unchanged
 	 */
@@ -148,6 +163,12 @@ typedef struct TRX_DRIVER_INTERFACE {
 	 * if the tx-buffer is empty the module will go back to idle state
 	 */
 	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
+
+	/*
+	 *
+	 */
+	TRX_DRIVER_INTERFACE_WAIT_FOR_TX_CALLBACK wait_for_tx;
+
 
 	/*
 	 * stops any active tx-operation, internal buffer will left unchanged

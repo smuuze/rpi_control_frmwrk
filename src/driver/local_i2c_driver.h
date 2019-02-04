@@ -1,27 +1,27 @@
-#ifndef _LOCAL_I2C_DRIVER_H_
-#define _LOCAL_I2C_DRIVER_H_
+#ifndef _I2C_DRIVER_H_
+#define _I2C_DRIVER_H_
 #endif
 
 #include "trx_driver_interface.h"
 
-#ifndef LOCAL_I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER
-#define LOCAL_I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER	128
+#ifndef I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER
+#define I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER	128
 #endif
 
-#ifndef LOCAL_I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER
-#define LOCAL_I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER	128
+#ifndef I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER
+#define I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER	128
 #endif
 
-#ifndef LOCAL_I2C_DRIVER_MAX_NUMBER_START_RETRY
-#define LOCAL_I2C_DRIVER_MAX_NUMBER_START_RETRY 3
+#ifndef I2C_DRIVER_MAX_NUMBER_START_RETRY
+#define I2C_DRIVER_MAX_NUMBER_START_RETRY 3
 #endif
 
 
-#define LOCAL_I2C_DRIVER_OP_MODE_MASTER			1
-#define LOCAL_I2C_DRIVER_OP_MODE_SLAVE			2
+#define I2C_DRIVER_OP_MODE_MASTER			1
+#define I2C_DRIVER_OP_MODE_SLAVE			2
 
-#define LOCAL_I2C_DRIVER_RESPONSE_TO_BROADCAST_ENABLED	(1 << 0)
-#define LOCAL_I2C_DRIVER_RESPONSE_TO_BROADCAST_DISABLED	(0)
+#define I2C_DRIVER_RESPONSE_TO_BROADCAST_ENABLED	(1 << 0)
+#define I2C_DRIVER_RESPONSE_TO_BROADCAST_DISABLED	(0)
 
 
 /*! --- Function prototypes --- */
@@ -80,6 +80,13 @@ u8 i2c_driver_is_ready_for_rx(void);
  */
 void i2c_driver_start_rx(u16 num_of_rx_bytes);
 
+/*!
+ *
+ * @param num_bytes
+ * @param timeout_ms
+ */
+void i2c_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms);
+
 /*
  * stops any active rx-operation
  * internal buffer will left unchanged
@@ -91,6 +98,13 @@ void i2c_driver_stop_rx(void);
  * if the tx-buffer is empty the module will go back to idle state
  */
 void i2c_driver_start_tx(void);
+
+/*!
+ *
+ * @param num_bytes
+ * @param timeout_ms
+ */
+void i2c_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms);
 
 /*
  * stops any active tx-operation, internal buffer will left unchanged
