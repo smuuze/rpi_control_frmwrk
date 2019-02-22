@@ -1,0 +1,100 @@
+﻿Entwicklerfreigabe
+==================
+
+Dieses Dokument muss für eine Entwicklerfreigabe komplett ausgefüllt werden.
+
+Bitte diese Dokument erst ausfüllen, NACHDEM die freizugebenden Dateien in den
+Freigabeordner kopiert wurden.
+
+Der Text kann entweder hinter oder unter das jeweilige Feld geschrieben werden.
+
+Name: PRL5A
+
+Projektnummer: 2.32.0049.00512
+
+Geraet: PRL5A, CRL5A, CRL5K, CRL7K, PRDiA_Lg, PRL4A, PRLiA, PRL5A_cerpass
+
+Devicetype: HW: diverse, SW: 0x21BA
+
+HW Plattform: diverse
+
+Version: webconfig_PRL5A_0x21BA0002_13032017
+
+Beschreibung:
+Konfigurationssoftware auf Basis von Webconfig.
+
+
+
+
+
+
+Changelog:
+
+Version: 13032017 SeLe
+- Anpassung Page deBus (Anzeige der Uebertragungsrate 230400 Baud)
+
+Version: 23062016 EK
+- Erweiterungen in der bio Page
+- Unterstützung für die zweite Legic Applikation 
+
+
+Version: 12022016 EK
+- Die Page deBus ist jetzt immer sichtbar. Soll die Konfiguration von der Bio Version 
+  erleichtern.
+
+Version: 01112015 EK
+- Erweiterung für den Update Mode => Konfigurationsflag
+
+Version: 28092015 EK
+- Stamplänge von 7 auf 12 Byte erweitert
+
+Version: 10072015 EK
+- Neue Konfiguration bei der BCD Wandlung. Nummer links-/rechts-bündig vor der Wandlung ausrichten
+
+Version: 11062015 EK
+
+- Grenzbereich für HITAG1_BLOCK_ADDRESS geändert
+
+Version23032015 EK
+- Keypad-Signalisierung kann über Konfiguration abgeschaltet werden.
+
+Version 12032015
+- Die Bio Page ist wieder da
+
+V1.51 Erweiterung für den CerPass Protokoll
+
+V1.49 Konfiguration für Thorstens neue 125 KHz-Routinen eingebaut.
+
+V1.46 Neue 125 KHz Kartentypen
+      Bei NummerPur kann die Multiplikation der Blocknummer mit 16 optional entfallen.
+
+V1.45 Rote Led und Pieper wieder konfigurierbar.
+
+V1.44 Konfiguration für PRDiA_Lg und 125 KHz angepasst.
+
+V1.43 Keine Änderung.
+
+V1.24
+Fehler in NummerPur-Konfiguration (Block 3) gefixt.
+
+V1.25
+Biometrykonfiguration hinzugefügt.
+Leading0s und Trailing0s werden bei Magstripe mit 16 (bei den alten Lesern war es 20) vorbesetzt.
+
+v1.30
+Neue Einstellungen bei der Nummer Pure (Bitstream) Funktion, change Bitorder nach der BCD/Hex Wandlung.
+
+v1.31 
+Unterstützung für 'SESAM_SPEZIAL' eingebaut.
+
+v1.32
+Unterstützung für Magstripe FF SPEZIAL eingebaut.
+
+v1.33
+Prefix/Postfix getrennt für 13 MHz / 125 KHz Karten aktivierbar 
+(Auch wenn der Leser keine 125 KHz Karten liest !).
+
+v1.34
+BPA9 - Togglefrequenz halbiert.
+
+v1.42 Konfiguration für alte Sonderformate eingebaut.

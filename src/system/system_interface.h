@@ -1,7 +1,7 @@
 #ifndef _LOCAL_SYSTEM_INTERFACE_H_
 #define _LOCAL_SYSTEM_INTERFACE_H_
 
-#include "platine/system_pin_map.h"
+#include BOARD_DESCRIPTION_FILE
 
 /*
  */
@@ -121,6 +121,30 @@ typedef struct {
 
 // --------------------------------------------------------------------------------------------------------------------
 
+#include "trx_driver_interface.h"
+
+/*!
+ *
+ */
+typedef struct {
+
+	#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
+		TRX_DRIVER_INTERFACE*	spi0;
+	#endif
+
+	#if defined HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
+		TRX_DRIVER_INTERFACE*	usart0;
+	#endif
+
+	#if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
+		TRX_DRIVER_INTERFACE*	i2c0;
+	#endif
+
+} SYSTEM_INTERFACE_DRIVER;
+
+
+// --------------------------------------------------------------------------------------------------------------------
+
 /*!
  *
  */
@@ -129,6 +153,7 @@ typedef struct {
 	SYSTEM_INTERFACE_EVENT	event;
 	SYSTEM_INTERFACE_MEMORY	memory;
 	SYSTEM_INTERFACE_IO	io;
+	SYSTEM_INTERFACE_DRIVER driver;
 } SYSTEM_INTERFACE;
 
 /*!

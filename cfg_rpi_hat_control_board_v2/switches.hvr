@@ -30,7 +30,7 @@
 ;---   #define  TRACE_BAUD_RATE  460800
 ;---   #define  TRACE_BAUD_RATE  921600
 #define TRACES_TO_TRC_TXD_PORT 1
-  OUTPUT      TRC_TXD_PORT,    PORTD,6 , 1       ; GPIO_27
+  OUTPUT      TRC_TXD_PORT,    PORTD,6 , 1       ; GPIO_17
 #endif ; #ifdef TRACES_ENABLED
 
 

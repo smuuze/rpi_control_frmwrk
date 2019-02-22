@@ -16,6 +16,9 @@
 #include "local_usart_driver.h"
 #include "local_module_status.h"
 
+//---------- Implementations of Traces ----------
+#define TRACES
+#include <traces.h>
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -71,12 +74,8 @@
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-//---------- Implementations of Traces ----------
-#define noTRACES
-#include <traces.h>
-
-#define noLOCAL_USART_RX_TRACES
-#define noLOCAL_USART_TX_TRACES
+#define LOCAL_USART_RX_TRACES
+#define LOCAL_USART_TX_TRACES
 
 #if defined TRACES_ENABLED && defined LOCAL_USART_RX_TRACES
 #define LOCAL_USART_RX_PASS()			PASS()
@@ -116,7 +115,7 @@ BUILD_LOCAL_MSG_BUFFER(static inline, __local_usart_rx_buffer, LOCAL_USART_DRIVE
 
 
 //----- RX / TX activ status -----
-BUILD_VOLATILE_MODULE_STATUS(u8, local_usart_status)
+BUILD_MODULE_STATUS_FAST_VOLATILE(local_usart_status, 2)
 
 #define LOCAL_USART_STATUS_RX_ACTIVE		(1 << 0)
 #define LOCAL_USART_STATUS_TX_ACTIVE		(1 << 1)
@@ -143,8 +142,11 @@ static u16 remote_usart_rx_bytes = 0;
 static u8 __local_usart_op_mode;
 */
 
+void usart_driver_initialize(void) {
 
-void local_usart_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
+}
+
+void usart_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	(void) p_cfg;
 	PASS();	// local_usart_driver_cfg()
@@ -152,26 +154,26 @@ void local_usart_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 	__local_usart_rx_buffer_init();
 	__local_usart_tx_buffer_init();
 
-	local_usart_driver_clear_buffer();
+	usart_driver_clear_buffer();
 
-	// Baudrate 9600
-	UBRR0L = 47;
+	// Baudrate 115200
+	UBRR0L = 3;
 	UBRR0H = 0;
 
-	/* Enable receiver and transmitter */
-	UCSR0B = (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0) | (1 << TXCIE0);
+	/* Set frame format: 8data, 1stop bit */
+	UCSR0C = (0 << USBS0) | (3 << UCSZ00);
 
-	/* Set frame format: 8data, 2stop bit */
-	UCSR0C = (1 << USBS0) | (3 << UCSZ00);
+	/* Enable receiver and transmitter */
+	UCSR0B = (1 << RXEN0) | (1 << TXEN0);// | (1 << RXCIE0) | (1 << TXCIE0);
 }
 
-void local_usart_driver_power_off(void) {
+void usart_driver_power_off(void) {
 	PASS(); // local_usart_driver_power_off()
 	__local_usart_rx_buffer_clear_all();
 	__local_usart_tx_buffer_clear_all();
 }
 
-u8 local_usart_driver_bytes_available (void) {
+u8 usart_driver_bytes_available (void) {
 	#if defined TRACES_ENABLED && defined LOCAL_USART_RX_TRACES
 	{
 	u8 bytes_available = __local_usart_rx_buffer_bytes_available();
@@ -186,7 +188,7 @@ u8 local_usart_driver_bytes_available (void) {
 
 
 
-u8 local_usart_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
+u8 usart_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 
 	PASS();	// local_usart_driver_get_N_bytes()
 
@@ -205,7 +207,7 @@ u8 local_usart_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 	return num_bytes_available;
 }
 
-u8 local_usart_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+u8 usart_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 	if (num_bytes > __local_usart_tx_buffer_size()) {
 		num_bytes = __local_usart_tx_buffer_size();
 	}
@@ -219,14 +221,13 @@ u8 local_usart_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 	return num_bytes;
 }
 
-u8 local_usart_driver_is_ready_for_tx (void) {
-
-	return local_usart_status_is_set(LOCAL_USART_STATUS_TX_ACTIVE) == 0 ? 1 : 0;
+u8 usart_driver_is_ready_for_rx(void) {
+	return 1;
 }
 
-void local_usart_driver_start_rx (u16 num_of_rx_bytes) {
+void usart_driver_start_rx (u16 num_of_rx_bytes) {
 
-	LOCAL_USART_RX_PASS(); // local_usart_driver_start_rx()
+	LOCAL_USART_RX_TRACE_word(num_of_rx_bytes); // local_usart_driver_start_rx()
 
 	remote_usart_rx_bytes = num_of_rx_bytes;
 
@@ -236,7 +237,12 @@ void local_usart_driver_start_rx (u16 num_of_rx_bytes) {
 	LOCAL_USART_STARTSIGNAL(); PASS(); // START sent
 }
 
-void local_usart_driver_stop_rx (void) {
+void usart_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+	(void) num_bytes;
+	(void) timeout_ms;
+}
+
+void usart_driver_stop_rx (void) {
 
 	LOCAL_USART_RX_PASS(); // local_usart_driver_stop_rx()
 
@@ -244,17 +250,38 @@ void local_usart_driver_stop_rx (void) {
 	__local_usart_rx_buffer_stop_write();
 }
 
-void local_usart_driver_start_tx (void) {
+u8 usart_driver_is_ready_for_tx (void) {
+
+	return local_usart_status_is_set(LOCAL_USART_STATUS_TX_ACTIVE) == 0 ? 1 : 0;
+}
+
+void usart_driver_start_tx (void) {
 
 	LOCAL_USART_TX_PASS(); // local_usart_driver_start_tx()
 
 	local_usart_status_set(LOCAL_USART_STATUS_TX_ACTIVE);
 	__local_usart_tx_buffer_start_read();
 
-	UDR0 = __local_usart_tx_buffer_get_byte();
+	while (__local_usart_tx_buffer_bytes_available() > 0) {
+
+		while ( !( UCSR0A & (1<<UDRE0)) );
+
+		u8 byte = __local_usart_tx_buffer_get_byte();
+		LOCAL_USART_TX_TRACE_byte(byte); // local_usart_driver_start_tx
+		UDR0 = byte;
+	}
+
+	__local_usart_tx_buffer_stop_read();
+
+//	UDR0 = __local_usart_tx_buffer_get_byte();
 }
 
-void local_usart_driver_stop_tx (void) {
+void usart_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+	(void) num_bytes;
+	(void) timeout_ms;
+}
+
+void usart_driver_stop_tx (void) {
 
 	LOCAL_USART_TX_PASS(); // local_usart_driver_stop_tx()
 
@@ -262,15 +289,23 @@ void local_usart_driver_stop_tx (void) {
 	local_usart_status_unset(LOCAL_USART_STATUS_TX_ACTIVE);
 }
 
-void local_usart_driver_clear_buffer (void) {
+void usart_driver_clear_buffer (void) {
 
 	PASS(); // local_usart_driver_clear_buffer()
 	__local_usart_rx_buffer_clear_all();
 	__local_usart_tx_buffer_clear_all();
 }
 
-void local_usart_driver_set_address (u8 addr) {
+void usart_driver_set_address (u8 addr) {
 	(void) addr;
+}
+
+u8 usart_driver_mutex_request(void) {
+	return 1;
+}
+
+void usart_driver_mutex_release(u8 m_id) {
+	(void) m_id;
 }
 
 
@@ -282,7 +317,7 @@ ISR(USART0_TX_vect) {
 		UDR0 = __local_usart_tx_buffer_get_byte();
 
 	} else {
-		local_usart_driver_stop_tx();
+		usart_driver_stop_tx();
 	}
 }
 
@@ -299,7 +334,7 @@ ISR(USART0_RX_vect) {
 		if (remote_usart_rx_bytes != TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH) {
 
 			if (remote_usart_rx_bytes-- == 0) {
-				local_usart_driver_stop_rx();
+				usart_driver_stop_rx();
 			}
 		}
 	}

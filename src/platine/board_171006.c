@@ -5,8 +5,8 @@
 #ifndef _PIN_MAP_H_
 #define _PIN_MAP_H_
 
-#include "config.h"
-#include "platine/pin_map_cfg.h"
+#include "platine/board_common_config.h"
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //   Port A (0x02

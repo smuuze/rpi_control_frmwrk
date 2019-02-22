@@ -10,19 +10,7 @@
 # werden. Beispiel:
 # VERSION_STRING = v1.07
 # VERSION_DIGITS = 107
-VERSION         ?= 0x011A
-
-# -----------------------------------------------------------------------
-# Definitions: [-D name[=definition]...] [-U name...]
-# Things that might be added to DEFS:
-#   BOARD             Board used: see $(BRDS_PATH)/board.h
-#   EXT_BOARD         Extension board used (if any): see $(BRDS_PATH)/board.h
-DEFS += -D BOARD=$(BOARD)
-DEFS += -D BOARD_ID=$(BOARD_ID)
-DEFS += -D HW_DEVICE_TYPE=$(HW_DEVICE_TYPE)
-DEFS += -D SW_DEVICE_TYPE=$(SW_DEVICE_TYPE)
-DEFS += -D VERSION=$(VERSION)
-
+# VERSION        = 0x107
 
 #! Man koennte den Namen auch so gestalten dass der Dateiname gleich die
 #! Version usw. traegt.
@@ -35,6 +23,27 @@ DEFS += -D VERSION=$(VERSION)
 ATPROGRAM_CLOCK		= 1Mhz
 
 BASE_PATH    = ../../../..
+# --------------------------------------------------------------------------------
+RTOS_PATH  = $(SERV_PATH)/125khz/avr
+RTOS_PORT_PATH = $(SERV_PATH)/125khz/avr
+# --------------------------------------------------------------------------------
+ISO14443A_PATH = $(SERV_PATH)/iso14443a
+SM4x00_PATH = $(SERV_PATH)/Legic/SM4x00
+SAMX_PATH = $(SERV_PATH)/iso14443a/samx
+KEYPAD_PATH = $(SERV_PATH)/ui/keypad
+KHZ125_PATH = $(SERV_PATH)/125khz
+KHZ125_PORT_PATH = $(SERV_PATH)/125khz/avr
+PROTOCOL_PATH=$(SERV_PATH)/protocol
+SIGNALING_PATH = $(SERV_PATH)/ui/signaling
+BIOMETRY_PATH = $(SERV_PATH)/protocol/biometry
+COMMON_PATH=$(SERV_PATH)/common
+PRD5A_DERIVATE_PATH=$(SERV_PATH)/common/PRD5A_derivate
+FLASH_PATH = $(SERV_PATH)/ui/flash
+CRYPT_PATH = $(SERV_PATH)/crypt
+# --------------------------------------------------------------------------------
+CFGPIECES_PATH = $(SERV_PATH)/cfgpieces/PRD5A_derivate
+# --------------------------------------------------------------------------------
+
 
 #-----------------------------------------------------------------------------
 #       Prepare Variable settings
@@ -44,23 +53,7 @@ TARGET_FILE_NAME = $(PROJECT)
 
 include $(MAKE_TEMPLATE_PATH)/iar_debus_framework.mk
 
-# -----------------------------------------------------------------------
-# Include path
-
-PROTOCOL_PATH	= $(SERV_PATH)/protocol
-COMMON_PATH	= $(SERV_PATH)/common
-FLASH_PATH	= $(SERV_PATH)/ui/flash
-CRYPT_PATH	= $(SERV_PATH)/crypt
-CFGPIECES_PATH  = $(SERV_PATH)/cfgpieces/PRD5A_derivate
-
-INC_PATH 	+= $(APP_PATH)
-INC_PATH 	+= $(COMMON_PATH)
-INC_PATH 	+= $(CFGPIECES_PATH)
-INC_PATH 	+= .
-
-# ---- DEFAULT APP CONFIGURATION ----
-
-APP_TASK_LIST	?= 
+APP_PATH		?= ../src
 
 
 ##############################################################################
@@ -79,150 +72,108 @@ INC_PATH += $(CFGPIECES_PATH)
 
 
 # -----------------------------------------------------------------------
-BOARD_INC_PATH = ${APP_PATH}/platine
-INC_PATH += $(BOARD_INC_PATH)
-
-CSRCS += ${BOARD_INC_PATH}/board_${BOARD_ID}.c
-
-# ---- COMMON MODULES ---------------------------------------------------
-COMMON_INC_PATH = $(APP_PATH)/common
+COMMON_INC_PATH = ../src/common
 INC_PATH += $(COMMON_INC_PATH)
 
 CSRCS += $(COMMON_INC_PATH)/local_module_status.c
 CSRCS += $(COMMON_INC_PATH)/local_mutex.c
 CSRCS += $(COMMON_INC_PATH)/local_progmem_load.c
 CSRCS += $(COMMON_INC_PATH)/local_data_storage_array.c
-CSRCS += $(COMMON_INC_PATH)/local_msg_buffer.c
+
+# Framework-Spezifische Quelldateien ------------------------------------
+
+##CSRCS += $(PRD5A_DERIVATE_PATH)/timer.c
+
+
 
 # Projekt-Spezifische Quelldateien --------------------------------------
 
 CSRCS += $(APP_PATH)/specific.c
 
-# ---- SYSTEM INTERFACE -------------------------------------------------
+#CSRCS += $(APP_PATH)/db_comms.c
+CSRCS += $(COMMON_INC_PATH)/local_msg_buffer.c
 
-SYSTEM_INC_PATH = $(APP_PATH)/system
+# -----------------------------------------------------------------------
+SYSTEM_INC_PATH = ../src/system
 INC_PATH += $(SYSTEM_INC_PATH)
-
 CSRCS += $(SYSTEM_INC_PATH)/system_interface.c
 
-# ---- TRACER -----------------------------------------------------------
-
-ifdef TRACER_CFG
-	
-TRACER_INC_PATH = $(APP_PATH)/tracer
-INC_PATH += $(TRACER_INC_PATH)
-
-include $(TRACER_INC_PATH)/make_tracer.mk
-
-endif
-
-# ---- HOST-INTERFACE ---------------------------------------------------
-
-ifneq '' '$(findstring SPI,$(HOST_INTERFACE_TYPE))'
-	DEFS += -D HOST_INTERFACE_SPI=1
-	DRIVER_MODULE_CFG += SPI0
-else
-ifneq '' '$(findstring HOST_INTERFACE_TYPE,$(APP_TASK_CFG))'
-	DEFS += -D HOST_INTERFACE_USART=1
-	DRIVER_MODULE_CFG += USART0
-endif
-endif
-
-# ---- DRIVER MODULES ---------------------------------------------------
-
-DRIVER_INC_PATH = $(APP_PATH)/driver
+# -----------------------------------------------------------------------
+DRIVER_INC_PATH = ../src/driver
 INC_PATH += $(DRIVER_INC_PATH)
-CSRCS += $(APP_PATH)/driver/local_rtc_driver.c
-CSRCS += $(APP_PATH)/driver/local_clk_driver.c
-CSRCS += $(APP_PATH)/driver/local_gpio_driver.c
-
-DEFS += -D HAS_DRIVER_I2C0=1
 CSRCS += $(APP_PATH)/driver/local_i2c_driver.c
-
-ifneq '' '$(findstring SPI0,$(DRIVER_MODULE_CFG))'
-	DEFS += -D HAS_DRIVER_SPI0=1
-	CSRCS += $(APP_PATH)/driver/local_spi_driver.c
-endif
-
-ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'
-	DEFS += -D HAS_DRIVER_USART0=1
-	CSRCS += $(APP_PATH)/driver/local_usart_driver.c
-endif
+CSRCS += $(APP_PATH)/driver/local_spi_driver.c
+CSRCS += $(APP_PATH)/driver/local_rtc_driver.c
+CSRCS += $(APP_PATH)/driver/local_gpio_driver.c
+#CSRCS += $(APP_PATH)/driver/local_usart_driver.c
 
 # -----------------------------------------------------------------------
 
-COMMAND_MANAGEMENT_INC_PATH = $(APP_PATH)/command_management
+COMMAND_MANAGEMENT_INC_PATH = ../src/command_management
 INC_PATH += $(COMMAND_MANAGEMENT_INC_PATH)
 
 CSRCS += $(COMMAND_MANAGEMENT_INC_PATH)/command_controller.c
 
 # -----------------------------------------------------------------------
 
-COMMAND_HANDLER_INC_PATH = $(APP_PATH)/command_handler
+DRIVER_INC_PATH = ../src/driver
+INC_PATH += $(DRIVER_INC_PATH)
+
+
+# -----------------------------------------------------------------------
+
+COMMAND_HANDLER_INC_PATH = ../src/command_handler
 INC_PATH += $(COMMAND_HANDLER_INC_PATH)
 
 CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_command_handler.c
 
 # -----------------------------------------------------------------------
 
-PROTOCOL_MANAGEMENT_INC_PATH = $(APP_PATH)/protocol_management
+PROTOCOL_MANAGEMENT_INC_PATH = ../src/protocol_management
 INC_PATH += $(PROTOCOL_MANAGEMENT_INC_PATH)
 
 CSRCS += $(PROTOCOL_MANAGEMENT_INC_PATH)/rpi_protocol_handler.c
 
 # -----------------------------------------------------------------------
 
-TIME_MANAGEMENT_INC_PATH = $(APP_PATH)/time_management
+TIME_MANAGEMENT_INC_PATH = ../src/time_management
 INC_PATH += $(TIME_MANAGEMENT_INC_PATH)
 
 CSRCS += $(TIME_MANAGEMENT_INC_PATH)/time_management.c
 
-# ---- TASK MANAGEMENT -------------------------------------------------------------------
+# -----------------------------------------------------------------------
 
-MCU_TASK_MANAGEMENT_INC_PATH = $(APP_PATH)/mcu_task_management
+MCU_TASK_MANAGEMENT_INC_PATH = ../src/mcu_task_management
 INC_PATH += $(MCU_TASK_MANAGEMENT_INC_PATH)
 
-APP_TASK_INC_PATH = $(APP_PATH)/app_tasks
+CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/mcu_idle_task.c
+CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/mcu_task_controller.c
+
+APP_TASK_INC_PATH = ../src/app_tasks
 INC_PATH += $(APP_TASK_INC_PATH)
 
-CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/mcu_task_controller.c
-CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/mcu_idle_task.c
-CSRCS += $(APP_TASK_INC_PATH)/local_event_task.c
-CSRCS += $(APP_TASK_INC_PATH)/local_cmd_mcu_task.c
-
-ifneq '' '$(findstring ADC_ADS1115,$(APP_TASK_CFG))'
-DEFS  += -D HAS_APP_TASK_ADC_ADS1115=1
 CSRCS += $(APP_TASK_INC_PATH)/local_ads1115_mcu_task.c
-endif
-
-ifneq '' '$(findstring TEMP_HUM_SHT31,$(APP_TASK_CFG))'
-DEFS  += -D HAS_APP_TASK_TEMP_HUM_SHT31=1
 CSRCS += $(APP_TASK_INC_PATH)/local_sht31_mcu_task.c
-endif
-
-ifneq '' '$(findstring LED_MATRIX,$(APP_TASK_CFG))'
-DEFS  += -D HAS_APP_TASK_LED_MATRIX=1
+CSRCS += $(APP_TASK_INC_PATH)/local_cmd_mcu_task.c
 CSRCS += $(APP_TASK_INC_PATH)/local_led_mcu_task.c
-endif
+CSRCS += $(APP_TASK_INC_PATH)/local_event_task.c
 
-ifneq '' '$(findstring DEBUS,$(APP_TASK_CFG))'
-DEFS += -D HAS_APP_TASK_DEBUS=1
+ifdef DEBUS_INTERFACE_CFG
+DEFS += -D HAS_DEBUS_INTERFACE=1
 CSRCS += $(APP_TASK_INC_PATH)/local_debus_mcu_task.c
 endif
 
 # -----------------------------------------------------------------------
 
-IO_CONTROLLER_INC_PATH = $(APP_PATH)/io_management
+IO_CONTROLLER_INC_PATH = ../src/io_management
 INC_PATH += $(IO_CONTROLLER_INC_PATH)
-
 CSRCS += $(IO_CONTROLLER_INC_PATH)/io_output_controller.c
 CSRCS += $(IO_CONTROLLER_INC_PATH)/io_input_controller.c
 
 # -----------------------------------------------------------------------
 
-INITIALIZATION_INC_PATH = $(APP_PATH)/initialization
+INITIALIZATION_INC_PATH = ../src/initialization
 INC_PATH += $(INITIALIZATION_INC_PATH)
-
 CSRCS += $(INITIALIZATION_INC_PATH)/button_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/output_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/protocol_initialization.c
@@ -233,16 +184,21 @@ CSRCS += $(INITIALIZATION_INC_PATH)/initialization.c
 
 # -----------------------------------------------------------------------
 
-# TK-Debug: fehlt noch: C++ source files:
-CPPSRCS +=
+# -----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
+INC_PATH += $(SERV_PATH)/rtc
 
 # -----------------------------------------------------------------------
 
-# Assembler source files
-IARSRCS +=
-ASSRCS += 
-# ASSRCS += $(COMMON_PATH)/format_and_conversion/algo.S
+# TK-Debug: fehlt noch: C++ source files:
+CPPSRCS +=
 
+# Assembler source files
+
+ASSRCS += $(COMMON_PATH)/format_and_conversion/algo.S
+
+IARSRCS +=
 
 ifdef DEBUS_INTERFACE_CFG
 
@@ -263,24 +219,36 @@ include $(SERV_PATH)/debus/debus_interface.mk
 endif
 
 
-# -----------------------------------------------------------------------
 # (gemeinsame) WebConfig - Beschreibung fuer verschiedene Konfigurationen
+# die Sparversion
+#ifndef DOORLOXX
 IARSRCS_WEBCONFIG_ROAD_SCRIPT = ../config/webconfig_road.cfg
-
-# -----------------------------------------------------------------------
+#else
+#IARSRCS_WEBCONFIG_ROAD_SCRIPT = $(SERV_PATH)/doorloxx/config_doorloxx/webconfig_road.cfg
+#endif
 # Library path
 LIB_PATH +=
 
-# -----------------------------------------------------------------------
 # Libraries to link with the project
 LIBS +=
 
-# -----------------------------------------------------------------------
 # Device/Platform/Board include path
 PLATFORM_INC_PATH += $(CPUS_PATH)/include
 PLATFORM_INC_PATH += $(BRDS_PATH)
 
-# -----------------------------------------------------------------------
+# Include path
+INC_PATH  +=  .
+INC_PATH += ../common
+
+# Definitions: [-D name[=definition]...] [-U name...]
+# Things that might be added to DEFS:
+#   BOARD             Board used: see $(BRDS_PATH)/board.h
+#   EXT_BOARD         Extension board used (if any): see $(BRDS_PATH)/board.h
+DEFS += -D BOARD=$(BOARD)
+DEFS += -D HW_DEVICE_TYPE=$(HW_DEVICE_TYPE)
+DEFS += -D SW_DEVICE_TYPE=$(SW_DEVICE_TYPE)
+DEFS += -D VERSION=$(VERSION)
+
 # Options to request or suppress warnings: [-fsyntax-only] [-pedantic[-errors]] [-w] [-Wwarning...]
 # For further details, refer to the chapter "GCC Command Options" of the GCC manual.
 WARNINGS += -Wall
@@ -320,4 +288,4 @@ LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 include $(GENERIC_TARGET_RULES) $(MAKE_TARGET_RULES)
 
 # Debug-Ausgabe aller Variablen
-#$(foreach var,$(.VARIABLES), $(info $(var) : $(value $(var)) )  )
+# $(foreach var,$(.VARIABLES), $(info $(var) : $(value $(var)) )  )

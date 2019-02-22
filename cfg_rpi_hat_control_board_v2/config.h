@@ -31,8 +31,10 @@
 #define CFG_DEFAULT_VALUE_SELECTOR 2
 ///-----------------------------------------------------------------------------
 #ifndef __ASSEMBLER__
-#include "../src/platine/22D5.h"  // port definition + crystal frequency
+#include "platine/22B2.h"  // port definition + crystal frequency
 #endif
+
+#define BOARD_DESCRIPTION_FILE "platine/board_180920.h"
 
 /// SIO_FOR_HOST : Festlegung ueber welchen UART die deBus-Kommandos empfangen werden
 // (SIO_FOR_HOST =  0 ) // Host-Interface kommuniziert ueber UART0
@@ -45,7 +47,9 @@
 // (SIO_FOR_HOST = 'W') // Host-Interface kommuniziert ueber virt. SIOW
 // (SIO_FOR_HOST = '-') // Bootloader kommuniziert ger nicht
 #define SIO_FOR_HOST    		'-'
-//#define DEFAULT_BAUD_SELECTOR		BD_115200
+#define DEFAULT_BAUD_SELECTOR		BD_115200
+
+#define HOST_DRIVER			'S'
 
 #define I2C_CLK_LIMIT 225000
 
@@ -54,11 +58,13 @@
 #define noCOPRO1_ENCRYPTION           32
 
 #define ASSERT_LOOP_INDICATION_ON() \
+        BEEPER_ON();                \
         LED_RED_ON();               \
         LED_GRN_ON();               \
         LED_YELLOW_OFF()
 
-#define ASSERT_LOOP_INDICATION_AFTER_3_SECONDS()
+#define ASSERT_LOOP_INDICATION_AFTER_3_SECONDS() \
+        BEEPER_OFF()
 
 // ================================================================================
 #define HOSTFIFO_BUFFER_SIZE 	512	//Eventuell auch kleiner möglich
@@ -75,9 +81,6 @@
 
 //-------------------------------------------------------------------------
 
-#define config_HAS_ONBOARD_BUTTONS				0
-#define config_HAS_LED_MATRIX					0
-#define config_HAS_DEBUS_INTERACE				0
 
 //-------------------------------------------------------------------------
 // Mus zuletzt eingebunden werden. Alles was oben nicht definiert wurde, wird

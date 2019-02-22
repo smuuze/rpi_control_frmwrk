@@ -20,14 +20,12 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 
-
-#include "local_msg_buffer.h"
-#include "local_i2c_driver.h"
-#include "local_spi_driver.h"
-
 #include "initialization.h"
 #include "mcu_task_controller.h"
+
+#ifdef HAS_APP_TASK_DEBUS
 #include "local_debus_mcu_task.h"
+#endif
 
 #define noTRACES
 #include <traces.H>
@@ -81,7 +79,7 @@ void main_init(void) {
 
 	//INIT_PORTS_FOR_STARTUP();
 
-	#if defined config_HAS_DEBUS_INTERACE && config_HAS_DEBUS_INTERACE != 0
+	#if defined HAS_APP_TASK_DEBUS && HAS_APP_TASK_DEBUS != 0
 	{
 		// Baudrate erstmal auf 9600 Baud setzen
 		INIT_PASS(); // Initialization - First-Time Debus-Init

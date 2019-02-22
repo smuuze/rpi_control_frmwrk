@@ -1,7 +1,12 @@
 #ifndef _SYS_PIN_MAP_H_
 #define _SYS_PIN_MAP_H_
 
-#include "platine/pin_map_cfg.h"
+#include "config.h"
+#include "board_common_config.h"
+
+#define SYS_CRYSTAL_FREQ		14745600
+#define SYS_CPU_CLK_PRESCALER		2
+#define SYS_CPU_CLK_FREQ		(SYS_CRYSTAL_FREQ / SYS_CPU_CLK_PRESCALER)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //   Port A (0x02

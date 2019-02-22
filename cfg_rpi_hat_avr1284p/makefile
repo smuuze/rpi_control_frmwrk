@@ -15,7 +15,6 @@
 # Dies ist die Software fuer die PDL2A / PDL5A-Hardware.
 
 FREIGABE_ID       =
-include ../src/version_string.mk
 
 # PROJEKT Name des Hexfiles
 PROJECT = RPI_Hat_ATMega1284P
@@ -26,29 +25,39 @@ HW_DEVICE_TYPE = 0x22B2
 # SW_DEVICE_TYPE wird im deBus Versionstelegramm und fuer Adressumstellung verwendet
 SW_DEVICE_TYPE = 0x22B2
 
-#-----------------------------------------------------------------------------
-# Precompiler Schalter fuer den mak-File
-#-----------------------------------------------------------------------------
-MIT_UART = TRUE
-APP_USART = TRUE
-MIT_BLUETOOTH = TRUE
-
-#MIT_LOCAL_FAKERTOS = TRUE
-
+BOARD_ID = 171006
 
 #-----------------------------------------------------------------------------
+
+BASE_PATH = ../../../..
 APP_PATH = ../src
-BASE_PATH    = ../../../..
 
-CSRCS += ../src/platine/pin_map_171006.c
-CSRCS += ../src/main_rpi_hat.c
+#-----------------------------------------------------------------------------
 
-# main config selector
+CSRCS += ${APP_PATH}/main_rpi_hat.c
+
+#-----------------------------------------------------------------------------
+HOST_INTERFACE_TYPE = SPI
+
+#-----------------------------------------------------------------------------
+APP_TASK_CFG += 
+APP_TASK_CFG += ADC_ADS1115
+APP_TASK_CFG += TEMP_HUM_SHT31
+APP_TASK_CFG += LED_MATRIX
+
+#-----------------------------------------------------------------------------
+DRIVER_MODULE_CFG =
+
+#-----------------------------------------------------------------------------
+
+TRACER_CFG =
+TRACER_CFG += ENABLED
+TRACER_CFG += USART0
+
+#-----------------------------------------------------------------------------
+include ${APP_PATH}/version_string.mk
 include $(BASE_PATH)/local.mk
 include $(DE_FRM)/make/mega1284_debl_v1.mk
-
-#-----------------------------------------------------------------------------
-# Projektabhaengige Dateien
 
 #-----------------------------------------------------------------------------
 # Fuer alle Projekte gueltige Dateien

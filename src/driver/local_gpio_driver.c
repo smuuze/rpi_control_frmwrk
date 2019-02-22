@@ -11,7 +11,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include "platine/pin_map_cfg.h"
 #include "system_interface.h"
 #include "local_gpio_driver.h"
 

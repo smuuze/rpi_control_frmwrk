@@ -34,6 +34,8 @@
 #include "platine/22B2.h"  // port definition + crystal frequency
 #endif
 
+#define BOARD_DESCRIPTION_FILE "platine/board_171006.h"
+
 /// SIO_FOR_HOST : Festlegung ueber welchen UART die deBus-Kommandos empfangen werden
 // (SIO_FOR_HOST =  0 ) // Host-Interface kommuniziert ueber UART0
 // (SIO_FOR_HOST =  1 ) // Host-Interface kommuniziert ueber UART1
@@ -80,10 +82,6 @@
 //-------------------------------------------------------------------------
 
 #define config_HAS_ONBOARD_BUTTONS				1
-#define config_HAS_LED_MATRIX					0
-
-//-------------------------------------------------------------------------
-
 
 //-------------------------------------------------------------------------
 // Mus zuletzt eingebunden werden. Alles was oben nicht definiert wurde, wird

@@ -1,6 +1,8 @@
 #ifndef _PIN_MAP_CFG_H_
 #define _PIN_MAP_CFG_H_
 
+#include "config.h"
+
 #define GPIO_INVERTED					0x80
 #define GPIO_IDLE_HIGH					0x40
 #define GPIO_IDLE_LOW					0x20
