@@ -11,8 +11,13 @@
 #include "system_interface.h"
 #include "io_output_controller.h"
 
-#define noTRACES
-#include <traces.h>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 /*!
  *

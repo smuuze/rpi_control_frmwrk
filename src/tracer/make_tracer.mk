@@ -4,7 +4,7 @@
 
 ifneq '' '$(findstring ENABLED,$(TRACER_CFG))'
 
-	DEFS += -D TRACER_ENABLED=1
+	#DEFS += -D TRACER_ENABLED=1
 
 	CSRCS += $(TRACER_INC_PATH)/tracer.c
 	
@@ -14,3 +14,11 @@ ifneq '' '$(findstring ENABLED,$(TRACER_CFG))'
 	endif
 
 endif
+
+TRACER_EXE_FILE = Tracer.exe
+TRACER_BIN_PATH = ../../Tracer/project/bin/Release
+TRACER_WORKING_PATH = ../../../../RPi_Hat_Derivate/$(notdir $(CURDIR))/
+
+tracer: 
+	#$(TRACER_BIN_PATH)/$(TRACER_EXE_FILE) $(TRACER_WORKING_PATH)
+	$(TRACER_BIN_PATH)/$(TRACER_EXE_FILE)

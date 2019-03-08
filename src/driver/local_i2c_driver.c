@@ -21,6 +21,14 @@
 
 #include "driver_specific_i2c.h"
 
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
+
 #define noI2C_RX_TRACES
 #define noI2C_TX_TRACES
 #define noI2C_ISR_TRACES
@@ -68,9 +76,6 @@
 #define I2C_ISR_TRACE_long(v)
 #define I2C_ISR_TRACE_N(n,v)
 #endif
-
-#define noTRACES
-#include <traces.h>
 
 //----- Bufferbuilding -----
 BUILD_LOCAL_MSG_BUFFER(, i2c_tx_buffer, I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)	// build transmissionbuffer

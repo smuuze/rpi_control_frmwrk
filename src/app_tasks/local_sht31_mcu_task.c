@@ -27,8 +27,11 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACES
-#include <traces.h>
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_ON
+#include "tracer.h"
 
 //-----------------------------------------------------------------------------
 
@@ -310,7 +313,7 @@ void local_sht31_mcu_task_run(void) {
 			PASS(); ///----- Humidity -----------------------------------------------------
 
 			GET_SYSTEM(data).adc.humidity = (answer_buffer[SHT31_INDEX_OF_HUMIDITY_MSB_IN_ANSWER] << 8 ) | answer_buffer[SHT31_INDEX_OF_HUMIDITY_LSB_IN_ANSWER];
-			TRACE_N(2, &GET_SYSTEM(data).adc.humidity); // local_sht31_mcu_task_run() - raw value of humidity
+			TRACE_N(2, (u8*)&GET_SYSTEM(data).adc.humidity); // local_sht31_mcu_task_run() - raw value of humidity
 
 			calculation_temp = (u32)GET_SYSTEM(data).adc.humidity * (u32)SHT31_HUMIDITY_FIXPOINT_FACTOR_M;
 			calculation_temp = calculation_temp >> 16;

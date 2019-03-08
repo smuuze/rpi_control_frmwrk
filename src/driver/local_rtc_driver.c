@@ -13,8 +13,13 @@
 
 #include "local_rtc_driver.h"
 
-#define noTRACES
-#include <traces.h>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 #ifndef config_RTC_TIMER_COUNTER_INTERVAL_MS
 #define config_RTC_TIMER_COUNTER_INTERVAL_MS	5

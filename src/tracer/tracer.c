@@ -6,14 +6,13 @@
 #include "specific.h"
 #include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
+#include <string.h>
+
 #include "utils/stdmacros.h"
 #include "system_interface.h"
 
 #include "trx_driver_interface.h"
 #include "cfg_driver_interface.h"
-
-#define TRACES
-#include "traces.h"
 
 
 #if defined TRACER_ENABLED
@@ -23,11 +22,43 @@
 #endif
 #endif
 
-#define TRACER_TRANSFER_ID_PASS		0x01
-#define TRACER_TRANSFER_ID_BYTE		0x02
-#define TRACER_TRANSFER_ID_WORD		0x03
-#define TRACER_TRANSFER_ID_LONG		0x04
-#define TRACER_TRANSFER_ID_ARRAY	0x05
+#define TRACER_TRANSFER_ID_PASS				0x01
+#define TRACER_TRANSFER_ID_BYTE				0x02
+#define TRACER_TRANSFER_ID_WORD				0x03
+#define TRACER_TRANSFER_ID_LONG				0x04
+#define TRACER_TRANSFER_ID_ARRAY			0x05
+
+#define TRACER_NUM_BYTES_LINE_NUMER			2
+#define TRACER_NUM_BYTES_TRACE_TYPE			1
+#define TRACER_NUM_BYTES_FRAME_LENGTH			2
+
+#ifndef TRACER_FOOTER_DATA_BYTE
+#define TRACER_FOOTER_DATA_BYTE				((u8)'\n')
+#endif
+
+#ifndef TRACER_FOTER_DATA_LENGTH
+#define TRACER_FOTER_DATA_LENGTH			1
+#endif
+
+#ifndef TRACER_HEADER_PREFIX_DATA_BYTE
+#define TRACER_HEADER_PREFIX_DATA_BYTE			0xFA
+#endif
+
+#ifndef TRACER_HEADER_PREFIX_DATA_LENGTH
+#define TRACER_HEADER_PREFIX_DATA_LENGTH		3
+#endif
+
+#define TRACER_HEADER_DATA_LENGTH			(TRACER_HEADER_PREFIX_DATA_LENGTH + TRACER_NUM_BYTES_FRAME_LENGTH + TRACER_NUM_BYTES_TRACE_TYPE)
+
+#define TRACER_INIT_HEADER()				memset(trace_header, TRACER_HEADER_PREFIX_DATA_BYTE, TRACER_HEADER_PREFIX_DATA_LENGTH)
+#define TRACER_INIT_FOOTER()				memset(trace_footer, TRACER_FOOTER_DATA_BYTE, TRACER_FOTER_DATA_LENGTH)
+
+#define TRACER_SET_BYTE_COUNT(byte_count)		trace_header[TRACER_HEADER_PREFIX_DATA_LENGTH] = (u8)(byte_count >> 8); 					\
+							trace_header[TRACER_HEADER_PREFIX_DATA_LENGTH + 1] = (u8)(byte_count)
+#define TRACER_SET_TYPE(type)				trace_header[TRACER_HEADER_PREFIX_DATA_LENGTH + TRACER_NUM_BYTES_FRAME_LENGTH] = type
+
+#define TRACER_GET_HEADER()				trace_header
+#define TRACER_GET_FOOTER()				trace_footer
 
 
 /*!
@@ -40,22 +71,22 @@ static TRX_DRIVER_INTERFACE* p_com_driver = 0;
  */
 static TRX_DRIVER_CONFIGURATION driver_cfg;
 
-void tracer_init(void) {
+/*!
+ *
+ */
+static u8 trace_header[TRACER_HEADER_DATA_LENGTH];
 
-	#if defined TRACER_ENABLED
-	{
-		PASS(); // tracer_init()
+/*!
+ *
+ */
+static u8 trace_footer[TRACER_FOTER_DATA_LENGTH + 1]; // +1 to avoid compiler warnings on zero data length
 
-		TRACER_APPLY_DRIVER(p_com_driver);
-		TRACER_APPLY_DRIVER_CFG(driver_cfg);
-
-		p_com_driver->configure(&driver_cfg);
-
-	}
-	#endif
-}
-
-u16 _get_string_length(const char* string) {
+/*!
+ *
+ * @param string
+ * @return
+ */
+static u16 _get_string_length(const char* string) {
 	char * pointer = (char*)string;
 
 	u16 length = 0;
@@ -67,103 +98,98 @@ u16 _get_string_length(const char* string) {
 	return length;
 }
 
+void tracer_init(void) {
+
+	#if defined TRACER_ENABLED
+	{
+		TRACER_APPLY_DRIVER(p_com_driver);
+		TRACER_APPLY_DRIVER_CFG(driver_cfg);
+
+		p_com_driver->configure(&driver_cfg);
+
+		TRACER_INIT_HEADER();
+		TRACER_INIT_FOOTER();
+	}
+	#endif
+}
+
 void tracer_pass(const char* file_name, u16 line_id) {
 
-	PASS(); // tracer_pass()
+	u16 file_name_length	= _get_string_length(file_name);
+	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
 
-	u16 file_name_length = _get_string_length(file_name);
-	u16 byte_count = file_name_length + 2;
-	u8 header[] = {(u8)(byte_count >> 8), (u8)(byte_count),  TRACER_TRANSFER_ID_PASS};
-	u8 footer[] = {'\n'};
+	TRACER_SET_BYTE_COUNT(byte_count);
+	TRACER_SET_TYPE(TRACER_TRANSFER_ID_PASS);
 
-	TRACE_N(file_name_length, (u8*)file_name);
-	TRACE_word(line_id);
-
-	p_com_driver->set_N_bytes(3, header);
-	p_com_driver->set_N_bytes(2, (u8*)&line_id);
+	p_com_driver->set_N_bytes(TRACER_HEADER_DATA_LENGTH, TRACER_GET_HEADER());
+	p_com_driver->set_N_bytes(TRACER_NUM_BYTES_LINE_NUMER, (u8*)&line_id);
 	p_com_driver->set_N_bytes(file_name_length, (u8*)file_name);
-	p_com_driver->set_N_bytes(1, footer);
+	p_com_driver->set_N_bytes(TRACER_FOTER_DATA_LENGTH, TRACER_GET_FOOTER());
 	p_com_driver->start_tx();
 }
 
 void tracer_trace_byte(const char* file_name, u16 line_id, u8 byte) {
 
-	PASS(); // tracer_trace_byte()
+	u16 file_name_length	= _get_string_length(file_name);
+	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + 1 + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
 
-	u16 file_name_length = _get_string_length(file_name);
-	u16 byte_count = file_name_length + 3;
-	u8 header[] = {(u8)(byte_count >> 8), (u8)(byte_count),  TRACER_TRANSFER_ID_BYTE};
-	u8 footer[] = {'\n'};
+	TRACER_SET_BYTE_COUNT(byte_count);
+	TRACER_SET_TYPE(TRACER_TRANSFER_ID_BYTE);
 
-	TRACE_N(file_name_length, (u8*)file_name);
-	TRACE_word(line_id);
-
-	p_com_driver->set_N_bytes(3, header);
+	p_com_driver->set_N_bytes(TRACER_HEADER_DATA_LENGTH, TRACER_GET_HEADER());
 	p_com_driver->set_N_bytes(1, &byte);
-	p_com_driver->set_N_bytes(2, (u8*)&line_id);
+	p_com_driver->set_N_bytes(TRACER_NUM_BYTES_LINE_NUMER, (u8*)&line_id);
 	p_com_driver->set_N_bytes(file_name_length, (u8*)file_name);
-	p_com_driver->set_N_bytes(1, footer);
+	p_com_driver->set_N_bytes(TRACER_FOTER_DATA_LENGTH, TRACER_GET_FOOTER());
 	p_com_driver->start_tx();
 }
 
 void tracer_trace_word(const char* file_name, u16 line_id, u16 word) {
 
-	PASS(); // tracer_trace_word()
+	u16 file_name_length	= _get_string_length(file_name);
+	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + 2 + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
 
-	u16 file_name_length = _get_string_length(file_name);
-	u16 byte_count = file_name_length + 4;
-	u8 header[] = {(u8)(byte_count >> 8), (u8)(byte_count),  TRACER_TRANSFER_ID_WORD};
-	u8 footer[] = {'\n'};
+	TRACER_SET_BYTE_COUNT(byte_count);
+	TRACER_SET_TYPE(TRACER_TRANSFER_ID_WORD);
 
-	TRACE_N(file_name_length, (u8*)file_name);
-	TRACE_word(line_id);
-
-	p_com_driver->set_N_bytes(3, header);
+	p_com_driver->set_N_bytes(TRACER_HEADER_DATA_LENGTH, TRACER_GET_HEADER());
 	p_com_driver->set_N_bytes(2, (u8*)&word);
-	p_com_driver->set_N_bytes(2, (u8*)&line_id);
+	p_com_driver->set_N_bytes(TRACER_NUM_BYTES_LINE_NUMER, (u8*)&line_id);
 	p_com_driver->set_N_bytes(file_name_length, (u8*)file_name);
-	p_com_driver->set_N_bytes(1, footer);
+	p_com_driver->set_N_bytes(TRACER_FOTER_DATA_LENGTH, TRACER_GET_FOOTER());
 	p_com_driver->start_tx();
 }
 
 void tracer_trace_long(const char* file_name, u16 line_id, u32 integer) {
 
-	PASS(); // tracer_trace_long()
+	u16 file_name_length	= _get_string_length(file_name);
+	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + 4 + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
 
-	u16 file_name_length = _get_string_length(file_name);
-	u16 byte_count = file_name_length + 6;
-	u8 header[] = {(u8)(byte_count >> 8), (u8)(byte_count),  TRACER_TRANSFER_ID_LONG};
-	u8 footer[] = {'\n'};
+	TRACER_SET_BYTE_COUNT(byte_count);
+	TRACER_SET_TYPE(TRACER_TRANSFER_ID_LONG);
 
-	TRACE_N(file_name_length, (u8*)file_name);
-	TRACE_word(line_id);
-
-	p_com_driver->set_N_bytes(3, header);
+	p_com_driver->set_N_bytes(TRACER_HEADER_DATA_LENGTH, TRACER_GET_HEADER());
 	p_com_driver->set_N_bytes(4, (u8*)&integer);
-	p_com_driver->set_N_bytes(2, (u8*)&line_id);
+	p_com_driver->set_N_bytes(TRACER_NUM_BYTES_LINE_NUMER, (u8*)&line_id);
 	p_com_driver->set_N_bytes(file_name_length, (u8*)file_name);
-	p_com_driver->set_N_bytes(1, footer);
+	p_com_driver->set_N_bytes(TRACER_FOTER_DATA_LENGTH, TRACER_GET_FOOTER());
 	p_com_driver->start_tx();
 }
 
 void tracer_trace_n(const char* file_name, u16 line_id, u8 length, u8* p_buffer) {
 
-	PASS(); // tracer_trace_n()
+	u16 file_name_length	= _get_string_length(file_name);
+	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + 1 + length + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
 
-	u16 file_name_length = _get_string_length(file_name);
-	u16 byte_count = file_name_length + 2;
-	u8 header[] = {(u8)(byte_count >> 8), (u8)(byte_count),  TRACER_TRANSFER_ID_ARRAY};
-	u8 footer[] = {'\n'};
+	TRACER_SET_BYTE_COUNT(byte_count);
+	TRACER_SET_TYPE(TRACER_TRANSFER_ID_ARRAY);
 
-	TRACE_N(file_name_length, (u8*)file_name);
-	TRACE_word(line_id);
-
-	p_com_driver->set_N_bytes(3, header);
+	p_com_driver->set_N_bytes(TRACER_HEADER_DATA_LENGTH, TRACER_GET_HEADER());
 	p_com_driver->set_N_bytes(1, &length);
 	p_com_driver->set_N_bytes(length, p_buffer);
-	p_com_driver->set_N_bytes(2, (u8*)&line_id);
+	p_com_driver->set_N_bytes(TRACER_NUM_BYTES_LINE_NUMER, (u8*)&line_id);
 	p_com_driver->set_N_bytes(file_name_length, (u8*)file_name);
-	p_com_driver->set_N_bytes(1, footer);
+	p_com_driver->set_N_bytes(TRACER_FOTER_DATA_LENGTH, TRACER_GET_FOOTER());
 	p_com_driver->start_tx();
 }
 

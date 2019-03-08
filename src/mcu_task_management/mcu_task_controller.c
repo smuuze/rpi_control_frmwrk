@@ -13,8 +13,13 @@
 #include "mcu_task_interface.h"
 #include "mcu_task_controller.h"
 
-#define noTRACES
-#include <traces.h>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 #include "mcu_idle_task.h"
 static MCU_TASK_INTERFACE mcu_idle_task = {

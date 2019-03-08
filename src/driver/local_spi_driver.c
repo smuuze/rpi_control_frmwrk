@@ -23,8 +23,13 @@
 #include "local_module_status.h"
 #include "local_mutex.h"
 
-#define noTRACES
-#include <traces.h>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 #define noSPI_RX_TRACES
 #define noSPI_TX_TRACES

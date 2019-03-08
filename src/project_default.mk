@@ -68,9 +68,9 @@ APP_TASK_LIST	?=
 # C source files
 
 INC_PATH += $(RTOS_PORT_PATH)
-CSRCS += $(FWRK_PATH)/utils/misc.c
-CSRCS += $(CPUS_PATH)/common/ffifo.c
-CSRCS += $(CPUS_PATH)/common/bitbuf.c
+#CSRCS += $(FWRK_PATH)/utils/misc.c
+#CSRCS += $(CPUS_PATH)/common/ffifo.c
+#CSRCS += $(CPUS_PATH)/common/bitbuf.c
 
 INC_PATH += $(ISO14443A_PATH)
 INC_PATH += $(APP_PATH)
@@ -210,6 +210,11 @@ DEFS += -D HAS_APP_TASK_DEBUS=1
 CSRCS += $(APP_TASK_INC_PATH)/local_debus_mcu_task.c
 endif
 
+ifneq '' '$(findstring TEST_TRACER,$(APP_TASK_CFG))'
+DEFS += -D HAS_APP_TASK_TEST_TRACER=1
+CSRCS += $(APP_TASK_INC_PATH)/test_tracer_mcu_task.c
+endif
+
 # -----------------------------------------------------------------------
 
 IO_CONTROLLER_INC_PATH = $(APP_PATH)/io_management
@@ -258,7 +263,7 @@ DEBUS_INTERFACE_CFG += I2C
 endif
 
 #$(info DEBUS_INTERFACE_CFG: $(DEBUS_INTERFACE_CFG))
-include $(SERV_PATH)/debus/debus_interface.mk
+#include $(SERV_PATH)/debus/debus_interface.mk
 
 endif
 

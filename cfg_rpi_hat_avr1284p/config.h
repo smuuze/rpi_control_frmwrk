@@ -5,6 +5,8 @@
 #define TRACES_ENABLED
 #define noTRACE_FAKE_RTOS_TIME_STAMP 2	// Trace-Ausgaben mit Timestamp (Anzahl-Bytes 1..4)
 
+#define TRACER_ENABLED
+
 ///-----------------------------------------------------------------------------
 #define EMBEDDED
 

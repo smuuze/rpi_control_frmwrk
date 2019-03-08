@@ -44,6 +44,7 @@ APP_TASK_CFG +=
 APP_TASK_CFG += ADC_ADS1115
 APP_TASK_CFG += TEMP_HUM_SHT31
 APP_TASK_CFG += LED_MATRIX
+APP_TASK_CFG += TEST_TRACER
 
 #-----------------------------------------------------------------------------
 DRIVER_MODULE_CFG =

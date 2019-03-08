@@ -17,8 +17,13 @@
 #include "io_input_controller.h"
 #include "io_output_controller.h"
 
-#define noTRACES
-#include <traces.h>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 static PROTOCOL_INTERFACE* p_act_protocol;
 

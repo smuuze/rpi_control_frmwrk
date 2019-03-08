@@ -8,6 +8,13 @@
 #include "local_rtc_driver.h"
 #include "local_gpio_driver.h"
 
+
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
 #include "tracer.h"
 
 void system_initialization(void) {

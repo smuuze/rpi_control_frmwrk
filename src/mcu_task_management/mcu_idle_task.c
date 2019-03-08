@@ -24,8 +24,13 @@
 #define config_SLEEP_MODE	SLEEP_MODE_PWR_SAVE
 #endif
 
-#define noTRACES
-#include <traces.H>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 #define SLEEP_DRIVER_PRR_ALL_ON		(0)
 #define SLEEP_DRIVER_PRR_TWI		(1 << PRTWI)

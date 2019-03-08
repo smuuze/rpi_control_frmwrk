@@ -27,8 +27,13 @@
 #include "local_debus_mcu_task.h"
 #endif
 
-#define noTRACES
-#include <traces.H>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 #ifdef TRACES_ENABLED
 #define MAIN_TRACES_ENABLED

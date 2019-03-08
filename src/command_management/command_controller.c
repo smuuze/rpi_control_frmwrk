@@ -12,9 +12,13 @@
 #include "command_handler_interface.h"
 #include "local_context.h"
 
-#define noTRACES
-#include <traces.h>
+//---------- Implementation of Traces -----------------------------------------
 
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 static COMMAND_HANDLER_INTERFACE* _first_cmd_handler = 0;
 static COMMAND_HANDLER_INTERFACE* _act_cmd_handler = 0;

@@ -14,8 +14,13 @@
 #include "io_controller.h"
 #include "local_rtc_driver.h"
 
-#define TRACES
-#include <traces.H>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 #define EVENT_TIMEOUT_MS	200
 #define EVENT_QEUE_MAX_SIZE	10

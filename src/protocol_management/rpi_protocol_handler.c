@@ -27,8 +27,13 @@
 #include "driver_specific_spi.h"
 #include "time_management.h"
 
-#define TRACES
-#include <traces.h>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(rpi_status, 2)
 

@@ -8,8 +8,13 @@
 
 #include "io_controller.h"
 
-#define noTRACES
-#include <traces.H>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 #if config_HAS_ONBOARD_BUTTONS == 1
 

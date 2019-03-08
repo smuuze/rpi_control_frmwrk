@@ -10,8 +10,13 @@
 
 #include "local_rtc_driver.h"
 
-#define TRACES
-#include <traces.h>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_ON
+#include "tracer.h"
 
 #define CLK_DRIVER_CLK_PRESCALER_1		0x00
 #define CLK_DRIVER_CLK_PRESCALER_2		0x01

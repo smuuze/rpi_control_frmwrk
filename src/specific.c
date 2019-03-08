@@ -2,8 +2,14 @@
 #include "config.h"  // immer als erstes einbinden!
 
 
-#define noTRACES
-#include <traces.h>
+
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 void specific_i2c_power_down(void) {
 	I2C0_SCL_ON();

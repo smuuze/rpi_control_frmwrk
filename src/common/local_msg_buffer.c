@@ -8,8 +8,13 @@
 
 #include "local_msg_buffer.h"
 
-#define noTRACES
-#include <traces.h>
+//---------- Implementation of Traces -----------------------------------------
+
+//#define TRACES
+//#include <traces.h>
+
+#define TRACER_OFF
+#include "tracer.h"
 
 
 void local_msg_buffer_init(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr) {
