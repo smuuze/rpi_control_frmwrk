@@ -12,10 +12,8 @@
 # VERSION_DIGITS = 107
 # VERSION        = 0x107
 
-# Dies ist die Software fuer die PDL2A / PDL5A-Hardware.
-
 # PROJEKT Name des Hexfiles
-PROJECT = RPI_Hat_ATMega1284P
+PROJECT = RPI_Hat_ControlBoard_V2
 
 # HW_DEVICE_TYPE ( siehe http://ew.deister-gmbh.de/cgi-bin/ibase/gertyp.cgi )
 HW_DEVICE_TYPE = 0x22B2
@@ -27,8 +25,9 @@ BOARD_ID = 180920
 
 #-----------------------------------------------------------------------------
 
-BASE_PATH = ../../../..
-APP_PATH = ../src
+BASE_PATH   = ../../../..
+APP_PATH    = ../src
+MAKE_PATH   = ../src/make
 
 #-----------------------------------------------------------------------------
 
@@ -60,4 +59,5 @@ include $(DE_FRM)/make/mega1284_debl_v1.mk
 
 #-----------------------------------------------------------------------------
 # Fuer alle Projekte gueltige Dateien
-include ../src/project_default.mk
+include $(MAKE_PATH)/common_make.mk
+#include ../src/project_default.mk

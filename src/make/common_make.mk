@@ -92,12 +92,6 @@ ifneq '' '$(findstring HOST_INTERFACE_TYPE,$(APP_TASK_CFG))'
 endif
 endif
 
-# ---- DRIVER MODULES ---------------------------------------------------
-
-ifdef DRIVER_MODULE_CFG
-include $(APP_PATH)/driver/make_driver.mk
-endif
-
 # -----------------------------------------------------------------------
 
 COMMAND_MANAGEMENT_INC_PATH = $(APP_PATH)/command_management
@@ -112,6 +106,7 @@ INC_PATH += $(COMMAND_HANDLER_INC_PATH)
 
 CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_command_handler.c
 
+
 # -----------------------------------------------------------------------
 
 PROTOCOL_MANAGEMENT_INC_PATH = $(APP_PATH)/protocol_management
@@ -119,14 +114,18 @@ INC_PATH += $(PROTOCOL_MANAGEMENT_INC_PATH)
 
 CSRCS += $(PROTOCOL_MANAGEMENT_INC_PATH)/rpi_protocol_handler.c
 
+
 # -----------------------------------------------------------------------
+
 
 TIME_MANAGEMENT_INC_PATH = $(APP_PATH)/time_management
 INC_PATH += $(TIME_MANAGEMENT_INC_PATH)
 
 CSRCS += $(TIME_MANAGEMENT_INC_PATH)/time_management.c
 
+
 # ---- TASK MANAGEMENT -------------------------------------------------------------------
+
 
 MCU_TASK_MANAGEMENT_INC_PATH = $(APP_PATH)/mcu_task_management
 INC_PATH += $(MCU_TASK_MANAGEMENT_INC_PATH)
@@ -164,7 +163,9 @@ DEFS += -D HAS_APP_TASK_TEST_TRACER=1
 CSRCS += $(APP_TASK_INC_PATH)/test_tracer_mcu_task.c
 endif
 
+
 # -----------------------------------------------------------------------
+
 
 IO_CONTROLLER_INC_PATH = $(APP_PATH)/io_management
 INC_PATH += $(IO_CONTROLLER_INC_PATH)
@@ -172,7 +173,9 @@ INC_PATH += $(IO_CONTROLLER_INC_PATH)
 CSRCS += $(IO_CONTROLLER_INC_PATH)/io_output_controller.c
 CSRCS += $(IO_CONTROLLER_INC_PATH)/io_input_controller.c
 
+
 # -----------------------------------------------------------------------
+
 
 INITIALIZATION_INC_PATH = $(APP_PATH)/initialization
 INC_PATH += $(INITIALIZATION_INC_PATH)
@@ -185,12 +188,15 @@ CSRCS += $(INITIALIZATION_INC_PATH)/task_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/system_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/initialization.c
 
+# ---- DRIVER MODULES ---------------------------------------------------
+
+ifdef DRIVER_MODULE_CFG
+include $(APP_PATH)/driver/make_driver.mk
+endif
+
+
 # -----------------------------------------------------------------------
 
-# TK-Debug: fehlt noch: C++ source files:
-CPPSRCS +=
-
-# -----------------------------------------------------------------------
 
 # Assembler source files
 IARSRCS +=
@@ -271,7 +277,9 @@ LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 
 # Include the generic Makefile
 #$(info MAKE_TARGET_RULES: $(MAKE_TARGET_RULES) )
-include $(GENERIC_TARGET_RULES) $(MAKE_TARGET_RULES)
+#include $(GENERIC_TARGET_RULES) $(MAKE_TARGET_RULES)
+
+include make_targets.mk
 
 # Debug-Ausgabe aller Variablen
 #$(foreach var,$(.VARIABLES), $(info $(var) : $(value $(var)) )  )
