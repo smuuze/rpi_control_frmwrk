@@ -14,8 +14,6 @@
 
 # Dies ist die Software fuer die PDL2A / PDL5A-Hardware.
 
-FREIGABE_ID       =
-
 # PROJEKT Name des Hexfiles
 PROJECT = RPI_Hat_ATMega1284P
 

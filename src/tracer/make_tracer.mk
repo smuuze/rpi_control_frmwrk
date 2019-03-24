@@ -2,6 +2,11 @@
 #       Makefile for TRACER
 #-----------------------------------------------------------------------------
 
+
+TRACER_INC_PATH = $(APP_PATH)/tracer
+INC_PATH += $(TRACER_INC_PATH)
+
+
 ifneq '' '$(findstring ENABLED,$(TRACER_CFG))'
 
 	#DEFS += -D TRACER_ENABLED=1
