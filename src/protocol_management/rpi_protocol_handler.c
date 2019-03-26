@@ -32,7 +32,7 @@
 //#define TRACES
 //#include <traces.h>
 
-#define TRACER_OFF
+#define TRACER_ON
 #include "tracer.h"
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(rpi_status, 2)

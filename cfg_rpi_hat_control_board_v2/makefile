@@ -25,18 +25,29 @@ BOARD_ID = 180920
 
 #-----------------------------------------------------------------------------
 
+VERSION_MAJOR		:= 3
+VERSION_MINOR		:= 0
+
+#-----------------------------------------------------------------------------
+
 BASE_PATH   = ../../../..
 APP_PATH    = ../src
-MAKE_PATH   = ../src/make
+MAKE_PATH   = ../make
+
+#-----------------------------------------------------------------------------
+
+MCU_NAME = ATMEGA1284P
 
 #-----------------------------------------------------------------------------
 
 CSRCS += ${APP_PATH}/main_rpi_hat.c
 
 #-----------------------------------------------------------------------------
+
 HOST_INTERFACE_TYPE = SPI
 
 #-----------------------------------------------------------------------------
+
 APP_TASK_CFG += 
 APP_TASK_CFG += ADC_ADS1115
 APP_TASK_CFG += TEMP_HUM_SHT31
@@ -44,6 +55,7 @@ APP_TASK_CFG += TEMP_HUM_SHT31
 APP_TASK_CFG += TEST_TRACER
 
 #-----------------------------------------------------------------------------
+
 DRIVER_MODULE_CFG =
 
 #-----------------------------------------------------------------------------
@@ -53,9 +65,9 @@ TRACER_CFG += ENABLED
 TRACER_CFG += USART0
 
 #-----------------------------------------------------------------------------
-include ${APP_PATH}/version_string.mk
-include $(BASE_PATH)/local.mk
-include $(DE_FRM)/make/mega1284_debl_v1.mk
+#include ${APP_PATH}/version_string.mk
+#include $(BASE_PATH)/local.mk
+#include $(DE_FRM)/make/mega1284_debl_v1.mk
 
 #-----------------------------------------------------------------------------
 # Fuer alle Projekte gueltige Dateien
