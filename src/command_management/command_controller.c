@@ -4,9 +4,6 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
-
-#include "utils/stdmacros.h"
 
 #include "command_controller.h"
 #include "command_handler_interface.h"
@@ -14,11 +11,10 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-//#define TRACES
-//#include <traces.h>
-
 #define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 static COMMAND_HANDLER_INTERFACE* _first_cmd_handler = 0;
 static COMMAND_HANDLER_INTERFACE* _act_cmd_handler = 0;

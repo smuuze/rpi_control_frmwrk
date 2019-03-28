@@ -33,9 +33,9 @@
 
 #define CFG_DEFAULT_VALUE_SELECTOR 2
 ///-----------------------------------------------------------------------------
-#ifndef __ASSEMBLER__
-#include "platine/22B2.h"  // port definition + crystal frequency
-#endif
+//#ifndef __ASSEMBLER__
+//#include "platine/22B2.h"  // port definition + crystal frequency
+//#endif
 
 #define BOARD_DESCRIPTION_FILE "platine/board_180920.h"
 
@@ -89,4 +89,6 @@
 // Mus zuletzt eingebunden werden. Alles was oben nicht definiert wurde, wird
 // hier auf default Werte gesetzt.
 #include "../src/config_default.h"
+#include "../src/common/cpu.h"
+
 #endif /* _config_H_ */

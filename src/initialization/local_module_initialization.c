@@ -4,7 +4,6 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "local_context.h"
 
@@ -29,8 +28,12 @@ void local_io_controller_initialization(LOCAL_CONTEXT* context) {
 #include "local_msg_buffer.h"
 #include "command_controller.h"
 
-#define TRACES
-#include <traces.H>
+//---------- Implementation of Traces -----------------------------------------
+
+#define TRACER_OFF
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 BUILD_LOCAL_MSG_BUFFER( , control_cmd_buffer, 64)
 

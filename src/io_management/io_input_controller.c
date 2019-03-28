@@ -4,16 +4,17 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
-
-#include "utils/stdmacros.h"
 
 #include "local_gpio_driver.h"
 #include "system_interface.h"
 #include "io_input_controller.h"
 
-#define noTRACES
-#include <traces.H>
+//---------- Implementation of Traces -----------------------------------------
+
+#define TRACER_OFF
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #define IO_INPUT_CONTROLLER_TASK_RUN_INTERVAL_MS	30
 

@@ -4,11 +4,10 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-//#define TRACES
-//#include <traces.h>
-
 #define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 
 /*!

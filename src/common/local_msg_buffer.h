@@ -1,6 +1,8 @@
 #ifndef _LOCAL_MSG_BUFFER_H_
 #define _LOCAL_MSG_BUFFER_H_
 
+#include "config.h"
+
 /*!
  *
  */

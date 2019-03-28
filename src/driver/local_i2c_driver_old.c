@@ -4,13 +4,6 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
-
-#include "utils/stdmacros.h"
-#include RTOS_H
-
-#include <avr/io.h>
-#include <avr/interrupt.h>
 
 #include "local_msg_buffer.h"
 #include "local_i2c_driver.h"

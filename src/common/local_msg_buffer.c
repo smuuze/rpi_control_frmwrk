@@ -2,19 +2,15 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
-
-#include "utils/stdmacros.h"
 
 #include "local_msg_buffer.h"
 
 //---------- Implementation of Traces -----------------------------------------
 
-//#define TRACES
-//#include <traces.h>
-
 #define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 
 void local_msg_buffer_init(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr) {

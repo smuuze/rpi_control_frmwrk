@@ -328,3 +328,5 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define EE_BLACKLIST_SIZE	0x200
 
 ///-----------------------------------------------------------------------------
+
+#include "common_types.h"

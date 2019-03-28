@@ -4,20 +4,16 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
-
-#include "utils/stdmacros.h"
 
 #include "system_interface.h"
 #include "io_output_controller.h"
 
 //---------- Implementation of Traces -----------------------------------------
 
-//#define TRACES
-//#include <traces.h>
-
 #define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 /*!
  *

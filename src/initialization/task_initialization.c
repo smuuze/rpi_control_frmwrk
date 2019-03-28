@@ -4,19 +4,16 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
 
 #include "mcu_task_controller.h"
 #include "mcu_task_interface.h"
 
-
 //---------- Implementation of Traces -----------------------------------------
-
-//#define TRACES
-//#include <traces.h>
 
 #define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #ifndef config_HAS_LED_MATRIX
 #define config_HAS_LED_MATRIX 0

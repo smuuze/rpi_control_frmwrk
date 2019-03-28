@@ -4,12 +4,9 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
-
-#include <avr/sleep.h>
-#include <avr/wdt.h>
 
 #include "system_interface.h"
+#include "mcu_task_interface.h"
 
 /*!
  * SLEEP_MODE_IDLE
@@ -26,11 +23,10 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-//#define TRACES
-//#include <traces.h>
-
 #define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #define SLEEP_DRIVER_PRR_ALL_ON		(0)
 #define SLEEP_DRIVER_PRR_TWI		(1 << PRTWI)
@@ -48,8 +44,8 @@ void mcu_idle_task_init(void) {
 	PASS(); // mcu_idle_task_init()
 }
 
-u8 mcu_idle_task_is_runable(void) {
-	return 1;
+MCU_TASK_INTERFACE_TASK_STATE mcu_idle_task_is_runable(void) {
+	return MCU_TASK_RUNNING;
 }
 
 void mcu_idle_task_run(void) {

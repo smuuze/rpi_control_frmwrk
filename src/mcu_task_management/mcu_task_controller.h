@@ -1,6 +1,7 @@
 #ifndef _MCU_TASK_CONTROLLER_H_
 #define _MCU_TASK_CONTROLLER_H_
 
+#include "config.h"
 #include "mcu_task_interface.h"
 
 /*!

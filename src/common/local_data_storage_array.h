@@ -2,7 +2,6 @@
 #define _LOCAL_DATA_STORAGE_ARRAY_H_
 
 #include "config.h"
-#include <utils/stdmacros.h>
 
 #define DATA_STORAGE_ARRAY_MIN_VALUE_I8		-100
 #define DATA_STORAGE_ARRAY_MAX_VALUE_I8		127

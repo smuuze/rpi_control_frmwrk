@@ -4,9 +4,6 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
-
-#include "utils/stdmacros.h"
 
 #include "system_interface.h"
 
@@ -15,11 +12,10 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-//#define TRACES
-//#include <traces.h>
-
 #define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #include "mcu_idle_task.h"
 static MCU_TASK_INTERFACE mcu_idle_task = {
@@ -199,7 +195,7 @@ void mcu_task_controller_background_run(void) {
 }
 
 
-static inline u8 _has_task_interval_passed(MCU_TASK_INTERFACE* p_task) {
+static u8 _has_task_interval_passed(MCU_TASK_INTERFACE* p_task) {
 
 	if (p_task->SCHEDULE_INTERVAL == MCU_TASK_SCHEDULE_NO_TIMEOUT) {
 		return 1;
@@ -212,7 +208,7 @@ static inline u8 _has_task_interval_passed(MCU_TASK_INTERFACE* p_task) {
 	return 1;
 }
 
-static inline void _update_last_run_time(MCU_TASK_INTERFACE* p_task) {
+static void _update_last_run_time(MCU_TASK_INTERFACE* p_task) {
 
 	if (p_task->SCHEDULE_INTERVAL == MCU_TASK_SCHEDULE_NO_TIMEOUT) {
 		return;

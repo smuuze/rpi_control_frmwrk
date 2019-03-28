@@ -5,18 +5,16 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "utils/stdmacros.h"
 #include BOARD_DESCRIPTION_FILE
 
 #include "local_rtc_driver.h"
 
 //---------- Implementation of Traces -----------------------------------------
 
-//#define TRACES
-//#include <traces.h>
-
-#define TRACER_ON
+#define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #define CLK_DRIVER_CLK_PRESCALER_1		0x00
 #define CLK_DRIVER_CLK_PRESCALER_2		0x01

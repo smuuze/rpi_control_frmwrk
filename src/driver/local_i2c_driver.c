@@ -4,13 +4,6 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
-
-#include "utils/stdmacros.h"
-
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <string.h>
 
 #include "cfg_driver_interface.h"
 #include "local_msg_buffer.h"
@@ -23,11 +16,10 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-//#define TRACES
-//#include <traces.h>
-
 #define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #define noI2C_RX_TRACES
 #define noI2C_TX_TRACES

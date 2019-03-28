@@ -1,6 +1,7 @@
 #ifndef _MCU_TASK_INTERFACE_H_
 #define _MCU_TASK_INTERFACE_H_
 
+#include "config.h"
 
 /*!
  *

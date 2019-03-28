@@ -1,6 +1,8 @@
 #ifndef _TRACER_H_
 #define _TRACER_H_
 
+#include "config.h"
+
 /*!
  *
  * @param p_driver

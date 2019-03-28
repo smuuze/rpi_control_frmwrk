@@ -9,7 +9,7 @@ void mcu_idle_task_init(void);
 /*!
  *
  */
-u8 mcu_idle_task_is_runable(void);
+MCU_TASK_INTERFACE_TASK_STATE mcu_idle_task_is_runable(void);
 
 /*!
  *

@@ -4,16 +4,10 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-#include "hmsrc/config_f.h"   // Default-Configuration nach config.h einbinden
-
-#include "debusapi.H"
-
-#include "utils/stdmacros.h"
 
 #include "system_interface.h"
 #include "local_context.h"
 #include "io_controller.h"
-
 
 #include "local_msg_buffer.h"
 #include "local_module_status.h"
@@ -29,11 +23,10 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-//#define TRACES
-//#include <traces.h>
-
-#define TRACER_ON
+#define TRACER_OFF
 #include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(rpi_status, 2)
 
