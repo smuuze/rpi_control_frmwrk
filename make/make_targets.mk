@@ -2,6 +2,7 @@
 # --------- Message Output
 
 MSG_COMPILING		:= Compiling
+MSG_DEPENDENCY		:= Generating dependency for 
 MSG_LINKING		:= Linking to
 MSG_PROG_LOCATION	:= Your programm can be found at
 MSG_LISTING		:= - Generating Disassembly
@@ -15,8 +16,11 @@ OBJECT_DIRECTORY	:= obj
 RELEASE_DIRECTORY	:= release/$(VERSION)
 FORMAT			:= ihex
 DEBUG_ENABLED		:= -DTRACER_ENABLED
+
 OBJECTS			:= $(CSRCS:.c=.o)
 DEBUG_OBJECTS		:= $(CSRCS:.c=.a)
+DEPENDENCY_OBJECTS	:= $(CSRCS:.c=.f)
+
 LOCAL_OBJECTS		:= $(notdir $(OBJECTS))
 LOCAL_DEBUG_OBJECTS	:= $(notdir $(DEBUG_OBJECTS))
 
@@ -42,6 +46,8 @@ release: release_dir release_obj hex_file lss_file prog_size
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(RELEASE_DIRECTORY)/$(TARGET).elf
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(RELEASE_DIRECTORY)/$(TARGET)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+eclipse: obj_dir $(DEPENDENCY_OBJECTS)
 
 clean:
 	$(VERBOSE) $(ECHO) - Removing object directory from filesystem
@@ -105,3 +111,7 @@ $(TARGET)_eeprom.hex:
 .c.a:
 	$(VERBOSE) $(ECHO) $(MSG_COMPILING) $(notdir $<)
 	$(VERBOSE) $(CC) -c $(OPTIMIZATION) $(DEFS) $(CFLAGS) $(DEBUG_ENABLED) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $< -o $(OBJECT_DIRECTORY)/$(notdir $@)
+	
+.c.f:
+	$(VERBOSE) $(ECHO) $(MSG_DEPENDENCY) $(notdir $<)
+	$(VERBOSE) $(CC) -MM -c $(OPTIMIZATION) $(DEFS) $(CFLAGS) $(DEBUG_ENABLED) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $< -o $(OBJECT_DIRECTORY)/$(notdir $@)
