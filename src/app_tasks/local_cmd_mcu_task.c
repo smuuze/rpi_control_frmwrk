@@ -10,7 +10,7 @@
 
 void local_cmd_mcu_task_init(void) {
 	command_controller_init();
-	local_cmd_protocol_initialization();
+	//local_cmd_protocol_initialization();
 }
 
 u8 local_cmd_mcu_task_is_runable(void) {

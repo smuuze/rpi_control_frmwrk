@@ -6,8 +6,6 @@
 #define noTRACES_ENABLED
 #define noTRACE_FAKE_RTOS_TIME_STAMP 2	// Trace-Ausgaben mit Timestamp (Anzahl-Bytes 1..4)
 
-#define TRACER_ENABLED
-
 ///-----------------------------------------------------------------------------
 #define EMBEDDED
 
@@ -70,7 +68,7 @@
         BEEPER_OFF()
 
 // ================================================================================
-#define HOSTFIFO_BUFFER_SIZE 	512	//Eventuell auch kleiner möglich
+#define HOSTFIFO_BUFFER_SIZE 	512	//Eventuell auch kleiner mï¿½glich
 #define AIRLINK_SERVICE_TYPE 	2	//Wenn 0: (AIRLINK_NOT_USED)  kein Airlink
 					//Wenn 1: (AIRLINK_IN_USE)    Airlink Service in diesem CPU
 					//Wenn 2: (AIRLINK_IN_COPRO1) Airlink Service im Copro

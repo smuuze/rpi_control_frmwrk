@@ -2,15 +2,6 @@
 #       Makefile fuer AVR-GCC Projekte
 #-----------------------------------------------------------------------------
 
-#-----------------------------------------------------------------------------
-# PROJECT: Name des Hexfiles usw.
-#-----------------------------------------------------------------------------
-# VERSION_STRING muss (!) zwei Ziffern nach dem '.' enthalten, weil
-# aus dem String noch weitere Varianten von Version erzeugt
-# werden. Beispiel:
-# VERSION_STRING = v1.07
-# VERSION_DIGITS = 107
-VERSION         ?= 0x011A
 
 # -----------------------------------------------------------------------
 # Definitions: [-D name[=definition]...] [-U name...]
@@ -34,7 +25,7 @@ DEFS += -D VERSION=$(VERSION)
 
 ATPROGRAM_CLOCK		= 1Mhz
 
-BASE_PATH    = ../../../..
+BASE_PATH    ?= ../../../..
 
 # -----------------------------------------------------------------------
 # Include path
@@ -275,8 +266,8 @@ LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 #-Wl,--gc-sections
 
 # -----------------------------------------------------------------------
-include $(MAKE_PATH)/make_toolchain.mk
 include $(MAKE_PATH)/make_cpu.mk
+include $(MAKE_PATH)/make_toolchain.mk
 include $(MAKE_PATH)/make_targets.mk
 
 # -----------------------------------------------------------------------

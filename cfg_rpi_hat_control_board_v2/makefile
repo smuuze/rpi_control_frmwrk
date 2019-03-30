@@ -36,7 +36,7 @@ MAKE_PATH   = ../make
 
 #-----------------------------------------------------------------------------
 
-MCU_NAME = ATMEGA1284P
+MCU = ATMEGA1284P
 
 #-----------------------------------------------------------------------------
 
@@ -61,15 +61,8 @@ DRIVER_MODULE_CFG =
 #-----------------------------------------------------------------------------
 
 TRACER_CFG =
-TRACER_CFG += ENABLED
 TRACER_CFG += USART0
-
-#-----------------------------------------------------------------------------
-#include ${APP_PATH}/version_string.mk
-#include $(BASE_PATH)/local.mk
-#include $(DE_FRM)/make/mega1284_debl_v1.mk
 
 #-----------------------------------------------------------------------------
 # Fuer alle Projekte gueltige Dateien
 include $(MAKE_PATH)/common_make.mk
-#include ../src/project_default.mk

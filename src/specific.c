@@ -9,8 +9,8 @@
 //-----------------------------------------------------------------------------
 
 void specific_i2c_power_down(void) {
-	I2C_SCL_ON();
-	I2C_SDA_ON();
+	//I2C_SCL_ON();
+	//I2C_SDA_ON();
 }
 
 void specific_spi_power_down(void) {

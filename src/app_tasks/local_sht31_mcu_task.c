@@ -131,8 +131,6 @@ void local_sht31_mcu_task_init(void) {
 	GET_SYSTEM(data).humidity.minimal = SHT31_MAXIMUM_MEASSUREABLE_HUMIDITY;
 
 	task_state = MCU_TASK_SLEEPING;
-
-	GPIO_17_OFF();
 }
 
 
@@ -304,7 +302,7 @@ void local_sht31_mcu_task_run(void) {
 			calculation_temp = calculation_temp >> 16;
 
 			GET_SYSTEM(data).temperature.actual = (i8)((i32)calculation_temp - SHT31_TEMPERATURE_FIXPOINT_FACTOR_B);
-			TRACE_byte(GET_SYSTEM(data).temperature.actual); // local_sht31_mcu_task_run() - actual temperature in °C
+			TRACE_byte(GET_SYSTEM(data).temperature.actual); // local_sht31_mcu_task_run() - actual temperature in ï¿½C
 
 			PASS(); ///----- Humidity -----------------------------------------------------
 
@@ -327,9 +325,9 @@ void local_sht31_mcu_task_run(void) {
 				GET_SYSTEM(data).temperature.minimal = sht31_temp_24hour_data_storage_array_get_min();
 				GET_SYSTEM(data).temperature.mean = sht31_temp_24hour_data_storage_array_get_mean();
 
-				TRACE_byte(GET_SYSTEM(data).temperature.maximal); // local_sht31_mcu_task_run() - maximum temperature in °C
-				TRACE_byte(GET_SYSTEM(data).temperature.minimal); // local_sht31_mcu_task_run() - minimum temperature in °C
-				TRACE_byte(GET_SYSTEM(data).temperature.mean); // local_sht31_mcu_task_run() - mean temperature in °C
+				TRACE_byte(GET_SYSTEM(data).temperature.maximal); // local_sht31_mcu_task_run() - maximum temperature in ï¿½C
+				TRACE_byte(GET_SYSTEM(data).temperature.minimal); // local_sht31_mcu_task_run() - minimum temperature in ï¿½C
+				TRACE_byte(GET_SYSTEM(data).temperature.mean); // local_sht31_mcu_task_run() - mean temperature in ï¿½C
 
 				sht31_hum_24hour_data_storage_array_add_value(GET_SYSTEM(data).humidity.actual);
 				GET_SYSTEM(data).humidity.maximal = sht31_hum_24hour_data_storage_array_get_max();
