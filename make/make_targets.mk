@@ -13,15 +13,17 @@ MSG_FINISH		:= --------------- Make done ---------------
 TARGET			:= $(PROJECT)
 VERSION			:= $(VERSION_MAJOR).$(VERSION_MINOR)
 OBJECT_DIRECTORY	:= obj
+DEBUG_DIRECTORY		:= $(OBJECT_DIRECTORY)/debug
+DEPENDENCY_DIRECTORY	:= $(OBJECT_DIRECTORY)/dependency
 RELEASE_DIRECTORY	:= release/$(VERSION)
 FORMAT			:= ihex
 DEBUG_ENABLED		:= -DTRACER_ENABLED
 
-OBJECTS			:= $(CSRCS:.c=.o)
-DEBUG_OBJECTS		:= $(CSRCS:.c=.a)
-DEPENDENCY_OBJECTS	:= $(CSRCS:.c=.f)
+RELEASE_OBJECTS		:= $(CSRCS:%.c=$(OBJECT_DIRECTORY)/%.o)
+DEBUG_OBJECTS		:= $(CSRCS:%.c=$(DEBUG_DIRECTORY)/%.o)
+DEPENDENCY_OBJECTS	:= $(CSRCS:%.c=$(DEPENDENCY_DIRECTORY)/%.o)
 
-LOCAL_OBJECTS		:= $(notdir $(OBJECTS))
+LOCAL_OBJECTS		:= $(notdir $(RELEASE_OBJECTS))
 LOCAL_DEBUG_OBJECTS	:= $(notdir $(DEBUG_OBJECTS))
 
 # --------- 
@@ -47,7 +49,7 @@ release: release_dir release_obj hex_file lss_file prog_size
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(RELEASE_DIRECTORY)/$(TARGET)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
-eclipse: obj_dir $(DEPENDENCY_OBJECTS)
+eclipse: dependency_obj 
 
 clean:
 	$(VERBOSE) $(ECHO) - Removing object directory from filesystem
@@ -61,14 +63,16 @@ clean:
 
 # --------- 
 
-release_obj: obj_dir $(OBJECTS)
-	$(VERBOSE) $(ECHO) - Generating Relase-Object - Version: $(VERSION)
+release_obj: obj_dir $(RELEASE_OBJECTS)
+	$(VERBOSE) $(ECHO) - Generating Relase-Objects - Version: $(VERSION)
 	$(VERBOSE) $(CC) $(OPTIMIZATION) $(DEFS) $(CFLAGS) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $(LOCAL_OBJECTS:%=$(OBJECT_DIRECTORY)/%) -o $(OBJECT_DIRECTORY)/$(TARGET).elf
 
-debug_obj: obj_dir $(DEBUG_OBJECTS)
-	$(VERBOSE) $(ECHO) - Generating Debug-Object - Version: $(VERSION)
-	$(VERBOSE) $(CC) $(OPTIMIZATION) $(DEFS) $(CFLAGS) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $(DEBUG_ENABLED) $(LOCAL_DEBUG_OBJECTS:%=$(OBJECT_DIRECTORY)/%) -o $(OBJECT_DIRECTORY)/$(TARGET).elf
+debug_obj: debug_dir $(DEBUG_OBJECTS)
+	$(VERBOSE) $(ECHO) - Generating Debug-Objects - Version: $(VERSION)
+	$(VERBOSE) $(CC) $(OPTIMIZATION) $(DEFS) $(CFLAGS) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $(DEBUG_ENABLED) $(LOCAL_DEBUG_OBJECTS:%=$(DEBUG_DIRECTORY)/%) -o $(OBJECT_DIRECTORY)/$(TARGET).elf
 
+dependency_obj: dependency_dir $(DEPENDENCY_OBJECTS)
+	
 hex_file:
 	$(VERBOSE) $(ECHO) - Generating $(OBJECT_DIRECTORY)/$(TARGET).hex
 	$(VERBOSE) $(CC_COPY) -O $(FORMAT) $(OBJECT_DIRECTORY)/$(TARGET).elf $(OBJECT_DIRECTORY)/$(TARGET).hex
@@ -80,6 +84,14 @@ lss_file:
 obj_dir:
 	$(VERBOSE) $(ECHO) - Creating Object directory: $(OBJECT_DIRECTORY)
 	$(VERBOSE) $(MK) $(OBJECT_DIRECTORY)
+	
+debug_dir: obj_dir
+	$(VERBOSE) $(ECHO) - Creating Debug directory: $(DEBUG_DIRECTORY)
+	$(VERBOSE) $(MK) $(DEBUG_DIRECTORY)
+	
+dependency_dir: obj_dir
+	$(VERBOSE) $(ECHO) - Creating Dependency directory: $(DEPENDENCY_DIRECTORY)
+	$(VERBOSE) $(MK) $(DEPENDENCY_DIRECTORY)
 
 release_dir:
 	$(VERBOSE) $(ECHO) - Creating Release directory: $(RELEASE_DIRECTORY)
@@ -104,14 +116,14 @@ eeprom: $(TARGET)_eeprom.hex
 $(TARGET)_eeprom.hex:
 	$(CC_OBJ) -O ihex -j .eeprom --change-section-lma .eeprom=1 $(TARGET).elf $(TARGET)_eeprom.hex
 
-.c.o:
+$(OBJECT_DIRECTORY)/%.o: %.c
 	$(VERBOSE) $(ECHO) $(MSG_COMPILING) $(notdir $<)
 	$(VERBOSE) $(CC) -c $(OPTIMIZATION) $(DEFS) $(CFLAGS) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $< -o $(OBJECT_DIRECTORY)/$(notdir $@)
 
-.c.a:
+$(DEBUG_DIRECTORY)/%.o: %.c
 	$(VERBOSE) $(ECHO) $(MSG_COMPILING) $(notdir $<)
-	$(VERBOSE) $(CC) -c $(OPTIMIZATION) $(DEFS) $(CFLAGS) $(DEBUG_ENABLED) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $< -o $(OBJECT_DIRECTORY)/$(notdir $@)
+	$(VERBOSE) $(CC) -c $(OPTIMIZATION) $(DEFS) $(CFLAGS) $(DEBUG_ENABLED) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $< -o $(DEBUG_DIRECTORY)/$(notdir $@)
 	
-.c.f:
+$(DEPENDENCY_DIRECTORY)/%.o: %.c
 	$(VERBOSE) $(ECHO) $(MSG_DEPENDENCY) $(notdir $<)
-	$(VERBOSE) $(CC) -MM -c $(OPTIMIZATION) $(DEFS) $(CFLAGS) $(DEBUG_ENABLED) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $< -o $(OBJECT_DIRECTORY)/$(notdir $@)
+	$(VERBOSE) $(CC) -M -c $(DEFS) $(CFLAGS) $(LIBS) $(LDFLAGS) $(MCU_FLAG) $(INC_PATH:%=-I%) $< -o $(DEPENDENCY_DIRECTORY)/$(notdir $@)
