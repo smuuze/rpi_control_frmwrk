@@ -75,7 +75,7 @@ dependency_obj: dependency_dir $(DEPENDENCY_OBJECTS)
 	
 hex_file:
 	$(VERBOSE) $(ECHO) - Generating $(OBJECT_DIRECTORY)/$(TARGET).hex
-	$(VERBOSE) $(CC_COPY) -O $(FORMAT) $(OBJECT_DIRECTORY)/$(TARGET).elf $(OBJECT_DIRECTORY)/$(TARGET).hex
+	$(VERBOSE) $(CC_COPY) $(SECTIONS) -O $(FORMAT) $(OBJECT_DIRECTORY)/$(TARGET).elf $(OBJECT_DIRECTORY)/$(TARGET).hex
 	
 lss_file:
 	$(VERBOSE) $(ECHO) $(MSG_LISTING)
