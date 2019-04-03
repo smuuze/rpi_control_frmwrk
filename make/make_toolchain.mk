@@ -37,4 +37,4 @@ MAKE_FILE_RIGHTS	:= chmod ug=rw
 ECHO			:= echo
 
 RM_FLAGS		:= -rf
-VERBOSE 		:= @
+VERBOSE 		:= 

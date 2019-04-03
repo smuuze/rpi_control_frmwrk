@@ -33,10 +33,16 @@ endif
 MCU_FLAG = -mmcu=$(MCU_NAME)
 
 CROSS_COMPILER_PREFIX = avr-
-OPTIMIZATION = -Os
 
 SECTIONS =
-SECTIONS += -j .text
-SECTIONS += -j .data
+#SECTIONS += .text
+#SECTIONS += .data
+
+CSLAGS += -g
+
+LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
+LDFLAGS += $(LD_EXTRA_FLAGS)
+
+HEXFLAGS = -R.fuse -R.signature -R.lock -R.eeprom -R.iblchif -R.blibl
 
 INC_PATH += $(AVR_INCLUDE_PATH)
