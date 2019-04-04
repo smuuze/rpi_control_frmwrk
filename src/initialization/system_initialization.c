@@ -17,6 +17,8 @@
 
 void system_initialization(void) {
 
+	local_clk_driver_init();
+
 	#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 	i_system.driver.i2c0->initialize();
 	#endif
@@ -31,7 +33,6 @@ void system_initialization(void) {
 
 	TRACER_RESTART();
 
-	local_clk_driver_init();
 	local_rtc_timer_init();
 	gpio_driver_init();
 }

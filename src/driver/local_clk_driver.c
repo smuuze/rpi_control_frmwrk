@@ -49,7 +49,7 @@ void local_clk_driver_init(void) {
 
 	#ifdef SYS_CRYSTAL_FREQ
 	{
-		TRACE_byte(SYS_CPU_CLK_PRESCALER); // local_clk_driver_init() - We are using a external crystal oszillator with prescaler
+		//TRACE_byte(SYS_CPU_CLK_PRESCALER); // local_clk_driver_init() - We are using a external crystal oszillator with prescaler
 
 		u8 clk_division_factor = 0;
 

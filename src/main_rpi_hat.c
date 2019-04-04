@@ -72,6 +72,10 @@ void task_yield(void) {
 
 void main_init(void) {
 
+	cli();
+	initialization();
+	sei();
+
 	INIT_PASS(); // Initialization - First-Time Debus-Init
 
 	//INIT_PORTS_FOR_STARTUP();
@@ -91,10 +95,6 @@ void main_init(void) {
 		fakertos_timer_init();
 	}
 	#endif  // #ifdef RTOS_TIMER
-
-	cli();
-	initialization();
-	sei();
 
 	wdt_enable(WDTO_8S);
 	watchdog();
