@@ -234,7 +234,7 @@ void task_initialization(void) {
 
 
 	#if defined (HAS_APP_TASK_TEST_TRACER) && (HAS_APP_TASK_TEST_TRACER) == 1
-	//mcu_task_controller_register_task(&test_tracer_task);
+	mcu_task_controller_register_task(&test_tracer_task);
 	#endif
 
 	#if config_HAS_LED_MATRIX == 1

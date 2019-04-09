@@ -18,9 +18,18 @@
 
 //-----------------------------------------------------------------------------
 
+#include "io_controller.h"
+IO_CONTROLLER_BUILD_INOUT(TEST_GPIO, MASTER_SPI_CLK)
+
+//-----------------------------------------------------------------------------
+
 void test_tracer_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 	(void) p_driver;
+	
 	PASS(); // test_tracer_module_init()
+	
+	TEST_GPIO_init();
+	TEST_GPIO_drive_low();
 }
 
 void test_tracer_task_init(void) {
@@ -36,6 +45,8 @@ MCU_TASK_INTERFACE_TASK_STATE test_tracer_task_get_state(void) {
 
 
 void test_tracer_task_run(void) {
+		
+	TEST_GPIO_toggle_level();
 
 	u8 actual_time_u8 = i_system.time.now_u8();
 	TRACE_byte(actual_time_u8); // test_tracer_task_run() -----------------
