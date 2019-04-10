@@ -86,6 +86,11 @@
 //#define RTC_TIMER_TICKS_PER_PERIOD		4		/* 1000 / RTC_TIMER_PERIOD */
 //#define RTC_TIMER_BIT_SHIFT_TICKS_PER_PERIOD	2		/* log2(RTC_TIMER_TICKS_PER_PERIOD) */
 
+//-----------------------------------------------------------------------------
+
+#include "io_controller.h"
+IO_CONTROLLER_BUILD_INOUT(TEST_GPIO, MASTER_SPI_CLK)
+
 /*!
  *
  */
@@ -123,6 +128,9 @@ void local_rtc_timer_init(void) {
 	PASS(); // 5. Enable IRQs
 	RTC_TIMER_CLEAR_IRQ_FLAGS();
 	RTC_TIMER_SET_IRQ(RTC_TIMER_IRQ_COMPARE_A);
+	
+	TEST_GPIO_init();
+	TEST_GPIO_drive_low();
 }
 
 /*
@@ -179,4 +187,6 @@ ISR(TIMER2_COMPA_vect) {
 		local_rtc_time += RTC_TIMER_INCREMENT_VALUE;
 		local_rtc_ticker = 0;
 	}
+		
+	TEST_GPIO_toggle_level();
 }
