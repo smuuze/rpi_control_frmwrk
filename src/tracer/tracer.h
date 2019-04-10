@@ -62,24 +62,26 @@ void tracer_trace_n(const char* file_name, u16 line_id, u8 length, u8* p_buffer)
 #undef PASS()
 #endif
 
-#ifdef PASS
+#ifdef TRACE_byte
 #undef TRACE_byte(byte)
 #endif
 
-#ifdef PASS
+#ifdef TRACE_word
 #undef TRACE_word(word)
 #endif
 
-#ifdef PASS
+#ifdef TRACE_long
 #undef TRACE_long(integer)
 #endif
 
-#ifdef PASS
+#ifdef TRACE_N
 #undef TRACE_N(len, p_buf)
 #endif
 
 
 #if defined TRACER_ON && defined TRACER_ENABLED
+
+#pragma TRACES_ENABLED
 
 #define PASS()				tracer_pass(__FILE__, __LINE__)
 #define TRACE_byte(byte)		tracer_trace_byte(__FILE__, __LINE__, byte)
@@ -88,6 +90,8 @@ void tracer_trace_n(const char* file_name, u16 line_id, u8 length, u8* p_buffer)
 #define TRACE_N(len, p_buf)		tracer_trace_n(__FILE__, __LINE__, len, p_buf)
 
 #else
+
+#pragma TRACES_NOT_ENABLED
 
 #define TRACES_RESTART()		do {} while(0)
 #define PASS()				do {} while(0)
@@ -98,6 +102,6 @@ void tracer_trace_n(const char* file_name, u16 line_id, u8 length, u8* p_buffer)
 
 #define BUILD_TRACER(name)
 
-#endif // TRACER_ON
+#endif // #if defined TRACER_ON && defined TRACER_ENABLED
 
 #undef TRACER_ON
