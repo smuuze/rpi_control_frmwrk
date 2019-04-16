@@ -147,15 +147,15 @@ void spi_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 		SPI0_ENABLE_MASTER_MODE(); PASS(); // spi_driver_configure()
 		SPI_CE_drive_high();
-		SPI_SCK_drive_high();
+		//SPI_SCK_drive_high();
 		SPI_MOSI_no_drive();
 		SPI_MISO_no_pull();
 
 	} else {
 
-		SPI0_DISABLE_MASTER_MODE(); PASS(); // spi_driver_configure()
+		SPI0_DISABLE_MASTER_MODE(); PASS(); // spi_driver_configure()		
 		SPI_CE_pull_up();
-		SPI_SCK_pull_up();
+		//SPI_SCK_pull_up();
 		SPI_MOSI_no_pull();
 		SPI_MISO_drive_low();
 	}

@@ -557,11 +557,11 @@ void rpi_protocol_task_run(void) {
 			 * How get i get noticed that the answer is read and no command was given
 			 */
 
-//			if (i_system.time.isup_u16(operation_timeout_ms, RPI_PROTOCOL_HANDLER_DATA_EXCHANGE_TIMEOUT_MS) != 0) {
-//				PASS(); // rpi_protocol_task_run() - RPI_STATE_EXCHANGE_DATA - Receiving Command has Timed-Out !!! ---
-//				actual_state = RPI_STATE_CANCEL;
-//				break;
-//			}
+			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_DATA_EXCHANGE_TIMEOUT_MS) /*i_system.time.isup_u16(operation_timeout_ms, RPI_PROTOCOL_HANDLER_DATA_EXCHANGE_TIMEOUT_MS)*/ != 0) {
+				PASS(); // rpi_protocol_task_run() - RPI_STATE_EXCHANGE_DATA - Receiving Command has Timed-Out !!! ---
+				actual_state = RPI_STATE_CANCEL;
+				break;
+			}
 
 			PASS(); // rpi_protocol_task_run() - RPI_STATE_EXCHANGE_DATA - Get state of
 			cmd_receiver_state = _command_receiver(); // this information has to be remember
