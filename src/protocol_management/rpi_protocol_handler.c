@@ -23,7 +23,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_ON
+#define TRACER_OFF
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -276,7 +276,7 @@ static RPI_CMD_RECEIVER_STATE _command_receiver(void) {
 			return RPI_CMD_RECEIVER_IDLE;
 		}
 
-		TRACE_byte(rpi_protocol_spi_interface.command_length); // _com_driver_command_handler() - Command-Length
+		//TRACE_byte(rpi_protocol_spi_interface.command_length); // _com_driver_command_handler() - Command-Length
 		RPI_COMMAND_BUFFER_clear_all();
 	}
 
