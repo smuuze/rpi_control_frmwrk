@@ -232,6 +232,14 @@ u8 rpi_cmd_set_output(void) {
 	}
 
 	u8 err_code = CMD_NO_ERR;
+	
+	if (p_act_protocol->cmd_buffer->bytes_available() < 10) {
+	
+		PASS(); // rpi_cmd_set_output() - Not enough bytes to execute command !!! ---
+		err_code = CMD_ERR_INVARG;
+		p_act_protocol->set_finished(err_code);
+		return err_code;
+	}
 
 	while (p_act_protocol->cmd_buffer->bytes_available() >= 10) {
 
@@ -250,6 +258,7 @@ u8 rpi_cmd_set_output(void) {
 		if (io_output_controller_set_output(id, state, duration, toggle_period) == 0) {
 			PASS(); // rpi_cmd_set_output() - Output not set - wrong ID !!!
 			err_code = CMD_ERR_INVARG;
+			break;
 		}
 	}
 
