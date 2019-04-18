@@ -226,20 +226,18 @@ u8 rpi_cmd_set_output(void) {
 	if (p_act_protocol->cmd_buffer->bytes_available() < 2) {
 
 		PASS(); // rpi_cmd_set_output() - No argument was given
-
+		p_act_protocol->set_finished(CMD_ERR_INVARG);
+		return CMD_ERR_INVARG;
+	}
+	
+	if (p_act_protocol->cmd_buffer->bytes_available() < 10) {
+	
+		PASS(); // rpi_cmd_set_output() - Not enough bytes to execute command !!! ---
 		p_act_protocol->set_finished(CMD_ERR_INVARG);
 		return CMD_ERR_INVARG;
 	}
 
 	u8 err_code = CMD_NO_ERR;
-	
-	if (p_act_protocol->cmd_buffer->bytes_available() < 10) {
-	
-		PASS(); // rpi_cmd_set_output() - Not enough bytes to execute command !!! ---
-		err_code = CMD_ERR_INVARG;
-		p_act_protocol->set_finished(err_code);
-		return err_code;
-	}
 
 	while (p_act_protocol->cmd_buffer->bytes_available() >= 10) {
 
