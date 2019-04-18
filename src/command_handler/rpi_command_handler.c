@@ -16,7 +16,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_OFF
+#define TRACER_ON
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -161,7 +161,7 @@ u8 rpi_cmd_get_input_state(void) {
 
 u8 rpi_cmd_get_output_list(void) {
 
-	PASS(); // rpi_cmd_set_output()
+	PASS(); // rpi_cmd_get_output_list()
 
 	p_act_protocol->answ_buffer->start_write();
 	IO_OUTPUT_STATE output;
@@ -187,6 +187,8 @@ u8 rpi_cmd_get_output_list(void) {
 }
 
 u8 rpi_cmd_get_output_state(void) {
+
+	PASS(); // rpi_cmd_get_output_state()
 
 	if (p_act_protocol->cmd_buffer->bytes_available() == 0) {
 
@@ -219,7 +221,7 @@ u8 rpi_cmd_get_output_state(void) {
 
 u8 rpi_cmd_set_output(void) {
 
-
+	PASS(); // rpi_cmd_set_output()
 
 	if (p_act_protocol->cmd_buffer->bytes_available() < 2) {
 
