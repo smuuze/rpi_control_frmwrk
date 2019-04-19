@@ -7,6 +7,7 @@
 
 #include "local_gpio_driver.h"
 #include "system_interface.h"
+#include "time_management.h"
 #include "io_input_controller.h"
 
 //---------- Implementation of Traces -----------------------------------------
@@ -21,6 +22,12 @@
 #define BUTTON_IS_DOWN(p_button_state)			(p_button_state->down == 1 ? 1 : 0)
 #define BUTTON_IS_RELEASED(p_button_state, timestamp)	(p_button_state->released == 1 && p_button_state->__release_time + IO_BUTTON_RELEASED_TIMESPAN_MS < timestamp)
 
+//-----------------------------------------------------------------------------
+
+TIME_MGMN_BUILD_STATIC_TIMER_U16(task_timer)
+
+//-----------------------------------------------------------------------------
+
 /*!
  *
  */
@@ -31,11 +38,7 @@ static IO_INPUT_DESCRIPTOR* p_first_button = 0;
  */
 static IO_INPUT_DESCRIPTOR* p_last_button = 0;
 
-/*!
- *
- */
-static u16 task_run_interval_reference = 0;
-
+//-----------------------------------------------------------------------------
 
 static void _init_state(IO_INPUT_DESCRIPTOR* p_button_state) {
 
@@ -48,11 +51,15 @@ static void _init_state(IO_INPUT_DESCRIPTOR* p_button_state) {
 	p_button_state->released = 0;
 }
 
+//-----------------------------------------------------------------------------
+
 void io_input_controller_init(void) {
 	//system_get_pointer(p_system);
 }
 
 u8 io_input_controller_register_input(IO_INPUT_DESCRIPTOR* p_new_button) {
+		
+	PASS(); // io_input_controller_register_input()
 
 	if (p_first_button == 0) {
 
@@ -176,12 +183,14 @@ void io_input_controller_get_state(u8 button_id, IO_INPUT_STATE* p_button_state)
 
 
 void io_input_controller_task_init(void) {
-	task_run_interval_reference = i_system.time.now_u16();
+	PASS(); // io_input_controller_task_init()
+	task_timer_start();
 }
 
 MCU_TASK_INTERFACE_TASK_STATE io_input_controller_task_get_state(void) {
+	//PASS(); // io_input_controller_task_get_state()
 
-	if (i_system.time.isup_u16(task_run_interval_reference, IO_INPUT_CONTROLLER_TASK_RUN_INTERVAL_MS) != 0) {
+	if (task_timer_is_up(IO_INPUT_CONTROLLER_TASK_RUN_INTERVAL_MS) != 0) {
 		return MCU_TASK_RUNNING;
 	} else {
 		return MCU_TASK_SLEEPING;
@@ -190,19 +199,14 @@ MCU_TASK_INTERFACE_TASK_STATE io_input_controller_task_get_state(void) {
 
 void io_input_controller_task_run(void) {
 
-	#ifdef TRACES_ENABLED
-	u32 actual_time = i_system.time.now_u32();
-	TRACE_long(actual_time); // rpi_protocol_task_run() ------------------
-	#endif
-
 	IO_INPUT_DESCRIPTOR* p_act_button = p_first_button;
 
 	while (p_act_button != 0) {
 		io_input_controller_check_state(p_act_button);
 		p_act_button = p_act_button->__next_button;
 	}
-
-	task_run_interval_reference = i_system.time.now_u16();
+	
+	task_timer_start();
 }
 
 void io_input_controller_task_background_run(void) {

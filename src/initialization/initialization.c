@@ -19,7 +19,7 @@ void initialization(void) {
 
 	system_initialization();
 
-	//button_initialization();
+	button_initialization();
 	output_initialization();
 
 	protocol_initialization();

@@ -7,6 +7,7 @@
 
 #include "system_interface.h"
 #include "local_event_task.h"
+#include "time_management.h"
 
 #include "specific.h"
 #include "local_context.h"
@@ -20,6 +21,11 @@
 
 //-----------------------------------------------------------------------------
 
+TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
+
+//-----------------------------------------------------------------------------
+
+#define EVENT_RISE_TIME_MS	50
 #define EVENT_TIMEOUT_MS	200
 #define EVENT_QEUE_MAX_SIZE	10
 
@@ -32,10 +38,10 @@ typedef struct EVENT_QEUE_ELEMENT {
  *
  */
 typedef enum {
-	EVENT_STATE_SLEEP,
+	EVENT_STATE_SLEEP = 0x00,
 	EVENT_STATE_ACTIVATE,
 	EVENT_STATE_RESET_QEUE,
-	EVENT_STATE_IDLE,
+	EVENT_STATE_WAIT_FOR_TIMEOUT,
 	EVENT_STATE_FINISH,
 } EVENT_HANDLER_STATE;
 
@@ -64,7 +70,10 @@ MCU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void) {
 
 	if (_event_counter != 0 || actual_task_state != EVENT_STATE_SLEEP) {
 
-		PASS(); // local_event_mcu_task_is_runable() ---
+		PASS(); // local_event_mcu_task_is_runable() --- 
+		TRACE_byte(_event_counter); //
+		TRACE_byte(actual_task_state); //
+
 		return MCU_TASK_RUNNING;
 	}
 
@@ -73,9 +82,6 @@ MCU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void) {
 
 void local_event_mcu_task_run(void) {
 
-	PASS(); // local_event_mcu_task_run() ---
-
-	static u16 operation_timeout = 0;
 	u8 i = 0;
 
 	switch (actual_task_state) {
@@ -86,6 +92,7 @@ void local_event_mcu_task_run(void) {
 				break;
 			}
 
+			PASS(); // local_event_mcu_task_run() - Event occured !!! ---
 			actual_task_state = EVENT_STATE_ACTIVATE;
 			// no break;
 
@@ -93,8 +100,8 @@ void local_event_mcu_task_run(void) {
 
 			EVENT_GPIO_drive_high();
 
-			operation_timeout = i_system.time.now_u16();
-			actual_task_state = EVENT_STATE_ACTIVATE;
+			operation_timer_start();
+			actual_task_state = EVENT_STATE_RESET_QEUE;
 
 			// no break;
 
@@ -106,32 +113,41 @@ void local_event_mcu_task_run(void) {
 					continue;
 				}
 
-				if (i_system.time.isup_u32(_event_qeue[i].timestamp, EVENT_TIMEOUT_MS) != 0) {
-					_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
-					_event_counter--;
+				if (i_system.time.isup_u32(_event_qeue[i].timestamp, EVENT_RISE_TIME_MS) == 0) {
+					TRACE_byte(_event_qeue[i].event_id); // local_event_mcu_task_run() - Event still active !!! ---
 					continue;
 				}
+
+				TRACE_byte(_event_qeue[i].event_id); // local_event_mcu_task_run() - Event removed !!! ---
 
 				_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
 				_event_counter--;
 			}
 
-			actual_task_state = EVENT_STATE_ACTIVATE;
+			actual_task_state = EVENT_STATE_WAIT_FOR_TIMEOUT;
 			// no break;
 
-		case EVENT_STATE_IDLE :
+		case EVENT_STATE_WAIT_FOR_TIMEOUT :
 
-			if (i_system.time.isup_u16(operation_timeout, EVENT_TIMEOUT_MS) == 0) {
+			if (operation_timer_is_up(EVENT_TIMEOUT_MS) == 0) {
 				break;
 			}
 
-			EVENT_GPIO_no_drive();
+			if (_event_counter != 0) {
+				PASS(); // local_event_mcu_task_run() - Event still available
+				actual_task_state = EVENT_STATE_ACTIVATE;
+				break;
+			}
+
 			actual_task_state = EVENT_STATE_FINISH;
 			// no break;
 
 		default:
 		case EVENT_STATE_FINISH :
 
+			PASS(); // local_event_mcu_task_run() - Event time is over
+
+			EVENT_GPIO_no_drive();
 			actual_task_state = EVENT_STATE_SLEEP;
 			break;
 	}
