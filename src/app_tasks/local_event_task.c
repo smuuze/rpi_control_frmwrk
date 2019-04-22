@@ -26,7 +26,7 @@ TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
 //-----------------------------------------------------------------------------
 
 #define EVENT_RISE_TIME_MS	50
-#define EVENT_TIMEOUT_MS	200
+#define EVENT_TIMEOUT_MS	50
 #define EVENT_QEUE_MAX_SIZE	10
 
 typedef struct EVENT_QEUE_ELEMENT {
@@ -45,12 +45,24 @@ typedef enum {
 	EVENT_STATE_FINISH,
 } EVENT_HANDLER_STATE;
 
+/*!
+ *
+ */
 static EVENT_HANDLER_STATE actual_task_state = EVENT_STATE_SLEEP;
 
+/*!
+ *
+ */
 static EVENT_QEUE_ELEMENT_TYPE _event_qeue[EVENT_QEUE_MAX_SIZE];
 
+/*!
+ *
+ */
 static u8 _event_counter = 0;
 
+/*!
+ *
+ */
 IO_CONTROLLER_BUILD_INOUT(EVENT_GPIO, EVENT_OUTPUT)
 
 void local_event_mcu_task_init(void) {
@@ -130,11 +142,12 @@ void local_event_mcu_task_run(void) {
 		case EVENT_STATE_WAIT_FOR_TIMEOUT :
 
 			if (operation_timer_is_up(EVENT_TIMEOUT_MS) == 0) {
+				actual_task_state = EVENT_STATE_RESET_QEUE;
 				break;
 			}
 
 			if (_event_counter != 0) {
-				PASS(); // local_event_mcu_task_run() - Event still available
+				TRACE_byte(_event_counter); // local_event_mcu_task_run() - Event still available
 				actual_task_state = EVENT_STATE_ACTIVATE;
 				break;
 			}
