@@ -16,7 +16,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_ON
+#define TRACER_OFF
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -26,7 +26,7 @@ TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
 //-----------------------------------------------------------------------------
 
 #define EVENT_RISE_TIME_MS	50
-#define EVENT_TIMEOUT_MS	50
+#define EVENT_TIMEOUT_MS	100
 #define EVENT_QEUE_MAX_SIZE	10
 
 typedef struct EVENT_QEUE_ELEMENT {
@@ -68,6 +68,7 @@ IO_CONTROLLER_BUILD_INOUT(EVENT_GPIO, EVENT_OUTPUT)
 void local_event_mcu_task_init(void) {
 
 	EVENT_GPIO_init();
+	EVENT_GPIO_drive_low();
 
 	u8 i = 0;
 	for ( ; i < EVENT_QEUE_MAX_SIZE; i++) {
@@ -160,7 +161,7 @@ void local_event_mcu_task_run(void) {
 
 			PASS(); // local_event_mcu_task_run() - Event time is over
 
-			EVENT_GPIO_no_drive();
+			EVENT_GPIO_drive_low();
 			actual_task_state = EVENT_STATE_SLEEP;
 			break;
 	}

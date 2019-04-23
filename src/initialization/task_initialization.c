@@ -163,7 +163,7 @@ static MCU_TASK_INTERFACE rpi_protocol_task = {
 static MCU_TASK_INTERFACE event_task = {
 
 	0, 						// u8 identifier,
-	25, 						// const u16 SCHEDULE_INTERVAL,
+	5, 						// const u16 SCHEDULE_INTERVAL,
 	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
