@@ -33,40 +33,48 @@
 	}											\
 												\
 	u8 name##_get_state(void) {								\
-		return pca9679_get_level(addr, pin_num);					\
+		return pca9679_get_state(addr, pin_num);					\
+	}											
+
+#define PCA9679_INCLUDE_INPUT(name)								\
+	void name##_init(void);									\
+	u8 name##_get_state(void);								
+
+#define PC9679_BUILD_OUTPUT(name, addr, pin_num)						\
+												\
+	void name##_init(void) {								\
+		pca9679_set_direction(addr, pin_num, PCA9679_DIRECTION_INPUT);			\
+		pca9679_set_level(addr, pin_num, PCA9679_LEVEL_HIGH);				\
+	}											\
+												\
+	void name##_set_on(void) {								\
+		return pca9679_set_state(addr, pin_num, PCA9679_STATE_HIGH);			\
+	}											\
+												\
+	void name##_set_off(void) {								\
+		return pca9679_set_state(addr, pin_num, PCA9679_STATE_LOW);			\
 	}
+
+#define PCA9679_INCLUDE_OUTPUT(name)								\
+	void name##_init(void);									\
+	u8 name##_set_on(void);									\
+	u8 name##_set_off(void);								
+
 
 // ---- Driver Type Definitions --------------------------------------------------------------
 
-
-typedef struct {
+typedef struct PCA9679_INSTANCE {
 	u8 address;
 	u8 direction_mask;
 	u8 level_mask;
+	struct PCA9679_INSTANCE* next;
 } PCA9679_INSTANCE_TYPE;
-
-
-typedef struct {
-	u8 pin_number : 3;
-	u8 direction : 1;
-	u8 level : 1;
-	u8 RESERVED : 3;
-} PCA9679_PIN_CFG_TYPE
-
-
-typedef struct {
-	u8 address;
-	PCA9679_PIN_CFG_TYPE pin_cfg;
-} PCA9679_PIN_TYPE;
 
 
 // ---- Driver Function Prototypes -----------------------------------------------------------
 
 
 void pca_9679_register_module(PCA9679_INSTANCE_TYPE* p_instance);
-
-
-void pca9679_init(PCA9679_INSTANCE_TYPE* p_instance);
 
 
 void pca9679_set_direction(u8 instance_address, u8 instance_pin_number, u8 new_direction);
