@@ -22,7 +22,6 @@
 #include "cfg_driver_interface.h"
 
 #include "local_data_storage_array.h"
-#include "system_interface.h"
 
 //---------- Implementation of Traces -----------------------------------------
 
