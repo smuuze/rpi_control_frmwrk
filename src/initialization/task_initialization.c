@@ -219,6 +219,27 @@ static MCU_TASK_INTERFACE test_tracer_task = {
 };
 #endif
 
+#ifdef EXPANSION_BOARD_PC9670_AVAILABLE
+#include "driver_PCA9670.h"
+static MCU_TASK_INTERFACE pca9670_task = {
+
+	0, 						// u8 identifier,
+	1000, 						// const u16 SCHEDULE_INTERVAL,
+	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&test_tracer_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
+	&test_tracer_task_get_state, 				// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&test_tracer_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
+	&test_tracer_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
+	0						// next-task
+};
+#endif
+
 void task_initialization(void) {
 
 	PASS(); // task_initialization()
@@ -232,7 +253,6 @@ void task_initialization(void) {
 	mcu_task_controller_register_task(&cmd_mcu_task);
 	//mcu_task_controller_register_task(&debus_task);
 
-
 	#if defined (HAS_APP_TASK_TEST_TRACER) && (HAS_APP_TASK_TEST_TRACER) == 1
 	mcu_task_controller_register_task(&test_tracer_task);
 	#endif
@@ -241,6 +261,9 @@ void task_initialization(void) {
 	mcu_task_controller_register_task(&led_mcu_task);
 	#endif
 
+	#ifdef EXPANSION_BOARD_PC9670_AVAILABLE
+	mcu_task_controller_register_task(&pca9670_task);
+	#endif
 
 	mcu_task_controller_register_task(&event_task);
 	mcu_task_controller_register_task(&io_output_controller_task);
