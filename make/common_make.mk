@@ -129,16 +129,6 @@ CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/mcu_idle_task.c
 CSRCS += $(APP_TASK_INC_PATH)/local_event_task.c
 CSRCS += $(APP_TASK_INC_PATH)/local_cmd_mcu_task.c
 
-ifneq '' '$(findstring ADC_ADS1115,$(APP_TASK_CFG))'
-DEFS  += -D HAS_APP_TASK_ADC_ADS1115=1
-CSRCS += $(APP_TASK_INC_PATH)/local_ads1115_mcu_task.c
-endif
-
-ifneq '' '$(findstring TEMP_HUM_SHT31,$(APP_TASK_CFG))'
-DEFS  += -D HAS_APP_TASK_TEMP_HUM_SHT31=1
-CSRCS += $(APP_TASK_INC_PATH)/local_sht31_mcu_task.c
-endif
-
 ifneq '' '$(findstring LED_MATRIX,$(APP_TASK_CFG))'
 DEFS  += -D HAS_APP_TASK_LED_MATRIX=1
 CSRCS += $(APP_TASK_INC_PATH)/local_led_mcu_task.c
@@ -152,6 +142,23 @@ endif
 ifneq '' '$(findstring TEST_TRACER,$(APP_TASK_CFG))'
 DEFS += -D HAS_APP_TASK_TEST_TRACER=1
 CSRCS += $(APP_TASK_INC_PATH)/test_tracer_mcu_task.c
+endif
+
+# ---- EXPANSION BOARDS -------------------------------------------------------------------
+
+EXPANSION_BOARD_PATH = $(APP_PATH)/expansion
+INC_PATH += $(EXPANSION_BOARD_PATH)
+
+ifneq '' '$(findstring SENSOR_SHT31_ADS1115,$(EXPANSION_BOARD_CFG))'
+	DEFS  += -D HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115=1
+	
+	CSRCS += $(EXPANSION_BOARD_PATH)/local_ads1115_mcu_task.c
+	CSRCS += $(EXPANSION_BOARD_PATH)/local_sht31_mcu_task.c
+endif
+
+ifneq '' '$(findstring GPIO_PCA9670,$(EXPANSION_BOARD_CFG))'
+	DEFS  += -D HAS_EXPANSION_BOARD_GPIO_PCA9670=1
+	CSRCS += $(EXPANSION_BOARD_PATH)/driver_PCA9670.c
 endif
 
 

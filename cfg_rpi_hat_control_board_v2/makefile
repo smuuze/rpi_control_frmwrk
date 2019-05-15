@@ -49,10 +49,14 @@ HOST_INTERFACE_TYPE = SPI
 #-----------------------------------------------------------------------------
 
 APP_TASK_CFG += 
-APP_TASK_CFG += ADC_ADS1115
-APP_TASK_CFG += TEMP_HUM_SHT31
 #APP_TASK_CFG += LED_MATRIX
 #APP_TASK_CFG += TEST_TRACER
+
+#-----------------------------------------------------------------------------
+
+EXPANSION_BOARD_CFG = 
+EXPANSION_BOARD_CFG += SENSOR_SHT31_ADS1115
+EXPANSION_BOARD_CFG += GPIO_PCA9670
 
 #-----------------------------------------------------------------------------
 

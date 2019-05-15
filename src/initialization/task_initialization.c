@@ -42,6 +42,7 @@ static MCU_TASK_INTERFACE led_mcu_task = {
 
 
 
+#ifdef HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115
 #include "local_ads1115_mcu_task.h"
 static MCU_TASK_INTERFACE ads1115_mcu_task = {
 
@@ -61,8 +62,6 @@ static MCU_TASK_INTERFACE ads1115_mcu_task = {
 	0					// next-task
 };
 
-
-
 #include "local_sht31_mcu_task.h"
 static MCU_TASK_INTERFACE sht31_mcu_task = {
 
@@ -81,6 +80,7 @@ static MCU_TASK_INTERFACE sht31_mcu_task = {
 	&local_sht31_mcu_task_terminate, 	// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
 	0					// next-task
 };
+#endif
 
 
 #include "command_controller.h"
@@ -219,19 +219,19 @@ static MCU_TASK_INTERFACE test_tracer_task = {
 };
 #endif
 
-#ifdef EXPANSION_BOARD_PC9670_AVAILABLE
+#ifdef HAS_EXPANSION_BOARD_GPIO_PCA9670
 #include "driver_PCA9670.h"
 static MCU_TASK_INTERFACE pca9670_task = {
 
 	0, 						// u8 identifier,
-	1000, 						// const u16 SCHEDULE_INTERVAL,
+	5, 						// const u16 SCHEDULE_INTERVAL,
 	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
-	&test_tracer_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&test_tracer_task_get_state, 				// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&test_tracer_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	&test_tracer_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
+	&pca9670_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
+	&pca9670_task_get_state, 			// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
+	&pca9670_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
+	&pca9670_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
 	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
 	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
 	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
@@ -248,8 +248,12 @@ void task_initialization(void) {
 
 	mcu_task_controller_register_task(&io_input_controller_task);
 	mcu_task_controller_register_task(&rpi_protocol_task);
+	
+	#ifdef HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115
 	mcu_task_controller_register_task(&sht31_mcu_task);
 	mcu_task_controller_register_task(&ads1115_mcu_task);
+	#endif
+	
 	mcu_task_controller_register_task(&cmd_mcu_task);
 	//mcu_task_controller_register_task(&debus_task);
 
@@ -261,7 +265,7 @@ void task_initialization(void) {
 	mcu_task_controller_register_task(&led_mcu_task);
 	#endif
 
-	#ifdef EXPANSION_BOARD_PC9670_AVAILABLE
+	#ifdef HAS_EXPANSION_BOARD_GPIO_PCA9670
 	mcu_task_controller_register_task(&pca9670_task);
 	#endif
 
