@@ -44,6 +44,9 @@ INC_PATH += $(BOARD_INC_PATH)
 
 CSRCS += ${BOARD_INC_PATH}/board_${BOARD_ID}.c
 
+
+INC_PATH += $(APP_PATH)
+
 # ---- COMMON MODULES ---------------------------------------------------
 COMMON_INC_PATH = $(APP_PATH)/common
 INC_PATH += $(COMMON_INC_PATH)
@@ -67,9 +70,7 @@ CSRCS += $(SYSTEM_INC_PATH)/system_interface.c
 
 # ---- TRACER -----------------------------------------------------------
 
-ifdef TRACER_CFG
 include $(MAKE_PATH)/make_tracer.mk
-endif
 
 # ---- HOST-INTERFACE ---------------------------------------------------
 
@@ -188,10 +189,7 @@ CSRCS += $(INITIALIZATION_INC_PATH)/initialization.c
 
 # ---- DRIVER MODULES ---------------------------------------------------
 
-ifdef DRIVER_MODULE_CFG
 include $(MAKE_PATH)/make_driver.mk
-endif
-
 
 # -----------------------------------------------------------------------
 

@@ -92,7 +92,7 @@ lss_file:
 obj_dir:
 	$(VERBOSE) $(ECHO) - Creating Object directory: $(OBJECT_DIRECTORY)
 	$(VERBOSE) $(MK) $(OBJECT_DIRECTORY)
-
+	
 prog_size:
 	$(CC_SIZE) --mcu=$(MCU_NAME) $(OBJECT_DIRECTORY)/$(TARGET).elf
 
@@ -121,7 +121,7 @@ tracer:
 git_update: 
 	git pull
 
-# --------- 
+# ---------
 
 $(OBJECT_DIRECTORY)/%.o: %.c
 	$(VERBOSE) $(ECHO) $(MSG_COMPILING) $(notdir $<)
