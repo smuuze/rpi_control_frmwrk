@@ -121,7 +121,7 @@ typedef struct {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-#include "trx_driver_interface.h"
+#include "driver/trx_driver_interface.h"
 
 /*!
  *

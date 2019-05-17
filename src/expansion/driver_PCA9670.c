@@ -5,11 +5,11 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "cfg_driver_interface.h"
-#include "system_interface.h"
-#include "time_management.h"
+#include "driver/cfg_driver_interface.h"
+#include "system/system_interface.h"
+#include "time_management/time_management.h"
 
-#include "driver/driver_PCA9670.h"
+#include "expansion/driver_PCA9670.h"
 
 //---------- Implementation of Traces -----------------------------------------
 
@@ -78,6 +78,11 @@ static PCA9670_INSTANCE_TYPE* p_first_instance = 0;
  *
  */
 static PCA9670_INSTANCE_TYPE* p_last_instance = 0;
+
+/*!
+ *
+ */
+static PCA9670_INSTANCE_TYPE* p_act_instance = 0;
 
 /*!
  *
@@ -265,7 +270,6 @@ void pca9670_task_run(void) {
 	#endif
 		
 	u8 command_buffer[PCA9670_COMMAND_BUFFER_SIZE];
-	PCA9670_INSTANCE_TYPE* actual_instance;
 
 	switch (operation_stage) {
 
@@ -285,7 +289,7 @@ void pca9670_task_run(void) {
 				break;
 			}
 			
-			actual_instance = p_first_instance;
+			p_act_instance = p_first_instance;
 			operation_stage = PCA9670_TASK_STATE_REQUEST_DRIVER;
 			operation_timer_start();
 			// no break;
@@ -323,10 +327,10 @@ void pca9670_task_run(void) {
 				
 			TRACE_byte(); // pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Going to handle instance
 			
-			PCA9670_GEN_COMMAND_WRITE_IO(actual_instance, command_buffer);
+			PCA9670_GEN_COMMAND_WRITE_IO(p_act_instance, command_buffer);
 
 			p_com_driver->clear_buffer();
-			p_com_driver->set_address(actual_instance->address);
+			p_com_driver->set_address(p_act_instance->address);
 			p_com_driver->set_N_bytes(PCA9670_WRITE_IO_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();
 			
@@ -348,7 +352,7 @@ void pca9670_task_run(void) {
 				break;
 			}
 
-			p_com_driver->set_address(actual_instance->address);
+			p_com_driver->set_address(p_act_instance->address);
 			p_com_driver->start_rx(PCA9670_READ_IO_ANSWER_LENGTH);
 			
 			operation_timer_start();
@@ -374,11 +378,11 @@ void pca9670_task_run(void) {
 			
 		case PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE :
 		
-			if (actual_instance->next != 0) {
+			if (p_act_instance->next != 0) {
 				
 				PASS(); // pca9670_task_run() - PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE - Loading next instance
 				
-				actual_instance = actual_instance->next;
+				p_act_instance = p_act_instance->next;
 				operation_stage = PCA9670_TASK_STATE_WRITE_IO;				
 				operation_timer_start();				
 				break;
@@ -399,7 +403,7 @@ void pca9670_task_run(void) {
 		
 			task_timer_start();
 			operation_stage = PCA9670_TASK_STATE_IDLE;
-			task_state == MCU_TASK_SLEEPING;
+			task_state = MCU_TASK_SLEEPING;
 			
 			break;
 	}

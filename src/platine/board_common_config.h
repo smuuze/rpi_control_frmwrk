@@ -1,7 +1,7 @@
 #ifndef _PIN_MAP_CFG_H_
 #define _PIN_MAP_CFG_H_
 
-#include "../src/common/cpu.h"
+#include "cpu.h"
 
 #define GPIO_INVERTED					0x80
 #define GPIO_IDLE_HIGH					0x40

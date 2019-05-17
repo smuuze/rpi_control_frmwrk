@@ -329,4 +329,5 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 
 ///-----------------------------------------------------------------------------
 
-#include "common_types.h"
+#include "common/common_types.h"
+#include "cpu.h"
