@@ -87,6 +87,5 @@
 // Mus zuletzt eingebunden werden. Alles was oben nicht definiert wurde, wird
 // hier auf default Werte gesetzt.
 #include "../src/config_default.h"
-#include "../src/common/cpu.h"
 
 #endif /* _config_H_ */

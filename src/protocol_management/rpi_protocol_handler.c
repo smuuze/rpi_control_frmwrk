@@ -438,7 +438,7 @@ void rpi_protocol_task_init(void) {
 
 MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 
-	if (IS_READY_is_high_level()) {
+	if (IS_READY_is_low_level()) {
 		actual_task_state = MCU_TASK_RUNNING;
 	}
 
@@ -468,7 +468,7 @@ void rpi_protocol_task_run(void) {
 		case RPI_STATE_SLEEP : PASS(); //
 
 			//if (IS_READY_PIN() == 0) {
-			if (IS_READY_is_low_level()) {
+			if (IS_READY_is_high_level()) {
 				PASS(); // rpi_protocol_task_run() - RPI_STATE_SLEEP - No request - FALSE ALARM
 				actual_task_state = RPI_STATE_SLEEP;
 				break;
@@ -506,7 +506,8 @@ void rpi_protocol_task_run(void) {
 
 			//if (IS_READY_PIN() == 0) {
 			if (IS_READY_is_low_level()) {
-				PASS(); // rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST - Ready Pin low !!! ---
+				PASS(); // rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST - Ready Pin still low !!! ---
+				break;
 			}
 
 			actual_state = RPI_STATE_ACTIVATE_DRIVER;
@@ -643,7 +644,7 @@ void rpi_protocol_task_run(void) {
 			actual_state = RPI_STATE_FINISH;
 
 			//------------------config_IS_READY_IDLE; // OUTPUT_ON
-			IS_READY_drive_high();
+			IS_READY_pull_up();
 
 			// no break; // Leave Task and let IO-Controller set Ouputs
 
@@ -657,14 +658,14 @@ void rpi_protocol_task_run(void) {
 			actual_state = RPI_STATE_WAIT_FOR_RELEASE;
 
 			//------------------config_IS_READY_DISABLE; // INPUT_HIGH_Z
-			IS_READY_no_drive();
+			//IS_READY_pull_up();
 
 			// no break; // Leave Task and let IO-Controller set Ouputs
 
 		case RPI_STATE_WAIT_FOR_RELEASE : PASS(); //
 
 			//if (IS_READY_PIN() != 0) {
-			if (IS_READY_is_high_level()) {
+			if (IS_READY_is_low_level()) {
 				PASS(); // rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_RELEASE - Request Still pending
 				actual_state = RPI_PREPARE_FOR_REQUEST;
 				break;

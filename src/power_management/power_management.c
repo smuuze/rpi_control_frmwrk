@@ -16,7 +16,7 @@
 
 #include "power_management/power_management.h"
 
-u8 power_mgmnt_request(POWER_MANAGEMENT_UNIT_TYPE* p_unit) {	
+u8 power_mgmnt_request(POWER_MANAGEMENT_UNIT_TYPE* p_unit) {
 	PASS(); // power_mgmnt_release()
 	
 	if (p_unit->request_counter == 0) {
