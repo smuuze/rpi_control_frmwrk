@@ -282,8 +282,11 @@ static RPI_CMD_RECEIVER_STATE _command_receiver(void) {
 
 	p_com_driver->wait_for_rx(rpi_protocol_spi_interface.command_length, 100); // blocking function
 
-	if (p_com_driver->bytes_available() < rpi_protocol_spi_interface.command_length) {
+	u8 bytes_available = p_com_driver->bytes_available();
+	if (bytes_available < rpi_protocol_spi_interface.command_length) {
 		PASS(); // _com_driver_command_handler() - Command not complete yet
+		TRACE_byte(rpi_protocol_spi_interface.command_length); //
+		TRACE_byte(bytes_available); //
 		return RPI_CMD_RECEIVER_WAIT_FOR_COMPLETION;
 	}
 
@@ -425,8 +428,8 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	PASS(); // rpi_protocol_init() - Finish
 
-	//IS_READY_drive_low();
-	IS_READY_no_drive();
+	//IS_READY_no_drive();
+	IS_READY_pull_up();
 
 	//io_output_controller_set_output(GET_SYSTEM(SYS_OUTPUT).system_busy_output_01, IO_OUTPUT_STATE_OFF, 0, 0);
 }
@@ -470,7 +473,7 @@ void rpi_protocol_task_run(void) {
 			//if (IS_READY_PIN() == 0) {
 			if (IS_READY_is_high_level()) {
 				PASS(); // rpi_protocol_task_run() - RPI_STATE_SLEEP - No request - FALSE ALARM
-				actual_task_state = RPI_STATE_SLEEP;
+				actual_task_state = MCU_TASK_SLEEPING;
 				break;
 			}
 
@@ -492,6 +495,7 @@ void rpi_protocol_task_run(void) {
 			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS)/* i_system.time.isup_u16(operation_timeout_ms, RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS)*/ != 0) {
 				PASS(); // rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST - OPERATION TIMEOUT!!! ---
 				actual_state = RPI_STATE_SLEEP;
+				actual_task_state = MCU_TASK_SLEEPING;
 				break;
 			}
 

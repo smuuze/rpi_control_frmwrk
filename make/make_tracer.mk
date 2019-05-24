@@ -16,5 +16,5 @@ endif
 endif
 
 TRACER_EXE_FILE = Tracer.exe
-TRACER_BIN_PATH = ../../Tracer/project/bin/Release
+TRACER_BIN_PATH = ../../Tracer/Release/1.0
 TRACER_WORKING_PATH = ../../../../RPi_Hat_Derivate/$(notdir $(CURDIR))/
