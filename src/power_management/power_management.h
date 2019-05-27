@@ -3,9 +3,19 @@
 
 // --------------------------------------------------------------------------------------------------------------
 
-#define POWER_MGMN_BUILD_UNIT(name)										\
+#define POWER_MGMN_BUILD_UNIT(name, _POWER_UP_TIME_MS, _POWER_ON_CALLBACK, _POWER_OFF_CALLBACK)			\
 														\
-	static POWER_MANAGEMENT_UNIT_TYPE _##name##_power_mgmnt_unit = 0;					\
+	static POWER_MANAGEMENT_UNIT_TYPE _##name##_power_mgmnt_unit;						\
+														\
+	void name##_init(void) {										\
+		_##name##_power_mgmnt_unit.power_up_time_ms = _POWER_UP_TIME_MS;				\
+		_##name##_power_mgmnt_unit.request_counter = _POWER_UP_TIME_MS;					\
+		_##name##_power_mgmnt_unit.switch_on_timestamp = 0;						\
+		_##name##_power_mgmnt_unit.on = _POWER_ON_CALLBACK;						\
+		_##name##_power_mgmnt_unit.off = _POWER_OFF_CALLBACK;						\
+		_##name##_power_mgmnt_unit.status.is_on = 0;							\
+		_##name##_power_mgmnt_unit.status.is_ramp_up = 0;						\
+	}													\
 														\
 	u8 name##_is_on(void) {											\
 		return power_mgmnt_is_on(&_##name##_power_mgmnt_unit);						\
@@ -22,11 +32,23 @@
 
 #define POWER_MGMN_INCLUDE_UNIT(name)										\
 														\
+	void name##_init(void);											\
 	u8 name##_request(void);										\
-	void name##_release(void);
+	void name##_release(void);										\
+	u8 name##_is_on(void);
 
 
 // --------------------------------------------------------------------------------------------------------------
+
+/*!
+ *
+ */
+typedef void (*POWER_MANAGEMENT_POWER_ON_CALLBACK)		(void);
+
+/*!
+ *
+ */
+typedef void (*POWER_MANAGEMENT_POWER_OFF_CALLBACK)		(void);
 
 /*!
  *
@@ -41,16 +63,27 @@ typedef struct {
 /*!
  *
  */
-typedef struct {
+typedef struct POWER_MANAGEMENT_UNIT {
 
-	u8 power_up_time_ms;
+	u16 power_up_time_ms;
 	u8 request_counter;
-	u32 switch_on_timestamp;
+	u16 switch_on_timestamp;
+	
+	POWER_MANAGEMENT_POWER_ON_CALLBACK on;
+	POWER_MANAGEMENT_POWER_OFF_CALLBACK off;
+	
 	POWER_MANAGEMENT_STATUS_TYPE status;
+	
+	//struct POWER_MANAGEMENT_UNIT _next;
 	
 } POWER_MANAGEMENT_UNIT_TYPE;
 
 // --------------------------------------------------------------------------------------------------------------
+
+/*!
+ *
+ */
+void power_mgmnt_init(POWER_MANAGEMENT_UNIT_TYPE* p_unit);
 
 /*!
  *
@@ -67,5 +100,49 @@ void power_mgmnt_release(POWER_MANAGEMENT_UNIT_TYPE* p_unit);
  *
  */
 u8 power_mgmnt_is_on(POWER_MANAGEMENT_UNIT_TYPE* p_unit);
+
+
+// ---- Task Interface Prototypes ------------------------------------------------------------
+
+
+/*!
+ *
+ */
+void power_management_task_init(void);
+
+/*!
+ *
+ */
+//MCU_TASK_INTERFACE_TASK_STATE power_management_task_get_state(void);
+
+/*!
+ *
+ */
+void power_management_task_run(void);
+
+/*!
+ *
+ */
+void power_management_task_background_run(void);
+
+/*!
+ *
+ */
+void power_management_task_sleep(void);
+
+/*!
+ *
+ */
+void power_management_task_wakeup(void);
+
+/*!
+ *
+ */
+void power_management_task_finish(void);
+
+/*!
+ *
+ */
+void power_management_task_terminate(void);
 
 #endif // _TIME_MANAGEMENT_H_

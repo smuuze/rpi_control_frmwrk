@@ -20,6 +20,7 @@
 #include "asic_information_sht31.h"
 
 #include "cfg_driver_interface.h"
+#include "power_management/power_management.h"
 
 #include "local_data_storage_array.h"
 
@@ -94,9 +95,10 @@ TIME_MGMN_BUILD_STATIC_TIMER_U32(task_timer_maxmin)
 //static u32 operation_refrence_time = 0;
 TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
 
-
 BUILD_LOCAL_DATA_STORAGE_ARRAY_I8(sht31_temp_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
 BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(sht31_hum_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
+
+POWER_MGMN_INCLUDE_UNIT(EXPANSION_BOARD_POWER)
 
 void local_sht31_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 
@@ -174,6 +176,8 @@ void local_sht31_mcu_task_run(void) {
 
 			p_com_driver->configure(&driver_cfg);
 
+			EXPANSION_BOARD_POWER_request();
+			
 			task_timer_start(); // task_run_interval_reference_actual = i_system.time.now_u16();
 			operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
 
@@ -188,7 +192,12 @@ void local_sht31_mcu_task_run(void) {
 				break;
 			}
 
-			if (task_timer_is_up(SHT31_STARTUP_TIME_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_STARTUP_TIME_MS) */ == 0) {
+			//if (task_timer_is_up(SHT31_STARTUP_TIME_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_STARTUP_TIME_MS) */ == 0) {
+			//	PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Wait for Start-Up of Sensor
+			//	break;
+			//}
+			
+			if (EXPANSION_BOARD_POWER_is_on() == 0) {
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Wait for Start-Up of Sensor
 				break;
 			}
@@ -350,6 +359,8 @@ void local_sht31_mcu_task_run(void) {
 
 			p_com_driver->shut_down();
 			p_com_driver->mutex_rel(com_driver_mutex_id);
+
+			EXPANSION_BOARD_POWER_release();
 
 			break;
 	}

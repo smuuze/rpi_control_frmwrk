@@ -162,6 +162,11 @@ ifneq '' '$(findstring GPIO_PCA9670,$(EXPANSION_BOARD_CFG))'
 	CSRCS += $(EXPANSION_BOARD_PATH)/driver_PCA9670.c
 endif
 
+# ---- POWER MANAGEMENT -------------------------------------------------------------------
+	
+POWER_MANAGEMENT_PATH = $(APP_PATH)/power_management
+CSRCS += $(POWER_MANAGEMENT_PATH)/power_management.c
+
 
 # -----------------------------------------------------------------------
 
