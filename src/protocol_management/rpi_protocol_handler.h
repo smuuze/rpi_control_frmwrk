@@ -8,9 +8,9 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "trx_driver_interface.h"
-#include "cfg_driver_interface.h"
-#include "mcu_task_interface.h"
+#include "driver/trx_driver_interface.h"
+#include "driver/cfg_driver_interface.h"
+#include "mcu_task_management/mcu_task_interface.h"
 
 #ifndef RPI_PROTOCOL_HANDLER_DRIVER_CFG
 #define RPI_PROTOCOL_HANDLER_DRIVER_CFG			DRIVER_SPI_SLAVE, 		/*	u8 op_mode; 		*/ \

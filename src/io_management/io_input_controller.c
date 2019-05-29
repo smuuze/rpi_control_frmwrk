@@ -5,10 +5,10 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "local_gpio_driver.h"
-#include "system_interface.h"
-#include "time_management.h"
-#include "io_input_controller.h"
+#include "driver/gpio/gpio_interface.h"
+#include "system/system_interface.h"
+#include "time_management/time_management.h"
+#include "io_management/io_input_controller.h"
 
 //---------- Implementation of Traces -----------------------------------------
 

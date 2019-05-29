@@ -1,10 +1,11 @@
 #ifndef _IO_CONTROLLER_H_
 #define _IO_CONTROLLER_H_
 
-#include "io_input_controller.h"
-#include "io_output_controller.h"
+#include "io_management/io_input_controller.h"
+#include "io_management/io_output_controller.h"
 
-#include "system_interface.h"
+#include "system/system_interface.h"
+#include "driver/gpio/gpio_interface.h"
 
 
 #define IO_CONTROLLER_BUILD_OUTPUT(name, pin_descriptor)								\
@@ -118,57 +119,57 @@
 #define IO_CONTROLLER_BUILD_INOUT(name, pin_descr)									\
 															\
 	void name##_init(void) {											\
-		i_system.io.init_pin(&pin_descr);									\
+		gpio_driver_init_pin(&pin_descr);									\
 	}														\
 															\
 	void name##_drive_high(void) {											\
 		/* OUTPUT_HIGH_LEVEL  */										\
-		i_system.io.set_direction(&pin_descr, GPIO_DIRECTION_OUTPUT);						\
-		i_system.io.set_level(&pin_descr, GPIO_LEVEL_HIGH);							\
+		gpio_driver_set_direction(&pin_descr, GPIO_DIRECTION_OUTPUT);						\
+		gpio_driver_set_level(&pin_descr, GPIO_LEVEL_HIGH);							\
 	}														\
 															\
 	void name##_drive_low(void) {											\
 		/* OUTPUT_LOW_LEVEL  */											\
-		i_system.io.set_direction(&pin_descr, GPIO_DIRECTION_OUTPUT);						\
-		i_system.io.set_level(&pin_descr, GPIO_LEVEL_LOW);							\
+		gpio_driver_set_direction(&pin_descr, GPIO_DIRECTION_OUTPUT);						\
+		gpio_driver_set_level(&pin_descr, GPIO_LEVEL_LOW);							\
 															\
 	}														\
 															\
 	void name##_no_drive(void) {											\
 		/* INPUT_HIGH_Z  */											\
-		i_system.io.set_direction(&pin_descr, GPIO_DIRECTION_INPUT);						\
-		i_system.io.set_level(&pin_descr, GPIO_LEVEL_HIGH_Z);							\
+		gpio_driver_set_direction(&pin_descr, GPIO_DIRECTION_INPUT);						\
+		gpio_driver_set_level(&pin_descr, GPIO_LEVEL_HIGH_Z);							\
 															\
 	}														\
 															\
 	void name##_toggle_level(void) {										\
-		i_system.io.toggle_level(&pin_descr);									\
+		gpio_driver_toggle_level(&pin_descr);									\
 	}														\
 															\
 	void name##_pull_up(void) {											\
-		i_system.io.set_direction(&pin_descr, GPIO_DIRECTION_INPUT);						\
-		i_system.io.set_level(&pin_descr, GPIO_LEVEL_HIGH);							\
+		gpio_driver_set_direction(&pin_descr, GPIO_DIRECTION_INPUT);						\
+		gpio_driver_set_level(&pin_descr, GPIO_LEVEL_HIGH);							\
 															\
 	}														\
 															\
 	void name##_pull_down(void) {											\
-		i_system.io.set_direction(&pin_descr, GPIO_DIRECTION_INPUT);						\
-		i_system.io.set_level(&pin_descr, GPIO_LEVEL_LOW);							\
+		gpio_driver_set_direction(&pin_descr, GPIO_DIRECTION_INPUT);						\
+		gpio_driver_set_level(&pin_descr, GPIO_LEVEL_LOW);							\
 															\
 	}														\
 															\
 	void name##_no_pull(void) {											\
 		/* INPUT_HIGH_Z  */											\
-		i_system.io.set_direction(&pin_descr, GPIO_DIRECTION_INPUT);						\
-		i_system.io.set_level(&pin_descr, GPIO_LEVEL_HIGH_Z);							\
+		gpio_driver_set_direction(&pin_descr, GPIO_DIRECTION_INPUT);						\
+		gpio_driver_set_level(&pin_descr, GPIO_LEVEL_HIGH_Z);							\
 	}														\
 															\
 	u8 name##_is_high_level(void) {											\
-		return i_system.io.get_level(&pin_descr) == GPIO_LEVEL_HIGH ? 1 : 0;					\
+		return gpio_driver_get_level(&pin_descr) == GPIO_LEVEL_HIGH ? 1 : 0;					\
 	}														\
 															\
 	u8 name##_is_low_level(void) {											\
-		return i_system.io.get_level(&pin_descr) == GPIO_LEVEL_LOW ? 1 : 0;					\
+		return gpio_driver_get_level(&pin_descr) == GPIO_LEVEL_LOW ? 1 : 0;					\
 	}														\
 
 #define IO_CONTROLLER_INCLUDE_INOUT(name)										\

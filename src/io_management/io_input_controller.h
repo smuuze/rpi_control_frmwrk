@@ -1,9 +1,9 @@
 #ifndef _IO_INPUT_CONTROLLER_H_
 #define _IO_INPUT_CONTROLLER_H_
 
-#include "iterator_interface.h"
-#include "mcu_task_interface.h"
-#include "system_interface.h"
+#include "common/iterator_interface.h"
+#include "mcu_task_management/mcu_task_interface.h"
+#include "system/system_interface.h"
 
 /*!
  * Timespan that the button will be in pressed state, until the down state is activated

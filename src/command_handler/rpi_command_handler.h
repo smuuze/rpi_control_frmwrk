@@ -9,7 +9,7 @@
 #include "specific.h"
 
 
-#include "command_handler_interface.h"
+#include "command_management/command_handler_interface.h"
 
 
 #define RPI_COMMAND_GET_VERSION			0x01

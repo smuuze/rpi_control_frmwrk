@@ -5,21 +5,23 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "system_interface.h"
-#include "local_context.h"
-#include "io_controller.h"
+#include "system/system_interface.h"
 
-#include "local_msg_buffer.h"
-#include "local_module_status.h"
-#include "local_mutex.h"
+#include "common/local_context.h"
+#include "common/local_msg_buffer.h"
+#include "common/local_module_status.h"
+#include "common/local_mutex.h"
 
-#include "rpi_protocol_handler.h"
-#include "rpi_command_handler.h"
-#include "protocol_interface.h"
-#include "trx_driver_interface.h"
-#include "cfg_driver_interface.h"
-#include "driver_specific_spi.h"
-#include "time_management.h"
+#include "io_management/io_controller.h"
+
+#include "driver/trx_driver_interface.h"
+#include "driver/cfg_driver_interface.h"
+#include "driver/driver_specific_spi.h"
+
+#include "protocol_management/rpi_protocol_handler.h"
+#include "command_handler/rpi_command_handler.h"
+#include "command_management/protocol_interface.h"
+#include "time_management/time_management.h"
 
 //---------- Implementation of Traces -----------------------------------------
 
@@ -27,8 +29,6 @@
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
-
-BUILD_MODULE_STATUS_FAST_VOLATILE(rpi_status, 2)
 
 #define RPI_STATUS_COMMAND_PENDING				0
 #define RPI_STATUS_ANSWER_PENDING				1
@@ -60,6 +60,8 @@ BUILD_MODULE_STATUS_FAST_VOLATILE(rpi_status, 2)
  */
 #define RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS		3000
 
+//-----------------------------------------------------------------------------
+
 /*!
  *
  */
@@ -86,6 +88,18 @@ typedef enum {
 	RPI_CMD_RECEIVER_COMPLETE
 } RPI_CMD_RECEIVER_STATE;
 
+//-----------------------------------------------------------------------------
+
+
+BUILD_LOCAL_MSG_BUFFER( , RPI_COMMAND_BUFFER, 32)
+BUILD_LOCAL_MSG_BUFFER( , RPI_ANSWER_BUFFER,  32)
+
+IO_CONTROLLER_BUILD_INOUT(IS_READY, READY_INOUT)
+
+TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
+
+BUILD_MODULE_STATUS_FAST_VOLATILE(rpi_status, 2)
+
 
 /*!
  *
@@ -97,13 +111,6 @@ static void _set_finished_debus(u8 err_code);
  * @param err_code
  */
 static void _set_finished_spi(u8 err_code);
-
-BUILD_LOCAL_MSG_BUFFER( , RPI_COMMAND_BUFFER, 32)
-BUILD_LOCAL_MSG_BUFFER( , RPI_ANSWER_BUFFER,  32)
-
-IO_CONTROLLER_BUILD_INOUT(IS_READY, READY_INOUT)
-
-TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
 
 /*!
  *
@@ -130,7 +137,7 @@ static RPI_PROTOCOL_HANDLER_STATE actual_state = RPI_STATE_SLEEP;
 /*!
  *
  */
-MCU_TASK_INTERFACE_TASK_STATE actual_task_state = MCU_TASK_UNINITIALIZED;
+static MCU_TASK_INTERFACE_TASK_STATE actual_task_state = MCU_TASK_UNINITIALIZED;
 
 /*!
  *
@@ -189,6 +196,8 @@ static PROTOCOL_INTERFACE rpi_protocol_spi_interface = {
 	&rpi_cmd_handler_command_buffer,
 	&rpi_cmd_handler_answer_buffer
 };
+
+//-----------------------------------------------------------------------------
 
 /*!
  *

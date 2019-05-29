@@ -5,14 +5,14 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "command_handler_interface.h"
-#include "command_buffer_interface.h"
-#include "answer_buffer_interface.h"
-#include "protocol_interface.h"
+#include "command_management/command_handler_interface.h"
+#include "command_management/command_buffer_interface.h"
+#include "command_management/answer_buffer_interface.h"
+#include "command_management/protocol_interface.h"
 
-#include "local_context.h"
-#include "io_input_controller.h"
-#include "io_output_controller.h"
+#include "common/local_context.h"
+#include "io_management/io_input_controller.h"
+#include "io_management/io_output_controller.h"
 
 //---------- Implementation of Traces -----------------------------------------
 

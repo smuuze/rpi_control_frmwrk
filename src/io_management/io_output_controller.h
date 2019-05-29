@@ -1,8 +1,8 @@
 #ifndef _IO_OUTPUT_CONTROLLER_H_
 #define _IO_OUTPUT_CONTROLLER_H_
 
-#include "iterator_interface.h"
-#include "mcu_task_interface.h"
+#include "common/iterator_interface.h"
+#include "mcu_task_management/mcu_task_interface.h"
 
 /*!
  *

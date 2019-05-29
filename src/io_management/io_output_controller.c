@@ -5,8 +5,8 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "system_interface.h"
-#include "io_output_controller.h"
+#include "system/system_interface.h"
+#include "io_management/io_output_controller.h"
 
 //---------- Implementation of Traces -----------------------------------------
 

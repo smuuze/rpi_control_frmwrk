@@ -1,7 +1,7 @@
 #ifndef _LOCAL_GPIO_DRIVER_H_
 #define _LOCAL_GPIO_DRIVER_H_
 
-#include "system_interface.h"
+#include "system/system_interface.h"
 
 /*!
  *
