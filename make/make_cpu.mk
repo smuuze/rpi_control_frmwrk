@@ -27,6 +27,7 @@ MCU ?=
 
 ifeq ($(MCU), ATMEGA1284P)
 	MCU_NAME = atmega1284p
+	CPU_FAMILY = avr
 	DEFS += -D__AVR_ATmega1284P__
 	INC_PATH += ../src/common/cpu/avr
 endif

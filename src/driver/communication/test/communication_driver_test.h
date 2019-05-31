@@ -39,4 +39,10 @@ u8 test_driver_mutex_request(void);
 
 void test_driver_mutex_release(u8 m_id);
 
+void test_driver_set_rx_bytes(u8 num_bytes, u8* p_buffer_from);
+
+u8 test_driver_get_tx_bytes(u8 num_bytes, u8* p_buffer_to);
+
+u8 test_driver_get_tx_bytes_num_available(void);
+
 #endif // _COM_DRIVER_TEST_H_

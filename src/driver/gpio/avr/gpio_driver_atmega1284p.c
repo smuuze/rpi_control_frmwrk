@@ -5,8 +5,8 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "system_interface.h"
-#include "local_gpio_driver.h"
+#include "system/system_interface.h"
+#include "driver/gpio/gpio_interface.h"
 
 //---------- Implementation of Traces -----------------------------------------
 

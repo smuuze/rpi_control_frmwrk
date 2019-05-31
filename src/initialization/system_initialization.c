@@ -6,7 +6,7 @@
 
 #include "local_clk_driver.h"
 #include "local_rtc_driver.h"
-#include "local_gpio_driver.h"
+#include "driver/gpio/gpio_interface.h"
 
 #include "io_management/io_controller.h"
 #include "power_management/power_management.h"

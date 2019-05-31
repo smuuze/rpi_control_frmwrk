@@ -6,7 +6,7 @@ ifdef DRIVER_MODULE_CFG
 
 CSRCS += $(APP_PATH)/driver/local_rtc_driver.c
 CSRCS += $(APP_PATH)/driver/local_clk_driver.c
-CSRCS += $(APP_PATH)/driver/local_gpio_driver.c
+CSRCS += $(APP_PATH)/driver/gpio/$(CPU_FAMILY)/gpio_driver_$(MCU_NAME).c
 
 DEFS += -D HAS_DRIVER_I2C0=1
 CSRCS += $(APP_PATH)/driver/local_i2c_driver.c

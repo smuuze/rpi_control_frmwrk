@@ -25,7 +25,7 @@ BOARD_ID = 180920
 
 #-----------------------------------------------------------------------------
 
-VERSION_MAJOR		:= 3
+VERSION_MAJOR		:= 1
 VERSION_MINOR		:= 0
 
 #-----------------------------------------------------------------------------
@@ -37,22 +37,30 @@ MAKE_PATH   = ../../make
 #-----------------------------------------------------------------------------
 
 CSRCS += main.c
+
+CSRCS += rpi_protocol_handler_test_send_version_command_and_receive_answer.c
+CSRCS += rpi_protocol_handler_test_activate_ready_pin.c
+
 CSRCS += $(APP_PATH)/platine/board_180920.c
 CSRCS += $(APP_PATH)/protocol_management/rpi_protocol_handler.c
 
-CSRCS += $(APP_PATH)/command_handler/rpi_command_handler.c
+#CSRCS += $(APP_PATH)/command_handler/rpi_command_handler.c
 
-CSRCS += $(APP_PATH)/io_management/io_input_controller.c
-CSRCS += $(APP_PATH)/io_management/io_output_controller.c
+#CSRCS += $(APP_PATH)/io_management/io_input_controller.c
+#CSRCS += $(APP_PATH)/io_management/io_output_controller.c
 
 CSRCS += $(APP_PATH)/time_management/rpi/time_management.c
 
 CSRCS += $(APP_PATH)/common/local_msg_buffer.c
+CSRCS += $(APP_PATH)/common/local_mutex.c
 
 CSRCS += $(APP_PATH)/driver/gpio/test/gpio_driver_test_atmega1284p.c
 CSRCS += $(APP_PATH)/driver/communication/test/communication_driver_test.c
 
-#-----------------------------------------------------------------------------
+# --------- Tracer
+
+TRACER_CFG = CONSOLE
+include $(MAKE_PATH)/make_tracer.mk
 
 
 # --------- Toolchain Path
@@ -127,7 +135,7 @@ DEFS += -DVERSION_MAJOR=$(VERSION_MAJOR)
 DEFS += -DVERSION_MINOR=$(VERSION_MINOR)
 DEFS += -D VERSION=0x$(VERSION_MAJOR)
 
-DEBUG_ENABLED = -DDEBUG_ENABLED
+DEBUG_ENABLED = -DTRACER_ENABLED
 
 # --------- Compiler Flags
 

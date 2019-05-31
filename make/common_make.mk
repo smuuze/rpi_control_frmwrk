@@ -2,6 +2,7 @@
 #       Makefile fuer AVR-GCC Projekte
 #-----------------------------------------------------------------------------
 
+include $(MAKE_PATH)/make_cpu.mk
 
 # -----------------------------------------------------------------------
 # Definitions: [-D name[=definition]...] [-U name...]
@@ -276,7 +277,6 @@ LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 #-Wl,--gc-sections
 
 # -----------------------------------------------------------------------
-include $(MAKE_PATH)/make_cpu.mk
 include $(MAKE_PATH)/make_toolchain.mk
 include $(MAKE_PATH)/make_targets.mk
 

@@ -65,4 +65,9 @@ void rpi_protocol_task_run(void);
  */
 void rpi_protocol_handler_debus_handler(void);
 
+/*!
+ *
+ */
+u8 rpi_protocol_handler_get_actual_state(void);
+
 #endif //RPI_PROTOCOL_HANDLER_H_

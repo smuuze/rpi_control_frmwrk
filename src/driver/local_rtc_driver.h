@@ -1,5 +1,5 @@
-#ifndef _LOCAL_RTC_TIMERH_
-#define _LOCAL_RTC_TIMERH_
+#ifndef _LOCAL_RTC_DRIVER_H_
+#define _LOCAL_RTC_DRIVER_H_
 
 
 /*! --- Function prototypes --- */
@@ -60,4 +60,4 @@ u8 local_rtc_timer_istimeup_u16(u16 time_reference, u16 time_interval);
  */
 u8 local_rtc_timer_istimeup_u32(u32 time_reference, u32 time_interval);
 
-#endif
+#endif // _LOCAL_RTC_DRIVER_H_

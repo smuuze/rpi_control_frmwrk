@@ -171,6 +171,10 @@
 	u8 name##_is_low_level(void) {											\
 		return gpio_driver_get_level(&pin_descr) == GPIO_LEVEL_LOW ? 1 : 0;					\
 	}														\
+															\
+	void name##_print_state(void) {											\
+		gpio_driver_print_pin_state(&pin_descr);								\
+	}
 
 #define IO_CONTROLLER_INCLUDE_INOUT(name)										\
 	void name##_drive_high(void);											\
@@ -179,5 +183,6 @@
 	void name##_pull_up(void);											\
 	void name##_pull_down(void);											\
 	void name##_no_pull(void);											\
-	u8 name##_is_low(void);												\
-	u8 name##_is_high(void);
+	u8 name##_is_high_level(void);											\
+	u8 name##_is_low_level(void);											\
+	void name##_print_state	(void);
