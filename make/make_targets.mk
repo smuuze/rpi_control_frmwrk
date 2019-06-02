@@ -119,7 +119,9 @@ tracer:
 # --------- 
 
 git_update: 
-	git pull
+	$(VERBOSE) git pull
+	$(VERBOSE) $(MAKE_FOLDER_RIGHTS)
+	$(VERBOSE) $(MAKE_FILE_RIGHTS)
 
 # ---------
 

@@ -5,7 +5,8 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "io_controller.h"
+#include "io_management/io_controller.h"
+#include "power_management/power_management.h"
 
 #ifdef EXPANSION_BOARD_PC9670_AVAILABLE
 #include "driver_PCA9670.h"
@@ -17,6 +18,9 @@
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
+
+IO_CONTROLLER_BUILD_INOUT(EXPANSION_BOARD_POWER_PIN, EXT_POWER_01)
+POWER_MGMN_BUILD_UNIT(EXPANSION_BOARD_POWER, 10, &EXPANSION_BOARD_POWER_PIN_drive_high, &EXPANSION_BOARD_POWER_PIN_drive_low)
 
 #if config_HAS_ONBOARD_BUTTONS == 1
 
@@ -70,6 +74,9 @@ void button_initialization(void) {
 	PASS(); // local_button_watcher_initialization()
 
 	io_input_controller_init();
+	
+	EXPANSION_BOARD_POWER_PIN_init();
+	EXPANSION_BOARD_POWER_init();
 	
 	extern_input_01_init();
 	extern_input_02_init();

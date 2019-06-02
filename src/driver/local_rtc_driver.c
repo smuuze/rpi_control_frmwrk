@@ -30,14 +30,15 @@
 						}							\
 						while (ASSR & (1 << TCR2BUB))
 
-#define RTC_TIMER_SET_CLOCK_PRESCALER(pre)	TCCR2B = pre;						\
-						while (ASSR & (1 << TCR2BUB))
+#define RTC_TIMER_SET_CLOCK_PRESCALER(pre)	while (ASSR & (1 << TCR2BUB));				\
+						TCCR2B = pre
+						
 
-#define RTC_TIMER_SET_OPERATION_MODE(mode)	TCCR2A = mode;						\
-						while (ASSR & (1 << TCR2AUB))
+#define RTC_TIMER_SET_OPERATION_MODE(mode)	while (ASSR & (1 << TCR2AUB));				\
+						TCCR2A = mode
 
-#define RTC_TIMER_SET_COMPARE_A_VALUE(val)	OCR2A = val;						\
-						while (ASSR & (1 << OCR2AUB))
+#define RTC_TIMER_SET_COMPARE_A_VALUE(val)	while (ASSR & (1 << OCR2AUB));				\
+						OCR2A = val
 
 #define RTC_RESTART_TIMER()			TCNT2 = 0
 

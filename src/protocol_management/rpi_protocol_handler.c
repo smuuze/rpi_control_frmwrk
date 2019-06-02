@@ -401,6 +401,7 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 	DEBUG_PASS("rpi_protocol_init() - START");
 
 	IS_READY_init();
+	IS_READY_drive_low();
 
 	rpi_status_clear_all();
 

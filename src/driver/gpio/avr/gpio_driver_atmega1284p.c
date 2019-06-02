@@ -59,10 +59,10 @@
 void gpio_driver_init(void) {
 	PASS(); // gpio_driver_init()
 
-	DDRA = 0x00; PORTA = 0x00;
-	DDRB = 0x00; PORTB = 0x00;
-	DDRC = 0x00; PORTC = 0x00;
-	DDRD = 0x00; PORTD = 0x00;
+	//DDRA = 0x00; PORTA = 0x00;
+	//DDRB = 0x00; PORTB = 0x00;
+	//DDRC = 0x00; PORTC = 0x00;
+	//DDRD = 0x00; PORTD = 0x00;
 
 }
 

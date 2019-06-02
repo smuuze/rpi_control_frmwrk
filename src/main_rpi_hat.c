@@ -78,29 +78,14 @@ void main_init(void) {
 
 	INIT_PASS(); // Initialization - First-Time Debus-Init
 
-	//INIT_PORTS_FOR_STARTUP();
-
-	#if defined HAS_APP_TASK_DEBUS && HAS_APP_TASK_DEBUS != 0
-	{
-		// Baudrate erstmal auf 9600 Baud setzen
-		INIT_PASS(); // Initialization - First-Time Debus-Init
-		debus_host_com_init();
-	}
-	#endif
-
-	#ifdef  RTOS_TIMER
-	{
-		// Millisekunden timer initialieren
-		INIT_PASS(); // Initialization - fakertos_timer_init
-		fakertos_timer_init();
-	}
-	#endif  // #ifdef RTOS_TIMER
-
 	wdt_enable(WDTO_8S);
 	watchdog();
 
 	INIT_PASS(); // Initialization done
 }
+
+#include "io_management/io_controller.h"
+IO_CONTROLLER_INCLUDE_INOUT(IS_READY)
 
 int main( void ) {
 

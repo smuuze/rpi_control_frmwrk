@@ -36,5 +36,8 @@ MAKE_EXE		:= chmod ug=+rwx
 MAKE_FILE_RIGHTS	:= chmod ug=rw
 ECHO			:= echo
 
+MAKE_FILE_RIGHTS	:= find ./$(APP_PATH) -type f -exec chmod ug+=rw {} \;
+MAKE_FOLDER_RIGHTS	:= find ./$(APP_PATH) -type d -exec chmod ug+rwx {} \;
+
 RM_FLAGS		:= -rf
 VERBOSE 		:= @

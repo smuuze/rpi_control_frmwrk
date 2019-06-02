@@ -67,16 +67,16 @@ IO_CONTROLLER_BUILD_INOUT(EVENT_GPIO, EVENT_OUTPUT)
 
 void local_event_mcu_task_init(void) {
 
-	EVENT_GPIO_init();
-	EVENT_GPIO_drive_low();
+	//EVENT_GPIO_init();
+	//EVENT_GPIO_drive_low();
 
-	u8 i = 0;
-	for ( ; i < EVENT_QEUE_MAX_SIZE; i++) {
-		_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
-		_event_qeue[i].timestamp = 0;
-	}
+	//u8 i = 0;
+	//for ( ; i < EVENT_QEUE_MAX_SIZE; i++) {
+	//	_event_qeue[i].event_id = SYS_EVT_NO_EVENT;
+	//	_event_qeue[i].timestamp = 0;
+	//}
 
-	actual_task_state = EVENT_STATE_SLEEP;
+	//actual_task_state = EVENT_STATE_SLEEP;
 }
 
 MCU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void) {

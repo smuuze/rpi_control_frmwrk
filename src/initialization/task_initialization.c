@@ -254,8 +254,8 @@ void task_initialization(void) {
 	mcu_task_controller_register_task(&ads1115_mcu_task);
 	#endif
 	
-	mcu_task_controller_register_task(&cmd_mcu_task);
-	//mcu_task_controller_register_task(&debus_task);
+	//mcu_task_controller_register_task(&cmd_mcu_task);
+	//-------mcu_task_controller_register_task(&debus_task);
 
 	#if defined (HAS_APP_TASK_TEST_TRACER) && (HAS_APP_TASK_TEST_TRACER) == 1
 	mcu_task_controller_register_task(&test_tracer_task);
@@ -266,7 +266,7 @@ void task_initialization(void) {
 	#endif
 
 	#ifdef HAS_EXPANSION_BOARD_GPIO_PCA9670
-	mcu_task_controller_register_task(&pca9670_task);
+	//-- task is currupted mcu_task_controller_register_task(&pca9670_task);
 	#endif
 
 	mcu_task_controller_register_task(&event_task);
