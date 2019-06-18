@@ -153,7 +153,7 @@ void usart_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 	usart_driver_clear_buffer();
 
 	// Baudrate 115200
-	UBRR0L = 3;
+	UBRR0L = 1;
 	UBRR0H = 0;
 
 	/* Set frame format: 8data, 1stop bit */

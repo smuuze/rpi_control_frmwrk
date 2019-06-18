@@ -13,7 +13,7 @@ CSRCS += $(APP_PATH)/driver/local_i2c_driver.c
 
 ifneq '' '$(findstring SPI0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_SPI0=1
-	CSRCS += $(APP_PATH)/driver/local_spi_driver.c
+	CSRCS += $(APP_PATH)/driver/communication/spi/spi0_driver_$(MCU_NAME).c
 endif
 
 ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'

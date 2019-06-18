@@ -72,20 +72,15 @@ void task_yield(void) {
 
 void main_init(void) {
 
+	wdt_enable(WDTO_8S);
+	watchdog();
+
 	cli();
 	initialization();
 	sei();
 
-	INIT_PASS(); // Initialization - First-Time Debus-Init
-
-	wdt_enable(WDTO_8S);
-	watchdog();
-
 	INIT_PASS(); // Initialization done
 }
-
-#include "io_management/io_controller.h"
-IO_CONTROLLER_INCLUDE_INOUT(IS_READY)
 
 int main( void ) {
 

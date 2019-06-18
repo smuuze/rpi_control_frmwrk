@@ -9,16 +9,19 @@ INC_PATH += $(TRACER_INC_PATH)
 ifdef TRACER_CFG
 
 ifneq '' '$(findstring CONSOLE,$(TRACER_CFG))'
-CSRCS += $(TRACER_INC_PATH)/tracer_console.c
+	CSRCS += $(TRACER_INC_PATH)/tracer_console.c
 endif
 	
 ifneq '' '$(findstring USART0,$(TRACER_CFG))'
 	DRIVER_MODULE_CFG += USART0
 	DEFS += -D TRACER_INTERFACE_USART0=1
+	CSRCS += $(TRACER_INC_PATH)/tracer.c
 endif
 
 endif
+
+TRACER_VERSION	= 1.1
 
 TRACER_EXE_FILE = Tracer.exe
-TRACER_BIN_PATH = ../../Tracer/Release/1.0
+TRACER_BIN_PATH = ../../Tracer/Release/$(TRACER_VERSION)
 TRACER_WORKING_PATH = ../../../../RPi_Hat_Derivate/$(notdir $(CURDIR))/

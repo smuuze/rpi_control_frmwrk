@@ -9,7 +9,7 @@
 
 #if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 
-#include "local_spi_driver.h"
+#include "driver/communication/spi/spi0_driver_atmega1284p.h"
 
 config_SPI_POWER_DOWN_PROTOTYPE
 

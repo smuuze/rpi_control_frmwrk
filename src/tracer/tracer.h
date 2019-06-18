@@ -39,7 +39,7 @@ void tracer_trace_word(const char* str, const char* file_name, u16 line_id, u16 
  * @param line_id
  * @param integer
  */
-void tracer_trace_long(const char* file_name, u16 line_id, u32 integer);
+void tracer_trace_long(const char* str, const char* file_name, u16 line_id, u32 integer);
 
 /*!
  *
