@@ -80,7 +80,42 @@ typedef struct LOCAL_MSG_BUFFER_DESCR {
 																					\
 	prefix u16 name##_size(void)						{ return size; }
 
-
+#define BUILD_FAST_MSG_BUFFER(prfeix, name, size)															\
+																					\
+	static u8  __##name##_msg_buffer[size];																\
+	static u16 __##name##_msg_buffer_size = size;															\
+	static u16 __##name##_read_counter = 0;																\
+	static u16 __##name##_write_counter = 0;															\
+																					\
+	inline void name##_init(void) 						{ __##name##_read_counter = 0; __##name##_write_counter = 0; }				\
+	inline u8 name##_bytes_available(void) 					{ return (__##name##_write_counter - __##name##_read_counter); }			\
+	inline u8 name##_bytes_free(void) 					{ return (__##name##_msg_buffer_size - __##name##_write_counter); }			\
+	inline void name##_clear_all(void) 					{ __##name##_read_counter = 0; __##name##_write_counter = 0; }				\
+																					\
+	inline u8 name##_start_write(void)					{ return 1;}										\
+	inline void name##_add_byte(u8 byte) 					{ __##name##_msg_buffer[__##name##_write_counter++] = byte; }				\
+	inline void name##_add_word(u16 word) 					{  }											\
+	inline void name##_add_long(u32 long_integer) 				{  }											\
+	inline void name##_add_N_bytes(u16 length, const u8* p_buffer)		{ u16 i = 0; 										\
+										  for ( ; i < length; i++) {								\
+											__##name##_msg_buffer[__##name##_write_counter++] = p_buffer[i];		\
+										  }											\
+										}											\
+	inline void name##_stop_write(void)					{  } 											\
+																					\
+	inline u8 name##_start_read(void)					{ return 1; }										\
+	inline u8 name##_get_byte(void) 					{ return __##name##_msg_buffer[__##name##_read_counter++]; }				\
+	inline u16 name##_get_word(void) 					{ return 0; }										\
+	inline u32 name##_get_long(void) 					{ return 0; }										\
+	inline u16 name##_get_N_bytes(u16 length, u8* p_buffer) 		{ u16 i = 0;										\
+										  for ( ; i < length; i++) {								\
+											p_buffer[i] = __##name##_msg_buffer[__##name##_read_counter++];			\
+										  }											\
+										}											\
+	inline void name##_stop_read(void)					{  }											\
+																					\
+	inline u16 name##_size(void)						{ return size; }
+	
 /*!
  *
  */

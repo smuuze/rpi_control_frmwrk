@@ -260,7 +260,7 @@ static RPI_CMD_RECEIVER_STATE _command_receiver(void) {
 	while (rpi_protocol_spi_interface.command_length == 0) {
 
 		p_com_driver->wait_for_rx(1, 100); // blocking function
-		p_com_driver->wait_for_tx(255, 100); // blocking function
+		p_com_driver->wait_for_tx(255, 100); // blocking function - sending everything that is left within the transmit-buffer
 
 		u16 num_bytes_available = p_com_driver->bytes_available();
 		if (num_bytes_available == 0) {
@@ -518,8 +518,6 @@ void rpi_protocol_task_run(void) {
 			actual_state = RPI_STATE_START_DATA_EXCHANGE;
 			operation_timer_start();
 
-			IS_READY_drive_low();
-
 			// no break;
 
 
@@ -550,8 +548,10 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - Get state of");
+			IS_READY_drive_low();
+
 			cmd_receiver_state = _command_receiver(); // this information has to be remember
+			DEBUG_TRACE_byte(cmd_receiver_state, "rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - State of command-receiver:");
 
 			if (cmd_receiver_state == RPI_CMD_RECEIVER_IDLE) {
 
