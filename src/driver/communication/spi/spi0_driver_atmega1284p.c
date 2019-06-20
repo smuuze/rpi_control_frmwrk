@@ -407,9 +407,12 @@ void spi_driver_start_rx(u16 num_of_rx_bytes) {
 
 void spi_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 
-	TRACE_byte(num_bytes); // spi_driver_wait_for_rx()
+	//TRACE_byte(num_bytes); // spi_driver_wait_for_rx()
 
 	u8 trx_complete = 0;
+	
+	trx_timer_start();
+	ce_timer_start();
 	
 	while (trx_complete == 0) {
 

@@ -38,7 +38,7 @@
 /*!
  *
  */
-#define RPI_PROTOCOL_HANDLER_DATA_EXCHANGE_TIMEOUT_MS		3000
+#define RPI_PROTOCOL_HANDLER_DATA_EXCHANGE_TIMEOUT_MS		250
 
 /*!
  *
@@ -255,7 +255,7 @@ static void _set_finished_spi(u8 err_code) {
  */
 static RPI_CMD_RECEIVER_STATE _command_receiver(void) {
 
-	DEBUG_PASS("_com_driver_command_handler()");
+	//DEBUG_PASS("_com_driver_command_handler()");
 
 	while (rpi_protocol_spi_interface.command_length == 0) {
 
