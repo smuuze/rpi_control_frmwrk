@@ -398,10 +398,9 @@ static void _com_driver_answer_handler(void) {
 
 void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
-	DEBUG_PASS("rpi_protocol_init() - START");
-
-	IS_READY_init();
 	IS_READY_drive_low();
+
+	DEBUG_PASS("rpi_protocol_init() - START");
 
 	rpi_status_clear_all();
 

@@ -16,7 +16,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_ON
+#define TRACER_OFF
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -69,10 +69,11 @@ u8 rpi_cmd_default_handler(void) {
 
 u8 rpi_cmd_get_version(void) {
 
-	PASS(); // rpi_cmd_get_version()
+	TRACE_word(((u16)VERSION_MAJOR << 8) + (u16)(VERSION_MINOR)); // rpi_cmd_get_version()
 
 	p_act_protocol->answ_buffer->start_write();
-	p_act_protocol->answ_buffer->add_word(VERSION);
+	p_act_protocol->answ_buffer->add_byte(VERSION_MAJOR);
+	p_act_protocol->answ_buffer->add_byte(VERSION_MINOR);
 	p_act_protocol->answ_buffer->stop_write();
 
 	p_act_protocol->set_finished(CMD_NO_ERR);

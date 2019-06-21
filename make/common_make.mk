@@ -13,7 +13,9 @@ DEFS += -D BOARD=$(BOARD)
 DEFS += -D BOARD_ID=$(BOARD_ID)
 DEFS += -D HW_DEVICE_TYPE=$(HW_DEVICE_TYPE)
 DEFS += -D SW_DEVICE_TYPE=$(SW_DEVICE_TYPE)
-DEFS += -D VERSION=$(VERSION)
+
+DEFS += -D VERSION_MAJOR=$(VERSION_MAJOR)
+DEFS += -D VERSION_MINOR=$(VERSION_MINOR)
 
 
 #! Man koennte den Namen auch so gestalten dass der Dateiname gleich die
