@@ -39,7 +39,7 @@ typedef struct  {
 		pin_id,						\
 		(pin_cfg)					\
 	};							\
-	const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id;
+	const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id = &pin_name;
 
 #define INCLUDE_GPIO(pin_name)					\
 	extern const GPIO_DRIVER_PIN_DESCRIPTOR pin_name;	
