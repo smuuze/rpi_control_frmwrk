@@ -38,6 +38,7 @@ MAKE_PATH   = ../../make
 
 CSRCS += main.c
 CSRCS += $(APP_PATH)/driver/gpio/test/gpio_driver_test_atmega1284p.c
+CSRCS += $(APP_PATH)/platine/board_180920.c
 
 # --------- Tracer
 

@@ -9,7 +9,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_OFF
+#define TRACER_ON
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -155,7 +155,6 @@ void gpio_driver_init(void) {
 void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 	DEBUG_PASS("gpio_driver_init_pin()");
-
 	DEBUG_TRACE_byte(GPIO_DRIVER_GET_PORT(p_pin_descr), " - PORT");
 	DEBUG_TRACE_byte(GPIO_DRIVER_GET_PIN(p_pin_descr), " - PIN");
 

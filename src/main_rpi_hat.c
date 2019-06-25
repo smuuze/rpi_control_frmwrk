@@ -82,16 +82,9 @@ void main_init(void) {
 	INIT_PASS(); // Initialization done
 }
 
-#include "io_management/io_controller.h"
-IO_CONTROLLER_INCLUDE_INOUT(IS_READY)
-
-int main( void ) {
-	
+int main( void ) {	
 
 	main_init();
-
-	gpio_driver_init();
-	//IS_READY_drive_low();
 
 	for (;;) {  // Endlosschleife
 
