@@ -193,6 +193,7 @@ CSRCS += $(INITIALIZATION_INC_PATH)/protocol_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/command_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/task_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/system_initialization.c
+CSRCS += $(INITIALIZATION_INC_PATH)/power_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/initialization.c
 
 # ---- DRIVER MODULES ---------------------------------------------------

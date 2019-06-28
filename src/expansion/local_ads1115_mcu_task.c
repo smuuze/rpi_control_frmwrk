@@ -5,24 +5,6 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "system_interface.h"
-
-#include "local_context.h"
-#include "local_ads1115_mcu_task.h"
-#include "local_mutex.h"
-
-#include "rpi_command_handler.h"
-#include "local_msg_buffer.h"
-
-#include "local_context.h"
-#include "local_i2c_driver.h"
-#include "asic_information_ads115.h"
-
-#include "local_data_storage_array.h"
-#include "time_management.h"
-
-#include "system_interface.h"
-
 //---------- Implementation of Traces -----------------------------------------
 
 #define TRACER_OFF
@@ -30,6 +12,22 @@
 
 //-----------------------------------------------------------------------------
 
+#include "system/system_interface.h"
+
+#include "common/local_context.h"
+#include "common/local_mutex.h"
+#include "common/local_msg_buffer.h"
+#include "common/local_data_storage_array.h"
+
+#include "time_management/time_management.h"
+#include "power_management/power_management.h"
+
+#include "local_i2c_driver.h"
+#include "asic_information_ads115.h"
+
+#include "local_ads1115_mcu_task.h"
+
+//-----------------------------------------------------------------------------
 
 #define ADS1115_TASK_RUN_INTERVAL_MS			60000 /* once in a minute */
 #define ADS1115_TASK_COMMAND_BUFFER_LENGHT		5
@@ -37,6 +35,7 @@
 
 #define ADS1115_TASK_NUMBER_OF_HISTORY_VALUES	10
 
+//-----------------------------------------------------------------------------
 
 /*!
  *
@@ -51,6 +50,29 @@ typedef enum {
 	ADS1115_TASK_STATE_PROCESS_DATA_CHAN,          //!< ADS1115_TASK_STATE_PROCESS_DATA_CHAN
 	ADS1115_TASK_STATE_CANCEL_OPERATION,   //!< ADS1115_TASK_STATE_CANCEL_OPERATION
 } ADS1115_TASK_STATE;
+
+//-----------------------------------------------------------------------------
+
+/*!
+ *
+ */
+//static u16 task_run_interval_reference = 0;
+TIME_MGMN_BUILD_STATIC_TIMER_U16(task_timer)
+
+/*!
+ *
+ */
+//static u16 operation_refrence_time = 0;
+TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
+
+BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan0, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
+BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan1, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
+BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan2, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
+BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan3, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
+
+POWER_MGMN_INCLUDE_UNIT(POWER_UNIT_5V)
+
+//-----------------------------------------------------------------------------
 
 /*!
  *
@@ -75,18 +97,6 @@ static ADS1115_TASK_STATE actual_task_state = ADS1115_TASK_STATE_INIT_ADC;
 /*!
  *
  */
-//static u16 task_run_interval_reference = 0;
-TIME_MGMN_BUILD_STATIC_TIMER_U16(task_timer)
-
-/*!
- *
- */
-//static u16 operation_refrence_time = 0;
-TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
-
-/*!
- *
- */
 static u8 com_driver_mutex_id = 0;
 
 /*!
@@ -94,10 +104,7 @@ static u8 com_driver_mutex_id = 0;
  */
 static const u8 adc_address_list[] = {ADS1115_CFG_CHANNEL_INDEX_0, ADS1115_CFG_CHANNEL_INDEX_1, ADS1115_CFG_CHANNEL_INDEX_2, ADS1115_CFG_CHANNEL_INDEX_3};
 
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan0, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan1, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan2, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan3, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
+//-----------------------------------------------------------------------------
 
 void local_ads1115_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 
@@ -170,6 +177,8 @@ void local_ads1115_mcu_task_run(void) {
 				break;
 			}
 
+			POWER_UNIT_5V_request();
+			
 			p_com_driver->configure(&driver_cfg);
 
 			task_timer_start(); // task_run_interval_reference = i_system.time.now_u16();
@@ -180,6 +189,11 @@ void local_ads1115_mcu_task_run(void) {
 			// no break;
 
 		case ADS1115_TASK_STATE_INIT_ADC:
+
+			if (POWER_UNIT_5V_is_on() == 0) {
+				PASS(); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_INIT_ADC - Waiting for power-management
+				break;
+			}
 
 			if (p_com_driver->is_ready_for_tx() == 0) {
 				PASS(); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_INIT_ADC - Waiting for communication-driver
@@ -392,6 +406,8 @@ void local_ads1115_mcu_task_run(void) {
 
 			p_com_driver->shut_down();
 			p_com_driver->mutex_rel(com_driver_mutex_id);
+
+			POWER_UNIT_5V_release();
 
 			break;
 	}

@@ -8,21 +8,20 @@
 	static POWER_MANAGEMENT_UNIT_TYPE _##name##_power_mgmnt_unit;						\
 														\
 	void name##_init(void) {										\
-		_##name##_power_mgmnt_unit.power_up_time_ms = _POWER_UP_TIME_MS;				\
-		_##name##_power_mgmnt_unit.request_counter = _POWER_UP_TIME_MS;					\
-		_##name##_power_mgmnt_unit.switch_on_timestamp = 0;						\
-		_##name##_power_mgmnt_unit.on = _POWER_ON_CALLBACK;						\
-		_##name##_power_mgmnt_unit.off = _POWER_OFF_CALLBACK;						\
-		_##name##_power_mgmnt_unit.status.is_on = 0;							\
-		_##name##_power_mgmnt_unit.status.is_ramp_up = 0;						\
+		power_mgmnt_init(										\
+			&_##name##_power_mgmnt_unit,								\
+			_POWER_UP_TIME_MS,									\
+			_POWER_ON_CALLBACK,									\
+			_POWER_OFF_CALLBACK									\
+		);												\
 	}													\
 														\
 	u8 name##_is_on(void) {											\
 		return power_mgmnt_is_on(&_##name##_power_mgmnt_unit);						\
 	}													\
 														\
-	u8 name##_request(void) {										\
-		return power_mgmnt_request(&_##name##_power_mgmnt_unit);					\
+	void name##_request(void) {										\
+		power_mgmnt_request(&_##name##_power_mgmnt_unit);						\
 	}													\
 														\
 	void name##_release(void) {										\
@@ -74,7 +73,7 @@ typedef struct POWER_MANAGEMENT_UNIT {
 	
 	POWER_MANAGEMENT_STATUS_TYPE status;
 	
-	//struct POWER_MANAGEMENT_UNIT _next;
+	struct POWER_MANAGEMENT_UNIT* _next;
 	
 } POWER_MANAGEMENT_UNIT_TYPE;
 
@@ -83,13 +82,13 @@ typedef struct POWER_MANAGEMENT_UNIT {
 /*!
  *
  */
-void power_mgmnt_init(POWER_MANAGEMENT_UNIT_TYPE* p_unit);
+void power_mgmnt_init(POWER_MANAGEMENT_UNIT_TYPE* p_unit, u16 power_up_time, POWER_MANAGEMENT_POWER_ON_CALLBACK p_callback_on, POWER_MANAGEMENT_POWER_OFF_CALLBACK p_callback_off);
 
 /*!
  *
  * @return
  */
-u8 power_mgmnt_request(POWER_MANAGEMENT_UNIT_TYPE* p_unit);
+void power_mgmnt_request(POWER_MANAGEMENT_UNIT_TYPE* p_unit);
 
 /*!
  *

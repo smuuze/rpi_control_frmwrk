@@ -5,25 +5,6 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "system_interface.h"
-
-#include "local_context.h"
-#include "local_sht31_mcu_task.h"
-#include "local_mutex.h"
-
-#include "rpi_command_handler.h"
-#include "local_msg_buffer.h"
-#include "time_management.h"
-
-#include "local_context.h"
-#include "local_i2c_driver.h"
-#include "asic_information_sht31.h"
-
-#include "cfg_driver_interface.h"
-#include "power_management/power_management.h"
-
-#include "local_data_storage_array.h"
-
 //---------- Implementation of Traces -----------------------------------------
 
 #define TRACER_OFF
@@ -31,6 +12,24 @@
 
 //-----------------------------------------------------------------------------
 
+#include "system_interface.h"
+
+#include "common/local_context.h"
+#include "common/local_mutex.h"
+#include "common/local_msg_buffer.h"
+#include "common/local_data_storage_array.h"
+
+#include "local_sht31_mcu_task.h"
+
+#include "time_management/time_management.h"
+#include "power_management/power_management.h"
+
+#include "local_i2c_driver.h"
+#include "cfg_driver_interface.h"
+
+#include "asic_information_sht31.h"
+
+//-----------------------------------------------------------------------------
 
 #define SHT31_TASK_RUN_INTERVAL_MS		60000 	/* once in a minute */
 #define SHT32_TASK_MAXMIN_INTERVAL_MS		900000	/* every 15 minutes*/
@@ -39,6 +38,7 @@
 
 #define SHT31_TASK_NUMBER_OF_HISTORY_VALUES	96 /* for the last 24 Hours */
 
+//-----------------------------------------------------------------------------
 
 /*!
  *
@@ -51,6 +51,33 @@ typedef enum {
 	SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA,      //!< SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA
 	SHT31_TASK_STATE_CANCEL_OPERATION
 } SHT31_TASK_STATE;
+
+//-----------------------------------------------------------------------------
+
+/*!
+ *
+ */
+//static u16 task_run_interval_reference_actual = 0;
+TIME_MGMN_BUILD_STATIC_TIMER_U16(task_timer)
+
+/*!
+ *
+ */
+//static u32 task_run_interval_reference_maxmin = 0;
+TIME_MGMN_BUILD_STATIC_TIMER_U32(task_timer_maxmin)
+
+/*!
+ *
+ */
+//static u32 operation_refrence_time = 0;
+TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
+
+BUILD_LOCAL_DATA_STORAGE_ARRAY_I8(sht31_temp_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
+BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(sht31_hum_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
+
+POWER_MGMN_INCLUDE_UNIT(POWER_UNIT_5V)
+
+//-----------------------------------------------------------------------------
 
 /*!
  *
@@ -77,28 +104,7 @@ static MCU_TASK_INTERFACE_TASK_STATE task_state = MCU_TASK_TERMINATED;
  */
 static u8 com_driver_mutex_id = 0;
 
-/*!
- *
- */
-//static u16 task_run_interval_reference_actual = 0;
-TIME_MGMN_BUILD_STATIC_TIMER_U16(task_timer)
-
-/*!
- *
- */
-//static u32 task_run_interval_reference_maxmin = 0;
-TIME_MGMN_BUILD_STATIC_TIMER_U32(task_timer_maxmin)
-
-/*!
- *
- */
-//static u32 operation_refrence_time = 0;
-TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
-
-BUILD_LOCAL_DATA_STORAGE_ARRAY_I8(sht31_temp_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(sht31_hum_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
-
-POWER_MGMN_INCLUDE_UNIT(EXPANSION_BOARD_POWER)
+//-----------------------------------------------------------------------------
 
 void local_sht31_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 
@@ -174,6 +180,8 @@ void local_sht31_mcu_task_run(void) {
 				break;
 			}
 
+			POWER_UNIT_5V_request();
+
 			p_com_driver->configure(&driver_cfg);
 
 			EXPANSION_BOARD_POWER_request();
@@ -186,6 +194,11 @@ void local_sht31_mcu_task_run(void) {
 			// no break;
 
 		case SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR :
+
+			if (POWER_UNIT_5V_is_on() == 0) {
+				PASS(); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_INIT_ADC - Waiting for power-management
+				break;
+			}
 
 			if (p_com_driver->is_ready_for_tx() == 0) {
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Waiting for communication-driver
@@ -360,7 +373,7 @@ void local_sht31_mcu_task_run(void) {
 			p_com_driver->shut_down();
 			p_com_driver->mutex_rel(com_driver_mutex_id);
 
-			EXPANSION_BOARD_POWER_release();
+			POWER_UNIT_5V_release();
 
 			break;
 	}
