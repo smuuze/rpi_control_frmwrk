@@ -14,7 +14,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_OFF
+#define TRACER_ON
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -128,7 +128,7 @@ static u8 _bit_isset(u8 vector, u8 bit) {
 
 void pca9670_init(TRX_DRIVER_INTERFACE* p_driver) {
 
-	PASS(); // pca9670_init()
+	DEBUG_PASS("pca9670_init()"); // 
 
 	driver_cfg.module.i2c.answer_general_call = 0;
 	driver_cfg.module.i2c.bit_rate = DRIVER_I2C_BITRATE_1KHZ;
@@ -142,12 +142,20 @@ void pca9670_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 void pca9670_register_module(PCA9670_INSTANCE_TYPE* p_instance) {
 
+	DEBUG_PASS("pca9670_register_module()"); // 
+	
 	if (p_first_instance == 0) {
+	
+		DEBUG_PASS("pca9670_register_module() - This is the first module"); // 
 		p_first_instance = p_instance;
+		p_last_instance  = p_instance;
+		
+	} else {
+	
+		p_last_instance->next = p_instance;
+		p_last_instance = p_last_instance->next;
 	}
 
-	p_last_instance->next = p_instance;
-	p_last_instance = p_last_instance->next;
 	p_last_instance->next = 0;
 }
 
@@ -163,9 +171,9 @@ void pca9670_set_direction(u8 instance_address, u8 instance_pin_number, u8 new_d
 			continue;
 		}
 
-		TRACE_byte(p_act->direction_mask); // pca9670_set_direction() - Direction before
+		DEBUG_TRACE_byte(p_act->direction_mask, "pca9670_set_direction() - Direction before"); // 
 		p_act->direction_mask  = _update_mask(p_act->direction_mask, instance_pin_number, new_direction);
-		TRACE_byte(p_act->direction_mask); // pca9670_set_direction() - Direction after
+		DEBUG_TRACE_byte(p_act->direction_mask, "pca9670_set_direction() - Direction after"); // 
 
 		break;
 	}
@@ -205,9 +213,9 @@ void pca9670_set_state(u8 instance_address, u8 instance_pin_number, u8 new_state
 			continue;
 		}
 
-		TRACE_byte(p_act->level_mask); // pca9670_set_state() - State before
+		DEBUG_TRACE_byte(p_act->level_mask, "pca9670_set_state() - State before"); // 
 		p_act->level_mask  = _update_mask(p_act->level_mask, instance_pin_number, new_state);
-		TRACE_byte(p_act->level_mask); // pca9670_set_state() - State after
+		DEBUG_TRACE_byte(p_act->level_mask, "pca9670_set_state() - State after"); // 
 
 		break;
 	}
@@ -243,6 +251,7 @@ u8 pca9670_get_state(u8 instance_address, u8 instance_pin_number) {
 void pca9670_task_init(void) {
 	
 	operation_stage = PCA9670_TASK_STATE_IDLE;
+	task_state = MCU_TASK_SLEEPING;
 }
 
 /*!
@@ -267,7 +276,7 @@ void pca9670_task_run(void) {
 
 	#ifdef TRACES_ENABLED
 	u16 actual_time = i_system.time.now_u16();
-	TRACE_word(actual_time); // pca9670_task_run() -----------------
+	DEBUG_TRACE_word(actual_time, "pca9670_task_run() -----------------"); // 
 	#endif
 		
 	u8 command_buffer[PCA9670_COMMAND_BUFFER_SIZE];
@@ -285,7 +294,7 @@ void pca9670_task_run(void) {
 			}
 			
 			if (p_first_instance == 0) {
-				PASS(); // pca9670_task_run() - No instance registered - FINISH !!! ---
+				DEBUG_PASS("pca9670_task_run() - No instance registered - FINISH !!! ---"); // 
 				operation_stage = PCA9670_TASK_STATE_REQUEST_FINISH;
 				break;
 			}
@@ -298,13 +307,13 @@ void pca9670_task_run(void) {
 		case PCA9670_TASK_STATE_REQUEST_DRIVER :
 		
 			if (operation_timer_is_up(PCA9670_REQUEST_DRIVER_TIMEOUT_MS) != 0) {
-				PASS(); // pca9670_task_run() - Waiting for driver request has timed out !!! ---
+				DEBUG_PASS("pca9670_task_run() - Waiting for driver request has timed out !!! ---"); // 
 				operation_stage = PCA9670_TASK_STATE_CANCEL;
 				break;
 			}
 
 			if ((com_driver_mutex_id = p_com_driver->mutex_req()) == 0) {
-				PASS(); // pca9670_task_run() - Can't get Mutex of communication-driver
+				DEBUG_PASS("pca9670_task_run() - Can't get Mutex of communication-driver"); // 
 				break;
 			}
 
@@ -316,17 +325,17 @@ void pca9670_task_run(void) {
 		case PCA9670_TASK_STATE_WRITE_IO :
 		
 			if (operation_timer_is_up(PCA9670_DRIVER_REQUEST_TIMEOUT_MS) != 0) {
-				PASS(); // pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Waiting for driver request has timed out !!! ---
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Waiting for driver request has timed out !!! ---"); // 
 				operation_stage = PCA9670_TASK_STATE_CANCEL;
 				break;
 			}
 
 			if (p_com_driver->is_ready_for_tx() == 0) {
-				PASS(); // pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Waiting for communication-driver
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Waiting for communication-driver"); // 
 				break;
 			}
 				
-			TRACE_byte(); // pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Going to handle instance
+			DEBUG_TRACE_byte(p_act_instance->address, "pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Going to handle instance"); // 
 			
 			PCA9670_GEN_COMMAND_WRITE_IO(p_act_instance, command_buffer);
 
@@ -342,14 +351,14 @@ void pca9670_task_run(void) {
 		case PCA9670_TASK_STATE_READ_IO :
 		
 			if (operation_timer_is_up(PCA9670_OPERATION_TIMEOUT_MS) != 0) {
-				PASS(); // pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for driver operation has timed out !!! ---
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for driver operation has timed out !!! ---"); // 
 				operation_stage = PCA9670_TASK_STATE_CANCEL;
 				p_com_driver->stop_tx();
 				break;
 			}
 
 			if (p_com_driver->is_ready_for_tx() == 0) {
-				PASS(); // pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for communication-driver
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for communication-driver"); // 
 				break;
 			}
 
@@ -363,14 +372,14 @@ void pca9670_task_run(void) {
 		case  PCA9670_TASK_STATE_PROCESS_DATA :
 		
 			if (operation_timer_is_up(PCA9670_OPERATION_TIMEOUT_MS) != 0) {
-				PASS(); // pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for driver operation has timed out !!! ---
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for driver operation has timed out !!! ---"); // 
 				operation_stage = PCA9670_TASK_STATE_CANCEL;
 				p_com_driver->stop_tx();
 				break;
 			}
 
 			if (p_com_driver->is_ready_for_tx() == 0) {
-				PASS(); // pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for communication-driver
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for communication-driver"); // 
 				break;
 			}			
 			
@@ -381,7 +390,7 @@ void pca9670_task_run(void) {
 		
 			if (p_act_instance->next != 0) {
 				
-				PASS(); // pca9670_task_run() - PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE - Loading next instance
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE - Loading next instance"); // 
 				
 				p_act_instance = p_act_instance->next;
 				operation_stage = PCA9670_TASK_STATE_WRITE_IO;				
@@ -389,7 +398,7 @@ void pca9670_task_run(void) {
 				break;
 			}
 				
-			PASS(); // pca9670_task_run() - PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE - No more instance available			
+			DEBUG_PASS("pca9670_task_run() - PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE - No more instance available"); // 			
 			operation_stage = PCA9670_TASK_STATE_CANCEL;				
 			// no break;
 			

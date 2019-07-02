@@ -32,14 +32,13 @@
 
 #define PCA9670_BUILD_INSTANCE(name, addr)							\
 												\
-	static PCA9670_INSTANCE_TYPE _##name##_pca9670_instance = {				\
-		.address = addr,								\
-		.direction_mask = 0,								\
-		.level_mask = 0,								\
-		.next = 0									\
-	};											\
+	static PCA9670_INSTANCE_TYPE _##name##_pca9670_instance;				\
 												\
 	static void name##_init(void) {								\
+		_##name##_pca9670_instance.address = addr;					\
+		_##name##_pca9670_instance.direction_mask = 0;					\
+		_##name##_pca9670_instance.level_mask = 0;					\
+		_##name##_pca9670_instance.next = 0;						\
 		pca9670_register_module(&_##name##_pca9670_instance);				\
 	}
 

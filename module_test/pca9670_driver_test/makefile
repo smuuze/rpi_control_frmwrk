@@ -25,7 +25,7 @@ BOARD_ID = 180920
 
 #-----------------------------------------------------------------------------
 
-VERSION_MAJOR		:= 3
+VERSION_MAJOR		:= 1
 VERSION_MINOR		:= 0
 
 #-----------------------------------------------------------------------------
@@ -37,10 +37,14 @@ MAKE_PATH   = ../../make
 #-----------------------------------------------------------------------------
 
 CSRCS += main.c
-CSRCS += $(APP_PATH)/time_management/rpi/time_management.c
 CSRCS += $(APP_PATH)/expansion/driver_PCA9670.c
+CSRCS += $(APP_PATH)/time_management/rpi/time_management.c
+CSRCS += $(APP_PATH)/platine/board_180920.c
 
-#-----------------------------------------------------------------------------
+# --------- Tracer
+
+TRACER_CFG = CONSOLE
+include $(MAKE_PATH)/make_tracer.mk
 
 
 # --------- Toolchain Path
@@ -113,8 +117,9 @@ INC_PATH += $(APP_PATH)/common/cpu/$(CPU_FAMILY)
 DEFS =
 DEFS += -DVERSION_MAJOR=$(VERSION_MAJOR)
 DEFS += -DVERSION_MINOR=$(VERSION_MINOR)
+DEFS += -D VERSION=0x$(VERSION_MAJOR)
 
-DEBUG_ENABLED = -DDEBUG_ENABLED
+DEBUG_ENABLED = -DTRACER_ENABLED
 
 # --------- Compiler Flags
 

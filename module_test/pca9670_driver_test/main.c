@@ -10,6 +10,12 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
+//---------- Implementation of Traces -----------------------------------------
+
+#define TRACER_ON
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #include "driver/cfg_driver_interface.h"
 #include "driver/trx_driver_interface.h"
@@ -18,77 +24,93 @@
 //---------- Implementation of Traces -----------------------------------------
 
 void i2c_driver_initialize(void) {
-
+	DEBUG_PASS("i2c_driver_initialize()");
 }
 
 void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
-
 	(void) p_cfg;
+	DEBUG_PASS("i2c_driver_configure()");
 }
 
 void i2c_driver_power_off(void) {
+	DEBUG_PASS("i2c_driver_power_off()");
 
 }
 
 u8 i2c_driver_bytes_available (void) {
+	DEBUG_PASS("i2c_driver_bytes_available()");
 	return 0;
 }
 
 u8 i2c_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
+	DEBUG_TRACE_byte(num_bytes, "i2c_driver_initialize()");
 	return 0;
 }
 
 u8 i2c_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+	DEBUG_TRACE_byte(num_bytes, "i2c_driver_set_N_bytes()");
 	return 0;
 }
 
 u8 i2c_driver_is_ready_for_tx (void) {
-	return 0;
+	DEBUG_PASS("i2c_driver_is_ready_for_tx()");
+	return 1;
 }
 
 u8 i2c_driver_is_ready_for_rx(void) {
-	return 0;
+	DEBUG_PASS("i2c_driver_is_ready_for_rx()");
+	return 1;
 }
 
 void i2c_driver_start_rx (u16 num_of_rx_bytes) {
+	DEBUG_TRACE_byte(num_of_rx_bytes, "i2c_driver_start_rx()");
 
 }
 
 void i2c_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
+	DEBUG_TRACE_byte(num_bytes, "i2c_driver_wait_for_rx()");
 }
 
 void i2c_driver_stop_rx (void) {
+	DEBUG_PASS("i2c_driver_stop_rx()");
 
 }
 
 void i2c_driver_start_tx (void) {
+	DEBUG_PASS("i2c_driver_initialize()");
 
 }
 
 void i2c_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
+	DEBUG_TRACE_byte(num_bytes, "i2c_driver_wait_for_tx()");
 }
 
 void i2c_driver_stop_tx (void) {
+	DEBUG_PASS("i2c_driver_stop_tx()");
 
 }
 
 void i2c_driver_clear_buffer (void) {
+	DEBUG_PASS("i2c_driver_clear_buffer()");
 
 }
 
 void i2c_driver_set_address (u8 addr) {
 	(void) addr;
+	DEBUG_TRACE_byte(addr, "i2c_driver_set_address()");
 }
 
 u8 i2c_driver_mutex_request(void) {
+	DEBUG_PASS("i2c_driver_mutex_request()");
 	return 1;
 }
 
 void i2c_driver_mutex_release(u8 m_id) {
+	DEBUG_PASS("i2c_driver_mutex_release()");
 
 }
 
@@ -96,7 +118,9 @@ PCA9670_BUILD_INSTANCE(PCA9670_test_instance, 0x20)
 
 int main( void ) {
 
+	DEBUG_PASS("main() - Welcome to Module Test for PCA9670 device");
 	
+	DEBUG_PASS("main() - init i2c dummy driver module");
 	TRX_DRIVER_INTERFACE i2c0_driver = {
 		I2C,					//	TRX_DRIVER_INTERFACE_TYPE type;
 		&i2c_driver_initialize,
@@ -119,12 +143,23 @@ int main( void ) {
 		&i2c_driver_mutex_release		//
 	};
 
+	DEBUG_PASS("main() - init PC9670 module");
 	pca9670_init(&i2c0_driver);
 	
+	DEBUG_PASS("main() - Initializing PCA9670-Instance");
 	PCA9670_test_instance_init();
-
-	for (;;) {  // Endlosschleife
 	
+	DEBUG_PASS("main() - Initialize PCA9670 Task");
+	pca9670_task_init();
+	
+	DEBUG_PASS("main() - Going to run test-cases");
+	for (;;) {  // Endlosschleife
+					
+		usleep(500);	
+	
+		if (pca9670_task_get_state() == MCU_TASK_RUNNING) {
+			pca9670_task_run();
+		}
 	}
 	
 	return 0;
