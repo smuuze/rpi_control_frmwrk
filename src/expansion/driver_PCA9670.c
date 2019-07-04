@@ -5,6 +5,8 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
+#include "common/local_module_status.h"
+
 #include "driver/cfg_driver_interface.h"
 #include "system/system_interface.h"
 #include "time_management/time_management.h"
@@ -38,9 +40,11 @@
 //-----------------------------------------------------------------------------
 
 #define PCA9670_WRITE_IO_COMMAND_LENGTH				1
-#define PCA9670_GEN_COMMAND_WRITE_IO(p_instance, p_buffer)	p_buffer[0] = p_instance->direction_mask
+#define PCA9670_GEN_COMMAND_WRITE_IO(p_instance, p_buffer)	p_buffer[0] = (p_instance->direction_mask | p_instance->level_mask)
 
 #define PCA9670_READ_IO_ANSWER_LENGTH				1
+
+#define PCA9670_STATUS_PIN_CHANGED				(1 << 0)
 
 //-----------------------------------------------------------------------------
 
@@ -55,8 +59,15 @@ typedef enum {
 	PCA9670_TASK_STATE_WRITE_IO,
 	PCA9670_TASK_STATE_READ_IO,
 	PCA9670_TASK_STATE_PROCESS_DATA,
-	PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE
+	PCA9670_TASK_STATE_LOAD_NEXT_INSTANCE
 } PCA9670_TASK_STATE;
+
+//-----------------------------------------------------------------------------
+
+TIME_MGMN_BUILD_STATIC_TIMER_U16(task_timer)
+TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
+
+BUILD_MODULE_STATUS_U8(pca9670_status)
 
 //-----------------------------------------------------------------------------
 
@@ -102,11 +113,9 @@ static u8 com_driver_mutex_id = 0;
 
 //-----------------------------------------------------------------------------
 
-TIME_MGMN_BUILD_STATIC_TIMER_U16(task_timer)
-TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
-
-//-----------------------------------------------------------------------------
-
+/*!
+ *
+ */
 static u8 _update_mask(u8 act_mask, u8 pin, u8 value) {
 
 	u8 new_mask = act_mask;
@@ -120,6 +129,18 @@ static u8 _update_mask(u8 act_mask, u8 pin, u8 value) {
 	return new_mask;
 }
 
+/*!
+ *
+ */
+static void _update_instance(PCA9670_INSTANCE_TYPE* p_instance, u8 new_pin_values) {
+
+	DEBUG_TRACE_byte(new_pin_values, "_update_instance() - new_pin_values:"); //
+	p_instance->level_mask = new_pin_values;
+}
+
+/*!
+ *
+ */
 static u8 _bit_isset(u8 vector, u8 bit) {
 	return (vector & (1 << bit)) != 0 ? 1 : 0;
 }
@@ -138,6 +159,8 @@ void pca9670_init(TRX_DRIVER_INTERFACE* p_driver) {
 	driver_cfg.module.i2c.slave_addr = 0;
 
 	p_com_driver = p_driver;
+	
+	pca9670_status_clear_all();
 }
 
 void pca9670_register_module(PCA9670_INSTANCE_TYPE* p_instance) {
@@ -171,9 +194,11 @@ void pca9670_set_direction(u8 instance_address, u8 instance_pin_number, u8 new_d
 			continue;
 		}
 
-		DEBUG_TRACE_byte(p_act->direction_mask, "pca9670_set_direction() - Direction before"); // 
+		DEBUG_TRACE_byte(p_act->direction_mask, "pca9670_set_direction() - Direction before"); //
 		p_act->direction_mask  = _update_mask(p_act->direction_mask, instance_pin_number, new_direction);
-		DEBUG_TRACE_byte(p_act->direction_mask, "pca9670_set_direction() - Direction after"); // 
+		DEBUG_TRACE_byte(p_act->direction_mask, "pca9670_set_direction() - Direction after"); //
+		
+		pca9670_status_set(PCA9670_STATUS_PIN_CHANGED);
 
 		break;
 	}
@@ -212,10 +237,15 @@ void pca9670_set_state(u8 instance_address, u8 instance_pin_number, u8 new_state
 			p_act = p_act->next;
 			continue;
 		}
+		
+		DEBUG_TRACE_byte(instance_address, "pca9670_set_state() - instance address"); // 
+		DEBUG_TRACE_byte(instance_pin_number, "pca9670_set_state() - pin number"); // 
 
 		DEBUG_TRACE_byte(p_act->level_mask, "pca9670_set_state() - State before"); // 
 		p_act->level_mask  = _update_mask(p_act->level_mask, instance_pin_number, new_state);
 		DEBUG_TRACE_byte(p_act->level_mask, "pca9670_set_state() - State after"); // 
+		
+		pca9670_status_set(PCA9670_STATUS_PIN_CHANGED);
 
 		break;
 	}
@@ -261,7 +291,10 @@ MCU_TASK_INTERFACE_TASK_STATE pca9670_task_get_state(void) {
 
 	if (task_state == MCU_TASK_SLEEPING) {
 
-		if (task_timer_is_up(PCA9670_TASK_RUN_INTERVAL_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_TASK_RUN_INTERVAL_MS) */ != 0) {
+		if (pca9670_status_is_set(PCA9670_STATUS_PIN_CHANGED)) {
+			task_state = MCU_TASK_RUNNING;
+			
+		} else if (task_timer_is_up(PCA9670_TASK_RUN_INTERVAL_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_TASK_RUN_INTERVAL_MS) */ != 0) {
 			task_state = MCU_TASK_RUNNING;
 		}
 	}
@@ -288,10 +321,6 @@ void pca9670_task_run(void) {
 			// no break;
 
 		case PCA9670_TASK_STATE_IDLE :
-		
-			if (task_state != MCU_TASK_RUNNING) {
-				break;
-			}
 			
 			if (p_first_instance == 0) {
 				DEBUG_PASS("pca9670_task_run() - No instance registered - FINISH !!! ---"); // 
@@ -320,6 +349,12 @@ void pca9670_task_run(void) {
 			p_com_driver->configure(&driver_cfg);
 			operation_timer_start();
 			operation_stage = PCA9670_TASK_STATE_WRITE_IO;
+			
+			if (pca9670_status_is_set(PCA9670_STATUS_PIN_CHANGED) == 0) {
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_REQUEST_DRIVER - No Pin-Change -> skip writing IO");
+				operation_stage = PCA9670_TASK_STATE_READ_IO;
+				break;
+			}
 			// no break;
 			
 		case PCA9670_TASK_STATE_WRITE_IO :
@@ -335,7 +370,7 @@ void pca9670_task_run(void) {
 				break;
 			}
 				
-			DEBUG_TRACE_byte(p_act_instance->address, "pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Going to handle instance"); // 
+			DEBUG_TRACE_byte(p_act_instance->address, "pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Going to write new direction states"); // 
 			
 			PCA9670_GEN_COMMAND_WRITE_IO(p_act_instance, command_buffer);
 
@@ -344,7 +379,7 @@ void pca9670_task_run(void) {
 			p_com_driver->set_N_bytes(PCA9670_WRITE_IO_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();
 			
-			operation_timer_start();	
+			operation_timer_start();
 			operation_stage = PCA9670_TASK_STATE_READ_IO;	
 			// no break;
 			
@@ -357,10 +392,12 @@ void pca9670_task_run(void) {
 				break;
 			}
 
-			if (p_com_driver->is_ready_for_tx() == 0) {
+			if (p_com_driver->is_ready_for_rx() == 0) {
 				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for communication-driver"); // 
 				break;
 			}
+			
+			DEBUG_TRACE_byte(p_act_instance->address, "pca9670_task_run() - PCA9670_TASK_STATE_WRITE_IO - Going to read actual pin level from instance "); // 
 
 			p_com_driver->set_address(p_act_instance->address);
 			p_com_driver->start_rx(PCA9670_READ_IO_ANSWER_LENGTH);
@@ -378,19 +415,23 @@ void pca9670_task_run(void) {
 				break;
 			}
 
-			if (p_com_driver->is_ready_for_tx() == 0) {
-				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for communication-driver"); // 
+			if (p_com_driver->bytes_available() == 0) {
+				//DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Waiting for bytes to be received"); // 
 				break;
 			}			
 			
-			p_com_driver->get_N_bytes(PCA9670_READ_IO_ANSWER_LENGTH, command_buffer);		
+			DEBUG_TRACE_word(operation_timer_elapsed(), "pca9670_task_run() - PCA9670_TASK_STATE_READ_IO - Bytes received after [ms]: "); // 
+			p_com_driver->get_N_bytes(PCA9670_READ_IO_ANSWER_LENGTH, command_buffer);
+			
+			_update_instance(p_act_instance, command_buffer[0]);
+			
 			// no break;
 			
-		case PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE :
+		case PCA9670_TASK_STATE_LOAD_NEXT_INSTANCE :
 		
 			if (p_act_instance->next != 0) {
 				
-				DEBUG_PASS("pca9670_task_run() - PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE - Loading next instance"); // 
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_LOAD_NEXT_INSTANCE - Loading next instance"); // 
 				
 				p_act_instance = p_act_instance->next;
 				operation_stage = PCA9670_TASK_STATE_WRITE_IO;				
@@ -398,7 +439,7 @@ void pca9670_task_run(void) {
 				break;
 			}
 				
-			DEBUG_PASS("pca9670_task_run() - PCA9670_TAST_STATE_LOAD_NEXT_INSTANCE - No more instance available"); // 			
+			DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_LOAD_NEXT_INSTANCE - No more instance available"); // 			
 			operation_stage = PCA9670_TASK_STATE_CANCEL;				
 			// no break;
 			
@@ -414,6 +455,8 @@ void pca9670_task_run(void) {
 			task_timer_start();
 			operation_stage = PCA9670_TASK_STATE_IDLE;
 			task_state = MCU_TASK_SLEEPING;
+			
+			pca9670_status_clear_all();
 			
 			break;
 	}

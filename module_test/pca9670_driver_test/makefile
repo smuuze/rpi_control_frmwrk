@@ -37,6 +37,7 @@ MAKE_PATH   = ../../make
 #-----------------------------------------------------------------------------
 
 CSRCS += main.c
+CSRCS += $(APP_PATH)/common/local_module_status.c
 CSRCS += $(APP_PATH)/expansion/driver_PCA9670.c
 CSRCS += $(APP_PATH)/time_management/rpi/time_management.c
 CSRCS += $(APP_PATH)/platine/board_180920.c

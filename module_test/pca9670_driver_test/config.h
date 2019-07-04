@@ -20,6 +20,8 @@
 ///-----------------------------------------------------------------------------
 #define MIN_BIOS_VERSION 0x163
 
+#define PCA9670_TASK_RUN_INTERVAL_MS	2000
+
 ///-----------------------------------------------------------------------------
 /// Konfigurationsspeicher
 // Konfigurationsspeicher ist groesser als 110 Byte und passt nicht in den deBus

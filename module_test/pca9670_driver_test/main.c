@@ -21,7 +21,14 @@
 #include "driver/trx_driver_interface.h"
 #include "expansion/driver_PCA9670.h"
 
-//---------- Implementation of Traces -----------------------------------------
+#include "time_management/time_management.h"
+
+//-----------------------------------------------------------------------------
+
+TIME_MGMN_BUILD_STATIC_TIMER_U16(DUT_RUN_TIMER)
+TIME_MGMN_BUILD_STATIC_TIMER_U16(DUT_BYTES_AVAILABLE_TIMER)
+
+//-----------------------------------------------------------------------------
 
 void i2c_driver_initialize(void) {
 	DEBUG_PASS("i2c_driver_initialize()");
@@ -38,17 +45,36 @@ void i2c_driver_power_off(void) {
 }
 
 u8 i2c_driver_bytes_available (void) {
-	DEBUG_PASS("i2c_driver_bytes_available()");
-	return 0;
+
+	static u8 timeout = 0;
+	
+	if (timeout == 0) {
+		timeout = 1;
+		DUT_BYTES_AVAILABLE_TIMER_start();
+	}
+	
+	if (DUT_BYTES_AVAILABLE_TIMER_is_up(50) == 0) {
+		return 0;
+	}
+	
+	timeout = 0;
+	return 1;
 }
 
 u8 i2c_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
-	DEBUG_TRACE_byte(num_bytes, "i2c_driver_initialize()");
-	return 0;
+	
+	u8 i = 0;
+	for ( ; i < num_bytes; i++) {
+		p_buffer_to[i] = (i + 1);
+	}
+	
+	DEBUG_TRACE_N(num_bytes, (u8*)p_buffer_to, "i2c_driver_set_N_bytes()");
+	
+	return i;
 }
 
 u8 i2c_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
-	DEBUG_TRACE_byte(num_bytes, "i2c_driver_set_N_bytes()");
+	DEBUG_TRACE_N(num_bytes, (u8*)p_buffer_from, "i2c_driver_set_N_bytes()");
 	return 0;
 }
 
@@ -114,7 +140,8 @@ void i2c_driver_mutex_release(u8 m_id) {
 
 }
 
-PCA9670_BUILD_INSTANCE(PCA9670_test_instance, 0x20)
+PCA9670_BUILD_INSTANCE(DUT_pca9670, 0x20)
+PC9670_BUILD_OUTPUT(DUT_out01, 0x20, PCA9670_PIN_NUM_1)
 
 int main( void ) {
 
@@ -146,11 +173,18 @@ int main( void ) {
 	DEBUG_PASS("main() - init PC9670 module");
 	pca9670_init(&i2c0_driver);
 	
-	DEBUG_PASS("main() - Initializing PCA9670-Instance");
-	PCA9670_test_instance_init();
-	
 	DEBUG_PASS("main() - Initialize PCA9670 Task");
 	pca9670_task_init();
+	
+	DEBUG_PASS("main() - Initializing PCA9670-Instance");
+	DUT_pca9670_init();
+	
+	DEBUG_PASS("main() - Initializing Output01");
+	DUT_out01_init();
+	
+	u8 state_changed = 0;
+	
+	DUT_RUN_TIMER_start();
 	
 	DEBUG_PASS("main() - Going to run test-cases");
 	for (;;) {  // Endlosschleife
@@ -158,7 +192,14 @@ int main( void ) {
 		usleep(500);	
 	
 		if (pca9670_task_get_state() == MCU_TASK_RUNNING) {
+			DEBUG_TRACE_word(DUT_RUN_TIMER_elapsed(), "main() ------------ RUNNING DEVICE UNDER TEST ------------");
 			pca9670_task_run();
+		}
+		
+		if (state_changed == 0) {
+			DEBUG_PASS("main() - Change output state ----------");
+			state_changed = 1;
+			DUT_out01_set_on();
 		}
 	}
 	
