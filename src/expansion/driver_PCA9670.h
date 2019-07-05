@@ -38,6 +38,7 @@
 		_##name##_pca9670_instance.address = addr;					\
 		_##name##_pca9670_instance.direction_mask = 0;					\
 		_##name##_pca9670_instance.level_mask = 0;					\
+		_##name##_pca9670_instance.pin_values = 0;					\
 		_##name##_pca9670_instance.next = 0;						\
 		pca9670_register_module(&_##name##_pca9670_instance);				\
 	}
@@ -89,6 +90,7 @@ typedef struct PCA9670_INSTANCE {
 	u8 address;
 	u8 direction_mask;
 	u8 level_mask;
+	u8 pin_values;
 	struct PCA9670_INSTANCE* next;
 } PCA9670_INSTANCE_TYPE;
 

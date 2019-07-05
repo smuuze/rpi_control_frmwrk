@@ -135,7 +135,7 @@ static u8 _update_mask(u8 act_mask, u8 pin, u8 value) {
 static void _update_instance(PCA9670_INSTANCE_TYPE* p_instance, u8 new_pin_values) {
 
 	DEBUG_TRACE_byte(new_pin_values, "_update_instance() - new_pin_values:"); //
-	p_instance->level_mask = new_pin_values;
+	p_instance->pin_values = new_pin_values;
 }
 
 /*!
@@ -161,6 +161,7 @@ void pca9670_init(TRX_DRIVER_INTERFACE* p_driver) {
 	p_com_driver = p_driver;
 	
 	pca9670_status_clear_all();
+	pca9670_status_set(PCA9670_STATUS_PIN_CHANGED);
 }
 
 void pca9670_register_module(PCA9670_INSTANCE_TYPE* p_instance) {
@@ -263,7 +264,7 @@ u8 pca9670_get_state(u8 instance_address, u8 instance_pin_number) {
 			continue;
 		}
 	
-		if (_bit_isset(p_act->level_mask, instance_pin_number) != 0) {
+		if (_bit_isset(p_act->pin_values, instance_pin_number) != 0) {
 			return PCA9670_STATE_HIGH;
 		} else {
 			return PCA9670_STATE_LOW;
@@ -328,6 +329,8 @@ void pca9670_task_run(void) {
 				break;
 			}
 			
+			DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_IDLE - Processing IO-States"); // 
+			
 			p_act_instance = p_first_instance;
 			operation_stage = PCA9670_TASK_STATE_REQUEST_DRIVER;
 			operation_timer_start();
@@ -336,13 +339,13 @@ void pca9670_task_run(void) {
 		case PCA9670_TASK_STATE_REQUEST_DRIVER :
 		
 			if (operation_timer_is_up(PCA9670_REQUEST_DRIVER_TIMEOUT_MS) != 0) {
-				DEBUG_PASS("pca9670_task_run() - Waiting for driver request has timed out !!! ---"); // 
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_REQUEST_DRIVER - Waiting for driver request has timed out !!! ---"); // 
 				operation_stage = PCA9670_TASK_STATE_CANCEL;
 				break;
 			}
 
 			if ((com_driver_mutex_id = p_com_driver->mutex_req()) == 0) {
-				DEBUG_PASS("pca9670_task_run() - Can't get Mutex of communication-driver"); // 
+				DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_REQUEST_DRIVER - Can't get Mutex of communication-driver"); // 
 				break;
 			}
 
@@ -355,6 +358,9 @@ void pca9670_task_run(void) {
 				operation_stage = PCA9670_TASK_STATE_READ_IO;
 				break;
 			}
+			
+			pca9670_status_unset(PCA9670_STATUS_PIN_CHANGED);
+			
 			// no break;
 			
 		case PCA9670_TASK_STATE_WRITE_IO :
@@ -456,7 +462,7 @@ void pca9670_task_run(void) {
 			operation_stage = PCA9670_TASK_STATE_IDLE;
 			task_state = MCU_TASK_SLEEPING;
 			
-			pca9670_status_clear_all();
+			DEBUG_PASS("pca9670_task_run() - PCA9670_TASK_STATE_REQUEST_FINISH - Task finished -------------------------------"); // 
 			
 			break;
 	}

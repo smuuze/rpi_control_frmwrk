@@ -22,11 +22,21 @@
 #include "expansion/driver_PCA9670.h"
 
 #include "time_management/time_management.h"
+//-----------------------------------------------------------------------------
+
+#define DEVICE_ADDR_1		0x20
+#define DEVICE_ADDR_2		0x22
+#define DEVICE_ADDR_3		0x23
 
 //-----------------------------------------------------------------------------
 
 TIME_MGMN_BUILD_STATIC_TIMER_U16(DUT_RUN_TIMER)
 TIME_MGMN_BUILD_STATIC_TIMER_U16(DUT_BYTES_AVAILABLE_TIMER)
+
+//-----------------------------------------------------------------------------
+
+static u8 actual_device_addr = 0x00;
+static u8 actual_output_state[3] = {0x00, 0x00, 0x00};
 
 //-----------------------------------------------------------------------------
 
@@ -62,20 +72,46 @@ u8 i2c_driver_bytes_available (void) {
 }
 
 u8 i2c_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
-	
-	u8 i = 0;
-	for ( ; i < num_bytes; i++) {
-		p_buffer_to[i] = (i + 1);
+			
+	switch (actual_device_addr) {
+		case DEVICE_ADDR_1 : 
+			p_buffer_to[0] = actual_output_state[0];
+			break;
+			
+		case DEVICE_ADDR_2 : 
+			p_buffer_to[0] = actual_output_state[1];
+			break;
+			
+		case DEVICE_ADDR_3 : 
+			p_buffer_to[0] = actual_output_state[2];
+			break;
 	}
 	
-	DEBUG_TRACE_N(num_bytes, (u8*)p_buffer_to, "i2c_driver_set_N_bytes()");
 	
-	return i;
+	DEBUG_TRACE_N(num_bytes, (u8*)p_buffer_to, "i2c_driver_get_N_bytes()");
+	
+	return 1;
 }
 
 u8 i2c_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+	
 	DEBUG_TRACE_N(num_bytes, (u8*)p_buffer_from, "i2c_driver_set_N_bytes()");
-	return 0;
+	
+	switch (actual_device_addr) {
+		case DEVICE_ADDR_1 : 
+			actual_output_state[0] = p_buffer_from[0];
+			break;
+			
+		case DEVICE_ADDR_2 : 
+			actual_output_state[1] = p_buffer_from[0];
+			break;
+			
+		case DEVICE_ADDR_3 : 
+			actual_output_state[2] = p_buffer_from[0];
+			break;
+	}
+	
+	return num_bytes;
 }
 
 u8 i2c_driver_is_ready_for_tx (void) {
@@ -126,8 +162,9 @@ void i2c_driver_clear_buffer (void) {
 }
 
 void i2c_driver_set_address (u8 addr) {
-	(void) addr;
+
 	DEBUG_TRACE_byte(addr, "i2c_driver_set_address()");
+	actual_device_addr = addr;
 }
 
 u8 i2c_driver_mutex_request(void) {
@@ -140,8 +177,12 @@ void i2c_driver_mutex_release(u8 m_id) {
 
 }
 
-PCA9670_BUILD_INSTANCE(DUT_pca9670, 0x20)
-PC9670_BUILD_OUTPUT(DUT_out01, 0x20, PCA9670_PIN_NUM_1)
+PCA9670_BUILD_INSTANCE(DUT_01_pca9670, DEVICE_ADDR_1)
+PC9670_BUILD_OUTPUT(DUT_out01, DEVICE_ADDR_1, PCA9670_PIN_NUM_1)
+PC9670_BUILD_OUTPUT(DUT_out02, DEVICE_ADDR_1, PCA9670_PIN_NUM_8)
+
+PCA9670_BUILD_INSTANCE(DUT_02_pca9670, DEVICE_ADDR_2)
+PC9670_BUILD_OUTPUT(DUT_out11, DEVICE_ADDR_2, PCA9670_PIN_NUM_4)
 
 int main( void ) {
 
@@ -177,12 +218,16 @@ int main( void ) {
 	pca9670_task_init();
 	
 	DEBUG_PASS("main() - Initializing PCA9670-Instance");
-	DUT_pca9670_init();
+	DUT_01_pca9670_init();
+	DUT_02_pca9670_init();
 	
 	DEBUG_PASS("main() - Initializing Output01");
 	DUT_out01_init();
+	DUT_out02_init();
 	
 	u8 state_changed = 0;
+	
+	DUT_out02_set_on();
 	
 	DUT_RUN_TIMER_start();
 	
@@ -192,7 +237,7 @@ int main( void ) {
 		usleep(500);	
 	
 		if (pca9670_task_get_state() == MCU_TASK_RUNNING) {
-			DEBUG_TRACE_word(DUT_RUN_TIMER_elapsed(), "main() ------------ RUNNING DEVICE UNDER TEST ------------");
+			//DEBUG_TRACE_word(DUT_RUN_TIMER_elapsed(), "main() ------------ RUNNING DEVICE UNDER TEST ------------");
 			pca9670_task_run();
 		}
 		
@@ -200,6 +245,7 @@ int main( void ) {
 			DEBUG_PASS("main() - Change output state ----------");
 			state_changed = 1;
 			DUT_out01_set_on();
+			DUT_out11_set_on();
 		}
 	}
 	
