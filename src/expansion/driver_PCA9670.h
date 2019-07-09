@@ -43,7 +43,7 @@
 		pca9670_register_module(&_##name##_pca9670_instance);				\
 	}
 
-#define PCA9670_BUILD_INPUT(name, addr, pin_num)						\
+#define PCA9670_BUILD_INPUT(name, addr, pin_num, pin_cfg)					\
 												\
 	void name##_init(void) {								\
 		pca9670_set_direction(addr, pin_num, PCA9670_DIRECTION_INPUT);			\
@@ -58,19 +58,19 @@
 	void name##_init(void);									\
 	u8 name##_get_state(void);								
 
-#define PC9670_BUILD_OUTPUT(name, addr, pin_num)						\
+#define PC9670_BUILD_OUTPUT(name, addr, pin_num, pin_state_on, pin_state_off)			\
 												\
 	void name##_init(void) {								\
 		pca9670_set_direction(addr, pin_num, PCA9670_DIRECTION_OUTPUT);			\
-		pca9670_set_state(addr, pin_num, PCA9670_STATE_LOW);				\
+		pca9670_set_state(addr, pin_num, pin_state_off);				\
 	}											\
 												\
 	void name##_set_on(void) {								\
-		return pca9670_set_state(addr, pin_num, PCA9670_STATE_HIGH);			\
+		return pca9670_set_state(addr, pin_num, pin_state_on);				\
 	}											\
 												\
 	void name##_set_off(void) {								\
-		return pca9670_set_state(addr, pin_num, PCA9670_STATE_LOW);			\
+		return pca9670_set_state(addr, pin_num, pin_state_off);				\
 	}											\
 												\
 	u8 name##_get_state(void) {								\

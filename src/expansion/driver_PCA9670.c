@@ -185,6 +185,9 @@ void pca9670_register_module(PCA9670_INSTANCE_TYPE* p_instance) {
 
 
 void pca9670_set_direction(u8 instance_address, u8 instance_pin_number, u8 new_direction) {
+		
+	DEBUG_TRACE_byte(instance_address, "pca9670_set_direction() - instance address"); // 
+	DEBUG_TRACE_byte(instance_pin_number, "pca9670_set_direction() - pin number"); // 
 
 	PCA9670_INSTANCE_TYPE* p_act = p_first_instance;
 
@@ -194,14 +197,13 @@ void pca9670_set_direction(u8 instance_address, u8 instance_pin_number, u8 new_d
 			p_act = p_act->next;
 			continue;
 		}
-
-		DEBUG_TRACE_byte(p_act->direction_mask, "pca9670_set_direction() - Direction before"); //
+		
 		p_act->direction_mask  = _update_mask(p_act->direction_mask, instance_pin_number, new_direction);
-		DEBUG_TRACE_byte(p_act->direction_mask, "pca9670_set_direction() - Direction after"); //
+		DEBUG_TRACE_byte(p_act->direction_mask, "pca9670_set_direction() - New State"); //
 		
 		pca9670_status_set(PCA9670_STATUS_PIN_CHANGED);
 
-		break;
+		return;
 	}
 }
 
@@ -229,6 +231,9 @@ u8 pca9670_get_direction(u8 instance_address, u8 instance_pin_number) {
 
 
 void pca9670_set_state(u8 instance_address, u8 instance_pin_number, u8 new_state) {
+		
+	DEBUG_TRACE_byte(instance_address, "pca9670_set_state() - instance address"); // 
+	DEBUG_TRACE_byte(instance_pin_number, "pca9670_set_state() - pin number"); // 
 
 	PCA9670_INSTANCE_TYPE* p_act = p_first_instance;
 
@@ -238,13 +243,9 @@ void pca9670_set_state(u8 instance_address, u8 instance_pin_number, u8 new_state
 			p_act = p_act->next;
 			continue;
 		}
-		
-		DEBUG_TRACE_byte(instance_address, "pca9670_set_state() - instance address"); // 
-		DEBUG_TRACE_byte(instance_pin_number, "pca9670_set_state() - pin number"); // 
 
-		DEBUG_TRACE_byte(p_act->level_mask, "pca9670_set_state() - State before"); // 
 		p_act->level_mask  = _update_mask(p_act->level_mask, instance_pin_number, new_state);
-		DEBUG_TRACE_byte(p_act->level_mask, "pca9670_set_state() - State after"); // 
+		DEBUG_TRACE_byte(p_act->level_mask, "pca9670_set_state() - New State"); // 
 		
 		pca9670_status_set(PCA9670_STATUS_PIN_CHANGED);
 

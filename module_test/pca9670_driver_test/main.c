@@ -32,6 +32,7 @@
 
 TIME_MGMN_BUILD_STATIC_TIMER_U16(DUT_RUN_TIMER)
 TIME_MGMN_BUILD_STATIC_TIMER_U16(DUT_BYTES_AVAILABLE_TIMER)
+TIME_MGMN_BUILD_STATIC_TIMER_U16(DUT_STATE_CHANGE_TIMER)
 
 //-----------------------------------------------------------------------------
 
@@ -178,11 +179,11 @@ void i2c_driver_mutex_release(u8 m_id) {
 }
 
 PCA9670_BUILD_INSTANCE(DUT_01_pca9670, DEVICE_ADDR_1)
-PC9670_BUILD_OUTPUT(DUT_out01, DEVICE_ADDR_1, PCA9670_PIN_NUM_1)
-PC9670_BUILD_OUTPUT(DUT_out02, DEVICE_ADDR_1, PCA9670_PIN_NUM_8)
+PC9670_BUILD_OUTPUT(DUT_out01, DEVICE_ADDR_1, PCA9670_PIN_NUM_1, PCA9670_STATE_HIGH, PCA9670_STATE_LOW)
+PC9670_BUILD_OUTPUT(DUT_out02, DEVICE_ADDR_1, PCA9670_PIN_NUM_8, PCA9670_STATE_LOW, PCA9670_STATE_HIGH)
 
 PCA9670_BUILD_INSTANCE(DUT_02_pca9670, DEVICE_ADDR_2)
-PC9670_BUILD_OUTPUT(DUT_out11, DEVICE_ADDR_2, PCA9670_PIN_NUM_4)
+PC9670_BUILD_OUTPUT(DUT_out11, DEVICE_ADDR_2, PCA9670_PIN_NUM_4, PCA9670_STATE_HIGH, PCA9670_STATE_LOW)
 
 int main( void ) {
 
@@ -211,25 +212,28 @@ int main( void ) {
 		&i2c_driver_mutex_release		//
 	};
 
-	DEBUG_PASS("main() - init PC9670 module");
+	DEBUG_PASS("main() - init PC9670 module ---");
 	pca9670_init(&i2c0_driver);
 	
-	DEBUG_PASS("main() - Initialize PCA9670 Task");
+	DEBUG_PASS("main() - Initialize PCA9670 Task ---");
 	pca9670_task_init();
 	
-	DEBUG_PASS("main() - Initializing PCA9670-Instance");
+	DEBUG_PASS("main() - Initializing PCA9670-Instance ---");
 	DUT_01_pca9670_init();
 	DUT_02_pca9670_init();
 	
-	DEBUG_PASS("main() - Initializing Output01");
+	DEBUG_PASS("main() - Initializing Outputs ---");
 	DUT_out01_init();
 	DUT_out02_init();
+	DUT_out11_init();
 	
 	u8 state_changed = 0;
 	
+	DEBUG_PASS("main() - Set first Output ---");
 	DUT_out02_set_on();
 	
 	DUT_RUN_TIMER_start();
+	DUT_STATE_CHANGE_TIMER_start();
 	
 	DEBUG_PASS("main() - Going to run test-cases");
 	for (;;) {  // Endlosschleife
@@ -241,11 +245,12 @@ int main( void ) {
 			pca9670_task_run();
 		}
 		
-		if (state_changed == 0) {
+		if (state_changed == 0 && DUT_STATE_CHANGE_TIMER_is_up(3000)) {
 			DEBUG_PASS("main() - Change output state ----------");
 			state_changed = 1;
 			DUT_out01_set_on();
 			DUT_out11_set_on();
+			DUT_out02_set_off();
 		}
 	}
 	
