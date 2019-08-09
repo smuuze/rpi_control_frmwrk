@@ -7,7 +7,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_OFF
+#define TRACER_ON
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -183,8 +183,6 @@ void local_sht31_mcu_task_run(void) {
 			POWER_UNIT_5V_request();
 
 			p_com_driver->configure(&driver_cfg);
-
-			EXPANSION_BOARD_POWER_request();
 			
 			task_timer_start(); // task_run_interval_reference_actual = i_system.time.now_u16();
 			operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
@@ -210,7 +208,7 @@ void local_sht31_mcu_task_run(void) {
 			//	break;
 			//}
 			
-			if (EXPANSION_BOARD_POWER_is_on() == 0) {
+			if (POWER_UNIT_5V_is_on() == 0) {
 				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Wait for Start-Up of Sensor
 				break;
 			}
@@ -325,6 +323,16 @@ void local_sht31_mcu_task_run(void) {
 			GET_SYSTEM(data).temperature.actual = (i8)((i32)calculation_temp - SHT31_TEMPERATURE_FIXPOINT_FACTOR_B);
 			TRACE_byte(GET_SYSTEM(data).temperature.actual); // local_sht31_mcu_task_run() - actual temperature in �C
 
+			if (GET_SYSTEM(data).temperature.actual > GET_SYSTEM(data).temperature.maximal) {
+				GET_SYSTEM(data).temperature.maximal = GET_SYSTEM(data).temperature.actual;
+				TRACE_byte(GET_SYSTEM(data).temperature.maximal); // local_sht31_mcu_task_run() - New Maximum Temperature
+			}
+
+			if (GET_SYSTEM(data).temperature.actual < GET_SYSTEM(data).temperature.minimal) {
+				GET_SYSTEM(data).temperature.minimal = GET_SYSTEM(data).temperature.actual;
+				TRACE_byte(GET_SYSTEM(data).temperature.minimal); // local_sht31_mcu_task_run() - New Minimum Temperature
+			}
+
 			PASS(); ///----- Humidity -----------------------------------------------------
 
 			GET_SYSTEM(data).adc.humidity = (answer_buffer[SHT31_INDEX_OF_HUMIDITY_MSB_IN_ANSWER] << 8 ) | answer_buffer[SHT31_INDEX_OF_HUMIDITY_LSB_IN_ANSWER];
@@ -335,6 +343,16 @@ void local_sht31_mcu_task_run(void) {
 
 			GET_SYSTEM(data).humidity.actual = calculation_temp;
 			TRACE_byte(GET_SYSTEM(data).humidity.actual); // local_sht31_mcu_task_run() - actual relative humidity in %
+
+			if (GET_SYSTEM(data).humidity.actual > GET_SYSTEM(data).humidity.maximal) {
+				GET_SYSTEM(data).humidity.maximal = GET_SYSTEM(data).temperature.actual;
+				TRACE_byte(GET_SYSTEM(data).humidity.maximal); // local_sht31_mcu_task_run() - New Maximum Humidity
+			}
+
+			if (GET_SYSTEM(data).humidity.actual < GET_SYSTEM(data).humidity.minimal) {
+				GET_SYSTEM(data).humidity.minimal = GET_SYSTEM(data).humidity.actual;
+				TRACE_byte(GET_SYSTEM(data).humidity.minimal); // local_sht31_mcu_task_run() - New Minimum Humidity
+			}
 
 			PASS(); ///----- Max Min Values -----------------------------------------------
 
