@@ -11,7 +11,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_OFF
+#define TRACER_ON
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -73,18 +73,19 @@ void power_mgmnt_request(POWER_MANAGEMENT_UNIT_TYPE* p_unit) {
 /*!
  *
  */
-void power_mgmnt_release(POWER_MANAGEMENT_UNIT_TYPE* p_unit) {
-	
-	PASS(); // power_mgmnt_release()
+void power_mgmnt_release(POWER_MANAGEMENT_UNIT_TYPE* p_unit) {	
+
+	DEBUG_PASS("power_mgmnt_release()");
 	
 	if (p_unit->request_counter == 0) {
+
+		DEBUG_PASS("power_mgmnt_release() - Unit was not requested");
+		return;		
+	} 
 	
-		PASS(); // power_mgmnt_release() - Unit was not requested
-		return;
-		
-	} else if (p_unit->request_counter == 1) {
-	
-		PASS(); // power_mgmnt_release() - The is the last release
+	if (p_unit->request_counter == 1) {
+
+		DEBUG_PASS("power_mgmnt_release() - The is the last release");
 		
 		p_unit->off();
 		p_unit->status.is_on = 0;
