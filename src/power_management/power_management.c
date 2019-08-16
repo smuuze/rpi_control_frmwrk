@@ -50,6 +50,8 @@ void power_mgmnt_init(POWER_MANAGEMENT_UNIT_TYPE* p_unit, u16 power_up_time, POW
 	p_unit->off = p_callback_off;
 	p_unit->status.is_on = 0;
 	p_unit->status.is_ramp_up = 0;
+
+	p_unit->off();
 }
 
 void power_mgmnt_request(POWER_MANAGEMENT_UNIT_TYPE* p_unit) {
