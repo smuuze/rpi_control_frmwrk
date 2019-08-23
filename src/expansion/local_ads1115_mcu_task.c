@@ -18,6 +18,7 @@
 #include "common/local_mutex.h"
 #include "common/local_msg_buffer.h"
 #include "common/local_data_storage_array.h"
+#include "common/signal_slot_interface.h"
 
 #include "time_management/time_management.h"
 #include "power_management/power_management.h"
@@ -74,6 +75,10 @@ POWER_MGMN_INCLUDE_UNIT(POWER_UNIT_5V)
 
 //-----------------------------------------------------------------------------
 
+SIGNAL_CREATE(ADS1115_NEW_VALUES_SIGNAL)
+
+//-----------------------------------------------------------------------------
+
 /*!
  *
  */
@@ -126,6 +131,8 @@ void local_ads1115_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 	ads1115_chan1_data_storage_array_init();
 	ads1115_chan2_data_storage_array_init();
 	ads1115_chan3_data_storage_array_init();
+
+	ADS1115_NEW_VALUES_SIGNAL_init();
 }
 
 void local_ads1115_mcu_task_init(void) {
@@ -392,6 +399,8 @@ void local_ads1115_mcu_task_run(void) {
 				break;
 
 			}
+
+			ADS1115_NEW_VALUES_SIGNAL_send();
 
 			// no break;
 

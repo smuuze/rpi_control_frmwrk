@@ -59,6 +59,7 @@ CSRCS += $(COMMON_INC_PATH)/local_mutex.c
 CSRCS += $(COMMON_INC_PATH)/local_progmem_load.c
 CSRCS += $(COMMON_INC_PATH)/local_data_storage_array.c
 CSRCS += $(COMMON_INC_PATH)/local_msg_buffer.c
+CSRCS += $(COMMON_INC_PATH)/signal_slot_interface.c
 
 # Projekt-Spezifische Quelldateien --------------------------------------
 
