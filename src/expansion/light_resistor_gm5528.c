@@ -16,6 +16,7 @@
 
 #include "common/local_context.h"
 #include "common/local_data_storage_array.h"
+#include "common/math_module.h"
 
 #include "time_management/time_management.h"
 
@@ -44,8 +45,7 @@ void light_resistor_gm5528_callback(void) {
 
 	DEBUG_PASS("light_resistor_gm5528_callback()");
 
-	u8 adc_value = (u8) GET_SYSTEM(data).adc.channel_3;
-	GET_SYSTEM(data).light.actual =  adc_value;
+	GET_SYSTEM(data).light.actual = (u8) math_div_u16((26403 - GET_SYSTEM(data).adc.channel_3), 262);
 
 	/*
 	 * 	0x7FFF		:	INPUT_SIGNAL >= FS * (2^15 - 1) / 2^15
@@ -60,18 +60,18 @@ void light_resistor_gm5528_callback(void) {
 	 * 				> 10 MOhm	-> almost perfect dark
 	 */ 
 
-	DEBUG_TRACE_word(adc_value, "light_resistor_gm5528_callback() - ADC-Value");
+	DEBUG_TRACE_word(GET_SYSTEM(data).adc.channel_3, "light_resistor_gm5528_callback() - ADC-Value");
 	DEBUG_TRACE_byte(GET_SYSTEM(data).light.actual, "light_resistor_gm5528_callback() - Actual value");
 
-	if (GET_SYSTEM(data).light.minimal > adc_value) {
+	if (GET_SYSTEM(data).light.minimal > GET_SYSTEM(data).light.actual) {
 
-		GET_SYSTEM(data).light.minimal = adc_value;
+		GET_SYSTEM(data).light.minimal = GET_SYSTEM(data).light.actual;
 		DEBUG_TRACE_byte(GET_SYSTEM(data).light.minimal, "light_resistor_gm5528_callback() - Minimal value");
 	}
 
-	if (GET_SYSTEM(data).light.maximal < adc_value) {
+	if (GET_SYSTEM(data).light.maximal < GET_SYSTEM(data).light.actual) {
 
-		GET_SYSTEM(data).light.maximal = adc_value;
+		GET_SYSTEM(data).light.maximal = GET_SYSTEM(data).light.actual;
 		DEBUG_TRACE_byte(GET_SYSTEM(data).light.maximal, "light_resistor_gm5528_callback() - Maximal value");
 	}
 
