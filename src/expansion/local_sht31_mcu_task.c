@@ -364,9 +364,9 @@ void local_sht31_mcu_task_run(void) {
 				GET_SYSTEM(data).temperature.minimal = sht31_temp_24hour_data_storage_array_get_min();
 				GET_SYSTEM(data).temperature.mean = sht31_temp_24hour_data_storage_array_get_mean();
 
-				TRACE_byte(GET_SYSTEM(data).temperature.maximal); // local_sht31_mcu_task_run() - maximum temperature in �C
-				TRACE_byte(GET_SYSTEM(data).temperature.minimal); // local_sht31_mcu_task_run() - minimum temperature in �C
-				TRACE_byte(GET_SYSTEM(data).temperature.mean); // local_sht31_mcu_task_run() - mean temperature in �C
+				TRACE_byte(GET_SYSTEM(data).temperature.maximal); // local_sht31_mcu_task_run() - maximum temperature in Degree of Celsius
+				TRACE_byte(GET_SYSTEM(data).temperature.minimal); // local_sht31_mcu_task_run() - minimum temperature in Degree of Celsius
+				TRACE_byte(GET_SYSTEM(data).temperature.mean); // local_sht31_mcu_task_run() - mean temperature in Degree of Celsius
 
 				sht31_hum_24hour_data_storage_array_add_value(GET_SYSTEM(data).humidity.actual);
 				GET_SYSTEM(data).humidity.maximal = sht31_hum_24hour_data_storage_array_get_max();

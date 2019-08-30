@@ -78,6 +78,13 @@ typedef struct {
 	u8 actual;
 } T_SYSTEM_DATA_HUMIDTY;
 
+typedef struct {
+	u8 maximal;
+	u8 minimal;
+	u8 mean;
+	u8 actual;
+} T_SYSTEM_DATA_LIGHT;
+
 /*!
  *
  */
@@ -85,6 +92,7 @@ typedef struct {
 	T_SYSTEM_DATA_ADC		adc;
 	T_SYSTEM_DATA_TEMPERATURE	temperature;
 	T_SYSTEM_DATA_HUMIDTY		humidity;
+	T_SYSTEM_DATA_LIGHT		light;
 } T_SYSTEM_DATA;
 
 /*!

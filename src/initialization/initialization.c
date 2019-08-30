@@ -13,6 +13,7 @@
 #include "initialization/protocol_initialization.h"
 #include "initialization/command_initialization.h"
 #include "initialization/task_initialization.h"
+#include "initialization/signal_slot_initialization.h"
 
 SYSTEM_T system_context;
 
@@ -28,5 +29,6 @@ void initialization(void) {
 	command_initialization();
 
 	task_initialization();
+	signal_slot_initialization();
 }
 

@@ -26,12 +26,18 @@ typedef struct SIGNAL_SLOT_CONTEXT {
 		signal_slot_connect(&_##name##_context, p_callback);			\
 	}
 
-#define SLOT_CREATE(signal_name, p_callback)						\
-	static SIGNAL_SLOT_CONTEXT_TYPE slot_##signal_name##_##p_callback = {		\
+#define SLOT_CREATE(signal_name, slot_name, p_callback)					\
+											\
+	static SIGNAL_SLOT_CONTEXT_TYPE _##slot_name##p_callback = {			\
 		.p_event_callback = &p_callback,					\
 		.p_next = 0								\
 	};										\
-	void signal_name##_connect(SIGNAL_SLOT_CONTEXT_TYPE* p_callback);
+											\
+	void slot_name##_connect(void) {						\
+		signal_name##_connect(&_##slot_name##p_callback);			\
+	}
+
+	
 
 /*!
  *

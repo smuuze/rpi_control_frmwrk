@@ -21,6 +21,7 @@
 #define RPI_COMMAND_GET_TEMPERATURE		0x07
 #define RPI_COMMAND_GET_HUMIDTY			0x08
 #define RPI_COMMAND_GET_ADC			0x09
+#define RPI_COMMAND_GET_LIGHT			0x0A
 
 
 /*!
@@ -112,5 +113,11 @@ u8 rpi_cmd_get_humidity(void);
  * @return
  */
 u8 rpi_cmd_get_adc(void);
+
+/*!
+ *
+ * @return
+ */
+u8 rpi_cmd_get_light(void);
 
 #endif //RPI_COMMAND_HANDLER_H_

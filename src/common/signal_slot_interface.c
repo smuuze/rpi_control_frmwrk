@@ -1,5 +1,5 @@
 
-#define TRACER_OFF
+#define TRACER_ON
 
 #include "config.h"
 #include "tracer.h"
@@ -10,6 +10,9 @@
  *
  */
 void signal_slot_init(SIGNAL_SLOT_CONTEXT_TYPE* p_context) {
+
+	DEBUG_PASS("signal_slot_init()");
+
 	p_context->p_next = 0;
 	p_context->p_event_callback = 0;
 }
@@ -18,6 +21,8 @@ void signal_slot_init(SIGNAL_SLOT_CONTEXT_TYPE* p_context) {
  *
  */
 void signal_slot_send(SIGNAL_SLOT_CONTEXT_TYPE* p_context) {
+
+	DEBUG_PASS("signal_slot_send()");
 
 	SIGNAL_SLOT_CONTEXT_TYPE* p_act = p_context;	
 
@@ -35,6 +40,8 @@ void signal_slot_send(SIGNAL_SLOT_CONTEXT_TYPE* p_context) {
  *
  */
 void signal_slot_connect(SIGNAL_SLOT_CONTEXT_TYPE* p_context, SIGNAL_SLOT_CONTEXT_TYPE* p_callback) {
+
+	DEBUG_PASS("signal_slot_connect()");
 
 	SIGNAL_SLOT_CONTEXT_TYPE* p_act = p_context;	
 

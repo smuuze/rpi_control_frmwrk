@@ -17,7 +17,6 @@
 #include "common/local_context.h"
 #include "common/local_mutex.h"
 #include "common/local_msg_buffer.h"
-#include "common/local_data_storage_array.h"
 #include "common/signal_slot_interface.h"
 
 #include "time_management/time_management.h"
@@ -34,7 +33,7 @@
 #define ADS1115_TASK_COMMAND_BUFFER_LENGHT		5
 #define ADS1115_TASK_ANSWER_BUFFER_LENGTH		6
 
-#define ADS1115_TASK_NUMBER_OF_HISTORY_VALUES	10
+#define ADS1115_TASK_NUMBER_OF_HISTORY_VALUES		10
 
 //-----------------------------------------------------------------------------
 
@@ -65,11 +64,6 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(task_timer)
  */
 //static u16 operation_refrence_time = 0;
 TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
-
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan0, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan1, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan2, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
-BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(ads1115_chan3, ADS1115_TASK_NUMBER_OF_HISTORY_VALUES)
 
 POWER_MGMN_INCLUDE_UNIT(POWER_UNIT_5V)
 
@@ -126,11 +120,6 @@ void local_ads1115_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	GET_SYSTEM(data).temperature.maximal = 0;
 	GET_SYSTEM(data).temperature.minimal = 127;
-
-	ads1115_chan0_data_storage_array_init();
-	ads1115_chan1_data_storage_array_init();
-	ads1115_chan2_data_storage_array_init();
-	ads1115_chan3_data_storage_array_init();
 
 	ADS1115_NEW_VALUES_SIGNAL_init();
 }
@@ -245,7 +234,7 @@ void local_ads1115_mcu_task_run(void) {
 			ADS1115_SET_OP_MODE(command_buffer, ADS1115_OP_MODE_SINGLE_SHOT);
 			ADS1115_SET_CHANNEL_INDEX(command_buffer, adc_address_list[adc_channel_index]);
 			ADS1115_SET_DATARATE(command_buffer, ADS1115_DATARATE_SPS_08);
-			ADS1115_SET_GAIN(command_buffer, ADS1115_CFG_GAIN_2048);
+			ADS1115_SET_GAIN(command_buffer, ADS1115_CFG_GAIN_4096);
 
 			p_com_driver->set_N_bytes(ADS1115_CONFIG_COMMAND_LENGTH, command_buffer);
 			p_com_driver->set_address(ADS1115_BUS_ADDRESS_01);
@@ -369,26 +358,18 @@ void local_ads1115_mcu_task_run(void) {
 			switch (adc_channel_index) {
 				case 0:
 					GET_SYSTEM(data).adc.channel_0 = (answer_buffer[0] << 8 ) | answer_buffer[1];
-					ads1115_chan0_data_storage_array_add_value(GET_SYSTEM(data).adc.channel_0);
-					GET_SYSTEM(data).adc.channel_0 = ads1115_chan0_data_storage_array_get_mean();
 					break;
 
 				case 1:
 					GET_SYSTEM(data).adc.channel_1 = (answer_buffer[0] << 8 ) | answer_buffer[1];
-					ads1115_chan1_data_storage_array_add_value(GET_SYSTEM(data).adc.channel_1);
-					GET_SYSTEM(data).adc.channel_1 = ads1115_chan1_data_storage_array_get_mean();
 					break;
 
 				case 2:
 					GET_SYSTEM(data).adc.channel_2 = (answer_buffer[0] << 8 ) | answer_buffer[1];
-					ads1115_chan2_data_storage_array_add_value(GET_SYSTEM(data).adc.channel_2);
-					GET_SYSTEM(data).adc.channel_2 = ads1115_chan2_data_storage_array_get_mean();
 					break;
 
 				case 3 :
 					GET_SYSTEM(data).adc.channel_3 = (answer_buffer[0] << 8 ) | answer_buffer[1];
-					ads1115_chan3_data_storage_array_add_value(GET_SYSTEM(data).adc.channel_3);
-					GET_SYSTEM(data).adc.channel_3 = ads1115_chan3_data_storage_array_get_mean();
 					break;
 
 				default: break;

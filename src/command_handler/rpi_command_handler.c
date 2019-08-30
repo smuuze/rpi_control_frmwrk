@@ -295,6 +295,21 @@ u8 rpi_cmd_get_humidity(void) {
 	return CMD_NO_ERR;
 }
 
+u8 rpi_cmd_get_light(void) {
+
+	PASS(); // rpi_cmd_get_light()
+
+	p_act_protocol->answ_buffer->start_write();
+	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).light.actual);
+	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).light.maximal);
+	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).light.minimal);
+	p_act_protocol->answ_buffer->add_byte(GET_SYSTEM(data).light.mean);
+	p_act_protocol->answ_buffer->stop_write();
+
+	p_act_protocol->set_finished(CMD_NO_ERR);
+	return CMD_NO_ERR;
+}
+
 u8 rpi_cmd_get_adc(void) {
 
 	PASS(); // rpi_cmd_get_adc()

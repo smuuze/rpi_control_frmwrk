@@ -20,7 +20,8 @@ static COMMAND_TABLE_INTERFACE rpi_cmd_handler_table[] = {
 	{RPI_COMMAND_GET_OUTPUT_STATE, &rpi_cmd_get_output_state},
 	{RPI_COMMAND_GET_TEMPERATURE, &rpi_cmd_get_temperature},
 	{RPI_COMMAND_GET_HUMIDTY, &rpi_cmd_get_humidity},
-	{RPI_COMMAND_GET_ADC, &rpi_cmd_get_adc}
+	{RPI_COMMAND_GET_ADC, &rpi_cmd_get_adc},
+	{RPI_COMMAND_GET_LIGHT, &rpi_cmd_get_light}
 };
 
 

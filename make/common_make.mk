@@ -119,9 +119,7 @@ INC_PATH += $(TIME_MANAGEMENT_INC_PATH)
 
 CSRCS += $(TIME_MANAGEMENT_INC_PATH)/time_management.c
 
-
 # ---- TASK MANAGEMENT -------------------------------------------------------------------
-
 
 MCU_TASK_MANAGEMENT_INC_PATH = $(APP_PATH)/mcu_task_management
 INC_PATH += $(MCU_TASK_MANAGEMENT_INC_PATH)
@@ -166,11 +164,18 @@ ifneq '' '$(findstring GPIO_PCA9670,$(EXPANSION_BOARD_CFG))'
 	CSRCS += $(EXPANSION_BOARD_PATH)/driver_PCA9670.c
 endif
 
+# ---- SENSOR_UNITS -----------------------------------------------------------------------
+
+ifneq '' '$(findstring GM5528_LIGHT_RESISTOR,$(SENSOR_UNIT_CFG))'
+	DEFS  += -D HAS_SENSOR_UNIT_GM5528=1
+	CSRCS += $(EXPANSION_BOARD_PATH)/light_resistor_gm5528.c
+endif
+
+
 # ---- POWER MANAGEMENT -------------------------------------------------------------------
 	
 POWER_MANAGEMENT_PATH = $(APP_PATH)/power_management
 CSRCS += $(POWER_MANAGEMENT_PATH)/power_management.c
-
 
 # -----------------------------------------------------------------------
 
@@ -188,6 +193,7 @@ CSRCS += $(IO_CONTROLLER_INC_PATH)/io_input_controller.c
 INITIALIZATION_INC_PATH = $(APP_PATH)/initialization
 INC_PATH += $(INITIALIZATION_INC_PATH)
 
+CSRCS += $(INITIALIZATION_INC_PATH)/signal_slot_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/button_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/output_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/protocol_initialization.c
