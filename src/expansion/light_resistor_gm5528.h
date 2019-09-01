@@ -3,6 +3,11 @@
 
 /*!
  *
+ */ 
+void light_resistor_gm5528_init(void);
+
+/*!
+ *
  * @param p_driver
  */
 void light_resistor_gm5528_callback(void);

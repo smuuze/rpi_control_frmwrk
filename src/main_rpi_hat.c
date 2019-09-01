@@ -72,9 +72,6 @@ void task_yield(void) {
 
 void main_init(void) {
 
-	wdt_enable(WDTO_8S);
-	watchdog();
-
 	cli();
 	initialization();
 	sei();
@@ -82,9 +79,16 @@ void main_init(void) {
 	INIT_PASS(); // Initialization done
 }
 
+#include "io_management/io_controller.h"
+IO_CONTROLLER_INCLUDE_INOUT(IS_READY)
+
 int main( void ) {	
 
 	main_init();
+
+	//IS_READY_init();
+	//IS_READY_pull_up();
+	//while(1){watchdog();}
 
 	for (;;) {  // Endlosschleife
 

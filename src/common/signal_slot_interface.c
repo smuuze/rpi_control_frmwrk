@@ -43,7 +43,7 @@ void signal_slot_connect(SIGNAL_SLOT_CONTEXT_TYPE* p_context, SIGNAL_SLOT_CONTEX
 
 	DEBUG_PASS("signal_slot_connect()");
 
-	SIGNAL_SLOT_CONTEXT_TYPE* p_act = p_context;	
+	SIGNAL_SLOT_CONTEXT_TYPE* p_act = p_context;
 
 	while (p_act != 0) {
 

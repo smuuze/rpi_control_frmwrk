@@ -22,6 +22,10 @@
 		return _##name##_time_reference;								\
 	}													\
 														\
+	static inline u8 name##_is_active(void) {								\
+		return _##name##_time_reference != 0 ? 1 : 0;							\
+	}													\
+														\
 	static inline u8 name##_elapsed(void) {									\
 		return time_mgmnt_elapsed_u8(_##name##_time_reference);						\
 	}
@@ -46,6 +50,10 @@
 		return _##name##_time_reference;								\
 	}													\
 														\
+	static inline u8 name##_is_active(void) {								\
+		return _##name##_time_reference != 0 ? 1 : 0;							\
+	}													\
+														\
 	static inline u16 name##_elapsed(void) {								\
 		return time_mgmnt_elapsed_u16(_##name##_time_reference);					\
 	}
@@ -68,6 +76,10 @@
 														\
 	static inline u32 name##_start_time(void) {								\
 		return _##name##_time_reference;								\
+	}													\
+														\
+	static inline u8 name##_is_active(void) {								\
+		return _##name##_time_reference != 0 ? 1 : 0;							\
 	}													\
 														\
 	static inline u32 name##_elapsed(void) {								\

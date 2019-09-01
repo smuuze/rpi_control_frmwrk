@@ -34,9 +34,6 @@ TIME_MGMN_BUILD_STATIC_TIMER_U32(GM5528_MAXMIN_TIMER)
 
 void light_resistor_gm5528_init(void) {
 
-	GM5528_MAXMIN_TIMER_start();
-	GM5528_LIGHT_RESISTOR_data_storage_array_init();
-
 	GET_SYSTEM(data).light.maximal = 0;
 	GET_SYSTEM(data).light.minimal = 100;
 }
@@ -45,7 +42,11 @@ void light_resistor_gm5528_callback(void) {
 
 	DEBUG_PASS("light_resistor_gm5528_callback()");
 
-	GET_SYSTEM(data).light.actual = (u8) math_div_u16((26403 - GET_SYSTEM(data).adc.channel_3), 262);
+	if (GM5528_MAXMIN_TIMER_is_active() == 0) {
+		GM5528_MAXMIN_TIMER_start();
+	}
+
+	GET_SYSTEM(data).light.actual = (u8) math_div_u32((u32)(26403 - GET_SYSTEM(data).adc.channel_3), (u32)262);
 
 	/*
 	 * 	0x7FFF		:	INPUT_SIGNAL >= FS * (2^15 - 1) / 2^15

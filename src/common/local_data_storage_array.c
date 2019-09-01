@@ -1,46 +1,13 @@
 
 #include "config.h"
-#include "local_data_storage_array.h"
 
-/*!
- *
- * @param divident
- * @param divisor
- * @return
- */
-static u32 division_unsigned(u32 divident, u32 divisor) {
-	u32 result = 0;
+#include "common/local_data_storage_array.h"
+#include "common/math_module.h"
 
-	while (divident >= divisor) {
-		divident -= divisor;
-		result += 1;
-	}
-
-	return result;
-}
-
-
-/*!
- *
- * @param divident
- * @param divisor
- * @return
- */
-static i32 division_signed(i32 divident, i32 divisor) {
-	i32 result = 0;
-
-	while (divident >= divisor) {
-		divident -= divisor;
-		result += 1;
-	}
-
-	return result;
-}
-
-#define div_u32(divident, divisor)		division_unsigned((u32)divident, (u32) divisor)
-#define div_u16(divident, divisor)		(u16)division_unsigned((u32)divident, (u32) divisor)
-#define div_u8(divident, divisor)		(u8)division_unsigned((u32)divident, (u32) divisor)
-#define div_i8(divident, divisor)		(i8)division_signed((i32)divident, (i32) divisor)
+#define div_u32(divident, divisor)		math_div_u32((u32)divident, (u32) divisor)
+#define div_u16(divident, divisor)		(u16)math_div_u32((u32)divident, (u32) divisor)
+#define div_u8(divident, divisor)		(u8)math_div_u32((u32)divident, (u32) divisor)
+#define div_i8(divident, divisor)		(i8)math_div_u32((i32)divident, (i32) divisor)
 
 // -------------------------------------------------------------------
 // I8 functions

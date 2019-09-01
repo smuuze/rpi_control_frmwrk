@@ -3,6 +3,6 @@
 
 #include "config.h"
 
-u16 math_div_u16(u16 dividend, u16 divisor);
+u32 math_div_u32(u32 dividend, u32 divisor);
 
 #endif // _MATH_MODULE_H_

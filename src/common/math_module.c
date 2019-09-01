@@ -7,10 +7,10 @@
 /*!
  *
  */
-u16 math_div_u16(u16 dividend, u16 divisor) {
-	u16 result = 0;
+u32 math_div_u32(u32 dividend, u32 divisor) {
+	u32 result = 0;
 
-	while (dividend > divisor) {
+	while (dividend >= divisor) {
 		result += 1;
 		dividend -= divisor;
 	}

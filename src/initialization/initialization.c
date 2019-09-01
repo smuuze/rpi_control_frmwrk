@@ -19,16 +19,23 @@ SYSTEM_T system_context;
 
 void initialization(void) {
 
+	wdt_enable(WDTO_8S);
+	watchdog();
+
 	system_initialization();
+
 	power_initialization();
 
 	button_initialization();
+
 	output_initialization();
 
 	protocol_initialization();
+
 	command_initialization();
 
 	task_initialization();
+
 	signal_slot_initialization();
 }
 

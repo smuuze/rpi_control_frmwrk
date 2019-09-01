@@ -10,31 +10,38 @@ typedef struct SIGNAL_SLOT_CONTEXT {
 	struct SIGNAL_SLOT_CONTEXT* p_next;
 } SIGNAL_SLOT_CONTEXT_TYPE;
 
-#define SIGNAL_CREATE(name)								\
-											\
-	static SIGNAL_SLOT_CONTEXT_TYPE _##name##_context;				\
-											\
-	static void name##_init(void) {							\
-		signal_slot_init(&_##name##_context);					\
-	}										\
-											\
-	static void name##_send(void) {							\
-		signal_slot_send(&_##name##_context);					\
-	}										\
-											\
-	void name##_connect(SIGNAL_SLOT_CONTEXT_TYPE* p_callback) {			\
-		signal_slot_connect(&_##name##_context, p_callback);			\
+#define SIGNAL_CREATE(signal_name)								\
+												\
+	static SIGNAL_SLOT_CONTEXT_TYPE _##signal_name##_context = {				\
+		.p_event_callback = 0,								\
+		.p_next = 0									\
+	};											\
+												\
+	static void signal_name##_init(void) {							\
+		signal_slot_init(&_##signal_name##_context);					\
+	}											\
+												\
+	static void signal_name##_send(void) {							\
+		signal_slot_send(&_##signal_name##_context);					\
+	}											\
+												\
+	void signal_name##_connect(SIGNAL_SLOT_CONTEXT_TYPE* p_callback) {			\
+		signal_slot_connect(&_##signal_name##_context, p_callback);			\
 	}
 
-#define SLOT_CREATE(signal_name, slot_name, p_callback)					\
-											\
-	static SIGNAL_SLOT_CONTEXT_TYPE _##slot_name##p_callback = {			\
-		.p_event_callback = &p_callback,					\
-		.p_next = 0								\
-	};										\
-											\
-	void slot_name##_connect(void) {						\
-		signal_name##_connect(&_##slot_name##p_callback);			\
+#define SLOT_CREATE(signal_name, slot_name, p_callback_func)					\
+												\
+	void signal_name##_connect(SIGNAL_SLOT_CONTEXT_TYPE* p_callback);			\
+												\
+	static SIGNAL_SLOT_CONTEXT_TYPE _##signal_name##_##slot_name##_context = {		\
+		.p_event_callback = 0,								\
+		.p_next = 0									\
+	};											\
+												\
+	void slot_name##_connect(void) {							\
+		_##signal_name##_##slot_name##_context.p_event_callback = &p_callback_func;	\
+		_##signal_name##_##slot_name##_context.p_next = 0;				\
+		/*signal_name##_connect(&_##signal_name##_##slot_name##_context);	*/	\
 	}
 
 	
