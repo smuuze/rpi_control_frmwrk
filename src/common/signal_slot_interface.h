@@ -10,6 +10,11 @@ typedef struct SIGNAL_SLOT_CONTEXT {
 	struct SIGNAL_SLOT_CONTEXT* p_next;
 } SIGNAL_SLOT_CONTEXT_TYPE;
 
+typedef stuct SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT {
+	u16 send_timeout_ms;
+	SIGNAL_SLOT_CONTEXT_TYPE* p_first_element;
+} SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE;
+
 #define SIGNAL_CREATE(signal_name)								\
 												\
 	static SIGNAL_SLOT_CONTEXT_TYPE _##signal_name##_context = {				\
@@ -41,7 +46,7 @@ typedef struct SIGNAL_SLOT_CONTEXT {
 	void slot_name##_connect(void) {							\
 		_##signal_name##_##slot_name##_context.p_event_callback = &p_callback_func;	\
 		_##signal_name##_##slot_name##_context.p_next = 0;				\
-		/*signal_name##_connect(&_##signal_name##_##slot_name##_context);	*/	\
+		signal_name##_connect(&_##signal_name##_##slot_name##_context);			\
 	}
 
 	
