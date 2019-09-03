@@ -31,6 +31,13 @@
 
 //---------- Test-Case Prototype ----------------------------------------------
 
+u8 module_test_case_simple_signal_sending(void);
+u8 module_test_case_chained_signal_sending(void);
+u8 module_test_case_signal_send_timeout(void);
+u8 module_test_case_signal_send_timeout_over(void);
+
+//-----------------------------------------------------------------------------
+
 void module_test_signal_slot_test_callback_1(void);
 void module_test_signal_slot_test_callback_2(void);
 void module_test_signal_slot_test_callback_3(void);
@@ -106,25 +113,31 @@ int main( void ) {
 	MAIN_TEST_SLOT_CHAIN_6_connect();
 
 	TIMEOUT_TIMER_start();
-	
-	while (TIMEOUT_TIMER_is_up(3000) == 0) {
+	while (TIMEOUT_TIMER_is_up(3000) == 0) { }
 
+	if (module_test_case_simple_signal_sending() != 0) {
+		return 1;
 	}
-	
-	signal_rx_counter = 0;
 
-	MAIN_TEST_SIGNAL_send();
+	TIMEOUT_TIMER_start();
+	while (TIMEOUT_TIMER_is_up(1000) == 0) { }
 
-	if (signal_rx_counter != 6) {
-		DEBUG_PASS("main() Incorrect value of Signal-RX-Counter");
+	if (module_test_case_chained_signal_sending() != 0) {
+		return 2;
 	}
-	
-	signal_rx_counter = 0;
 
-	MAIN_TEST_SIGNAL_CHAIN_1_send();
+	TIMEOUT_TIMER_start();
+	while (TIMEOUT_TIMER_is_up(1000) == 0) { }
 
-	if (signal_rx_counter != 6) {
-		DEBUG_PASS("main() Incorrect value of Signal-RX-Counter");
+	if (module_test_case_signal_send_timeout() != 0) {
+		return 3;
+	}
+
+	TIMEOUT_TIMER_start();
+	while (TIMEOUT_TIMER_is_up(1000) == 0) { }
+
+	if (module_test_case_signal_send_timeout_over() != 0) {
+		return 4;
 	}
 	
 	return 0;
@@ -132,6 +145,64 @@ int main( void ) {
 }
 
 //---------- Test-Case Implementation ---------------------------------------------
+
+u8 module_test_case_simple_signal_sending(void) {
+	
+	signal_rx_counter = 0;
+
+	MAIN_TEST_SIGNAL_send();
+
+	if (signal_rx_counter != 6) {
+		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_simple_signal_sending() Incorrect value of Signal-RX-Counter (Simple Signal sending)");
+	}
+
+	return 0;
+}
+
+u8 module_test_case_chained_signal_sending(void) {
+	
+	signal_rx_counter = 0;
+
+	MAIN_TEST_SIGNAL_CHAIN_1_send();
+
+	if (signal_rx_counter != 6) {
+		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_chained_signal_sending() Incorrect value of Signal-RX-Counter (Chained signal sending)");
+	}
+
+	return 0;
+}
+
+u8 module_test_case_signal_send_timeout(void) {
+	
+	signal_rx_counter = 0;
+
+	MAIN_TEST_SIGNAL_send();
+	MAIN_TEST_SIGNAL_send();
+	MAIN_TEST_SIGNAL_send();
+	MAIN_TEST_SIGNAL_send();
+	MAIN_TEST_SIGNAL_send();
+	MAIN_TEST_SIGNAL_send();
+
+	if (signal_rx_counter != 6) {
+		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_signal_send_timeout() Incorrect value of Signal-RX-Counter (Signal Send Timeout)");
+	}
+
+	return 0;
+}
+
+u8 module_test_case_signal_send_timeout_over(void) {
+
+	MAIN_TEST_SIGNAL_send();
+
+	if (signal_rx_counter != 12) {
+		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_signal_send_timeout_over() Incorrect value of Signal-RX-Counter (Signal Send Timeout over)");
+	}
+
+	return 0;
+}
+
+
+//---------------------------------------------------------------------------------
 
 void module_test_signal_slot_test_callback_1(void) { DEBUG_PASS("module_test_signal_slot_test_callback_1() - Signal Received"); signal_rx_counter += 1; }
 void module_test_signal_slot_test_callback_2(void) { DEBUG_PASS("module_test_signal_slot_test_callback_2() - Signal Received"); signal_rx_counter += 1; }
