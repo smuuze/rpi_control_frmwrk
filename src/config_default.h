@@ -233,15 +233,15 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_SYSTEM_INTERFACE_IS_TIME_UP_U16_CALLBACK		local_rtc_timer_istimeup_u16 /*mstimer_time_is_up_ux16*/
 #define config_SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK		local_rtc_timer_istimeup_u32 /*mstimer_time_is_up_ux32*/
 
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_PROTOTYPE	static u8 local_progmem_get_byte(u8* addr);
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE	static u16 local_progmem_get_word(u8* addr);
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_PROTOTYPE	static u32 local_progmem_get_long(u8* addr);
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_PROTOTYPE	static void local_progmem_get_N_bytes(u8* addr, u8* p_buffer_to, u8 num_bytes);
+//#define config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_PROTOTYPE	static u8 local_progmem_get_byte(u8* addr);
+//#define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE	static u16 local_progmem_get_word(u8* addr);
+//#define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_PROTOTYPE	static u32 local_progmem_get_long(u8* addr);
+//#define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_PROTOTYPE	static void local_progmem_get_N_bytes(u8* addr, u8* p_buffer_to, u8 num_bytes);
 
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK	local_progmem_get_byte
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK	local_progmem_get_word
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK	local_progmem_get_long
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	local_progmem_get_N_bytes
+//#define config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK	local_progmem_get_byte
+//#define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK	local_progmem_get_word
+//#define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK	local_progmem_get_long
+//#define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	local_progmem_get_N_bytes
 
 #define config_SYSTEM_INTERFACE_IO_INIT_PIN_PROTOTYPE		void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 #define config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE 	void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, SYSTEM_INTERFACE_GPIO_DIRECTION direction);

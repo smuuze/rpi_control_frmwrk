@@ -167,6 +167,7 @@ u8 module_test_case_chained_signal_sending(void) {
 
 	if (signal_rx_counter != 6) {
 		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_chained_signal_sending() Incorrect value of Signal-RX-Counter (Chained signal sending)");
+		return 1;
 	}
 
 	return 0;
@@ -185,6 +186,7 @@ u8 module_test_case_signal_send_timeout(void) {
 
 	if (signal_rx_counter != 6) {
 		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_signal_send_timeout() Incorrect value of Signal-RX-Counter (Signal Send Timeout)");
+		return 1;
 	}
 
 	return 0;
@@ -196,6 +198,7 @@ u8 module_test_case_signal_send_timeout_over(void) {
 
 	if (signal_rx_counter != 12) {
 		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_signal_send_timeout_over() Incorrect value of Signal-RX-Counter (Signal Send Timeout over)");
+		return 1;
 	}
 
 	return 0;
