@@ -17,8 +17,11 @@
 #include "common/local_context.h"
 #include "common/local_data_storage_array.h"
 #include "common/math_module.h"
+#include "common/signal_slot_interface.h"
 
 #include "time_management/time_management.h"
+
+#include "expansion/light_resistor_gm5528.h"
 
 //-----------------------------------------------------------------------------
 
@@ -29,6 +32,7 @@
 
 BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(GM5528_LIGHT_RESISTOR, GM5528_DATA_ARRAY_NUMBER_OF_ELEMENTS)
 TIME_MGMN_BUILD_STATIC_TIMER_U32(GM5528_MAXMIN_TIMER)
+SLOT_CREATE(ADC_NEW_VALUES_SIGNAL, LIGHT_RESISTOR_GM5528_SLOT, light_resistor_gm5528_callback)
 
 //-----------------------------------------------------------------------------
 
@@ -36,6 +40,8 @@ void light_resistor_gm5528_init(void) {
 
 	GET_SYSTEM(data).light.maximal = 0;
 	GET_SYSTEM(data).light.minimal = 100;
+
+	LIGHT_RESISTOR_GM5528_SLOT_connect();
 }
 
 void light_resistor_gm5528_callback(void) {

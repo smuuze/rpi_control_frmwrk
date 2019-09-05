@@ -67,9 +67,7 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
 
 POWER_MGMN_INCLUDE_UNIT(POWER_UNIT_5V)
 
-//-----------------------------------------------------------------------------
-
-SIGNAL_CREATE(ADS1115_NEW_VALUES_SIGNAL)
+SIGNAL_CREATE(ADC_NEW_VALUES_SIGNAL)
 
 //-----------------------------------------------------------------------------
 
@@ -121,7 +119,7 @@ void local_ads1115_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 	GET_SYSTEM(data).temperature.maximal = 0;
 	GET_SYSTEM(data).temperature.minimal = 127;
 
-	ADS1115_NEW_VALUES_SIGNAL_init();
+	ADC_NEW_VALUES_SIGNAL_init();
 }
 
 void local_ads1115_mcu_task_init(void) {
@@ -381,7 +379,7 @@ void local_ads1115_mcu_task_run(void) {
 
 			}
 
-			ADS1115_NEW_VALUES_SIGNAL_send();
+			ADC_NEW_VALUES_SIGNAL_send();
 
 			// no break;
 
