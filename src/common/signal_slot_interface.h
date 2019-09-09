@@ -31,7 +31,7 @@ typedef struct SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT {
 } SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE;
 
 
-#define SIGNAL_CREATE(signal_name)									\
+#define SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(signal_name)						\
 													\
 	static SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE _##signal_name##_context = {			\
 		.send_timeout_ms = 0,									\
@@ -50,19 +50,19 @@ typedef struct SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT {
 		signal_slot_connect(&_##signal_name##_context, p_slot_context);				\
 	}
 
-#define SLOT_CREATE(signal_name, slot_name, p_callback_func)						\
+#define SIGNAL_SLOT_INTERFACE_CREATE_SLOT(signal_name, slot_name, callback_func)			\
 													\
 	void signal_name##_connect(SIGNAL_SLOT_INTERFACE_SLOT_CONTEXT_TYPE* p_slot_context);		\
 													\
-	static SIGNAL_SLOT_INTERFACE_SLOT_CONTEXT_TYPE _##signal_name##_##slot_name##_context = {	\
+	static SIGNAL_SLOT_INTERFACE_SLOT_CONTEXT_TYPE _##slot_name##_context = {			\
 		.p_event_callback = 0,									\
 		.p_next = 0										\
 	};												\
 													\
 	void slot_name##_connect(void) {								\
-		_##signal_name##_##slot_name##_context.p_event_callback = &p_callback_func;		\
-		_##signal_name##_##slot_name##_context.p_next = 0;					\
-		signal_name##_connect(&_##signal_name##_##slot_name##_context);				\
+		_##slot_name##_context.p_event_callback = &callback_func;				\
+		_##slot_name##_context.p_next = 0;							\
+		signal_name##_connect(&_##slot_name##_context);						\
 	}
 
 	

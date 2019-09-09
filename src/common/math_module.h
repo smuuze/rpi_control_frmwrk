@@ -1,5 +1,5 @@
 #ifndef _MATH_MODULE_H_
-#define _SIGNAL_SLOT_INTERFACE_H_
+#define _MATH_MODULE_H_
 
 #include "config.h"
 
