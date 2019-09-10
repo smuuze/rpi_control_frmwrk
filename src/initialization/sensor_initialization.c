@@ -11,19 +11,15 @@
 
 //-----------------------------------------------------------------------------
 
-#include "common/signal_slot_interface.h"
-
-//-----------------------------------------------------------------------------
-
-#ifdef HAS_SENSOR_UNIT_GM5528
-#include "expansion/light_resistor_gm5528.h"
+#if defined (HAS_LIGHT_SENSOR_GM5528) && ((HAS_LIGHT_SENSOR_GM5528) == 1)
+#include "driver/sensor/light_resistor_gm5528.h"
 #endif
 
 //-----------------------------------------------------------------------------
 
-void signal_slot_initialization(void) {
+void sensor_initialization(void) {
 
-	#ifdef HAS_SENSOR_UNIT_GM5528
+	#if defined (HAS_LIGHT_SENSOR_GM5528) && ((HAS_LIGHT_SENSOR_GM5528) == 1)
 	{
 		light_resistor_gm5528_init();
 	}

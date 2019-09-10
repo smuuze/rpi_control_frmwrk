@@ -13,7 +13,7 @@
 #include "initialization/protocol_initialization.h"
 #include "initialization/command_initialization.h"
 #include "initialization/task_initialization.h"
-#include "initialization/signal_slot_initialization.h"
+#include "initialization/sensor_initialization.h"
 
 SYSTEM_T system_context;
 
@@ -36,6 +36,6 @@ void initialization(void) {
 
 	task_initialization();
 
-	signal_slot_initialization();
+	sensor_initialization();
 }
 

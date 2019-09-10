@@ -167,11 +167,7 @@ endif
 
 # ---- SENSOR_UNITS -----------------------------------------------------------------------
 
-ifneq '' '$(findstring GM5528_LIGHT_RESISTOR,$(SENSOR_UNIT_CFG))'
-	DEFS  += -D HAS_SENSOR_UNIT_GM5528=1
-	CSRCS += $(EXPANSION_BOARD_PATH)/light_resistor_gm5528.c
-endif
-
+include $(MAKE_PATH)/make_sensor.mk
 
 # ---- POWER MANAGEMENT -------------------------------------------------------------------
 	
@@ -194,7 +190,7 @@ CSRCS += $(IO_CONTROLLER_INC_PATH)/io_input_controller.c
 INITIALIZATION_INC_PATH = $(APP_PATH)/initialization
 INC_PATH += $(INITIALIZATION_INC_PATH)
 
-CSRCS += $(INITIALIZATION_INC_PATH)/signal_slot_initialization.c
+CSRCS += $(INITIALIZATION_INC_PATH)/sensor_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/button_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/output_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/protocol_initialization.c

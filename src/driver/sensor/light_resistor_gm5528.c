@@ -21,7 +21,7 @@
 
 #include "time_management/time_management.h"
 
-#include "expansion/light_resistor_gm5528.h"
+#include "driver/sensor/light_resistor_gm5528.h"
 
 //-----------------------------------------------------------------------------
 
@@ -37,6 +37,8 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SIGNAL_ADC_NEW_VALUES_AVAILABLE, SLOT_LIGHT_RE
 //-----------------------------------------------------------------------------
 
 void light_resistor_gm5528_init(void) {
+
+	DEBUG_PASS("light_resistor_gm5528_init()");
 
 	GET_SYSTEM(data).light.maximal = 0;
 	GET_SYSTEM(data).light.minimal = 100;
