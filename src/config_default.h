@@ -1,60 +1,3 @@
-//-------------------------------------------------------------------------
-//       ZENTRALE DEFAULT WERTE FUER SWITCHES
-//-------------------------------------------------------------------------
-//
-// Diese Datei wird �ber die config.h von allen Projekten eingebunden.
-// ALLE Schalter werden hier auf eine Voreinstellung gesetzt, sofern sie
-// noch nicht bekannt sind, wenn dies hier eingelesen wird.
-//
-// Wenn ein neuer Schalter gebraucht wird, wird dieser zuerst hier eingef�gt
-// und auf einen 'neutralen' Wert gesetzt. Das ist normalerweise die Einstellung,
-// die den selben Code wie bisher erzeugt. In dem Projekt, das die neue
-// Funktion ben�tigt, kann dieser neue Schalter dann auf einen anderen Wert
-// gesetzt werden. Das muss aber in config.h passieren, BEVOR diese
-// Datei eingebunden wird.
-
-// Strommmesungen mit einem PRD: nur EV1 und Mifare Classic sind aktiv
-// 50ms  => ?mA
-// 100ms => ?mA
-// 150ms => ?mA
-// 200ms => ?mA
-// 300ms => ?mA
-#define READ_INTERVALL_TIME 200  // Wartezeit zwischen 2 Leseversuchen
-
-//-----------------------------------------------------------------------------
-
-#define TEST_HANDLER_NO_READ_TAG_MONITOR
-
-//#ifndef SET_UNUSED_BITS2ZERO
-//#define SET_UNUSED_BITS2ZERO
-//#endif
-
-//-----------------------------------------------------------------------------
-#ifdef SIO_FOR_COPRO1
-  #define copro1_init_proto void init_copro1_slave_state_machine(void);
-  #define copro1_func_proto void copro1_slave_state_machine(void);
-  #define copro1_init_call  init_copro1_slave_state_machine();
-  #define copro1_func_call  copro1_slave_state_machine();
-#else
-  #define copro1_init_proto // do nothing
-  #define copro1_func_proto // do nothing
-  #define copro1_init_call  // do nothing
-  #define copro1_func_call  // do nothing
-#endif
-
-// -- I2C Interface
-
-#ifdef I2C_USE_MSGFIFO
-  #define i2c_driver_init_proto void init_i2c_driver_polling_function(void);
-  #define i2c_driver_func_proto void i2c_driver_polling_function(void);
-  #define i2c_driver_init_call  init_i2c_driver_polling_function();
-  #define i2c_driver_func_call  i2c_driver_polling_function();
-#else
-  #define i2c_driver_init_proto // do nothing
-  #define i2c_driver_func_proto // do nothing
-  #define i2c_driver_init_call  // do nothing
-  #define i2c_driver_func_call  // do nothing
-#endif
 
 //----------------------------------------------------------------------------
 //      Konfiguration fuer Systemtimer
@@ -110,96 +53,18 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_FAKERTOS_TASKYIELD_FUNCTION		mcu_task_controller_background_run();
 #endif
 
-
-#ifndef SW_TYPE_FOR_KEYMARKE
-#define SW_TYPE_FOR_KEYMARKE 1
-#endif
-
-#ifndef MIT_TAMPER
-#define MIT_TAMPER 1 // Aktiviert die Tamperabfrage/Ausgabe
-#endif
-
-//------------------------------------------------------------------------------
-// -- Call Back Funktionen fuer die Tastatur
-#ifdef keypadVersion
-#define config_KEYPAD_ENTER_KEY_FCT        keypad_enter_event();
-#define config_KEYPAD_ENTER_KEY_FCT_PROTO  extern void keypad_enter_event(void);
-
-#define config_KEYPAD_CLEAR_KEY_FCT        keypad_clear_event();
-#define config_KEYPAD_CLEAR_KEY_FCT_PROTO  extern void keypad_clear_event(void);
-
-//#define config_KEYPAD_NUMBER_KEY_FCT       keypad_number_event();
-//#define config_KEYPAD_NUMBER_KEY_FCT_PROTO extern void keypad_number_event(void);
-
-// #define config_KEYPAD_TIMEIUT_FCT
-// #define config_KEYPAD_TIMEOUT_FCT_PROTO
-#endif
-///-----------------------------------------------------------------------------
-#ifndef MINIMUM_TIMESTAMP_FOR_CARD_PROCESS
-// the actual Date / Time is 18.12.2015 - 10:37:41 (GMT)
-// => 1450435061 seconds since 1.1.1970 - 00:00:00
-#define MINIMUM_TIMESTAMP_FOR_CARD_PROCESS	0x5673E1F5
-#endif
-
-///-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 #ifndef config_HAS_ONBOARD_BUTTONS
 #define config_HAS_ONBOARD_BUTTONS				0
 #endif
 
 #ifndef config_HAS_LED_MATRIX
-#define config_HAS_LED_MATRIX					0
+#define config_HAS_LED_MATRIX				      0
 #endif
 
-///-----------------------------------------------------------------------------
-
-///-----------------------------------------------------------------------------
-/// 0x21BAxxxx => Ist die Bezeichnung f�r die allgemeong�ltige, PRLxA\CRLxA Konfigueration.
-#ifndef CONFIG_MEM_SCHEME
-  #define KONFIGVERSION 2
-  #define CONFIG_MEM_SCHEME    (0x21BA*65536+KONFIGVERSION)
-#endif // CONFIG_MEM_SCHEME
-
-#ifndef BOOTLOADER_EXTENSION
-#define BOOTLOADER_EXTENSION  0
-#endif
-
-#ifndef CFG_DEFAULT_VALUE_SELECTOR
-#pragma NO____CFG_DEFAULT_VALUE_SELECTOR____SELECTED
-#endif
-///-----------------------------------------------------------------------------
-//Global memory for reading routines. The memory space may be used by reading
-//routines freely. The application does not use gmem_read while reading
-//routines are active. Consider using the OVERLAY-Macro, as there is
-//intentionally no reference in any header file like this:
-//u8 gmem_read[config_SIZEOF_gmem_read];
-#ifndef  config_SIZEOF_gmem_read
-#define config_SIZEOF_gmem_read    (330)
-#endif
-
-//Gobal read_tagstruct. Tag reading routines have to return tag data in this
-//struct. The memory space of read_tagstruct may be used by reading routines
-//freely. The application does not use read_tagstruct while reading routines
-//are active. To use: #include "service/deister/tagstruct.h"
-//Data is only valid, if a reading routine returned with RFID_READ_SUCCESS.
-//Size of the data array in the struct:
-#ifndef  config_SIZEOF_TAGSTRUCT_DATA
-#define config_SIZEOF_TAGSTRUCT_DATA    (31)
-#endif
-//Size of tagstruct.ext.GENERIC_SERNUM.sernum[] (may be 0 if not needed)
-#ifndef	config_SIZEOF_TAGSTRUCT_EXT_GENERIC_SERNUM_SERNUM
-#define	config_SIZEOF_TAGSTRUCT_EXT_GENERIC_SERNUM_SERNUM (8)
-#endif
-
-///-----------------------------------------------------------------------------
-/// Die Verschluesselung auf dem Hostinterface soll Standardmaessig moeglich sein
-#ifndef DEBUS_DEVICE_AES_ENCRYPTION
-#define DEBUS_DEVICE_AES_ENCRYPTION 1
-#endif
-
-
-///-----------------------------------------------------------------------------
-/// Driver Interface
+// -----------------------------------------------------------------------------
+// Driver Interface
 
 #define config_I2C_POWER_DOWN_PROTOTYPE				void specific_i2c_power_down(void);
 #define config_I2C_POWER_DOWN_FUNCTION_REF			&specific_spi_power_down
@@ -207,9 +72,8 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_SPI_POWER_DOWN_PROTOTYPE				void specific_spi_power_down(void);
 #define config_SPI_POWER_DOWN_FUNCTION_REF			&specific_spi_power_down
 
-///-----------------------------------------------------------------------------
-/// System Interface
-
+// -----------------------------------------------------------------------------
+// System Interface
 
 #define config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE		void local_event_add(SYSTEM_EVENT event);
 #define config_SYSTEM_INTERFACE_GET_EVENT_PROTOTYPE		SYSTEM_EVENT local_event_get_next(void);
@@ -260,7 +124,7 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 
 #define config_IS_READY_ENABLE					IS_READY_as_OUTPUT();		\
 								IS_READY_OFF()
-#define config_IS_READY_IDLE					IS_READY_as_OUTPUT();		\
+#define config_IS_READY_IDLE            IS_READY_as_OUTPUT();		\
 								IS_READY_ON();
 #define config_IS_READY_DISABLE					IS_READY_as_INPUT();		\
 								IS_READY_OFF()
@@ -282,50 +146,6 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_DEBUS_SET_ACTIVE_FUNC_CALL
 #define config_DEBUS_SET_INACTIVE_FUNC_CALL
 #endif
-
-///-----------------------------------------------------------------------------
-// Ram Zuweisung fuer die open collector Protokole. Dieser Platz wird vom
-// Protokoll nur temporaer, fuer die Dauer der Ausfuehrung benutzt.
-#ifndef OC_DATA
-#define OC_DATA gmem_read  // Speicherplatz fuer den OC_DATA
-#endif
-
-#define SESAM_SPEZIAL
-///-----------------------------------------------------------------------------
-//DOORLOXX
-#ifdef DOORLOXX_BUSINESS_ACTIVE
-#define DOORLOXX_BUSINESS_ACTIVE_OVER_COPRO
-#endif
-
-#ifdef DOORLOXX_BUSINESS_PASSIVE
-#define EE_DOORGROOPID_OFFSET 1
-#define EE_DOORGROOPID_SIZE 0
-#endif
-///-----------------------------------------------------------------------------
-/// -- Projekt abh�ngige EEPROM Belegung. Zur besseren Kontrolle der EEPROM
-///    Belegung, sollen alle Platzreservierungen hier aufgelistet werden!
-//DoorLoxx
-#define EE_MAXIMUM_LAST_REFRESH_TIME	0x610
-			//bis 		0x613
-#define EE_EUI_64_ADR	0x614
-			//bis 0x61B (8 byte) airlink Adresse
-//DoorLoxx
-#define EE_SYSTEMCODE_OFFSET 		0x61C
-			//bis 		0x61F
-#define EE_DL_COUNTER			0x620
-			//bis 		0x623
-			//------------------------
-                        //     0x624 frei
-                        //     ...
-                        //------------------------
-#define AESKEYMEMORY           0x6E0
-                        //     0x6E0-0x6EF => 16 Byte Marker
-                        //     0x6F0-0x6FF => 16 Byte Zufall Key
-                        //     0x700-0x83F => 16*ANZAHL_AESKEYS (bei ANZAHL_AESKEYS = 20)
-                        //------------------------
-                        //     0x840 frei bei ANZAHL_AESKEYS = 16
-#define EE_BLACKLIST_OFFSET    	0x840 //128 Eintrage a 4 Byte
-#define EE_BLACKLIST_SIZE	0x200
 
 ///-----------------------------------------------------------------------------
 

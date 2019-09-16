@@ -2,19 +2,20 @@
 
  *****************************************************************************/
 
+#define TRACER_OFF
+
+//-----------------------------------------------------------------------------
+
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
-
-#include "local_context.h"
-#include "io_controller.h"
-
-//---------- Implementation of Traces -----------------------------------------
-
-#define TRACER_OFF
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
 
+#include "local_context.h"
+#include "io_controller.h"
+
+//-----------------------------------------------------------------------------
 
 #if config_HAS_LED_MATRIX == 1
 
@@ -143,14 +144,19 @@ void output_initialization(void) {
 	extern_output_04_init();
 
 	#if config_HAS_LED_MATRIX == 1
-	GET_SYSTEM(SYS_SIGNAL).led_01 = io_output_controller_register_output(&led_01);
-	GET_SYSTEM(SYS_SIGNAL).led_02 = io_output_controller_register_output(&led_02);
-	GET_SYSTEM(SYS_SIGNAL).led_03 = io_output_controller_register_output(&led_03);
-	GET_SYSTEM(SYS_SIGNAL).led_04 = io_output_controller_register_output(&led_04);
-	GET_SYSTEM(SYS_SIGNAL).led_05 = io_output_controller_register_output(&led_05);
-	GET_SYSTEM(SYS_SIGNAL).led_06 = io_output_controller_register_output(&led_06);
-	GET_SYSTEM(SYS_SIGNAL).led_07 = io_output_controller_register_output(&led_07);
-	GET_SYSTEM(SYS_SIGNAL).led_08 = io_output_controller_register_output(&led_08);
-	GET_SYSTEM(SYS_SIGNAL).led_09 = io_output_controller_register_output(&led_09);
+	{
+
+		PASS(); // output_initialization() - Initializing LED matrix
+
+		GET_SYSTEM(SYS_SIGNAL).led_01 = io_output_controller_register_output(&led_01);
+		GET_SYSTEM(SYS_SIGNAL).led_02 = io_output_controller_register_output(&led_02);
+		GET_SYSTEM(SYS_SIGNAL).led_03 = io_output_controller_register_output(&led_03);
+		GET_SYSTEM(SYS_SIGNAL).led_04 = io_output_controller_register_output(&led_04);
+		GET_SYSTEM(SYS_SIGNAL).led_05 = io_output_controller_register_output(&led_05);
+		GET_SYSTEM(SYS_SIGNAL).led_06 = io_output_controller_register_output(&led_06);
+		GET_SYSTEM(SYS_SIGNAL).led_07 = io_output_controller_register_output(&led_07);
+		GET_SYSTEM(SYS_SIGNAL).led_08 = io_output_controller_register_output(&led_08);
+		GET_SYSTEM(SYS_SIGNAL).led_09 = io_output_controller_register_output(&led_09);
+	}
 	#endif
 }

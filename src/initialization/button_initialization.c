@@ -2,8 +2,15 @@
 
  *****************************************************************************/
 
+#define TRACER_OFF
+
+//-----------------------------------------------------------------------------
+
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #include "io_management/io_controller.h"
 #include "power_management/power_management.h"
@@ -12,21 +19,11 @@
 #include "driver_PCA9670.h"
 #endif
 
-//---------- Implementation of Traces -----------------------------------------
-
-#define TRACER_OFF
-#include "tracer.h"
-
-//-----------------------------------------------------------------------------
-
-IO_CONTROLLER_BUILD_INOUT(EXPANSION_BOARD_POWER_PIN, EXT_POWER_01)
-POWER_MGMN_BUILD_UNIT(EXPANSION_BOARD_POWER, 10, &EXPANSION_BOARD_POWER_PIN_drive_high, &EXPANSION_BOARD_POWER_PIN_drive_low)
+//----------------------------------------------------------------------------
 
 #if config_HAS_ONBOARD_BUTTONS == 1
-
 IO_CONTROLLER_BUILD_INPUT(onboard_input_01, ONBOARD_INPUT_01)
 IO_CONTROLLER_BUILD_INPUT(onboard_input_02, ONBOARD_INPUT_02)
-
 #endif
 
 IO_CONTROLLER_BUILD_INPUT(extern_input_01, EXTERN_INPUT_01)
@@ -71,12 +68,9 @@ PCA9670_BUILD_INPUT(EXT_PIN_38, 0x24, PCA9670_PIN_NUM_8)
 
 void button_initialization(void) {
 
-	PASS(); // local_button_watcher_initialization()
+	PASS(); // button_initialization()
 
 	io_input_controller_init();
-	
-	EXPANSION_BOARD_POWER_PIN_init();
-	EXPANSION_BOARD_POWER_init();
 	
 	extern_input_01_init();
 	extern_input_02_init();
@@ -85,6 +79,8 @@ void button_initialization(void) {
 	
 	#ifdef EXPANSION_BOARD_PC9670_AVAILABLE
 	{
+		PASS(); // button_initialization() - Initializing external Buttons
+
 		EXT_BUTTON_INSTANCE_01_init();
 		
 		EXT_PIN_11_init();
@@ -121,8 +117,11 @@ void button_initialization(void) {
 	#endif
 
 	#if config_HAS_ONBOARD_BUTTONS == 1
-	onboard_input_01_init();
-	onboard_input_02_init();
+	{
+		PASS(); // button_initialization() - Initializing onboard Buttons
+		onboard_input_01_init();
+		onboard_input_02_init();
+	}
 	#endif
 }
 

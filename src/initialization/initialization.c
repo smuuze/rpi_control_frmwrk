@@ -2,8 +2,15 @@
 
  *****************************************************************************/
 
+#define TRACER_OFF
+
+//-----------------------------------------------------------------------------
+
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #include "local_context.h"
 #include "initialization/system_initialization.h"
@@ -15,12 +22,20 @@
 #include "initialization/task_initialization.h"
 #include "initialization/sensor_initialization.h"
 
+//-----------------------------------------------------------------------------
+
 SYSTEM_T system_context;
+
+//-----------------------------------------------------------------------------
 
 void initialization(void) {
 
-	wdt_enable(WDTO_8S);
-	watchdog();
+	#ifdef config_WATCHDOG_TIMEOUT_VALUE
+	{
+		wdt_enable(config_WATCHDOG_TIMEOUT_VALUE);
+		watchdog();
+	}
+	#endif
 
 	system_initialization();
 
