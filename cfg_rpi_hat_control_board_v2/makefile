@@ -15,12 +15,6 @@
 # PROJEKT Name des Hexfiles
 PROJECT = RPI_Hat_ControlBoard_V2
 
-# HW_DEVICE_TYPE ( siehe http://ew.deister-gmbh.de/cgi-bin/ibase/gertyp.cgi )
-HW_DEVICE_TYPE = 0x22B2
-
-# SW_DEVICE_TYPE wird im deBus Versionstelegramm und fuer Adressumstellung verwendet
-SW_DEVICE_TYPE = 0x22B2
-
 BOARD_ID = 180920
 
 #-----------------------------------------------------------------------------

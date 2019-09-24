@@ -27,6 +27,7 @@ config_FAKERTOS_TASKYIELD_INIT_PROTO
 #endif
 
 // --------------------------------------------------------------------------------
+
 void task_yield(void) {
 	config_FAKERTOS_TASKYIELD_FUNCTION
 }

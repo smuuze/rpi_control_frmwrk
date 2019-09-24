@@ -11,24 +11,15 @@ include $(MAKE_PATH)/make_cpu.mk
 #   EXT_BOARD         Extension board used (if any): see $(BRDS_PATH)/board.h
 DEFS += -D BOARD=$(BOARD)
 DEFS += -D BOARD_ID=$(BOARD_ID)
-DEFS += -D HW_DEVICE_TYPE=$(HW_DEVICE_TYPE)
-DEFS += -D SW_DEVICE_TYPE=$(SW_DEVICE_TYPE)
 
 DEFS += -D VERSION_MAJOR=$(VERSION_MAJOR)
 DEFS += -D VERSION_MINOR=$(VERSION_MINOR)
 
+# -----------------------------------------------------------------------
 
-#! Man koennte den Namen auch so gestalten dass der Dateiname gleich die
-#! Version usw. traegt.
-#! PROJECT = hello_$(HW_DEVICE_TYPE)_$(VERSION_STRING)
-
-# Praktikantenvariante:  IBLCHIF_CTRL ?= -mega128 -d
-
-# CPU: name of the cpu directory in framework/cpu/$(CPUSERIES)/
-
-ATPROGRAM_CLOCK		= 1Mhz
-
-BASE_PATH    ?= ../../../..
+BASE_PATH	?= ..
+APP_PATH	?= $(BASE_PATH)/src
+MAKE_PATH	?= $(BASE_PATH)/make
 
 # -----------------------------------------------------------------------
 # Include path
@@ -39,7 +30,6 @@ INC_PATH 	+= .
 # ---- DEFAULT APP CONFIGURATION ----
 
 APP_TASK_LIST	?= 
-
 
 # -----------------------------------------------------------------------
 BOARD_INC_PATH = ${APP_PATH}/platine
@@ -205,49 +195,12 @@ CSRCS += $(INITIALIZATION_INC_PATH)/initialization.c
 include $(MAKE_PATH)/make_driver.mk
 
 # -----------------------------------------------------------------------
-
-
-# Assembler source files
-IARSRCS +=
-ASSRCS += 
-# ASSRCS += $(COMMON_PATH)/format_and_conversion/algo.S
-
-
-ifdef DEBUS_INTERFACE_CFG
-
-DEBUS_INTERFACE_CFG += HOST
-DEBUS_INTERFACE_CFG += AES
-DEBUS_INTERFACE_CFG += SIO0
-
-ifdef MIT_COPRO
-DEBUS_INTERFACE_CFG += COPRO1_SSM
-DEBUS_INTERFACE_CFG += MSGFIFO
-DEBUS_INTERFACE_CFG += BLHOOKS
-DEBUS_INTERFACE_CFG += I2C
-endif
-
-#$(info DEBUS_INTERFACE_CFG: $(DEBUS_INTERFACE_CFG))
-#include $(SERV_PATH)/debus/debus_interface.mk
-
-endif
-
-
-# -----------------------------------------------------------------------
-# (gemeinsame) WebConfig - Beschreibung fuer verschiedene Konfigurationen
-IARSRCS_WEBCONFIG_ROAD_SCRIPT = ../config/webconfig_road.cfg
-
-# -----------------------------------------------------------------------
 # Library path
 LIB_PATH +=
 
 # -----------------------------------------------------------------------
 # Libraries to link with the project
 LIBS +=
-
-# -----------------------------------------------------------------------
-# Device/Platform/Board include path
-PLATFORM_INC_PATH += $(CPUS_PATH)/include
-PLATFORM_INC_PATH += $(BRDS_PATH)
 
 # -----------------------------------------------------------------------
 # Options to request or suppress warnings: [-fsyntax-only] [-pedantic[-errors]] [-w] [-Wwarning...]
