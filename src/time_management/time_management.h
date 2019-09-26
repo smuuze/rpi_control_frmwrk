@@ -5,13 +5,15 @@
 #define TIME_MGMN_BUILD_STATIC_TIMER_U8(name)									\
 														\
 	static u8 _##name##_time_reference = 0;									\
+	static u8 _##name##_timer_status = 0;									\
 														\
 	static inline void name##_start(void) {									\
 		_##name##_time_reference = time_mgmnt_gettime_u8();						\
+		_##name##_timer_status = 1;									\
 	}													\
 														\
 	static inline void name##_stop(void) {									\
-		_##name##_time_reference = 0;									\
+		_##name##_timer_status = 0;									\
 	}													\
 														\
 	static inline u8 name##_is_up(u8 time_interval) {							\
@@ -23,7 +25,7 @@
 	}													\
 														\
 	static inline u8 name##_is_active(void) {								\
-		return _##name##_time_reference != 0 ? 1 : 0;							\
+		return _##name##_timer_status != 0 ? 1 : 0;							\
 	}													\
 														\
 	static inline u8 name##_elapsed(void) {									\
@@ -33,13 +35,15 @@
 #define TIME_MGMN_BUILD_STATIC_TIMER_U16(name)									\
 														\
 	static u16 _##name##_time_reference = 0;								\
+	static u8 _##name##_timer_status = 0;									\
 														\
 	static inline void name##_start(void) {									\
 		_##name##_time_reference = time_mgmnt_gettime_u16();						\
+		_##name##_timer_status = 1;									\
 	}													\
 														\
 	static inline void name##_stop(void) {									\
-		_##name##_time_reference = 0;									\
+		_##name##_timer_status = 0;									\
 	}													\
 														\
 	static inline u8 name##_is_up(u16 time_interval) {							\
@@ -51,7 +55,7 @@
 	}													\
 														\
 	static inline u8 name##_is_active(void) {								\
-		return _##name##_time_reference != 0 ? 1 : 0;							\
+		return _##name##_timer_status != 0 ? 1 : 0;							\
 	}													\
 														\
 	static inline u16 name##_elapsed(void) {								\
@@ -61,13 +65,15 @@
 #define TIME_MGMN_BUILD_STATIC_TIMER_U32(name)									\
 														\
 	static u32 _##name##_time_reference = 0;								\
+	static u8 _##name##_timer_status = 0;									\
 														\
 	static inline void name##_start(void) {									\
 		_##name##_time_reference = time_mgmnt_gettime_u32();						\
+		_##name##_timer_status = 1;									\
 	}													\
 														\
 	static inline void name##_stop(void) {									\
-		_##name##_time_reference = 0;									\
+		_##name##_timer_status = 0;									\
 	}													\
 														\
 	static inline u8 name##_is_up(u32 time_interval) {							\
@@ -79,7 +85,7 @@
 	}													\
 														\
 	static inline u8 name##_is_active(void) {								\
-		return _##name##_time_reference != 0 ? 1 : 0;							\
+		return _##name##_timer_status != 0 ? 1 : 0;							\
 	}													\
 														\
 	static inline u32 name##_elapsed(void) {								\
