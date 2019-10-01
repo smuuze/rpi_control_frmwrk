@@ -28,11 +28,21 @@
 #define GM5528_MAXMIN_INTERVAL_MS			900000	/* every 15 minutes*/
 #define GM5528_DATA_ARRAY_NUMBER_OF_ELEMENTS		96 /* last 24 hours */
 
+#define GM5528_DEFAULT_VALUE_MAX			(26403)
+#define GM5528_DEFAULT_VALUE_MIN			(213)
+#define GM5528_DEFAULT_VALUE_STEIGUNG			(262)
+
 //-----------------------------------------------------------------------------
 
 BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(GM5528_LIGHT_RESISTOR, GM5528_DATA_ARRAY_NUMBER_OF_ELEMENTS)
 TIME_MGMN_BUILD_STATIC_TIMER_U32(GM5528_MAXMIN_TIMER)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SIGNAL_ADC_NEW_VALUES_AVAILABLE, SLOT_LIGHT_RESISTOR_GM5528, light_resistor_gm5528_callback)
+
+//-----------------------------------------------------------------------------
+
+static u16 adc_max_value = 0;
+static u16 adc_min_value = 0;
+static u16 steigung = 0;
 
 //-----------------------------------------------------------------------------
 
@@ -43,7 +53,21 @@ void light_resistor_gm5528_init(void) {
 	GET_SYSTEM(data).light.maximal = 0;
 	GET_SYSTEM(data).light.minimal = 100;
 
+	adc_max_value = GM5528_DEFAULT_VALUE_MAX;
+	adc_min_value = GM5528_DEFAULT_VALUE_MIN;
+	steigung = GM5528_DEFAULT_VALUE_STEIGUNG;
+
 	SLOT_LIGHT_RESISTOR_GM5528_connect();
+}
+
+void light_resistor_gm5528_calibrate(void) {
+	
+	DEBUG_TRACE_word(adc_max_value, "light_resistor_gm5528_calibrate() - ADC-Max-Value");
+	DEBUG_TRACE_word(adc_min_value, "light_resistor_gm5528_calibrate() - ADC-Min-Value");
+
+	steigung = math_div_u32(((u32)adc_max_value - (u32)adc_min_value), (u32)100);
+
+	DEBUG_TRACE_word(steigung, "light_resistor_gm5528_calibrate() - Steigung");
 }
 
 void light_resistor_gm5528_callback(void) {
@@ -54,7 +78,17 @@ void light_resistor_gm5528_callback(void) {
 		GM5528_MAXMIN_TIMER_start();
 	}
 
-	GET_SYSTEM(data).light.actual = (u8) math_div_u32((u32)(26403 - GET_SYSTEM(data).adc.channel_3), (u32)262);
+	if (GET_SYSTEM(data).adc.channel_3 > adc_max_value) {
+		adc_max_value = GET_SYSTEM(data).adc.channel_3;
+		light_resistor_gm5528_calibrate();
+	}
+
+	if (GET_SYSTEM(data).adc.channel_3 < adc_min_value) {
+		adc_min_value = GET_SYSTEM(data).adc.channel_3;
+		light_resistor_gm5528_calibrate();
+	}
+
+	GET_SYSTEM(data).light.actual = (u8) math_div_u32((u32)(adc_max_value - GET_SYSTEM(data).adc.channel_3), (u32)steigung);
 
 	/*
 	 * 	0x7FFF		:	INPUT_SIGNAL >= FS * (2^15 - 1) / 2^15
