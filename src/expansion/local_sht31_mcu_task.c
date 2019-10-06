@@ -320,7 +320,7 @@ void local_sht31_mcu_task_run(void) {
 			calculation_temp = (u32)GET_SYSTEM(data).adc.temperature * (u32)SHT31_TEMPERATURE_FIXPOINT_FACTOR_M;
 			calculation_temp = calculation_temp >> 16;
 
-			GET_SYSTEM(data).temperature.actual = (i8)((i32)calculation_temp - SHT31_TEMPERATURE_FIXPOINT_FACTOR_B);
+			GET_SYSTEM(data).temperature.actual = (i8)((i32)calculation_temp - SHT31_TEMPERATURE_FIXPOINT_FACTOR_B) + SHT31_TEMPERATURE_CORRECTION_OFFSET;
 			TRACE_byte(GET_SYSTEM(data).temperature.actual); // local_sht31_mcu_task_run() - actual temperature in �C
 
 			if (GET_SYSTEM(data).temperature.actual > GET_SYSTEM(data).temperature.maximal) {
