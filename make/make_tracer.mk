@@ -17,6 +17,12 @@ ifneq '' '$(findstring USART0,$(TRACER_CFG))'
 	DEFS += -D TRACER_INTERFACE_USART0=1
 	CSRCS += $(TRACER_INC_PATH)/tracer.c
 endif
+	
+ifneq '' '$(findstring USART1,$(TRACER_CFG))'
+	DRIVER_MODULE_CFG += USART1
+	DEFS += -D TRACER_INTERFACE_USART1=1
+	CSRCS += $(TRACER_INC_PATH)/tracer.c
+endif
 
 endif
 

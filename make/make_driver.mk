@@ -18,7 +18,12 @@ endif
 
 ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_USART0=1
-	CSRCS += $(APP_PATH)/driver/local_usart_driver.c
+	CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_atmega1284p.c
+endif
+
+ifneq '' '$(findstring USART1,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_USART1=1
+	CSRCS += $(APP_PATH)/driver/communication/usart/usart1_driver_atmega1284p.c
 endif
 
 endif

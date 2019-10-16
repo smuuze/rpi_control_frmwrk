@@ -116,21 +116,6 @@ BUILD_MODULE_STATUS_FAST_VOLATILE(local_usart_status, 2)
 #define LOCAL_USART_STATUS_RX_ACTIVE		(1 << 0)
 #define LOCAL_USART_STATUS_TX_ACTIVE		(1 << 1)
 
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*
-/// Bitrate of I2C bus - needs to be looked over for correct setting before letting loose
-#define f_cpu	7372800		// 14745600 without prescaling
-
-#if defined f_cpu && f_cpu < 3600000
-	#define LOCAL_USART_BITRATE()	(TWBR = 0x0A)			// if f_cpu < 3,6 MHz, f_i2c should be reduced too
-#elif defined f_cpu && f_cpu == 7372800
-		#define LOCAL_USART_BITRATE()	(TWBR = 0x1C)		// f_cpu = 14,7456 / 2	MHz = 7,3728 MHz ; f_i2c = 0,1 MHz
-	#elif defined f_cpu && f_cpu == 14745600
-		#define LOCAL_USART_BITRATE()	(TWBR = 0x0A)		// f_cpu = 14,7456 MHz ; f_i2c = 0,4 MHz
-	#else
-		#define	LOCAL_USART_BITRATE()	(TWBR = 0x0A)		// standard minimum setting if not otherwise modified
-#endif
-*/
 /*!-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 static u16 remote_usart_rx_bytes = 0;

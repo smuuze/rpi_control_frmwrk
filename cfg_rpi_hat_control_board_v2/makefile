@@ -64,7 +64,7 @@ SENSOR_MODULE_CFG += LIGHT_SENSOR_GM5528
 #-----------------------------------------------------------------------------
 
 TRACER_CFG =
-TRACER_CFG += USART0
+TRACER_CFG += USART1
 
 #-----------------------------------------------------------------------------
 # Fuer alle Projekte gueltige Dateien
