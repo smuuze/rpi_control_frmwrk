@@ -43,6 +43,34 @@ typedef void (*CFG_DRIVER_INTERFACE_HOST_TX_COMPLETE_CALLBACK)	(void);
 /*!
  *
  */
+typedef enum {
+	BAUDRATE_9600 = 0x00;
+	BAUDRATE_19200;
+	BAUDRATE_38400;
+	BAUDRATE_115200;
+	BAUDRATE_230400
+} DRIVER_CFG_BAUDRATE;
+
+/*!
+ *
+ */
+typedef enum {
+	DATABITS_8 = 0x00;
+	DATABITS_9
+} DRIVER_CFG_DATABITS
+
+/*!
+ *
+ */
+typedef enum {
+	STOPBITS_0 = 0x00;
+	STOPBITS_1;
+	STOPBITS_2
+} DRIVER_CFG_STOPBITS
+
+/*!
+ *
+ */
 typedef struct CFG_DRIVER_SPI {
 
 	u8 is_master;
@@ -75,9 +103,9 @@ typedef struct CFG_DRIVER_I2C {
  */
 typedef struct CFG_DRIVER_USART {
 
-	u8 baud_rate;
-	u8 databits;
-	u8 stopbits;
+	DRIVER_CFG_BAUDRATE baud_rate;
+	DRIVER_CFG_DATABITS databits;
+	DRIVER_CFG_STOPBITS stopbits;
 
 } CFG_DRIVER_USART;
 
