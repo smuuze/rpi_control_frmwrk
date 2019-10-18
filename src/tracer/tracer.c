@@ -10,12 +10,22 @@
 #include "trx_driver_interface.h"
 #include "cfg_driver_interface.h"
 
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
 
 #if defined TRACER_ENABLED
+
 #if defined TRACER_INTERFACE_USART0 && TRACER_INTERFACE_USART0 == 1
+
 #define TRACER_APPLY_DRIVER(p_com_driver)	p_com_driver = i_system.driver.usart0
 #define TRACER_APPLY_DRIVER_CFG(driver_cfg)
+
+#elif defined TRACER_INTERFACE_USART1 && TRACER_INTERFACE_USART1 == 1
+
+#define TRACER_APPLY_DRIVER(p_com_driver)	p_com_driver = i_system.driver.usart1
+#define TRACER_APPLY_DRIVER_CFG(driver_cfg)
+
 #endif
+
 #endif
 
 #define TRACER_TRANSFER_ID_PASS				0x01
@@ -56,6 +66,7 @@
 #define TRACER_GET_HEADER()				trace_header
 #define TRACER_GET_FOOTER()				trace_footer
 
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
 
 /*!
  *
@@ -76,6 +87,8 @@ static u8 trace_header[TRACER_HEADER_DATA_LENGTH];
  *
  */
 static u8 trace_footer[TRACER_FOTER_DATA_LENGTH + 1]; // +1 to avoid compiler warnings on zero data length
+
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
 
 /*!
  *

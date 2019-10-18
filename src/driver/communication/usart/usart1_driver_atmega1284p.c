@@ -11,7 +11,7 @@
 
 #include "cfg_driver_interface.h"
 #include "local_msg_buffer.h"
-#include "driver/communication/usart/usart1_driver_atmega1284p.h"
+#include "driver/communication/usart/usart1_driver.h"
 #include "local_module_status.h"
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
@@ -20,15 +20,12 @@
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
-BUILD_LOCAL_MSG_BUFFER(static inline, usart1_tx_buffer, LOCAL_USART_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
-BUILD_LOCAL_MSG_BUFFER(static inline, usart1_rx_buffer, LOCAL_USART_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)
-
-BUILD_MODULE_STATUS_FAST_VOLATILE(usart1_status, 2)
-
-#define USART1_STATUS_RX_ACTIVE		(1 << 0)
-#define USART1_STATUS_TX_ACTIVE		(1 << 1)
+#define USART1_STATUS_RX_ACTIVE				(1 << 0)
+#define USART1_STATUS_TX_ACTIVE				(1 << 1)
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
+
+#define USART1_DRIVER_CLEAR_CONFIG()			UBRR1L = 0; UBRR1H = 0; UCSR1C = 0; UCSR1B = 0
 
 #define USART1_DRIVER_SET_BAUDRATE_9600()		UBRR1L = 47; UBRR1H = 0
 #define USART1_DRIVER_SET_BAUDRATE_19200()		UBRR1L = 23; UBRR1H = 0
@@ -36,9 +33,34 @@ BUILD_MODULE_STATUS_FAST_VOLATILE(usart1_status, 2)
 #define USART1_DRIVER_SET_BAUDRATE_115200()		UBRR1L = 3; UBRR1H = 0
 #define USART1_DRIVER_SET_BAUDRATE_230400()		UBRR1L = 1; UBRR1H = 0
 
+#define USART1_DRIVER_SET_DATABITS_5()			UCSR1C = (0 << UCSZ10)
+#define USART1_DRIVER_SET_DATABITS_6()			UCSR1C = (1 << UCSZ10)
+#define USART1_DRIVER_SET_DATABITS_7()			UCSR1C = (2 << UCSZ10)
+#define USART1_DRIVER_SET_DATABITS_8()			UCSR1C = (3 << UCSZ10)
+#define USART1_DRIVER_SET_DATABITS_9()			UCSR1C = (7 << UCSZ10)
+
+#define USART1_DRIVER_SET_STOPBITS_1()			UCSR1C = (0 << USBS1)
+#define USART1_DRIVER_SET_STOPBITS_2()			UCSR1C = (1 << USBS1)
+
+#define USART1_DRIVER_SET_PARITY_NONE()			UCSR1C = (0 << UPM10)
+#define USART1_DRIVER_SET_PARITY_EVEN()			UCSR1C = (2 << UPM10)
+#define USART1_DRIVER_SET_PARITY_ODD()			UCSR1C = (3 << UPM10)
+
+#define USART1_DRIVER_ENABLE_TX()			UCSR1B |= (1 << TXEN1)
+#define USART1_DRIVER_ENABLE_RX()			UCSR1B |= (1 << RXEN1)
+
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
-static u16 remote_usart_rx_bytes = 0;
+BUILD_LOCAL_MSG_BUFFER(static inline, usart1_tx_buffer, USART1_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
+BUILD_LOCAL_MSG_BUFFER(static inline, usart1_rx_buffer, USART1_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)
+
+BUILD_MODULE_STATUS_FAST_VOLATILE(usart1_status, 2)
+
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
+
+static u16 usart1_num_bytes_rx = 0;
+
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
 
 void usart1_driver_initialize(void) {
 
@@ -47,17 +69,16 @@ void usart1_driver_initialize(void) {
 void usart1_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	(void) p_cfg;
-	PASS();	// local_usart_driver_cfg()
 
 	usart1_rx_buffer_init();
 	usart1_tx_buffer_init();
 
 	usart_driver_clear_buffer();
 
-	// Baudrate 115200
-	//UBRR1L = 1;
-	//UBRR1H = 0;
-	switch (p_cfg->usart.baud_rate) {
+	USART1_DRIVER_CLEAR_CONFIG();
+
+	switch (p_cfg->usart1.baud_rate) {
+		default:
 		case BAUDRATE_9600:	USART1_DRIVER_SET_BAUDRATE_9600(); break;
 		case BAUDRATE_19200:	USART1_DRIVER_SET_BAUDRATE_19200(); break;
 		case BAUDRATE_38400:	USART1_DRIVER_SET_BAUDRATE_38400(); break;
@@ -65,15 +86,34 @@ void usart1_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 		case BAUDRATE_230400:	USART1_DRIVER_SET_BAUDRATE_230400(); break;
 	}
 
-	/* Set frame format: 8data, 1stop bit */
-	UCSR1C = (0 << USBS1) | (3 << UCSZ10);
+	switch (p_cfg->usart1.databits) {
+		default:
+		case DATABITS_8:	USART1_DRIVER_SET_DATABITS_8(); break;
+		case DATABITS_5:	USART1_DRIVER_SET_DATABITS_5(); break;
+		case DATABITS_6:	USART1_DRIVER_SET_DATABITS_6(); break;
+		case DATABITS_7:	USART1_DRIVER_SET_DATABITS_7(); break;
+		case DATABITS_9:	USART1_DRIVER_SET_DATABITS_9(); break;
+	}
 
-	/* Enable receiver and transmitter */
-	UCSR1B = (1 << RXEN1) | (1 << TXEN1);// | (1 << RXCIE1) | (1 << TXCIE1);
+	switch (p_cfg->usart1.stopbits) {
+		default:
+		case STOPBITS_1:	USART1_DRIVER_SET_STOPBITS_1(); break;
+		case STOPBITS_2:	USART1_DRIVER_SET_STOPBITS_2(); break;
+	}
+
+	switch (p_cfg->usart1.parity) {
+		default:
+		case PARITY_NONE:	USART1_DRIVER_SET_PARITY_NONE(); break;
+		case PARITY_EVEN:	USART1_DRIVER_SET_PARITY_EVEN(); break;
+		case PARITY_ODD:	USART1_DRIVER_SET_PARITY_ODD(); break;
+	}
+
+	USART1_DRIVER_ENABLE_TX();
+	USART1_DRIVER_ENABLE_RX();
 }
 
 void usart1_driver_power_off(void) {
-	PASS(); // local_usart_driver_power_off()
+	
 	usart1_rx_buffer_clear_all();
 	usart1_tx_buffer_clear_all();
 }
@@ -83,7 +123,7 @@ u8 usart1_driver_bytes_available (void) {
 	{
 		u8 bytes_available = usart1_rx_buffer_bytes_available();
 		if (bytes_available) {
-			USART1_RX_TRACE_byte(bytes_available); // i2c_driver_bytes_available()
+			USART1_RX_TRACE_byte(bytes_available);
 		}
 	}
 	#endif
@@ -92,8 +132,6 @@ u8 usart1_driver_bytes_available (void) {
 }
 
 u8 usart1_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
-
-	PASS();	// local_usart_driver_get_N_bytes()
 
 	u8 num_bytes_available = usart1_rx_buffer_bytes_available();
 
@@ -105,8 +143,6 @@ u8 usart1_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 	usart1_rx_buffer_get_N_bytes(num_bytes_available, p_buffer_to);
 	usart1_rx_buffer_stop_read();
 
-	TRACE_N(num_bytes_available, p_buffer_to); // local_usart_driver_bytes_available()
-
 	return num_bytes_available;
 }
 
@@ -114,8 +150,6 @@ u8 usart1_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 	if (num_bytes > usart1_tx_buffer_size()) {
 		num_bytes = usart1_tx_buffer_size();
 	}
-
-	TRACE_N(num_bytes, p_buffer_from); // local_usart_driver_bytes_available()
 
 	usart1_tx_buffer_start_write(); // this will delete all data added so far
 	usart1_tx_buffer_add_N_bytes(num_bytes, p_buffer_from);
@@ -130,14 +164,10 @@ u8 usart1_driver_is_ready_for_rx(void) {
 
 void usart1_driver_start_rx (u16 num_of_rx_bytes) {
 
-	TRACE_word(num_of_rx_bytes); // local_usart_driver_start_rx()
-
-	remote_usart_rx_bytes = num_of_rx_bytes;
+	usart1_num_bytes_rx = num_of_rx_bytes;
 
 	usart1_rx_buffer_start_write();
 	usart1_status_set(USART1_STATUS_RX_ACTIVE);
-
-	LOCAL_USART_STARTSIGNAL(); PASS(); // START sent
 }
 
 void usart1_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
@@ -146,8 +176,6 @@ void usart1_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 }
 
 void usart1_driver_stop_rx (void) {
-
-	PASS(); // local_usart_driver_stop_rx()
 
 	usart1_status_unset(USART1_STATUS_RX_ACTIVE);
 	usart1_rx_buffer_stop_write();
@@ -170,13 +198,10 @@ void usart1_driver_start_tx (void) {
 		while ( !( UCSR0A & (1<<UDRE0)) );
 
 		u8 byte = usart1_tx_buffer_get_byte();
-		LOCAL_USART_TX_TRACE_byte(byte); // local_usart_driver_start_tx
 		UDR0 = byte;
 	}
 
 	usart1_tx_buffer_stop_read();
-
-//	UDR0 = usart1_tx_buffer_get_byte();
 }
 
 void usart1_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
@@ -186,15 +211,12 @@ void usart1_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
 
 void usart1_driver_stop_tx (void) {
 
-	PASS(); // local_usart_driver_stop_tx()
-
 	usart1_tx_buffer_stop_read();
 	usart1_status_unset(USART1_STATUS_TX_ACTIVE);
 }
 
 void usart1_driver_clear_buffer (void) {
 
-	PASS(); // local_usart_driver_clear_buffer()
 	usart1_rx_buffer_clear_all();
 	usart1_tx_buffer_clear_all();
 }
@@ -214,8 +236,6 @@ void usart1_driver_mutex_release(u8 m_id) {
 
 ISR(USART1_TX_vect) {
 
-	PASS(); // TX complete
-
 	if (usart1_tx_buffer_bytes_available() > 0) {
 		UDR1 = usart1_tx_buffer_get_byte();
 
@@ -227,16 +247,14 @@ ISR(USART1_TX_vect) {
 
 ISR(USART1_RX_vect) {
 
-	PASS(); // RX complete
-
-	if (remote_usart_rx_bytes != 0) {
+	if (usart1_num_bytes_rx != 0) {
 
 		u8 byte = UDR1;
 		usart1_rx_buffer_add_byte(byte);
 
-		if (remote_usart_rx_bytes != TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH) {
+		if (usart1_num_bytes_rx != TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH) {
 
-			if (remote_usart_rx_bytes-- == 0) {
+			if (usart1_num_bytes_rx-- == 0) {
 				usart1_driver_stop_rx();
 			}
 		}

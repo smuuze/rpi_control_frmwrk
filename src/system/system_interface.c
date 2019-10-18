@@ -41,33 +41,63 @@ static TRX_DRIVER_INTERFACE spi0_driver = {
 
 #if defined HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
 
-#include "local_usart_driver.h"
+#include "driver/communication/usart/usart0_driver.h"
 
 /*!
  *
  */
 static TRX_DRIVER_INTERFACE usart0_driver = {
 	USART,					//	TRX_DRIVER_INTERFACE_TYPE type;
-		&usart_driver_initialize,			//
+	&usart_driver_initialize,			//
 	&usart_driver_configure, 		//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
 	&usart_driver_power_off, 		//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
-	&usart_driver_bytes_available, 	//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
-	&usart_driver_get_N_bytes, 	//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
-	&usart_driver_set_N_bytes, 	//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
+	&usart_driver_bytes_available, 		//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
+	&usart_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
+	&usart_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
 	&usart_driver_start_rx, 		//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
-		&usart_driver_wait_for_rx,		//
-	&usart_driver_stop_rx, 		//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
-	&usart_driver_is_ready_for_tx,	//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
-		&usart_driver_is_ready_for_rx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&usart_driver_wait_for_rx,		//
+	&usart_driver_stop_rx, 			//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
+	&usart_driver_is_ready_for_tx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&usart_driver_is_ready_for_rx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
 	&usart_driver_start_tx, 		//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
-		&usart_driver_wait_for_tx,		//
-	&usart_driver_stop_tx, 		//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
-	&usart_driver_clear_buffer, 	//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&usart_driver_wait_for_tx,		//
+	&usart_driver_stop_tx, 			//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
+	&usart_driver_clear_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
 	&usart_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
-		&usart_driver_mutex_request,		//
-		&usart_driver_mutex_release		//
+	&usart_driver_mutex_request,		//
+	&usart_driver_mutex_release		//
 };
-#endif // #if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
+#endif // HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
+
+#if defined HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
+
+#include "driver/communication/usart/usart1_driver.h"
+
+/*!
+ *
+ */
+static TRX_DRIVER_INTERFACE usart1_driver = {
+	USART,					//	TRX_DRIVER_INTERFACE_TYPE type;
+	&usart1_driver_initialize,		//
+	&usart1_driver_configure, 		//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
+	&usart1_driver_power_off, 		//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
+	&usart1_driver_bytes_available, 	//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
+	&usart1_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
+	&usart1_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
+	&usart1_driver_start_rx, 		//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
+	&usart1_driver_wait_for_rx,		//
+	&usart1_driver_stop_rx, 		//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
+	&usart1_driver_is_ready_for_tx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&usart1_driver_is_ready_for_rx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&usart1_driver_start_tx, 		//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
+	&usart1_driver_wait_for_tx,		//
+	&usart1_driver_stop_tx, 		//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
+	&usart1_driver_clear_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&usart1_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
+	&usart1_driver_mutex_request,		//
+	&usart1_driver_mutex_release		//
+};
+#endif // HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
 
 #if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
 
@@ -309,6 +339,10 @@ const SYSTEM_INTERFACE i_system = {
 
 		#if defined HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
 		&usart0_driver,
+		#endif
+
+		#if defined HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
+		&usart1_driver,
 		#endif
 
 		#if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1

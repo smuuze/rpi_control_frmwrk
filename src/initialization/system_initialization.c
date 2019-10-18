@@ -31,14 +31,21 @@ void system_initialization(void) {
 	}
 	#endif
 
-	#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_USART0 == 1
+	#if defined HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
 	{
 		//PASS(); // system_initialization() - Initializing USART0
 		i_system.driver.usart0->initialize();
 	}
 	#endif
 
-	#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_I2C0 == 1
+	#if defined HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
+	{
+		//PASS(); // system_initialization() - Initializing USART0
+		i_system.driver.usart1->initialize();
+	}
+	#endif
+
+	#if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
 	{
 		//PASS(); // system_initialization() - Initializing I2C0
 		i_system.driver.spi0->initialize();

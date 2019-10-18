@@ -136,6 +136,10 @@ typedef struct {
 		TRX_DRIVER_INTERFACE*	usart0;
 	#endif
 
+	#if defined HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
+		TRX_DRIVER_INTERFACE*	usart1;
+	#endif
+
 	#if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
 		TRX_DRIVER_INTERFACE*	i2c0;
 	#endif
