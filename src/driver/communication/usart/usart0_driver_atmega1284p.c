@@ -14,7 +14,7 @@
 
 #include "cfg_driver_interface.h"
 #include "local_msg_buffer.h"
-#include "local_usart_driver.h"
+#include "driver/communication/usart/usart0_driver.h"
 #include "local_module_status.h"
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
@@ -62,8 +62,34 @@
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
-BUILD_LOCAL_MSG_BUFFER(static inline, __local_usart_tx_buffer, LOCAL_USART_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
-BUILD_LOCAL_MSG_BUFFER(static inline, __local_usart_rx_buffer, LOCAL_USART_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)
+#define USART0_DRIVER_CLEAR_CONFIG()			UBRR0L = 0; UBRR0H = 0; UCSR0C = 0; UCSR0B = 0
+
+#define USART0_DRIVER_SET_BAUDRATE_9600()		UBRR0L = 47; UBRR0H = 0
+#define USART0_DRIVER_SET_BAUDRATE_19200()		UBRR0L = 23; UBRR0H = 0
+#define USART0_DRIVER_SET_BAUDRATE_38400()		UBRR0L = 11; UBRR0H = 0
+#define USART0_DRIVER_SET_BAUDRATE_115200()		UBRR0L = 3; UBRR0H = 0
+#define USART0_DRIVER_SET_BAUDRATE_230400()		UBRR0L = 1; UBRR0H = 0
+
+#define USART0_DRIVER_SET_DATABITS_5()			UCSR0C |= (0 << UCSZ00)
+#define USART0_DRIVER_SET_DATABITS_6()			UCSR0C |= (1 << UCSZ00)
+#define USART0_DRIVER_SET_DATABITS_7()			UCSR0C |= (2 << UCSZ00)
+#define USART0_DRIVER_SET_DATABITS_8()			UCSR0C |= (3 << UCSZ00)
+#define USART0_DRIVER_SET_DATABITS_9()			UCSR0C |= (7 << UCSZ00)
+
+#define USART0_DRIVER_SET_STOPBITS_1()			UCSR0C |= (0 << USBS0)
+#define USART0_DRIVER_SET_STOPBITS_2()			UCSR0C |= (1 << USBS0)
+
+#define USART0_DRIVER_SET_PARITY_NONE()			UCSR0C |= (0 << UPM00)
+#define USART0_DRIVER_SET_PARITY_EVEN()			UCSR0C |= (2 << UPM00)
+#define USART0_DRIVER_SET_PARITY_ODD()			UCSR0C |= (3 << UPM00)
+
+#define USART0_DRIVER_ENABLE_TX()			UCSR0B |= (1 << TXEN0)
+#define USART0_DRIVER_ENABLE_RX()			UCSR0B |= (1 << RXEN0)
+
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
+
+BUILD_LOCAL_MSG_BUFFER(static inline, __local_usart_tx_buffer, USART0_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
+BUILD_LOCAL_MSG_BUFFER(static inline, __local_usart_rx_buffer, USART0_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(local_usart_status, 2)
 
@@ -87,15 +113,51 @@ void usart_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	usart_driver_clear_buffer();
 
+	USART0_DRIVER_CLEAR_CONFIG();
+
+	switch (p_cfg->module.usart.baudrate) {
+		default:
+		case BAUDRATE_9600:	USART0_DRIVER_SET_BAUDRATE_9600();   DEBUG_PASS("usart0_driver_configure()"); break;
+		case BAUDRATE_19200:	USART0_DRIVER_SET_BAUDRATE_19200();  DEBUG_PASS("usart0_driver_configure()"); break;
+		case BAUDRATE_38400:	USART0_DRIVER_SET_BAUDRATE_38400();  DEBUG_PASS("usart0_driver_configure()"); break;
+		case BAUDRATE_115200:	USART0_DRIVER_SET_BAUDRATE_115200(); DEBUG_PASS("usart0_driver_configure()"); break;
+		case BAUDRATE_230400:	USART0_DRIVER_SET_BAUDRATE_230400(); DEBUG_PASS("usart0_driver_configure()"); break;
+	}
+
+	switch (p_cfg->module.usart.databits) {
+		default:
+		case DATABITS_8:	USART0_DRIVER_SET_DATABITS_8(); DEBUG_PASS("usart0_driver_configure()"); break;
+		case DATABITS_5:	USART0_DRIVER_SET_DATABITS_5(); DEBUG_PASS("usart0_driver_configure()"); break;
+		case DATABITS_6:	USART0_DRIVER_SET_DATABITS_6(); DEBUG_PASS("usart0_driver_configure()"); break;
+		case DATABITS_7:	USART0_DRIVER_SET_DATABITS_7(); DEBUG_PASS("usart0_driver_configure()"); break;
+		case DATABITS_9:	USART0_DRIVER_SET_DATABITS_9(); DEBUG_PASS("usart0_driver_configure()"); break;
+	}
+
+	switch (p_cfg->module.usart.stopbits) {
+		default:
+		case STOPBITS_1:	USART0_DRIVER_SET_STOPBITS_1(); DEBUG_PASS("usart0_driver_configure()"); break;
+		case STOPBITS_2:	USART0_DRIVER_SET_STOPBITS_2(); DEBUG_PASS("usart0_driver_configure()"); break;
+	}
+
+	switch (p_cfg->module.usart.parity) {
+		default:
+		case PARITY_NONE:	USART0_DRIVER_SET_PARITY_NONE(); DEBUG_PASS("usart0_driver_configure()"); break;
+		case PARITY_EVEN:	USART0_DRIVER_SET_PARITY_EVEN(); DEBUG_PASS("usart0_driver_configure()"); break;
+		case PARITY_ODD:	USART0_DRIVER_SET_PARITY_ODD();  DEBUG_PASS("usart0_driver_configure()"); break;
+	}
+
+	USART0_DRIVER_ENABLE_TX();
+	USART0_DRIVER_ENABLE_RX();
+
 	// Baudrate 115200
-	UBRR0L = 1;
-	UBRR0H = 0;
+	//UBRR0L = 1;
+	//UBRR0H = 0;
 
 	/* Set frame format: 8data, 1stop bit */
-	UCSR0C = (0 << USBS0) | (3 << UCSZ00);
+	//UCSR0C = (0 << USBS0) | (3 << UCSZ00);
 
 	/* Enable receiver and transmitter */
-	UCSR0B = (1 << RXEN0) | (1 << TXEN0);// | (1 << RXCIE0) | (1 << TXCIE0);
+	//UCSR0B = (1 << RXEN0) | (1 << TXEN0);// | (1 << RXCIE0) | (1 << TXCIE0);
 }
 
 void usart_driver_power_off(void) {
@@ -165,8 +227,6 @@ void usart_driver_start_rx (u16 num_of_rx_bytes) {
 
 	__local_usart_rx_buffer_start_write();
 	local_usart_status_set(LOCAL_USART_STATUS_RX_ACTIVE);
-
-	LOCAL_USART_STARTSIGNAL(); PASS(); // START sent
 }
 
 void usart_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {

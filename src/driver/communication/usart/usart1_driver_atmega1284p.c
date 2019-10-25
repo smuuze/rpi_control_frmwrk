@@ -33,18 +33,18 @@
 #define USART1_DRIVER_SET_BAUDRATE_115200()		UBRR1L = 3; UBRR1H = 0
 #define USART1_DRIVER_SET_BAUDRATE_230400()		UBRR1L = 1; UBRR1H = 0
 
-#define USART1_DRIVER_SET_DATABITS_5()			UCSR1C = (0 << UCSZ10)
-#define USART1_DRIVER_SET_DATABITS_6()			UCSR1C = (1 << UCSZ10)
-#define USART1_DRIVER_SET_DATABITS_7()			UCSR1C = (2 << UCSZ10)
-#define USART1_DRIVER_SET_DATABITS_8()			UCSR1C = (3 << UCSZ10)
-#define USART1_DRIVER_SET_DATABITS_9()			UCSR1C = (7 << UCSZ10)
+#define USART1_DRIVER_SET_DATABITS_5()			UCSR1C |= (0 << UCSZ10)
+#define USART1_DRIVER_SET_DATABITS_6()			UCSR1C |= (1 << UCSZ10)
+#define USART1_DRIVER_SET_DATABITS_7()			UCSR1C |= (2 << UCSZ10)
+#define USART1_DRIVER_SET_DATABITS_8()			UCSR1C |= (3 << UCSZ10)
+#define USART1_DRIVER_SET_DATABITS_9()			UCSR1C |= (7 << UCSZ10)
 
-#define USART1_DRIVER_SET_STOPBITS_1()			UCSR1C = (0 << USBS1)
-#define USART1_DRIVER_SET_STOPBITS_2()			UCSR1C = (1 << USBS1)
+#define USART1_DRIVER_SET_STOPBITS_1()			UCSR1C |= (0 << USBS1)
+#define USART1_DRIVER_SET_STOPBITS_2()			UCSR1C |= (1 << USBS1)
 
-#define USART1_DRIVER_SET_PARITY_NONE()			UCSR1C = (0 << UPM10)
-#define USART1_DRIVER_SET_PARITY_EVEN()			UCSR1C = (2 << UPM10)
-#define USART1_DRIVER_SET_PARITY_ODD()			UCSR1C = (3 << UPM10)
+#define USART1_DRIVER_SET_PARITY_NONE()			UCSR1C |= (0 << UPM10)
+#define USART1_DRIVER_SET_PARITY_EVEN()			UCSR1C |= (2 << UPM10)
+#define USART1_DRIVER_SET_PARITY_ODD()			UCSR1C |= (3 << UPM10)
 
 #define USART1_DRIVER_ENABLE_TX()			UCSR1B |= (1 << TXEN1)
 #define USART1_DRIVER_ENABLE_RX()			UCSR1B |= (1 << RXEN1)
@@ -68,48 +68,58 @@ void usart1_driver_initialize(void) {
 
 void usart1_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
-	(void) p_cfg;
-
 	usart1_rx_buffer_init();
 	usart1_tx_buffer_init();
 
-	usart_driver_clear_buffer();
+	usart1_driver_clear_buffer();
 
 	USART1_DRIVER_CLEAR_CONFIG();
 
-	switch (p_cfg->usart1.baud_rate) {
+	switch (p_cfg->module.usart.baudrate) {
 		default:
-		case BAUDRATE_9600:	USART1_DRIVER_SET_BAUDRATE_9600(); break;
-		case BAUDRATE_19200:	USART1_DRIVER_SET_BAUDRATE_19200(); break;
-		case BAUDRATE_38400:	USART1_DRIVER_SET_BAUDRATE_38400(); break;
-		case BAUDRATE_115200:	USART1_DRIVER_SET_BAUDRATE_115200(); break;
-		case BAUDRATE_230400:	USART1_DRIVER_SET_BAUDRATE_230400(); break;
+		case BAUDRATE_9600:	USART1_DRIVER_SET_BAUDRATE_9600();   DEBUG_PASS("usart1_driver_configure()"); break;
+		case BAUDRATE_19200:	USART1_DRIVER_SET_BAUDRATE_19200();  DEBUG_PASS("usart1_driver_configure()"); break;
+		case BAUDRATE_38400:	USART1_DRIVER_SET_BAUDRATE_38400();  DEBUG_PASS("usart1_driver_configure()"); break;
+		case BAUDRATE_115200:	USART1_DRIVER_SET_BAUDRATE_115200(); DEBUG_PASS("usart1_driver_configure()"); break;
+		case BAUDRATE_230400:	USART1_DRIVER_SET_BAUDRATE_230400(); DEBUG_PASS("usart1_driver_configure()"); break;
 	}
 
-	switch (p_cfg->usart1.databits) {
+	switch (p_cfg->module.usart.databits) {
 		default:
-		case DATABITS_8:	USART1_DRIVER_SET_DATABITS_8(); break;
-		case DATABITS_5:	USART1_DRIVER_SET_DATABITS_5(); break;
-		case DATABITS_6:	USART1_DRIVER_SET_DATABITS_6(); break;
-		case DATABITS_7:	USART1_DRIVER_SET_DATABITS_7(); break;
-		case DATABITS_9:	USART1_DRIVER_SET_DATABITS_9(); break;
+		case DATABITS_8:	USART1_DRIVER_SET_DATABITS_8(); DEBUG_PASS("usart1_driver_configure()"); break;
+		case DATABITS_5:	USART1_DRIVER_SET_DATABITS_5(); DEBUG_PASS("usart1_driver_configure()"); break;
+		case DATABITS_6:	USART1_DRIVER_SET_DATABITS_6(); DEBUG_PASS("usart1_driver_configure()"); break;
+		case DATABITS_7:	USART1_DRIVER_SET_DATABITS_7(); DEBUG_PASS("usart1_driver_configure()"); break;
+		case DATABITS_9:	USART1_DRIVER_SET_DATABITS_9(); DEBUG_PASS("usart1_driver_configure()"); break;
 	}
 
-	switch (p_cfg->usart1.stopbits) {
+	switch (p_cfg->module.usart.stopbits) {
 		default:
-		case STOPBITS_1:	USART1_DRIVER_SET_STOPBITS_1(); break;
-		case STOPBITS_2:	USART1_DRIVER_SET_STOPBITS_2(); break;
+		case STOPBITS_1:	USART1_DRIVER_SET_STOPBITS_1(); DEBUG_PASS("usart1_driver_configure()"); break;
+		case STOPBITS_2:	USART1_DRIVER_SET_STOPBITS_2(); DEBUG_PASS("usart1_driver_configure()"); break;
 	}
 
-	switch (p_cfg->usart1.parity) {
+	switch (p_cfg->module.usart.parity) {
 		default:
-		case PARITY_NONE:	USART1_DRIVER_SET_PARITY_NONE(); break;
-		case PARITY_EVEN:	USART1_DRIVER_SET_PARITY_EVEN(); break;
-		case PARITY_ODD:	USART1_DRIVER_SET_PARITY_ODD(); break;
+		case PARITY_NONE:	USART1_DRIVER_SET_PARITY_NONE(); DEBUG_PASS("usart1_driver_configure()"); break;
+		case PARITY_EVEN:	USART1_DRIVER_SET_PARITY_EVEN(); DEBUG_PASS("usart1_driver_configure()"); break;
+		case PARITY_ODD:	USART1_DRIVER_SET_PARITY_ODD();  DEBUG_PASS("usart1_driver_configure()"); break;
 	}
 
 	USART1_DRIVER_ENABLE_TX();
 	USART1_DRIVER_ENABLE_RX();
+
+	DEBUG_TRACE_byte(UBRR1L, "usart1_driver_configure() - UBRR1L");
+	DEBUG_TRACE_byte(UBRR1H, "usart1_driver_configure() - UBRR1H");
+	DEBUG_TRACE_byte(UCSR1C, "usart1_driver_configure() - UCSR1C");
+	DEBUG_TRACE_byte(UCSR1B, "usart1_driver_configure() - UCSR1B");
+	DEBUG_TRACE_byte(UCSR1A, "usart1_driver_configure() - UCSR1A");
+
+	DEBUG_TRACE_byte(UBRR0L, "usart1_driver_configure() - UBRR0L");
+	DEBUG_TRACE_byte(UBRR0H, "usart1_driver_configure() - UBRR0H");
+	DEBUG_TRACE_byte(UCSR0C, "usart1_driver_configure() - UCSR0C");
+	DEBUG_TRACE_byte(UCSR0B, "usart1_driver_configure() - UCSR0B");
+	DEBUG_TRACE_byte(UCSR0A, "usart1_driver_configure() - UCSR0A");
 }
 
 void usart1_driver_power_off(void) {
@@ -151,6 +161,8 @@ u8 usart1_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 		num_bytes = usart1_tx_buffer_size();
 	}
 
+	DEBUG_TRACE_N(num_bytes, (u8*)p_buffer_from, "usart1_driver_set_N_bytes() - Adding bytes to buffer");
+
 	usart1_tx_buffer_start_write(); // this will delete all data added so far
 	usart1_tx_buffer_add_N_bytes(num_bytes, p_buffer_from);
 	usart1_tx_buffer_stop_write();
@@ -188,20 +200,22 @@ u8 usart1_driver_is_ready_for_tx (void) {
 
 void usart1_driver_start_tx (void) {
 
-	PASS(); // local_usart_driver_start_tx()
+	DEBUG_PASS("usart1_driver_start_tx()");
 
 	usart1_status_set(USART1_STATUS_TX_ACTIVE);
 	usart1_tx_buffer_start_read();
 
 	while (usart1_tx_buffer_bytes_available() > 0) {
 
-		while ( !( UCSR0A & (1<<UDRE0)) );
+		while ( !( UCSR1A & (1<<UDRE1)) );
 
 		u8 byte = usart1_tx_buffer_get_byte();
-		UDR0 = byte;
+		UDR1 = byte;
 	}
 
 	usart1_tx_buffer_stop_read();
+
+	DEBUG_PASS("usart1_driver_start_tx() - Finished");
 }
 
 void usart1_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {

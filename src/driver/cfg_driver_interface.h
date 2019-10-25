@@ -30,6 +30,8 @@
 #define DRIVER_I2C_BITRATE_100KHZ				2
 #define DRIVER_I2C_BITRATE_1MHZ					3
 
+#define TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH		0xFFFF
+
 /*!
  *
  */
@@ -55,10 +57,10 @@ typedef enum {
  *
  */
 typedef enum {
-	DATABITS_5 = 0x00,
+	DATABITS_8 = 0x00,
+	DATABITS_5,
 	DATABITS_6,
-	DATABITS7,
-	DATABITS_8,
+	DATABITS_7,
 	DATABITS_9
 } DRIVER_CFG_DATABITS;
 
@@ -74,9 +76,9 @@ typedef enum {
  *
  */
 typedef enum {
+	PARITY_NONE = 0x00,
 	PARITY_EVEN,
 	PARITY_ODD,
-	PARITY_NONE
 } DRIVER_CFG_PARITY;
 
 /*!
@@ -114,7 +116,7 @@ typedef struct CFG_DRIVER_I2C {
  */
 typedef struct CFG_DRIVER_USART {
 
-	DRIVER_CFG_BAUDRATE baud_rate;
+	DRIVER_CFG_BAUDRATE baudrate;
 	DRIVER_CFG_DATABITS databits;
 	DRIVER_CFG_STOPBITS stopbits;
 	DRIVER_CFG_PARITY parity;

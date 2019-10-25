@@ -12,21 +12,35 @@
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
+#if defined TRACER_BAUDRATE_115200 && (TRACER_BAUDRATE_115200) == 1
+#define TRACER_BAUDRATE					BAUDRATE_115200
+#elif defined TRACER_BAUDRATE_230400 && (TRACER_BAUDRATE_230400) == 1
+#define TRACER_BAUDRATE					BAUDRATE_230400
+#else
+#define TRACER_BAUDRATE					BAUDRATE_9600
+#endif
+
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
+
 #if defined TRACER_ENABLED
 
 #if defined TRACER_INTERFACE_USART0 && TRACER_INTERFACE_USART0 == 1
 
-#define TRACER_APPLY_DRIVER(p_com_driver)	p_com_driver = i_system.driver.usart0
-#define TRACER_APPLY_DRIVER_CFG(driver_cfg)
+#define TRACER_APPLY_DRIVER(p_com_driver)		p_com_driver = i_system.driver.usart0
+#define TRACER_APPLY_DRIVER_CFG(driver_cfg)		memset((u8*)&driver_cfg, 0x00, sizeof(driver_cfg));				\
+							driver_cfg.module.usart.baudrate = TRACER_BAUDRATE
 
 #elif defined TRACER_INTERFACE_USART1 && TRACER_INTERFACE_USART1 == 1
 
-#define TRACER_APPLY_DRIVER(p_com_driver)	p_com_driver = i_system.driver.usart1
-#define TRACER_APPLY_DRIVER_CFG(driver_cfg)
+#define TRACER_APPLY_DRIVER(p_com_driver)		p_com_driver = i_system.driver.usart1
+#define TRACER_APPLY_DRIVER_CFG(driver_cfg)		memset((u8*)&driver_cfg, 0x00, sizeof(driver_cfg));				\
+							driver_cfg.module.usart.baudrate = TRACER_BAUDRATE
 
 #endif
 
 #endif
+
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
 
 #define TRACER_TRANSFER_ID_PASS				0x01
 #define TRACER_TRANSFER_ID_BYTE				0x02
