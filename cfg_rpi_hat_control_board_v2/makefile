@@ -56,6 +56,7 @@ EXPANSION_BOARD_CFG += GPIO_PCA9670
 
 DRIVER_MODULE_CFG =
 DRIVER_MODULE_CFG += USART0
+DRIVER_MODULE_CFG += USART1
 
 #-----------------------------------------------------------------------------
 
@@ -66,10 +67,10 @@ SENSOR_MODULE_CFG += LIGHT_SENSOR_GM5528
 
 TRACER_CFG =
 TRACER_CFG += USART1
-TRACER_CFG += BAUDRATE_230400
-TRACER_CFG += PARITY_NONE
-TRACER_CFG += DATABITS_8
-TRACER_CFG += STOPBITS_1
+TRACER_CFG += BAUDRATE_115200
+#TRACER_CFG += PARITY_NONE
+#TRACER_CFG += DATABITS_8
+#TRACER_CFG += STOPBITS_1
 
 #-----------------------------------------------------------------------------
 # Fuer alle Projekte gueltige Dateien

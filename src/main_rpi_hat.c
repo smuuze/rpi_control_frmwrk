@@ -49,6 +49,8 @@ void main_init(void) {
 #include "cfg_driver_interface.h"
 #include "time_management/time_management.h"
 
+#include "driver/communication/usart/usart0_driver.h"
+
 TIME_MGMN_BUILD_STATIC_TIMER_U16(PERIODE_TIMER)
 
 int main( void ) {	
@@ -58,11 +60,11 @@ int main( void ) {
 	TRX_DRIVER_CONFIGURATION driver_cfg;
 	memset(&driver_cfg, 0x00, sizeof(driver_cfg));
 
-	u8 byte_array[] = {'H','e','l','l','o',' ', 'U','A','R','T','!','\n'};
+	u8 byte_array[] = {'H','e','l','l','o',' ', 'T','R','A','U','!','\n'};
 
-	//usart1_driver_configure(&driver_cfg);
-	//usart1_driver_set_N_bytes (sizeof(byte_array), byte_array);
-	//usart1_driver_start_tx();
+	usart0_driver_configure(&driver_cfg);
+	usart0_driver_set_N_bytes (sizeof(byte_array), byte_array);
+	usart0_driver_start_tx();
 
 	PERIODE_TIMER_start();
 
@@ -76,8 +78,8 @@ int main( void ) {
 
 			DEBUG_PASS("main() - Going to send UART1 message");
 			
-			//usart1_driver_set_N_bytes (sizeof(byte_array), byte_array);
-			//usart1_driver_start_tx();
+			usart0_driver_set_N_bytes (sizeof(byte_array), byte_array);
+			usart0_driver_start_tx();
 			PERIODE_TIMER_start();
 		}
 

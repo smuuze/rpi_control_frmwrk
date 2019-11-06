@@ -49,6 +49,11 @@
 #define USART1_DRIVER_ENABLE_TX()			UCSR1B |= (1 << TXEN1)
 #define USART1_DRIVER_ENABLE_RX()			UCSR1B |= (1 << RXEN1)
 
+#define USART1_DRIVER_WAIT_UNTIL_TX_RDY()		while ( !( UCSR1A & (1<<UDRE1)) )
+
+#define USART1_DRIVER_GET_BYTE()			UDR1
+#define USART1_DRIVER_SET_BYTE(byte)			UDR1 = byte
+
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
 BUILD_LOCAL_MSG_BUFFER(static inline, usart1_tx_buffer, USART1_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
@@ -207,10 +212,10 @@ void usart1_driver_start_tx (void) {
 
 	while (usart1_tx_buffer_bytes_available() > 0) {
 
-		while ( !( UCSR1A & (1<<UDRE1)) );
+		USART1_DRIVER_WAIT_UNTIL_TX_RDY();
 
 		u8 byte = usart1_tx_buffer_get_byte();
-		UDR1 = byte;
+		USART1_DRIVER_SET_BYTE(byte);
 	}
 
 	usart1_tx_buffer_stop_read();
@@ -251,7 +256,7 @@ void usart1_driver_mutex_release(u8 m_id) {
 ISR(USART1_TX_vect) {
 
 	if (usart1_tx_buffer_bytes_available() > 0) {
-		UDR1 = usart1_tx_buffer_get_byte();
+		USART1_DRIVER_SET_BYTE(usart1_tx_buffer_get_byte());
 
 	} else {
 		usart1_driver_stop_tx();
@@ -263,7 +268,7 @@ ISR(USART1_RX_vect) {
 
 	if (usart1_num_bytes_rx != 0) {
 
-		u8 byte = UDR1;
+		u8 byte = USART1_DRIVER_GET_BYTE();
 		usart1_rx_buffer_add_byte(byte);
 
 		if (usart1_num_bytes_rx != TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH) {
