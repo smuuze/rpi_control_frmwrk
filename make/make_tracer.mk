@@ -28,6 +28,10 @@ ifneq '' '$(findstring BAUDRATE_9600,$(TRACER_CFG))'
 	DEFS += -D TRACER_BAUDRATE_9600=1
 endif
 
+ifneq '' '$(findstring BAUDRATE_115200,$(TRACER_CFG))'
+	DEFS += -D TRACER_BAUDRATE_115200=1
+endif
+
 ifneq '' '$(findstring BAUDRATE_230400,$(TRACER_CFG))'
 	DEFS += -D TRACER_BAUDRATE_230400=1
 endif

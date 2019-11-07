@@ -102,6 +102,11 @@ static u8 trace_header[TRACER_HEADER_DATA_LENGTH];
  */
 static u8 trace_footer[TRACER_FOTER_DATA_LENGTH + 1]; // +1 to avoid compiler warnings on zero data length
 
+/*!
+ *
+ */
+static u8 driver_mutex_id = 0xFF;
+
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
 /*!
@@ -128,6 +133,7 @@ void tracer_init(void) {
 		TRACER_APPLY_DRIVER(p_com_driver);
 		TRACER_APPLY_DRIVER_CFG(driver_cfg);
 
+		driver_mutex_id = p_com_driver->mutex_req();
 		p_com_driver->configure(&driver_cfg);
 
 		TRACER_INIT_HEADER();
