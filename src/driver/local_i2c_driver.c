@@ -10,7 +10,7 @@
 #include "local_i2c_driver.h"
 #include "local_module_status.h"
 #include "local_mutex.h"
-#include "io_controller.h"
+#include "io_management/io_controller.h"
 
 #include "driver_specific_i2c.h"
 

@@ -43,6 +43,7 @@ HOST_INTERFACE_TYPE = SPI
 #-----------------------------------------------------------------------------
 
 APP_TASK_CFG += 
+APP_TASK_CFG += EVENT
 #APP_TASK_CFG += LED_MATRIX
 #APP_TASK_CFG += TEST_TRACER
 
@@ -62,6 +63,13 @@ DRIVER_MODULE_CFG += USART1
 
 SENSOR_MODULE_CFG =
 SENSOR_MODULE_CFG += LIGHT_SENSOR_GM5528
+
+#-----------------------------------------------------------------------------
+
+MANAGEMENT_MODULE_CFG =
+MANAGEMENT_MODULE_CFG += POWER
+MANAGEMENT_MODULE_CFG += IO
+MANAGEMENT_MODULE_CFG += RPI_PROTOCOL
 
 #-----------------------------------------------------------------------------
 

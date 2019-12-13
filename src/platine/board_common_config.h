@@ -50,4 +50,6 @@ typedef struct  {
 #define GET_GPIO_REFERENCE(port_id, pin_id)			\
 	p_pin_##port_id##_##pin_id
 
+#define HAS_GPIO(name)			
+
 #endif

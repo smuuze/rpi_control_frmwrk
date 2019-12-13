@@ -26,10 +26,12 @@ IO_CONTROLLER_BUILD_INPUT(onboard_input_01, ONBOARD_INPUT_01)
 IO_CONTROLLER_BUILD_INPUT(onboard_input_02, ONBOARD_INPUT_02)
 #endif
 
+#ifdef HAS_MANAGEMENT_MODULE_IO
 IO_CONTROLLER_BUILD_INPUT(extern_input_01, EXTERN_INPUT_01)
 IO_CONTROLLER_BUILD_INPUT(extern_input_02, EXTERN_INPUT_02)
 IO_CONTROLLER_BUILD_INPUT(extern_input_03, EXTERN_INPUT_03)
 IO_CONTROLLER_BUILD_INPUT(extern_input_04, EXTERN_INPUT_04)
+#endif
 
 #ifdef EXPANSION_BOARD_PC9670_AVAILABLE
 
@@ -70,12 +72,16 @@ void button_initialization(void) {
 
 	PASS(); // button_initialization()
 
-	io_input_controller_init();
-	
-	extern_input_01_init();
-	extern_input_02_init();
-	extern_input_03_init();
-	extern_input_04_init();
+	#ifdef HAS_MANAGEMENT_MODULE_IO
+	{
+		io_input_controller_init();
+		
+		extern_input_01_init();
+		extern_input_02_init();
+		extern_input_03_init();
+		extern_input_04_init();
+	}
+	#endif
 	
 	#ifdef EXPANSION_BOARD_PC9670_AVAILABLE
 	{

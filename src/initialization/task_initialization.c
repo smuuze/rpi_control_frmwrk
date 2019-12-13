@@ -104,7 +104,8 @@ static MCU_TASK_INTERFACE cmd_mcu_task = {
 	0					// next-task
 };
 
-#include "io_input_controller.h"
+#ifdef HAS_MANAGEMENT_MODULE_IO
+#include "io_mangement/io_input_controller.h"
 static MCU_TASK_INTERFACE io_input_controller_task = {
 
 	0, 					// u8 identifier,
@@ -123,7 +124,7 @@ static MCU_TASK_INTERFACE io_input_controller_task = {
 	0					// next-task
 };
 
-#include "io_output_controller.h"
+#include "io_mangement/io_output_controller.h"
 static MCU_TASK_INTERFACE io_output_controller_task = {
 
 	0, 						// u8 identifier,
@@ -141,8 +142,10 @@ static MCU_TASK_INTERFACE io_output_controller_task = {
 	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
 	0						// next-task
 };
+#endif
 
-#include "rpi_protocol_handler.h"
+#ifdef HAS_MANAGEMENT_MODULE_RPI_PROTOCOL
+#include "protocol_management/rpi_protocol_handler.h"
 static MCU_TASK_INTERFACE rpi_protocol_task = {
 
 	0, 						// u8 identifier,
@@ -160,7 +163,9 @@ static MCU_TASK_INTERFACE rpi_protocol_task = {
 	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
 	0						// next-task
 };
+#endif
 
+#ifdef HAS_APP_TASK_EVENT
 #include "local_event_task.h"
 static MCU_TASK_INTERFACE event_task = {
 
@@ -179,6 +184,7 @@ static MCU_TASK_INTERFACE event_task = {
 	&local_event_mcu_task_terminate, 		// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
 	0						// next-task
 };
+#endif
 
 #include "local_debus_mcu_task.h"
 static MCU_TASK_INTERFACE debus_task = {
@@ -248,9 +254,14 @@ void task_initialization(void) {
 
 	mcu_task_controller_init();
 
+	#ifdef HAS_MANAGEMENT_MODULE_IO
 	mcu_task_controller_register_task(&io_input_controller_task);
+	#endif
+
+	#ifdef HAS_MANAGEMENT_MODULE_RPI_PROTOCOL
 	mcu_task_controller_register_task(&rpi_protocol_task);
-	
+	#endif
+
 	#ifdef HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115
 	mcu_task_controller_register_task(&sht31_mcu_task);
 	mcu_task_controller_register_task(&ads1115_mcu_task);
@@ -271,8 +282,13 @@ void task_initialization(void) {
 	//-- task is currupted mcu_task_controller_register_task(&pca9670_task);
 	#endif
 
+	#ifdef HAS_APP_TASK_EVENT
 	mcu_task_controller_register_task(&event_task);
+	#endif
+
+	#ifdef HAS_MANAGEMENT_MODULE_IO
 	mcu_task_controller_register_task(&io_output_controller_task);
+	#endif
 }
 
 

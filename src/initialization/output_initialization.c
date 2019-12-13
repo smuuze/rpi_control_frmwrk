@@ -13,7 +13,7 @@
 //-----------------------------------------------------------------------------
 
 #include "local_context.h"
-#include "io_controller.h"
+#include "io_management/io_controller.h"
 
 //-----------------------------------------------------------------------------
 
@@ -129,19 +129,25 @@ static IO_OUTPUT_DESCRIPTOR led_09 = {
 
 #endif
 
+#ifdef HAS_MANAGEMENT_MODULE_IO
 IO_CONTROLLER_BUILD_OUTPUT(extern_output_01, EXTERN_OUTPUT_01)
 IO_CONTROLLER_BUILD_OUTPUT(extern_output_02, EXTERN_OUTPUT_02)
 IO_CONTROLLER_BUILD_OUTPUT(extern_output_03, EXTERN_OUTPUT_03)
 IO_CONTROLLER_BUILD_OUTPUT(extern_output_04, EXTERN_OUTPUT_04)
+#endif
 
 void output_initialization(void) {
 
 	PASS(); // output_initialization()
 
-	extern_output_01_init();
-	extern_output_02_init();
-	extern_output_03_init();
-	extern_output_04_init();
+	#ifdef HAS_MANAGEMENT_MODULE_IO
+	{
+		extern_output_01_init();
+		extern_output_02_init();
+		extern_output_03_init();
+		extern_output_04_init();
+	}
+	#endif	
 
 	#if config_HAS_LED_MATRIX == 1
 	{

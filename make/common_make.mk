@@ -93,17 +93,7 @@ INC_PATH += $(COMMAND_HANDLER_INC_PATH)
 
 CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_command_handler.c
 
-
 # -----------------------------------------------------------------------
-
-PROTOCOL_MANAGEMENT_INC_PATH = $(APP_PATH)/protocol_management
-INC_PATH += $(PROTOCOL_MANAGEMENT_INC_PATH)
-
-CSRCS += $(PROTOCOL_MANAGEMENT_INC_PATH)/rpi_protocol_handler.c
-
-
-# -----------------------------------------------------------------------
-
 
 TIME_MANAGEMENT_INC_PATH = $(APP_PATH)/time_management
 INC_PATH += $(TIME_MANAGEMENT_INC_PATH)
@@ -120,7 +110,12 @@ INC_PATH += $(APP_TASK_INC_PATH)
 
 CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/mcu_task_controller.c
 CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/mcu_idle_task.c
+
+ifneq '' '$(findstring EVENT,$(APP_TASK_CFG))'
+DEFS  += -D HAS_APP_TASK_EVENT=1
 CSRCS += $(APP_TASK_INC_PATH)/local_event_task.c
+endif
+
 CSRCS += $(APP_TASK_INC_PATH)/local_cmd_mcu_task.c
 
 ifneq '' '$(findstring LED_MATRIX,$(APP_TASK_CFG))'
@@ -159,20 +154,28 @@ endif
 
 include $(MAKE_PATH)/make_sensor.mk
 
-# ---- POWER MANAGEMENT -------------------------------------------------------------------
+# ---- MANAGEMENT MODULES -----------------------------------------------------------------
 	
-POWER_MANAGEMENT_PATH = $(APP_PATH)/power_management
-CSRCS += $(POWER_MANAGEMENT_PATH)/power_management.c
+ifneq '' '$(findstring POWER,$(MANAGEMENT_MODULE_CFG))'
+	POWER_MANAGEMENT_PATH = $(APP_PATH)/power_management
+	CSRCS += $(POWER_MANAGEMENT_PATH)/power_management.c
+endif
 
-# -----------------------------------------------------------------------
+ifneq '' '$(findstring IO,$(MANAGEMENT_MODULE_CFG))'
+	DEFS  += -D HAS_MANAGEMENT_MODULE_IO=1
 
+	IO_CONTROLLER_INC_PATH = $(APP_PATH)/io_management
+	INC_PATH += $(IO_CONTROLLER_INC_PATH)
 
-IO_CONTROLLER_INC_PATH = $(APP_PATH)/io_management
-INC_PATH += $(IO_CONTROLLER_INC_PATH)
+	CSRCS += $(IO_CONTROLLER_INC_PATH)/io_output_controller.c
+	CSRCS += $(IO_CONTROLLER_INC_PATH)/io_input_controller.c
+endif
 
-CSRCS += $(IO_CONTROLLER_INC_PATH)/io_output_controller.c
-CSRCS += $(IO_CONTROLLER_INC_PATH)/io_input_controller.c
-
+ifneq '' '$(findstring RPI_PROTOCOL,$(MANAGEMENT_MODULE_CFG))'
+	DEFS  += -D HAS_MANAGEMENT_MODULE_RPI_PROTOCOL=1
+	PROTOCOL_MANAGEMENT_PATH = $(APP_PATH)/protocol_management
+	CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler.c
+endif
 
 # -----------------------------------------------------------------------
 
