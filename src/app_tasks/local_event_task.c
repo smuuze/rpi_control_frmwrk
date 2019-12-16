@@ -2,8 +2,18 @@
 
  *****************************************************************************/
 
+#define TRACER_OFF
+
+//-----------------------------------------------------------------------------
+
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
+
+//-----------------------------------------------------------------------------
+
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #include "system_interface.h"
 #include "local_event_task.h"
@@ -14,20 +24,13 @@
 #include "io_controller.h"
 #include "local_rtc_driver.h"
 
-//---------- Implementation of Traces -----------------------------------------
-
-#define TRACER_OFF
-#include "tracer.h"
-
-//-----------------------------------------------------------------------------
-
-TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
-
 //-----------------------------------------------------------------------------
 
 #define EVENT_RISE_TIME_MS	50
 #define EVENT_TIMEOUT_MS	100
 #define EVENT_QEUE_MAX_SIZE	10
+
+//-----------------------------------------------------------------------------
 
 typedef struct EVENT_QEUE_ELEMENT {
 	SYSTEM_EVENT event_id;
@@ -45,6 +48,8 @@ typedef enum {
 	EVENT_STATE_FINISH,
 } EVENT_HANDLER_STATE;
 
+//-----------------------------------------------------------------------------
+
 /*!
  *
  */
@@ -60,10 +65,15 @@ static EVENT_QEUE_ELEMENT_TYPE _event_qeue[EVENT_QEUE_MAX_SIZE];
  */
 static u8 _event_counter = 0;
 
-/*!
- *
- */
+//-----------------------------------------------------------------------------
+
+TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
+
+#ifdef HAS_GPIO_EVENT_OUTPUT
 IO_CONTROLLER_BUILD_INOUT(EVENT_GPIO, EVENT_OUTPUT)
+#endif
+
+//-----------------------------------------------------------------------------
 
 void local_event_mcu_task_init(void) {
 
@@ -111,7 +121,9 @@ void local_event_mcu_task_run(void) {
 
 		case EVENT_STATE_ACTIVATE :
 
+			#ifdef HAS_GPIO_EVENT_OUTPUT
 			EVENT_GPIO_drive_high();
+			#endif
 
 			operation_timer_start();
 			actual_task_state = EVENT_STATE_RESET_QEUE;
@@ -161,7 +173,10 @@ void local_event_mcu_task_run(void) {
 
 			PASS(); // local_event_mcu_task_run() - Event time is over
 
+			#ifdef HAS_GPIO_EVENT_OUTPUT
 			EVENT_GPIO_drive_low();
+			#endif
+
 			actual_task_state = EVENT_STATE_SLEEP;
 			break;
 	}

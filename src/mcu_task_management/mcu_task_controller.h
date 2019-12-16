@@ -29,4 +29,9 @@ void mcu_task_controller_sleep(void);
  */
 void mcu_task_controller_wakeup(void);
 
+/*!
+ *
+ */
+void mcu_task_controller_background_run(void);
+
 #endif // _MCU_TASK_CONTROLLER_H_

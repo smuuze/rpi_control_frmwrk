@@ -13,23 +13,20 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
+
+// --------------------------------------------------------------------------------
+
 #include "tracer.h"
 
 // --------------------------------------------------------------------------------
 
-#include "initialization.h"
-#include "mcu_task_controller.h"
-
-// --------------------------------------------------------------------------------
-
-#ifdef  config_FAKERTOS_TASKYIELD_INIT_PROTO
-config_FAKERTOS_TASKYIELD_INIT_PROTO
-#endif
+#include "initialization/initialization.h"
+#include "mcu_task_management/mcu_task_controller.h"
 
 // --------------------------------------------------------------------------------
 
 void task_yield(void) {
-	config_FAKERTOS_TASKYIELD_FUNCTION
+	mcu_task_controller_background_run();
 }
 
 // --------------------------------------------------------------------------------

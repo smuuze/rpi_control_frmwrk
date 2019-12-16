@@ -2,22 +2,27 @@
 
  *****************************************************************************/
 
+#define TRACER_OFF
+
+//-----------------------------------------------------------------------------
+
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "system_interface.h"
+//-----------------------------------------------------------------------------
 
-#include "mcu_task_interface.h"
-#include "mcu_task_controller.h"
-
-//---------- Implementation of Traces -----------------------------------------
-
-#define TRACER_OFF
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
 
-#include "mcu_idle_task.h"
+#include "system/system_interface.h"
+
+#include "mcu_task_management/mcu_task_interface.h"
+#include "mcu_task_management/mcu_task_controller.h"
+#include "mcu_task_management/mcu_idle_task.h"
+
+//-----------------------------------------------------------------------------
+
 static MCU_TASK_INTERFACE mcu_idle_task = {
 
 	0, 					// u8 identifier,
@@ -35,6 +40,8 @@ static MCU_TASK_INTERFACE mcu_idle_task = {
 	&mcu_idle_task_terminate, 		// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
 	0					// next-task
 };
+
+//-----------------------------------------------------------------------------
 
 /*!
  *
@@ -61,6 +68,7 @@ static void _update_last_run_time(MCU_TASK_INTERFACE* p_task);
  */
 static u32 _minimum_taks_schedule_interval = 0xFFFFFFFF;
 
+//-----------------------------------------------------------------------------
 
 void mcu_task_controller_init(void) {
 

@@ -26,23 +26,6 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
   #define config_SYSTEMTIMER_PRESCALER 64
 #endif
 
-//----------------------------------------------------------------------------
-
-#ifndef config_FAKERTOS_TASKYIELD_INIT_PROTO
-#define config_FAKERTOS_TASKYIELD_INIT_PROTO
-#endif
-
-#ifndef config_FAKERTOS_TASKYIELD_FCT_PROTO
-#define config_FAKERTOS_TASKYIELD_FCT_PROTO		\
-	void mcu_task_controller_background_run(void);
-#endif
-
-#define config_FAKERTOS_TASKYIELD_INIT
-
-#ifndef config_FAKERTOS_TASKYIELD_FUNCTION
-#define config_FAKERTOS_TASKYIELD_FUNCTION		mcu_task_controller_background_run();
-#endif
-
 // -----------------------------------------------------------------------------
 
 #ifndef config_HAS_ONBOARD_BUTTONS

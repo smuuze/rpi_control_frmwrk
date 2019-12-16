@@ -1,9 +1,6 @@
 //--------------------------------------------------------------------------------------------------------------
-//       Pin-Map   :  RPi-Control Board v1
+//       Pin-Map   :  RPi-IR-Board v1
 //--------------------------------------------------------------------------------------------------------------
-
-#ifndef _PIN_MAP_H_
-#define _PIN_MAP_H_
 
 #include "platine/board_common_config.h"
 
@@ -55,5 +52,3 @@ BUILD_GPIO ( UNUSED_D4, 	GPIO_PORT_D, 	GPIO_PIN_4, 	GPIO_INPUT | GPIO_IDLE_HIGH	
 BUILD_GPIO ( UNUSED_D5, 	GPIO_PORT_D, 	GPIO_PIN_5, 	GPIO_INPUT | GPIO_IDLE_HIGH				)
 BUILD_GPIO ( UNUSED_D6, 	GPIO_PORT_D, 	GPIO_PIN_6, 	GPIO_INPUT | GPIO_IDLE_HIGH				)
 BUILD_GPIO ( UNUSED_D7, 	GPIO_PORT_D, 	GPIO_PIN_7, 	GPIO_INPUT | GPIO_IDLE_HIGH				)
-
-#endif

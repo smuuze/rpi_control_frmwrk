@@ -45,7 +45,7 @@ HOST_INTERFACE_TYPE = I2C
 APP_TASK_CFG += 
 #APP_TASK_CFG += LED_MATRIX
 #APP_TASK_CFG += TEST_TRACER
-#APP_TASK_CFG += EVENT
+APP_TASK_CFG += EVENT
 
 #-----------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ SENSOR_MODULE_CFG =
 
 MANAGEMENT_MODULE_CFG =
 #MANAGEMENT_MODULE_CFG += POWER
-#MANAGEMENT_MODULE_CFG += IO
+MANAGEMENT_MODULE_CFG += IO
 #MANAGEMENT_MODULE_CFG += RPI_PROTOCOL
 
 #-----------------------------------------------------------------------------

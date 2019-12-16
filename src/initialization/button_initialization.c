@@ -8,6 +8,9 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
+
+//-----------------------------------------------------------------------------
+
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -26,10 +29,19 @@ IO_CONTROLLER_BUILD_INPUT(onboard_input_01, ONBOARD_INPUT_01)
 IO_CONTROLLER_BUILD_INPUT(onboard_input_02, ONBOARD_INPUT_02)
 #endif
 
-#ifdef HAS_MANAGEMENT_MODULE_IO
+#ifdef HAS_GPIO_EXTERN_OUTPUT_01
 IO_CONTROLLER_BUILD_INPUT(extern_input_01, EXTERN_INPUT_01)
+#endif
+
+#ifdef HAS_GPIO_EXTERN_OUTPUT_02
 IO_CONTROLLER_BUILD_INPUT(extern_input_02, EXTERN_INPUT_02)
+#endif
+
+#ifdef HAS_GPIO_EXTERN_OUTPUT_03
 IO_CONTROLLER_BUILD_INPUT(extern_input_03, EXTERN_INPUT_03)
+#endif
+
+#ifdef HAS_GPIO_EXTERN_OUTPUT_04
 IO_CONTROLLER_BUILD_INPUT(extern_input_04, EXTERN_INPUT_04)
 #endif
 
@@ -74,12 +86,28 @@ void button_initialization(void) {
 
 	#ifdef HAS_MANAGEMENT_MODULE_IO
 	{
+		PASS(); // button_initialization() - io_input_controller_init()
 		io_input_controller_init();
 		
+		#ifdef HAS_GPIO_EXTERN_OUTPUT_01
+		PASS(); // button_initialization() - extern_input_01_init()
 		extern_input_01_init();
+		#endif
+		
+		#ifdef HAS_GPIO_EXTERN_OUTPUT_01
+		PASS(); // button_initialization() - extern_input_02_init()
 		extern_input_02_init();
+		#endif
+		
+		#ifdef HAS_GPIO_EXTERN_OUTPUT_01
+		PASS(); // button_initialization() - extern_input_03_init()
 		extern_input_03_init();
+		#endif
+		
+		#ifdef HAS_GPIO_EXTERN_OUTPUT_01
+		PASS(); // button_initialization() - extern_input_04_init()
 		extern_input_04_init();
+		#endif
 	}
 	#endif
 	

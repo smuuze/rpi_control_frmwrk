@@ -2,11 +2,7 @@
 //       Pin-Map   :  RPi-Control Board v1
 //--------------------------------------------------------------------------------------------------------------
 
-#ifndef _PIN_MAP_H_
-#define _PIN_MAP_H_
-
 #include "platine/board_common_config.h"
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //   Port A (0x02
@@ -55,5 +51,3 @@ BUILD_GPIO(MASTER_SPI_CLK, 	GPIO_PORT_D, 	GPIO_PIN_4, 	GPIO_INPUT | GPIO_IDLE_HI
 BUILD_GPIO(MCU_PIN_14, 		GPIO_PORT_D, 	GPIO_PIN_5, 	GPIO_INPUT | GPIO_IDLE_HIGH		)
 BUILD_GPIO(TRACE_OUT, 		GPIO_PORT_D, 	GPIO_PIN_6, 	GPIO_OUTPUT | GPIO_IDLE_LOW		)
 BUILD_GPIO(READY_INOUT, 	GPIO_PORT_D, 	GPIO_PIN_7, 	GPIO_OUTPUT | GPIO_IDLE_LOW		)
-
-#endif

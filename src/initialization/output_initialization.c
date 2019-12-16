@@ -8,6 +8,9 @@
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
+
+//-----------------------------------------------------------------------------
+
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -129,10 +132,19 @@ static IO_OUTPUT_DESCRIPTOR led_09 = {
 
 #endif
 
-#ifdef HAS_MANAGEMENT_MODULE_IO
+#ifdef HAS_GPIO_EXTERN_OUTPUT_01
 IO_CONTROLLER_BUILD_OUTPUT(extern_output_01, EXTERN_OUTPUT_01)
+#endif
+
+#ifdef HAS_GPIO_EXTERN_OUTPUT_02
 IO_CONTROLLER_BUILD_OUTPUT(extern_output_02, EXTERN_OUTPUT_02)
+#endif
+
+#ifdef HAS_GPIO_EXTERN_OUTPUT_03
 IO_CONTROLLER_BUILD_OUTPUT(extern_output_03, EXTERN_OUTPUT_03)
+#endif
+
+#ifdef HAS_GPIO_EXTERN_OUTPUT_04
 IO_CONTROLLER_BUILD_OUTPUT(extern_output_04, EXTERN_OUTPUT_04)
 #endif
 
@@ -140,18 +152,36 @@ void output_initialization(void) {
 
 	PASS(); // output_initialization()
 
-	#ifdef HAS_MANAGEMENT_MODULE_IO
+	#ifdef HAS_GPIO_EXTERN_OUTPUT_01
 	{
+		PASS(); // output_initialization() - extern_output_01_init()
 		extern_output_01_init();
-		extern_output_02_init();
-		extern_output_03_init();
-		extern_output_04_init();
 	}
 	#endif	
 
+	#ifdef HAS_GPIO_EXTERN_OUTPUT_02
+	{
+		PASS(); // output_initialization() - extern_output_02_init()
+		extern_output_02_init();
+	}
+	#endif	
+
+	#ifdef HAS_GPIO_EXTERN_OUTPUT_03
+	{
+		PASS(); // output_initialization() - extern_output_03_init()
+		extern_output_03_init();
+	}
+	#endif	
+
+	#ifdef HAS_GPIO_EXTERN_OUTPUT_04
+	{
+		PASS(); // output_initialization() - extern_output_04_init()
+		extern_output_04_init();
+	}
+	#endif
+
 	#if config_HAS_LED_MATRIX == 1
 	{
-
 		PASS(); // output_initialization() - Initializing LED matrix
 
 		GET_SYSTEM(SYS_SIGNAL).led_01 = io_output_controller_register_output(&led_01);

@@ -105,7 +105,7 @@ static MCU_TASK_INTERFACE cmd_mcu_task = {
 };
 
 #ifdef HAS_MANAGEMENT_MODULE_IO
-#include "io_mangement/io_input_controller.h"
+#include "io_management/io_input_controller.h"
 static MCU_TASK_INTERFACE io_input_controller_task = {
 
 	0, 					// u8 identifier,
@@ -124,7 +124,7 @@ static MCU_TASK_INTERFACE io_input_controller_task = {
 	0					// next-task
 };
 
-#include "io_mangement/io_output_controller.h"
+#include "io_management/io_output_controller.h"
 static MCU_TASK_INTERFACE io_output_controller_task = {
 
 	0, 						// u8 identifier,
