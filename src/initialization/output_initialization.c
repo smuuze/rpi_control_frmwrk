@@ -150,7 +150,7 @@ IO_CONTROLLER_BUILD_OUTPUT(extern_output_04, EXTERN_OUTPUT_04)
 
 void output_initialization(void) {
 
-	PASS(); // output_initialization()
+	DEBUG_PASS("output_initialization()");
 
 	#ifdef HAS_GPIO_EXTERN_OUTPUT_01
 	{

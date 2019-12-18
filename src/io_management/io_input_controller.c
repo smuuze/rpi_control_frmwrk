@@ -90,7 +90,7 @@ void io_input_controller_check_state(IO_INPUT_DESCRIPTOR* p_button_state) {
 
 	//PASS(); // io_input_controller_check_state() ----------------
 
-	SYSTEM_INTERFACE_GPIO_LEVEL level = i_system.io.get_level(p_button_state->pin_descriptor); //p_button_state->__pin_state();
+	GPIO_DRIVER_LEVEL level = i_system.io.get_level(p_button_state->pin_descriptor); //p_button_state->__pin_state();
 
 	if (level == GPIO_LEVEL_HIGH) {
 

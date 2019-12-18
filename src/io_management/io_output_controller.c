@@ -165,7 +165,7 @@ void io_output_controller_task_run(void) {
 			TRACE_byte(act_output->id); // io_output_controller_task_run() changing pin-state
 
 			act_output->actual_pin_state = act_output->next_pin_state;
-			SYSTEM_INTERFACE_GPIO_LEVEL level;
+			GPIO_DRIVER_LEVEL level;
 
 			if (act_output->actual_pin_state == IO_OUTPUT_STATE_ON) {
 				level = GPIO_LEVEL_HIGH;

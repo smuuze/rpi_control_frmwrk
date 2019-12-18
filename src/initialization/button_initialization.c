@@ -82,7 +82,7 @@ PCA9670_BUILD_INPUT(EXT_PIN_38, 0x24, PCA9670_PIN_NUM_8)
 
 void button_initialization(void) {
 
-	PASS(); // button_initialization()
+	DEBUG_PASS("button_initialization()");
 
 	#ifdef HAS_MANAGEMENT_MODULE_IO
 	{

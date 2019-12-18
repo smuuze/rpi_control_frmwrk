@@ -10,7 +10,6 @@
 #include <string.h>
 
 #include "local_msg_buffer.h"
-#include "io_controller.h"
 
 #include "cfg_driver_interface.h"
 
@@ -160,11 +159,6 @@ BUILD_LOCAL_MSG_BUFFER( , __spi_rx_buffer, LOCAL_SPI_DRIVER_MAX_NUM_BYTES_RECEIV
 
 BUILD_MODULE_STATUS_FAST(spi_driver_status, 2)
 
-IO_CONTROLLER_BUILD_INOUT(SPI_CE, HOST_SPI_CE)
-IO_CONTROLLER_BUILD_INOUT(SPI_SCK, HOST_SPI_SCK)
-IO_CONTROLLER_BUILD_INOUT(SPI_MOSI, HOST_SPI_MOSI)
-IO_CONTROLLER_BUILD_INOUT(SPI_MISO, HOST_SPI_MISO)
-
 TIME_MGMN_BUILD_STATIC_TIMER_U16(trx_timer)
 TIME_MGMN_BUILD_STATIC_TIMER_U16(ce_timer)
 
@@ -181,11 +175,6 @@ static volatile u8 _status_register = 0;
 void spi_driver_initialize(void) {
 
 	PASS(); // spi_driver_initialize()
-
-	SPI_CE_init();
-	SPI_SCK_init();
-	SPI_MOSI_init();
-	SPI_MISO_init();
 
 	__spi_rx_buffer_init();
 	__spi_tx_buffer_init();
@@ -227,18 +216,18 @@ void spi_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 	if (p_cfg->module.spi.is_master != 0) {
 
 		SPI0_ENABLE_MASTER_MODE(); PASS(); // spi_driver_configure()
-		SPI_CE_drive_high();
-		//SPI_SCK_drive_high();
-		SPI_MOSI_no_drive();
-		SPI_MISO_no_pull();
+		SPI0_CE_drive_high();
+		//SPI0_SCK_drive_high();
+		SPI0_MOSI_no_drive();
+		SPI0_MISO_no_pull();
 
 	} else {
 
 		SPI0_DISABLE_MASTER_MODE(); PASS(); // spi_driver_configure()		
-		SPI_CE_pull_up();
-		//SPI_SCK_pull_up();
-		SPI_MOSI_no_pull();
-		SPI_MISO_drive_low();
+		SPI0_CE_pull_up();
+		//SPI0_SCK_pull_up();
+		SPI0_MOSI_no_pull();
+		SPI0_MISO_drive_low();
 	}
 
 	if (p_cfg->module.spi.data_order != 0) {
@@ -334,10 +323,10 @@ void spi_driver_power_off(void) {
 	SPI0_DISABLE_MODULE();
 	SPI0_POWER_DOWN();
 
-	SPI_CE_pull_up();
-	SPI_SCK_pull_up();
-	SPI_MOSI_no_pull();
-	SPI_MISO_no_pull();
+	SPI0_CE_pull_up();
+	SPI0_SCK_pull_up();
+	SPI0_MOSI_no_pull();
+	SPI0_MISO_no_pull();
 }
 
 
@@ -501,9 +490,9 @@ void spi_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
 	TRACE_byte(num_bytes); // spi_driver_wait_for_tx()
 
 	u8 bytes_transmitted = 0;
-	u16 time_reference_ms = i_system.time.now_u16();
+	u16 time_reference_ms = time_mgmnt_gettime_u16();
 
-	while (i_system.time.isup_u16(time_reference_ms, timeout_ms) == 0) {
+	while (time_mgmnt_istimeup_u16(time_reference_ms, timeout_ms) == 0) {
 
 		if (SPI0_IS_TRX_COMPLETE() != 0) {
 

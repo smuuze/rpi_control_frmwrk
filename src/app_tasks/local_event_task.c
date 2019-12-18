@@ -69,10 +69,6 @@ static u8 _event_counter = 0;
 
 TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
 
-#ifdef HAS_GPIO_EVENT_OUTPUT
-IO_CONTROLLER_BUILD_INOUT(EVENT_GPIO, EVENT_OUTPUT)
-#endif
-
 //-----------------------------------------------------------------------------
 
 void local_event_mcu_task_init(void) {
@@ -122,7 +118,7 @@ void local_event_mcu_task_run(void) {
 		case EVENT_STATE_ACTIVATE :
 
 			#ifdef HAS_GPIO_EVENT_OUTPUT
-			EVENT_GPIO_drive_high();
+			EVENT_OUTPUT_drive_high();
 			#endif
 
 			operation_timer_start();
@@ -174,7 +170,7 @@ void local_event_mcu_task_run(void) {
 			PASS(); // local_event_mcu_task_run() - Event time is over
 
 			#ifdef HAS_GPIO_EVENT_OUTPUT
-			EVENT_GPIO_drive_low();
+			EVENT_OUTPUT_drive_low();
 			#endif
 
 			actual_task_state = EVENT_STATE_SLEEP;

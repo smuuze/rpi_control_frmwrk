@@ -10,7 +10,6 @@
 #include "local_i2c_driver.h"
 #include "local_module_status.h"
 #include "local_mutex.h"
-#include "io_management/io_controller.h"
 
 #include "driver_specific_i2c.h"
 
@@ -79,9 +78,6 @@ BUILD_MUTEX(i2c_mutex)
 //----- RX / TX activ status -----
 BUILD_MODULE_STATUS_FAST_VOLATILE(i2c_driver_status, 2)
 
-IO_CONTROLLER_BUILD_INOUT(MASTER_I2C_SCL, I2C_SCL)
-IO_CONTROLLER_BUILD_INOUT(MASTER_I2C_SDA, I2C_SDA)
-
 I2C_BUILD_CFG()
 
 #define I2C_STATUS_RX_ACTIVE		0
@@ -98,9 +94,6 @@ void i2c_driver_initialize(void) {
 
 	i2c_rx_buffer_init();
 	i2c_tx_buffer_init();
-
-	MASTER_I2C_SCL_init();
-	MASTER_I2C_SDA_init();
 }
 
 void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
@@ -113,8 +106,8 @@ void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 		I2C_ENABLE_MASTER_MODE(); PASS(); //
 
-		MASTER_I2C_SCL_drive_high();
-		MASTER_I2C_SDA_drive_high();
+		I2C_SCL_drive_high();
+		I2C_SDA_drive_high();
 
 		I2C_DELETE_SLAVE_ADDRESS();
 		I2C_DISABLE_ANSWER_TO_GENERAL_CALL();
@@ -123,8 +116,8 @@ void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 		I2C_DISABLE_MASTER_MODE(); PASS(); //
 
-		MASTER_I2C_SCL_pull_up();
-		MASTER_I2C_SDA_pull_up();
+		I2C_SCL_pull_up();
+		I2C_SDA_pull_up();
 
 		TRACE_byte(p_cfg->module.i2c.slave_addr); // i2c_driver_configure
 		I2C_SET_SLAVE_ADDRESS(p_cfg->module.i2c.slave_addr);
@@ -194,8 +187,8 @@ void i2c_driver_power_off(void) {
 
 	PASS(); // local_i2c_driver_power_off()
 
-	MASTER_I2C_SCL_no_pull();
-	MASTER_I2C_SDA_no_pull();
+	I2C_SCL_no_pull();
+	I2C_SDA_no_pull();
 
 	I2C_DISABLE_MODULE();
 	I2C_POWER_DOWN();
