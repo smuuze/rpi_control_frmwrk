@@ -48,6 +48,7 @@ static COMMAND_HANDLER_INTERFACE rpi_command_handler = {
 
 void command_initialization(void) {
 
+	DEBUG_PASS("command_initialization()");
 	command_controller_register_handler(&rpi_command_handler);
 }
 

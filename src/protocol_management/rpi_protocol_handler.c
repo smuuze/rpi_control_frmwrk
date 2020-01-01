@@ -2,8 +2,18 @@
 
  *****************************************************************************/
 
-#include "config.h"  // immer als erstes einbinden!
+#define TRACER_ON
+
+//-----------------------------------------------------------------------------
+
+#include "config.h"
 #include "specific.h"
+
+//-----------------------------------------------------------------------------
+
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #include "system/system_interface.h"
 
@@ -23,10 +33,11 @@
 #include "command_management/protocol_interface.h"
 #include "time_management/time_management.h"
 
-//---------- Implementation of Traces -----------------------------------------
+//-----------------------------------------------------------------------------
 
-#define TRACER_OFF
-#include "tracer.h"
+#ifndef HAS_GPIO_READY_INOUT
+#error DEFINE_PIN___READY_INOUT___IN_YOUR_BOARD_FILE
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -396,11 +407,7 @@ static void _com_driver_answer_handler(void) {
 
 void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
-	#ifdef HAS_GPIO_READY_INOUT
-	{
-		READY_INOUT_drive_low();
-	}		
-	#endif
+	READY_INOUT_drive_low();
 
 	DEBUG_PASS("rpi_protocol_init() - START");
 
@@ -424,11 +431,7 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	DEBUG_PASS("rpi_protocol_init() - FINISH");
 
-	#ifdef HAS_GPIO_READY_INOUT
-	{
-		READY_INOUT_pull_up();
-	}
-	#endif
+	READY_INOUT_pull_up();
 }
 
 void rpi_protocol_task_init(void) {
@@ -438,14 +441,7 @@ void rpi_protocol_task_init(void) {
 
 MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 
-	u8 is_ready = 1;
-
-	#ifdef HAS_GPIO_READY_INOUT
-	{
-		is_ready = READY_INOUT_is_low_level();
-	}
-	#endif
-
+	u8 is_ready = READY_INOUT_is_low_level();
 
 	if ((actual_task_state == MCU_TASK_SLEEPING) && is_ready) {
 		DEBUG_PASS("rpi_protocol_task_get_state() - Start-Signal detected - will enter Task-State RUNNING");
@@ -472,15 +468,11 @@ void rpi_protocol_task_run(void) {
 		default : //break;
 		case RPI_STATE_SLEEP : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_SLEEP");
 
-			#ifdef HAS_GPIO_READY_INOUT
-			{
-				if (READY_INOUT_is_high_level()) {
-						DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_SLEEP - No request - FALSE ALARM");
-						actual_task_state = MCU_TASK_SLEEPING;
-						break;
-					}
+			if (READY_INOUT_is_high_level()) {
+				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_SLEEP - No request - FALSE ALARM");
+				actual_task_state = MCU_TASK_SLEEPING;
+				break;
 			}
-			#endif
 
 			// no break;
 
@@ -504,14 +496,10 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 			
-			#ifdef HAS_GPIO_READY_INOUT
-			{
-				if (READY_INOUT_is_low_level()) {
-					DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST - Ready Pin still low !!! ---");
-					break;
-				}
+			if (READY_INOUT_is_low_level()) {
+				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST - Ready Pin still low !!! ---");
+				break;
 			}
-			#endif
 
 			if (driver_mutex_id == MUTEX_INVALID_ID) {
 
@@ -570,11 +558,7 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			#ifdef HAS_GPIO_READY_INOUT
-			{
-				READY_INOUT_drive_low();
-			}
-			#endif
+			READY_INOUT_drive_low();
 
 			cmd_receiver_state = _command_receiver(); // this information has to be remember
 			DEBUG_TRACE_byte(cmd_receiver_state, "rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - State of command-receiver:");
@@ -653,11 +637,7 @@ void rpi_protocol_task_run(void) {
 			cmd_receiver_state = RPI_CMD_RECEIVER_IDLE;
 			actual_state = RPI_STATE_FINISH;
 
-			#ifdef HAS_GPIO_READY_INOUT
-			{
-				READY_INOUT_pull_up();
-			}
-			#endif
+			READY_INOUT_pull_up();
 
 			// no break; 
 
@@ -674,15 +654,11 @@ void rpi_protocol_task_run(void) {
 
 		case RPI_STATE_WAIT_FOR_RELEASE : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_WAIT_FOR_RELEASE");
 
-			#ifdef HAS_GPIO_READY_INOUT
-			{
-				if (READY_INOUT_is_low_level()) {
-					DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_RELEASE - Request Still pending");
-					actual_state = RPI_PREPARE_FOR_REQUEST;
-					break;
-				}
+			if (READY_INOUT_is_low_level()) {
+				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_RELEASE - Request Still pending");
+				actual_state = RPI_PREPARE_FOR_REQUEST;
+				break;
 			}
-			#endif
 
 			actual_state = RPI_STATE_SLEEP;
 			actual_task_state = MCU_TASK_SLEEPING;

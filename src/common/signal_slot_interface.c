@@ -1,5 +1,5 @@
 
-#define TRACER_ON
+#define TRACER_OFF
 
 #include "config.h"
 #include "tracer.h"

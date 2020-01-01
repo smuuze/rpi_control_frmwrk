@@ -12,6 +12,10 @@
 
 //-------------------------------------------------------------------------
 
+#define config_DEBUG_WELCOME_MESSAGE			"Welcome to RPi - Control Board V2"
+
+//-------------------------------------------------------------------------
+
 #define HOST_INTERFACE_SPI                                      1
 #define HOST_DRIVER			                        'S'
 

@@ -33,7 +33,8 @@ POWER_MGMN_BUILD_UNIT(POWER_UNIT_5V, POWER_UNIT_5V_POWER_UP_TIME_MS, EXT_POWER_0
 void power_initialization(void) {
 
 	#ifdef HAS_GPIO_EXT_POWER_01
-	{		
+	{	
+		DEBUG_PASS("power_initialization() - POWER_UNIT_5V_init()");
 		POWER_UNIT_5V_init();
 	}
 	#endif

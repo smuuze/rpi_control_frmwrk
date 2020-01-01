@@ -250,20 +250,26 @@ static MCU_TASK_INTERFACE pca9670_task = {
 
 void task_initialization(void) {
 
-	PASS(); // task_initialization()
+	DEBUG_PASS("task_initialization()");
 
 	mcu_task_controller_init();
 
 	#ifdef HAS_MANAGEMENT_MODULE_IO
+	DEBUG_PASS("task_initialization() - IO input-controller task");
 	mcu_task_controller_register_task(&io_input_controller_task);
 	#endif
 
 	#ifdef HAS_MANAGEMENT_MODULE_RPI_PROTOCOL
+	DEBUG_PASS("task_initialization() - rpi-protocol task");
 	mcu_task_controller_register_task(&rpi_protocol_task);
 	#endif
 
 	#ifdef HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115
+
+	DEBUG_PASS("task_initialization() - SHT31 (Temperature / Humidity) task");
 	mcu_task_controller_register_task(&sht31_mcu_task);
+
+	DEBUG_PASS("task_initialization() - ADS1115 (ADC) task");
 	mcu_task_controller_register_task(&ads1115_mcu_task);
 	#endif
 	
@@ -287,6 +293,7 @@ void task_initialization(void) {
 	#endif
 
 	#ifdef HAS_MANAGEMENT_MODULE_IO
+	DEBUG_PASS("task_initialization() - IO output-controller task");
 	mcu_task_controller_register_task(&io_output_controller_task);
 	#endif
 }

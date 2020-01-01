@@ -154,35 +154,35 @@ void output_initialization(void) {
 
 	#ifdef HAS_GPIO_EXTERN_OUTPUT_01
 	{
-		PASS(); // output_initialization() - extern_output_01_init()
+		DEBUG_PASS("output_initialization() - extern_output_01_init()");
 		extern_output_01_init();
 	}
 	#endif	
 
 	#ifdef HAS_GPIO_EXTERN_OUTPUT_02
 	{
-		PASS(); // output_initialization() - extern_output_02_init()
+		DEBUG_PASS("output_initialization() - extern_output_02_init()");
 		extern_output_02_init();
 	}
 	#endif	
 
 	#ifdef HAS_GPIO_EXTERN_OUTPUT_03
 	{
-		PASS(); // output_initialization() - extern_output_03_init()
+		DEBUG_PASS("output_initialization() - extern_output_03_init()");
 		extern_output_03_init();
 	}
 	#endif	
 
 	#ifdef HAS_GPIO_EXTERN_OUTPUT_04
 	{
-		PASS(); // output_initialization() - extern_output_04_init()
+		DEBUG_PASS("output_initialization() - extern_output_04_init()");
 		extern_output_04_init();
 	}
 	#endif
 
 	#if config_HAS_LED_MATRIX == 1
 	{
-		PASS(); // output_initialization() - Initializing LED matrix
+		DEBUG_PASS("output_initialization() - Initializing LED matrix");
 
 		GET_SYSTEM(SYS_SIGNAL).led_01 = io_output_controller_register_output(&led_01);
 		GET_SYSTEM(SYS_SIGNAL).led_02 = io_output_controller_register_output(&led_02);

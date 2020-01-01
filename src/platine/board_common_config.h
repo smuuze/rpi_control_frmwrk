@@ -119,6 +119,7 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	void pin_name##_drive_high(void);										\
 	void pin_name##_drive_low(void);										\
 	void pin_name##_no_drive(void);											\
+	void pin_name##_toggle_level(void);										\
 	void pin_name##_pull_up(void);											\
 	void pin_name##_pull_down(void);										\
 	void pin_name##_no_pull(void);											\

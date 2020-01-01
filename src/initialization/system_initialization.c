@@ -29,7 +29,7 @@ void system_initialization(void) {
 
 	#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 	{
-		//PASS(); // system_initialization() - Initializing I2C0
+		//PASS(); // system_initialization() - Initializing SPI0
 		i_system.driver.spi0->initialize();
 	}
 	#endif
@@ -50,7 +50,7 @@ void system_initialization(void) {
 
 	#if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
 	{
-		//PASS(); // system_initialization() - Initializing SPI0
+		//PASS(); // system_initialization() - Initializing I2C0
 		i_system.driver.i2c0->initialize();
 	}
 	#endif

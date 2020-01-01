@@ -86,26 +86,26 @@ void button_initialization(void) {
 
 	#ifdef HAS_MANAGEMENT_MODULE_IO
 	{
-		PASS(); // button_initialization() - io_input_controller_init()
+		DEBUG_PASS("button_initialization() - io_input_controller_init()");
 		io_input_controller_init();
 		
 		#ifdef HAS_GPIO_EXTERN_OUTPUT_01
-		PASS(); // button_initialization() - extern_input_01_init()
+		DEBUG_PASS("button_initialization() - extern_input_01_init()");
 		extern_input_01_init();
 		#endif
 		
 		#ifdef HAS_GPIO_EXTERN_OUTPUT_01
-		PASS(); // button_initialization() - extern_input_02_init()
+		DEBUG_PASS("button_initialization() - extern_input_02_init()");
 		extern_input_02_init();
 		#endif
 		
 		#ifdef HAS_GPIO_EXTERN_OUTPUT_01
-		PASS(); // button_initialization() - extern_input_03_init()
+		DEBUG_PASS("button_initialization() - extern_input_03_init()");
 		extern_input_03_init();
 		#endif
 		
 		#ifdef HAS_GPIO_EXTERN_OUTPUT_01
-		PASS(); // button_initialization() - extern_input_04_init()
+		DEBUG_PASS("button_initialization() - extern_input_04_init()");
 		extern_input_04_init();
 		#endif
 	}
@@ -152,7 +152,7 @@ void button_initialization(void) {
 
 	#if config_HAS_ONBOARD_BUTTONS == 1
 	{
-		PASS(); // button_initialization() - Initializing onboard Buttons
+		DEBUG_PASS("button_initialization() - Initializing onboard Buttons");
 		onboard_input_01_init();
 		onboard_input_02_init();
 	}

@@ -41,6 +41,8 @@ void initialization(void) {
 
 	power_initialization();
 
+	sensor_initialization();
+
 	button_initialization();
 
 	output_initialization();
@@ -50,7 +52,5 @@ void initialization(void) {
 	command_initialization();
 
 	task_initialization();
-
-	sensor_initialization();
 }
 
