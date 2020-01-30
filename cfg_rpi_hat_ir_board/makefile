@@ -56,7 +56,10 @@ EXPANSION_BOARD_CFG =
 #-----------------------------------------------------------------------------
 
 DRIVER_MODULE_CFG =
-DRIVER_MODULE_CFG += USART0
+DRIVER_MODULE_CFG += GPIO
+DRIVER_MODULE_CFG += RTC
+DRIVER_MODULE_CFG += CLK
+#DRIVER_MODULE_CFG += USART0
 #DRIVER_MODULE_CFG += USART1
 
 #-----------------------------------------------------------------------------
@@ -74,8 +77,8 @@ MANAGEMENT_MODULE_CFG += IO
 #-----------------------------------------------------------------------------
 
 TRACER_CFG =
-TRACER_CFG += USART0
-TRACER_CFG += BAUDRATE_230400
+#TRACER_CFG += USART0
+#TRACER_CFG += BAUDRATE_230400
 #TRACER_CFG += PARITY_NONE
 #TRACER_CFG += DATABITS_8
 #TRACER_CFG += STOPBITS_1

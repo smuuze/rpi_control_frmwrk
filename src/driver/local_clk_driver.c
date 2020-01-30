@@ -7,7 +7,7 @@
 
 #include BOARD_DESCRIPTION_FILE
 
-#include "local_rtc_driver.h"
+#include "driver/rtc/rtc_driver_interface.h"
 
 //---------- Implementation of Traces -----------------------------------------
 

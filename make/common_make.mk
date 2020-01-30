@@ -241,6 +241,7 @@ LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 
 # -----------------------------------------------------------------------
 include $(MAKE_PATH)/make_toolchain.mk
+include $(MAKE_PATH)/make_avr_dude.mk
 include $(MAKE_PATH)/make_targets.mk
 
 # -----------------------------------------------------------------------

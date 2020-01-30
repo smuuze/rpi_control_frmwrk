@@ -56,6 +56,9 @@ EXPANSION_BOARD_CFG += GPIO_PCA9670
 #-----------------------------------------------------------------------------
 
 DRIVER_MODULE_CFG =
+DRIVER_MODULE_CFG += GPIO
+DRIVER_MODULE_CFG += RTC
+DRIVER_MODULE_CFG += CLK
 DRIVER_MODULE_CFG += USART0
 DRIVER_MODULE_CFG += USART1
 

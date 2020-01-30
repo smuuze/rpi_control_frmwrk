@@ -21,6 +21,10 @@
 
 //-------------------------------------------------------------------------
 
+#define config_DEBUG_WELCOME_MESSAGE			"Welcome to RPi - IR-BOARD V1"
+
+//-------------------------------------------------------------------------
+
 #define config_LOCAL_COMMAND_HANDLER_TABLE_FUNC_PROTO		\
 	u8 cmd_handler_version(const COMMAND_BUFFER_INTERFACE* i_cmd_buffer, const ANSWER_BUFFER_INTERFACE* i_answ_buffer);
 

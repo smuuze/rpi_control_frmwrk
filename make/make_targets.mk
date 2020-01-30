@@ -5,6 +5,7 @@ MSG_COMPILING		:= Compiling
 MSG_DEPENDENCY		:= Generating dependency for 
 MSG_LINKING		:= Linking to
 MSG_PROG_LOCATION	:= Your programm can be found at
+MSG_FLASH_LOCATION	:= Using this file for Flashing: 
 MSG_LISTING		:= - Generating Disassembly
 MAP_LISTING		:= - Generating memory map
 MSG_FINISH		:= --------------- Make done ---------------
@@ -122,6 +123,21 @@ git_update:
 	$(VERBOSE) git pull
 	$(VERBOSE) $(MAKE_FOLDER_RIGHTS)
 	$(VERBOSE) $(MAKE_FILE_RIGHTS)
+
+# ---------
+
+flash: 
+	$(VERBOSE) $(ECHO) $(MSG_FLASH_LOCATION) $(TARGET).hex
+	$(VERBOSE) $(AVR_DUDE) -C $(AVR_DUDE_CFG_FILE) -c $(AVR_DUDE_PROGRAMMER) -p $(AVR_DUDE_MCU_NAME) $(AVR_DUDE_PORT) -b $(AVR_DUDE_BAUDRATE) -U flash:w:"$(TARGET).hex":$(AVR_DUDE_UPDATE_FORMAT)
+	$(VERBOSE) $(GPIO_MODE) $(GPIO_PIN_SCK) $(GPIO_MODE_SCK)
+	$(VERBOSE) $(GPIO_MODE) $(GPIO_PIN_MOSI) $(GPIO_MODE_MOSI)
+	$(VERBOSE) $(GPIO_MODE) $(GPIO_PIN_MISO) $(GPIO_MODE_MISO)
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+	
+fuses:
+	$(VERBOSE) $(AVR_DUDE) -C $(AVR_DUDE_CFG_FILE) -c $(AVR_DUDE_PROGRAMMER) -p $(AVR_DUDE_MCU_NAME) $(AVR_DUDE_PORT) -b $(AVR_DUDE_BAUDRATE) -U lfuse:w:$(AVR_LFUSE):m -U hfuse:w:$(AVR_HFUSE):m -U efuse:w:$(AVR_EFUSE):m
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
 
 # ---------
 

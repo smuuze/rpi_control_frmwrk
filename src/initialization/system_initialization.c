@@ -16,16 +16,21 @@
 //-----------------------------------------------------------------------------
 
 #include "local_clk_driver.h"
-#include "local_rtc_driver.h"
+#include "driver/rtc/rtc_driver_interface.h"
 #include "driver/gpio/gpio_interface.h"
 
 //-----------------------------------------------------------------------------
 
 void system_initialization(void) {
 
-	gpio_driver_init();
+	#ifdef HAS_DRIVER_GPIO
+	{
+		gpio_driver_init();
+	}
+	#endif
+
 	local_clk_driver_init();
-	local_rtc_timer_init();
+	rtc_driver_init();
 
 	#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 	{

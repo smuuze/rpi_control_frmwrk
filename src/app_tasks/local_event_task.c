@@ -22,7 +22,7 @@
 #include "specific.h"
 #include "local_context.h"
 #include "io_controller.h"
-#include "local_rtc_driver.h"
+//#include "local_rtc_driver.h"
 
 //-----------------------------------------------------------------------------
 
