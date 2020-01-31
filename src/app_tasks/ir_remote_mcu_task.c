@@ -21,42 +21,38 @@
 
 // --------------------------------------------------------------------------------
 
-#include "initialization/initialization.h"
-#include "mcu_task_management/mcu_task_controller.h"
+#include "driver/timer/timer0_driver.h"
 
 // --------------------------------------------------------------------------------
 
-void task_yield(void) {
-	mcu_task_controller_background_run();
+void ir_remote_task_init(void) {
+	timer0_driver_init();
 }
 
-// --------------------------------------------------------------------------------
-
-void main_init(void) {
-
-	cli();
-	initialization();
-	sei();
-
-	DEBUG_PASS("main_init() - Initialization done");
+u8 ir_remote_task_is_runable(void) {
+	return 0;
 }
 
-int main( void ) {
+void ir_remote_task_run(void) {
+	
+}
 
-	main_init();
+void ir_remote_task_background_run(void) {
 
-	DEBUG_PASS(config_DEBUG_WELCOME_MESSAGE);
-		
-	LED_RED_drive_low();
-	UART0_RX_drive_high();
+}
 
-	for (;;) {
+void ir_remote_task_sleep(void) {
 
-		UART0_RX_toggle_level();
-		LED_GREEN_toggle_level();
-		
-		mcu_task_controller_schedule();
-		task_yield();
-		watchdog();
-	}
+}
+
+void ir_remote_task_wakeup(void) {
+
+}
+
+void ir_remote_task_finish(void) {
+
+}
+
+void ir_remote_task_terminate(void) {
+
 }
