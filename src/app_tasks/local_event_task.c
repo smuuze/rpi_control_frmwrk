@@ -32,6 +32,10 @@
 
 //-----------------------------------------------------------------------------
 
+#define EVENT_TASK_SCHEDULE_INTERVAL_MS		5
+
+//-----------------------------------------------------------------------------
+
 typedef struct EVENT_QEUE_ELEMENT {
 	SYSTEM_EVENT event_id;
 	u32 timestamp;
@@ -83,6 +87,10 @@ void local_event_mcu_task_init(void) {
 	//}
 
 	//actual_task_state = EVENT_STATE_SLEEP;
+}
+
+u16 local_event_mcu_task_get_schedule_interval(void) {
+	return EVENT_TASK_SCHEDULE_INTERVAL_MS;
 }
 
 MCU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void) {

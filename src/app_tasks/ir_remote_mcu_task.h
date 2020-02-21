@@ -1,5 +1,17 @@
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	ir_remote_mcu_task.h
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
+
 #ifndef _IR_REMOTE_MCU_TASK_H_
 #define _IR_REMOTE_MCU_TASK_H_
+
+#include "mcu_task_interface.h"
 
 /*!
  *
@@ -9,7 +21,12 @@ void ir_remote_task_init(void);
 /*!
  *
  */
-u8 ir_remote_task_is_runable(void);
+u16 ir_remote_task_get_schedule_interval(void);
+
+/*!
+ *
+ */
+MCU_TASK_INTERFACE_TASK_STATE ir_remote_task_get_state(void);
 
 /*!
  *

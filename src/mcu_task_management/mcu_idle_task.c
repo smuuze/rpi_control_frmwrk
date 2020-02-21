@@ -44,6 +44,10 @@ void mcu_idle_task_init(void) {
 	PASS(); // mcu_idle_task_init()
 }
 
+u16 mcu_idle_task_get_schedule_interval(void) {
+	return 0;
+}
+
 MCU_TASK_INTERFACE_TASK_STATE mcu_idle_task_is_runable(void) {
 	return MCU_TASK_RUNNING;
 }

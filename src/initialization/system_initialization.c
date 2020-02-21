@@ -21,10 +21,6 @@
 
 //-----------------------------------------------------------------------------
 
-#include "tracer.h"
-
-//-----------------------------------------------------------------------------
-
 #include "local_clk_driver.h"
 #include "driver/rtc/rtc_driver_interface.h"
 #include "driver/gpio/gpio_interface.h"

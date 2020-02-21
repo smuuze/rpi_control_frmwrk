@@ -51,6 +51,11 @@ void rpi_protocol_task_init(void);
 
 /*!
  *
+ */
+u16 rpi_protocol_task_get_schedule_interval(void);
+
+/*!
+ *
  * @return
  */
 MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void);

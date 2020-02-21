@@ -27,6 +27,11 @@ void command_controller_handle_command(void);
 
 /*!
  *
+ */
+u16 command_controller_task_get_schedule_interval(void);
+
+/*!
+ *
  * @return
  */
 MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void);

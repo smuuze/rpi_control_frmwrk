@@ -9,7 +9,12 @@ void local_cmd_mcu_task_init(void);
 /*!
  *
  */
-u8 local_cmd_mcu_task_is_runable(void);
+u16 local_cmd_task_get_schedule_interval(void);
+
+/*!
+ *
+ */
+MCU_TASK_INTERFACE_TASK_STATE local_cmd_mcu_task_get_state(void);
 
 /*!
  *

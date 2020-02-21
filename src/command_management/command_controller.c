@@ -1,18 +1,33 @@
-/*! \file *********************************************************************
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	main_rpi_hat.c
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
- *****************************************************************************/
+#define TRACER_OFF
+
+//-----------------------------------------------------------------------------
 
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
+
+//-----------------------------------------------------------------------------
+
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #include "command_controller.h"
 #include "command_handler_interface.h"
 #include "local_context.h"
 
-//---------- Implementation of Traces -----------------------------------------
+//-----------------------------------------------------------------------------
 
-#define TRACER_OFF
-#include "tracer.h"
+#define COMMAND_CONTROLLER_SCHEDULE_INTERVAL_MS		5
 
 //-----------------------------------------------------------------------------
 
@@ -20,6 +35,7 @@ static COMMAND_HANDLER_INTERFACE* _first_cmd_handler = 0;
 static COMMAND_HANDLER_INTERFACE* _act_cmd_handler = 0;
 static COMMAND_HANDLER_INTERFACE* _last_cmd_handler = 0;
 
+//-----------------------------------------------------------------------------
 
 void command_controller_init(void) {
 
@@ -92,6 +108,10 @@ void command_controller_handle_command(void) {
 	}
 
 	_act_cmd_handler = 0;
+}
+
+u16 command_controller_task_get_schedule_interval(void) {
+	return COMMAND_CONTROLLER_SCHEDULE_INTERVAL_MS;
 }
 
 MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void) {

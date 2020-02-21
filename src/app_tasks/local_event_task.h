@@ -12,6 +12,11 @@ void local_event_mcu_task_init(void);
 /*!
  *
  */
+u16 local_event_mcu_task_get_schedule_interval(void);
+
+/*!
+ *
+ */
 MCU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void);
 
 /*!

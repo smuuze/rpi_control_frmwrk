@@ -71,6 +71,11 @@
  */
 #define RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS		250
 
+/*!
+ *
+ */
+#define RPI_PROTOCOL_HANDLER_SCHEDULE_INTERVAL_MS		5
+
 //-----------------------------------------------------------------------------
 
 /*!
@@ -437,6 +442,10 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 void rpi_protocol_task_init(void) {
 
 	DEBUG_PASS("rpi_protocol_task_init()");
+}
+
+u16 rpi_protocol_task_get_schedule_interval(void) {
+	return RPI_PROTOCOL_HANDLER_SCHEDULE_INTERVAL_MS;
 }
 
 MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {

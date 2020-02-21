@@ -133,6 +133,13 @@ DEFS += -D HAS_APP_TASK_TEST_TRACER=1
 CSRCS += $(APP_TASK_INC_PATH)/test_tracer_mcu_task.c
 endif
 
+ifneq '' '$(findstring IR_REMOTE,$(APP_TASK_CFG))'
+DEFS += -D HAS_APP_TASK_IR_REMOTE=1
+CSRCS += $(APP_TASK_INC_PATH)/ir_remote_mcu_task.c
+endif
+
+
+
 # ---- EXPANSION BOARDS -------------------------------------------------------------------
 
 EXPANSION_BOARD_PATH = $(APP_PATH)/expansion

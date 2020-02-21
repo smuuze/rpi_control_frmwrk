@@ -170,9 +170,13 @@ void local_adc_mcu_task_init(void) {
 	task_run_interval_reference = i_system.time.now_u16();
 }
 
+u16 local_adc_mcu_task_get_schedule_interval(void) {
+	return ADC_TASK_RUN_INTERVAL_MS;
+}
 
-u8 local_adc_mcu_task_is_runable(void) {
-	return 1;
+
+MCU_TASK_INTERFACE_TASK_STATE local_adc_mcu_task_get_state(void) {
+	return MCU_TASK_RUNNING;
 }
 
 
@@ -319,7 +323,7 @@ void local_adc_mcu_task_run(void) {
 			GET_SYSTEM(data).temperature.actual = calculation_temp;
 
 			TRACE_word(GET_SYSTEM(data).adc.temperature); // actual raw-value of temperature
-			TRACE_byte(GET_SYSTEM(data).temperature.actual); // actual temperature in °C
+			TRACE_byte(GET_SYSTEM(data).temperature.actual); // actual temperature in ï¿½C
 
 			if (GET_SYSTEM(data).temperature.maximal < GET_SYSTEM(data).temperature.actual) {
 				GET_SYSTEM(data).temperature.maximal = GET_SYSTEM(data).temperature.actual;

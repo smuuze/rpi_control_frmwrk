@@ -45,6 +45,7 @@ HOST_INTERFACE_TYPE = I2C
 APP_TASK_CFG += 
 #APP_TASK_CFG += LED_MATRIX
 #APP_TASK_CFG += TEST_TRACER
+APP_TASK_CFG += HAS_APP_TASK_IR_REMOTE
 APP_TASK_CFG += EVENT
 
 #-----------------------------------------------------------------------------
@@ -78,8 +79,8 @@ MANAGEMENT_MODULE_CFG += IO
 #-----------------------------------------------------------------------------
 
 TRACER_CFG =
-#TRACER_CFG += USART0
-#TRACER_CFG += BAUDRATE_230400
+TRACER_CFG += USART0
+TRACER_CFG += BAUDRATE_230400
 #TRACER_CFG += PARITY_NONE
 #TRACER_CFG += DATABITS_8
 #TRACER_CFG += STOPBITS_1

@@ -9,6 +9,11 @@ void mcu_idle_task_init(void);
 /*!
  *
  */
+u16 mcu_idle_task_get_schedule_interval(void);
+
+/*!
+ *
+ */
 MCU_TASK_INTERFACE_TASK_STATE mcu_idle_task_is_runable(void);
 
 /*!

@@ -124,6 +124,10 @@ void io_output_controller_task_init(void) {
 
 }
 
+u16 io_output_controller_task_get_schedule_interval(void) {
+	return 5;
+}
+
 MCU_TASK_INTERFACE_TASK_STATE io_output_controller_task_get_state(void) {
 
 	if (output_is_active != 0) {

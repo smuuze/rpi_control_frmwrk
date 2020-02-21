@@ -29,6 +29,9 @@ void test_tracer_task_init(void) {
 	PASS(); // test_tracer_task_init()
 }
 
+u16 test_tracer_task_get_schdeule_interval(void) {
+	return 0;
+}
 
 MCU_TASK_INTERFACE_TASK_STATE test_tracer_task_get_state(void) {
 

@@ -25,20 +25,18 @@
 #include "local_led_mcu_task.h"
 static MCU_TASK_INTERFACE led_mcu_task = {
 
-	0, 					// u8 identifier,
-	100, 					// const u16 SCHEDULE_INTERVAL,
-	15,					// const ux16 WORST_CASE_EXECUTION_TIME;
-	0, 					// u16 new_run_timeout,
-	0, 					// u16 last_run_time,
-	&local_led_mcu_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&local_led_mcu_task_is_runable, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&local_led_mcu_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	0,					// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 					// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 					// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	&local_led_mcu_task_finish, 		// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	&local_led_mcu_task_terminate, 		// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
-	0					// next-task
+	0, 						// u8 identifier,
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&local_led_mcu_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
+	&local_led_mcu_task_is_runable, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK	get_sate,
+	&local_led_mcu_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
+	0,						// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
+	&local_led_mcu_task_finish, 			// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
+	&local_led_mcu_task_terminate, 			// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
+	0						// next-task
 };
 #endif
 
@@ -48,39 +46,37 @@ static MCU_TASK_INTERFACE led_mcu_task = {
 #include "local_ads1115_mcu_task.h"
 static MCU_TASK_INTERFACE ads1115_mcu_task = {
 
-	0, 					// u8 identifier,
-	50, 					// const u16 SCHEDULE_INTERVAL,
-	15,					// const ux16 WORST_CASE_EXECUTION_TIME;
-	0, 					// u16 new_run_timeout,
-	0, 					// u16 last_run_time,
-	&local_ads1115_mcu_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&local_ads1115_mcu_task_get_state, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&local_ads1115_mcu_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	0,					// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 					// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 					// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	&local_ads1115_mcu_task_finish, 	// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	&local_ads1115_mcu_task_terminate, 	// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
-	0					// next-task
+	0, 						// u8 identifier,
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&local_ads1115_mcu_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&local_ads1115_mcu_task_get_schedule_interval, 	// MCU_TASK_INTERFACE_GET_SCHEDULE_INTERVAL_CALLBACK	get_schedule_interval,
+	&local_ads1115_mcu_task_get_state, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&local_ads1115_mcu_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	0,						// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	&local_ads1115_mcu_task_finish, 		// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	&local_ads1115_mcu_task_terminate, 		// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
+	0						// next-task
 };
 
 #include "local_sht31_mcu_task.h"
 static MCU_TASK_INTERFACE sht31_mcu_task = {
 
-	0, 					// u8 identifier,
-	50, 					// const u16 SCHEDULE_INTERVAL,
-	15,					// const ux16 WORST_CASE_EXECUTION_TIME;
-	0, 					// u16 new_run_timeout,
-	0, 					// u16 last_run_time,
-	&local_sht31_mcu_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&local_sht31_mcu_task_get_state, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&local_sht31_mcu_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	0,					// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 					// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 					// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	&local_sht31_mcu_task_finish, 		// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	&local_sht31_mcu_task_terminate, 	// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
-	0					// next-task
+	0, 						// u8 identifier,
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&local_sht31_mcu_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&local_sht31_mcu_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&local_sht31_mcu_task_get_state, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&local_sht31_mcu_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	0,						// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	&local_sht31_mcu_task_finish, 			// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	&local_sht31_mcu_task_terminate, 		// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
+	0						// next-task
 };
 #endif
 
@@ -88,58 +84,55 @@ static MCU_TASK_INTERFACE sht31_mcu_task = {
 #include "command_controller.h"
 static MCU_TASK_INTERFACE cmd_mcu_task = {
 
-	0, 					// u8 identifier,
-	5, 					// const u16 SCHEDULE_INTERVAL,
-	15,					// const ux16 WORST_CASE_EXECUTION_TIME;
-	0, 					// u16 new_run_timeout,
-	0, 					// u16 last_run_time,
-	&command_controller_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&command_controller_task_get_state, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&command_controller_handle_command, 	// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	&command_controller_background_run,	// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 					// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 					// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	0, 					// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	0, 					// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
-	0					// next-task
+	0, 						// u8 identifier,
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&command_controller_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&command_controller_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&command_controller_task_get_state, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&command_controller_handle_command, 		// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	&command_controller_background_run,		// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
+	0						// next-task
 };
 
 #ifdef HAS_MANAGEMENT_MODULE_IO
 #include "io_management/io_input_controller.h"
 static MCU_TASK_INTERFACE io_input_controller_task = {
 
-	0, 					// u8 identifier,
-	5, 					// const u16 SCHEDULE_INTERVAL,
-	15,					// const ux16 WORST_CASE_EXECUTION_TIME;
-	0, 					// u16 new_run_timeout,
-	0, 					// u16 last_run_time,
-	&io_input_controller_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK	init,
-	&io_input_controller_task_get_state, 	// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&io_input_controller_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	&io_input_controller_task_background_run,// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 					// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 					// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	0, 					// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	0, 					// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
-	0					// next-task
+	0, 						// u8 identifier,
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&io_input_controller_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&io_input_controller_task_get_schedule_interval,// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&io_input_controller_task_get_state, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&io_input_controller_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	&io_input_controller_task_background_run,	// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
+	0						// next-task
 };
 
 #include "io_management/io_output_controller.h"
 static MCU_TASK_INTERFACE io_output_controller_task = {
 
 	0, 						// u8 identifier,
-	5, 						// const u16 SCHEDULE_INTERVAL,
-	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
-	&io_output_controller_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&io_output_controller_task_get_state, 		// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&io_output_controller_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	&io_output_controller_task_background_run,	// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
+	&io_output_controller_task_init, 		// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&io_output_controller_task_get_schedule_interval,// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&io_output_controller_task_get_state, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&io_output_controller_task_run, 		// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	&io_output_controller_task_background_run,	// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
 	0						// next-task
 };
 #endif
@@ -149,18 +142,17 @@ static MCU_TASK_INTERFACE io_output_controller_task = {
 static MCU_TASK_INTERFACE rpi_protocol_task = {
 
 	0, 						// u8 identifier,
-	5, 						// const u16 SCHEDULE_INTERVAL,
-	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
-	&rpi_protocol_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&rpi_protocol_task_get_state, 			// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&rpi_protocol_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	0,						// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
+	&rpi_protocol_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&rpi_protocol_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&rpi_protocol_task_get_state, 			// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&rpi_protocol_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	0,						// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
 	0						// next-task
 };
 #endif
@@ -170,40 +162,20 @@ static MCU_TASK_INTERFACE rpi_protocol_task = {
 static MCU_TASK_INTERFACE event_task = {
 
 	0, 						// u8 identifier,
-	5, 						// const u16 SCHEDULE_INTERVAL,
-	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
-	&local_event_mcu_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&local_event_mcu_task_get_state, 		// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&local_event_mcu_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	&local_event_mcu_task_background_run,		// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	&local_event_mcu_task_sleep, 			// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	&local_event_mcu_task_wakeup, 			// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	&local_event_mcu_task_finish, 			// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	&local_event_mcu_task_terminate, 		// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
+	&local_event_mcu_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&local_event_mcu_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&local_event_mcu_task_get_state, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&local_event_mcu_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	&local_event_mcu_task_background_run,		// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	&local_event_mcu_task_sleep, 			// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	&local_event_mcu_task_wakeup, 			// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	&local_event_mcu_task_finish, 			// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	&local_event_mcu_task_terminate, 		// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
 	0						// next-task
 };
 #endif
-
-#include "local_debus_mcu_task.h"
-static MCU_TASK_INTERFACE debus_task = {
-
-	0, 						// u8 identifier,
-	25, 						// const u16 SCHEDULE_INTERVAL,
-	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
-	0, 						// u16 new_run_timeout,
-	0, 						// u16 last_run_time,
-	&debus_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&debus_task_get_state, 				// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&debus_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	&debus_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
-	0						// next-task
-};
 
 #if defined (HAS_APP_TASK_TEST_TRACER) && (HAS_APP_TASK_TEST_TRACER) == 1
 
@@ -211,18 +183,17 @@ static MCU_TASK_INTERFACE debus_task = {
 static MCU_TASK_INTERFACE test_tracer_task = {
 
 	0, 						// u8 identifier,
-	5000, 						// const u16 SCHEDULE_INTERVAL,
-	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
-	&test_tracer_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&test_tracer_task_get_state, 				// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&test_tracer_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	&test_tracer_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
+	&test_tracer_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&test_tracer_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&test_tracer_task_get_state, 			// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&test_tracer_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	&test_tracer_task_background_run,		// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
 	0						// next-task
 };
 #endif
@@ -232,18 +203,37 @@ static MCU_TASK_INTERFACE test_tracer_task = {
 static MCU_TASK_INTERFACE pca9670_task = {
 
 	0, 						// u8 identifier,
-	5, 						// const u16 SCHEDULE_INTERVAL,
-	15,						// const ux16 WORST_CASE_EXECUTION_TIME;
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
-	&pca9670_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
-	&pca9670_task_get_state, 			// CU_TASK_INTERFACE_IS_RUNABLE_CALLBACK	is_runable,
-	&pca9670_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
-	&pca9670_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
-	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK		sleep,
-	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK		wakeup,
-	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK		finish,
-	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK	terminate,
+	&pca9670_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&pca9670_task_get_schedule_interval,		// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&pca9670_task_get_state, 			// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&pca9670_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	&pca9670_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
+	0						// next-task
+};
+#endif
+
+#if defined (HAS_APP_TASK_IR_REMOTE) && (HAS_APP_TASK_IR_REMOTE) == 1
+#include "app_tasks/ir_remote_mcu_task.h"
+static MCU_TASK_INTERFACE ir_remote_task = {
+
+	0, 						// u8 identifier,
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&ir_remote_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&ir_remote_task_get_schedule_interval,		// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&ir_remote_task_get_state, 			// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&ir_remote_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	&ir_remote_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
 	0						// next-task
 };
 #endif
@@ -278,6 +268,10 @@ void task_initialization(void) {
 
 	#if defined (HAS_APP_TASK_TEST_TRACER) && (HAS_APP_TASK_TEST_TRACER) == 1
 	mcu_task_controller_register_task(&test_tracer_task);
+	#endif
+
+	#if defined (HAS_APP_TASK_IR_REMOTE) && (HAS_APP_TASK_IR_REMOTE) == 1
+	mcu_task_controller_register_task(&ir_remote_task);
 	#endif
 
 	#if config_HAS_LED_MATRIX == 1

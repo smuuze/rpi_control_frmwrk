@@ -92,6 +92,12 @@ void io_output_controller_get_output(u8 id, IO_OUTPUT_STATE* p_state);
  */
 void io_output_controller_task_init(void);
 
+
+/*!
+ *
+ */
+u16 io_output_controller_task_get_schedule_interval(void);
+
 /*!
  *
  * @return

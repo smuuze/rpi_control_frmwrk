@@ -18,6 +18,11 @@ void test_tracer_task_init(void);
 /*!
  *
  */
+u16 test_tracer_task_get_schdeule_interval(void);
+
+/*!
+ *
+ */
 MCU_TASK_INTERFACE_TASK_STATE test_tracer_task_get_state(void);
 
 /*!

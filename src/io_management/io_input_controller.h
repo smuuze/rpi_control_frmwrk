@@ -84,6 +84,11 @@ void io_input_controller_task_init(void);
 
 /*!
  *
+ */
+u16 io_input_controller_task_get_schedule_interval(void);
+
+/*!
+ *
  * @return
  */
 MCU_TASK_INTERFACE_TASK_STATE io_input_controller_task_get_state(void);
