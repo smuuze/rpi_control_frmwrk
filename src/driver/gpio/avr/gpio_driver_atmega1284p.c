@@ -16,12 +16,6 @@
 
 //---------- ------------------------------------------------------------------
 
-/*
- * How to set Port-Pins on a ATMega 128 4P
- *
- * DDR
- */
-
 #define SET_PIN_AS_INPUT(port, pin)					DDR##port &= (unsigned char)~(pin)
 #define SET_PIN_AS_OUTPUT(port, pin)					DDR##port |= (pin)
 
@@ -212,8 +206,9 @@ void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 	u8 port_id = GPIO_DRIVER_GET_PORT(p_pin_descr);
 	u8 pin_num = GPIO_DRIVER_GET_PIN(p_pin_descr);
 
-	TRACE_byte(port_id);  // gpio_driver_toggle_level() - PORT
-	TRACE_byte(pin_num);  // gpio_driver_toggle_level() - PIN
+	DEBUG_TRACE_byte(port_id, "gpio_driver_toggle_level() - PORT");
+	DEBUG_TRACE_byte(pin_num, "gpio_driver_toggle_level() - PIN");
+	//DEBUG_TRACE_byte(gpio_driver_get_level(p_pin_descr), "gpio_driver_toggle_level() - LEVEL before");
 
 	switch (port_id) {
 		case GPIO_PORT_A: GPIO_DRIVER_TOGGLE_PIN_LEVEL(A, pin_num); break;
@@ -222,6 +217,8 @@ void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 		case GPIO_PORT_D: GPIO_DRIVER_TOGGLE_PIN_LEVEL(D, pin_num); break;
 		default: break;
 	}
+
+	//DEBUG_TRACE_byte(gpio_driver_get_level(p_pin_descr), "gpio_driver_toggle_level() - LEVEL after");
 }
 
 GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {

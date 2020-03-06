@@ -39,3 +39,8 @@ ifneq '' '$(findstring TIMER0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_TIMER0=1
 	CSRCS += $(APP_PATH)/driver/timer/timer0_driver_atmega1284p.c
 endif
+
+ifneq '' '$(findstring TIMER1,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_TIMER0=1
+	CSRCS += $(APP_PATH)/driver/timer/timer1_driver_atmega1284p.c
+endif

@@ -107,6 +107,11 @@ static u8 trace_footer[TRACER_FOTER_DATA_LENGTH + 1]; // +1 to avoid compiler wa
  */
 static u8 driver_mutex_id = 0xFF;
 
+/*!
+ *
+ */
+static u8 _is_initialized = 0;
+
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
 /*!
@@ -138,6 +143,8 @@ void tracer_init(void) {
 
 		TRACER_INIT_HEADER();
 		TRACER_INIT_FOOTER();
+
+		_is_initialized = 1;
 	}
 	#endif
 }
@@ -145,6 +152,10 @@ void tracer_init(void) {
 void tracer_pass(const char* str, const char* file_name, u16 line_id) {
 
 	(void) str;
+
+	if (_is_initialized == 0) {
+		return;
+	}
 
 	u16 file_name_length	= _get_string_length(file_name);
 	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
@@ -162,6 +173,10 @@ void tracer_pass(const char* str, const char* file_name, u16 line_id) {
 void tracer_trace_byte(const char* str, const char* file_name, u16 line_id, u8 byte) {
 
 	(void) str;
+
+	if (_is_initialized == 0) {
+		return;
+	}
 
 	u16 file_name_length	= _get_string_length(file_name);
 	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + 1 + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
@@ -181,6 +196,10 @@ void tracer_trace_word(const char* str, const char* file_name, u16 line_id, u16 
 
 	(void) str;
 
+	if (_is_initialized == 0) {
+		return;
+	}
+
 	u16 file_name_length	= _get_string_length(file_name);
 	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + 2 + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
 
@@ -199,6 +218,10 @@ void tracer_trace_long(const char* str, const char* file_name, u16 line_id, u32 
 
 	(void) str;
 
+	if (_is_initialized == 0) {
+		return;
+	}
+
 	u16 file_name_length	= _get_string_length(file_name);
 	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + 4 + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
 
@@ -216,6 +239,10 @@ void tracer_trace_long(const char* str, const char* file_name, u16 line_id, u32 
 void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 length, u8* p_buffer) {
 
 	(void) str;
+
+	if (_is_initialized == 0) {
+		return;
+	}
 
 	u16 file_name_length	= _get_string_length(file_name);
 	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + 1 + length + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;

@@ -2,7 +2,7 @@
 
  *****************************************************************************/
 
-#define TRACER_ON
+#define TRACER_OFF
 
 //-----------------------------------------------------------------------------
 
@@ -122,9 +122,9 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 	}
 
 	switch (p_configuration->mode) {
-		case TIMER_MODE_COUNTER :
-			TCCR0A_backup = TIMER0_TCCR0A_COM0A0 | TIMER0_TCCR0A_WGM1 | TIMER0_TCCR0A_WGM0;
-			TCCR0B_backup |= TIMER0_CLOCK_SOURCE_CLK_IO | TIMER0_TCCR0B_WGM2;
+		case TIMER_MODE_TIMER :
+			TCCR0A_backup  = TIMER0_TCCR0A_COM0A0 | TIMER0_TCCR0A_WGM1 | TIMER0_TCCR0A_WGM0;
+			TCCR0B_backup |= TIMER0_TCCR0B_WGM2;
 			break;
 
 		case TIMER_MODE_FREQUENCY:
@@ -133,16 +133,16 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 			break;
 	}
 
-	if (p_configuration->mod_counter_callback != 0) {
-		p_irq_callback = p_configuration->mod_counter_callback;
+	if (p_configuration->irq_callback != 0) {
+		p_irq_callback = p_configuration->irq_callback;
 	} else {
 		p_irq_callback = 0;
 	}
 }
 
-void timer0_driver_start(TIMER_CONFIGURATION_TIME time_ms) {
+void timer0_driver_start(u32 time_us) {
 
-	(void) time_ms;
+	(void) time_us;
 	DEBUG_PASS("timer0_driver_start()");
 
 	TCNT0 = 0;

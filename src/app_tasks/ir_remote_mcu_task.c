@@ -22,8 +22,10 @@
 // --------------------------------------------------------------------------------
 
 #include "mcu_task_management/mcu_task_interface.h"
-#include "driver/timer/timer0_driver.h"
 #include "time_management/time_management.h"
+
+#include "driver/timer/timer0_driver.h"
+#include "driver/timer/timer1_driver.h"
 
 // --------------------------------------------------------------------------------
 
@@ -37,8 +39,13 @@ static TIMER_CONFIGURATION_TYPE timer_config;
 
 // --------------------------------------------------------------------------------
 
-void timer0_channela_irq_callback(void) {
-	IR_CARRIER_OUT_toggle_level();
+void ir_remote_app_task_irq_callback(void) {
+
+	IR_MOD_OUT_toggle_level();
+	//timer1_driver_start(10000); // 0.01 sec = 10 ms = 10000 us
+	//timer1_driver_start(560); // 560 us
+	//timer1_driver_start(4000); // 4000 us
+	timer1_driver_start(80); // 80 us
 }
 
 // --------------------------------------------------------------------------------
@@ -46,6 +53,20 @@ void timer0_channela_irq_callback(void) {
 void ir_remote_task_init(void) {
 
 	DEBUG_PASS("ir_remote_task_init()");
+
+	IR_MOD_OUT_drive_low();
+
+	LED_GREEN_drive_low();
+	LED_BLUE_drive_high();
+	
+	timer_config.frequency = TIMER_FREQUENCY_NONE;
+	timer_config.irq_callback = &ir_remote_app_task_irq_callback;
+	timer_config.mode = TIMER_MODE_TIMER;
+	timer_config.time_interval = TIMER_TIME_INTERVAL_80us;
+
+	timer1_driver_init();
+	timer1_driver_configure(&timer_config);
+	timer1_driver_start(10000); // 0.01 sec = 10 ms = 10000 us
 	
 	timer_config.frequency = TIMER_FREQUENCY_36kHz;
 	timer_config.irq_callback = 0;
@@ -53,7 +74,7 @@ void ir_remote_task_init(void) {
 
 	timer0_driver_init();
 	timer0_driver_configure(&timer_config);
-	timer0_driver_start();
+	timer0_driver_start(TIME_CONFIGURATION_RUN_FOREVER);
 
 	CHANGE_FREQ_TIMER_start();
 }
@@ -75,18 +96,26 @@ void ir_remote_task_run(void) {
 
 	CHANGE_FREQ_TIMER_start();
 
-	if (timer_config.frequency == TIMER_FREQUENCY_36kHz) {
-		timer_config.frequency = TIMER_FREQUENCY_38kHz;
+	switch (timer_config.frequency) {
 
-	} else if (timer_config.frequency == TIMER_FREQUENCY_38kHz) {
-		timer_config.frequency = TIMER_FREQUENCY_42kHz;
+		default:
+		case TIMER_FREQUENCY_36kHz :
+			timer_config.frequency = TIMER_FREQUENCY_38kHz;
+			break;
 
-	} else {
-		timer_config.frequency = TIMER_FREQUENCY_36kHz;
+		case TIMER_FREQUENCY_38kHz :
+			timer_config.frequency = TIMER_FREQUENCY_42kHz;
+			break;
+
+		case TIMER_FREQUENCY_42kHz :
+			timer_config.frequency = TIMER_FREQUENCY_36kHz;
+			break;
 	}
-
+	
+	timer_config.irq_callback = 0;
+	timer_config.mode = TIMER_MODE_FREQUENCY;
 	timer0_driver_configure(&timer_config);
-	timer0_driver_start();
+	timer0_driver_start(TIME_CONFIGURATION_RUN_FOREVER);
 }
 
 void ir_remote_task_background_run(void) {

@@ -35,7 +35,7 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration);
 /*!
  *
  */
-void timer0_driver_start(TIMER_CONFIGURATION_TIME time_ms);
+void timer0_driver_start(u32 time_us);
 
 /*!
  *
