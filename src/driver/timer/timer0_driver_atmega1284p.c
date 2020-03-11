@@ -111,7 +111,7 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 		case TIMER_FREQUENCY_37_9kHz :
 			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_37_9kHz");
 			TCCR0B_backup |= TIMER0_CLOCK_SOURCE_CLK_IO;
-			OCR0A_backup = 103;
+			OCR0A_backup = 97;
 			break;
 
 		case TIMER_FREQUENCY_38kHz :

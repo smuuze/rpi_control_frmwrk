@@ -96,31 +96,6 @@ void ir_remote_task_run(void) {
 	}
 
 	CHANGE_FREQ_TIMER_start();
-
-	switch (timer_config.frequency) {
-
-		default:
-		case TIMER_FREQUENCY_36kHz :
-			timer_config.frequency = TIMER_FREQUENCY_37_9kHz;
-			break;
-
-		case TIMER_FREQUENCY_37_9kHz :
-			timer_config.frequency = TIMER_FREQUENCY_38kHz;
-			break;		
-
-		case TIMER_FREQUENCY_38kHz :
-			timer_config.frequency = TIMER_FREQUENCY_42kHz;
-			break;
-
-		case TIMER_FREQUENCY_42kHz :
-			timer_config.frequency = TIMER_FREQUENCY_36kHz;
-			break;
-	}
-	
-	timer_config.irq_callback = 0;
-	timer_config.mode = TIMER_MODE_FREQUENCY;
-	timer0_driver_configure(&timer_config);
-	timer0_driver_start(TIME_CONFIGURATION_RUN_FOREVER);
 }
 
 void ir_remote_task_background_run(void) {
