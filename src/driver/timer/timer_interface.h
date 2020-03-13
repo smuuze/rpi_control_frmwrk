@@ -17,6 +17,7 @@
 
 // --------------------------------------------------------------------------------
 
+typedef void (*TIMER_INTERFACE_INIT_CALLBACK)		(void);
 typedef void (*TIMER_INTERFACE_CONFIGURE_CALLBACK)	(TIMER_CONFIGURATION_TYPE* p_configuration);
 typedef void (*TIMER_INTERFACE_START_CALLBACK)		(u32 duration);
 typedef void (*TIMER_INTERFACE_STOP_CALLBACK)		(void);
@@ -28,8 +29,10 @@ typedef void (*TIMER_INTERFACE_STOP_CALLBACK)		(void);
  */
 typedef struct {
 
+	TIMER_INTERFACE_INIT_CALLBACK init;
 	TIMER_INTERFACE_CONFIGURE_CALLBACK configure;
 	TIMER_INTERFACE_START_CALLBACK start;
+	TIMER_INTERFACE_STOP_CALLBACK stop;
 
 } TIMER_INTERFACE_TYPE;
 
