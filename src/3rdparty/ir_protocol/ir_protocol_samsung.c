@@ -185,6 +185,24 @@ static void ir_protocol_samsung_calculate_modulation_time(void) {
 	data_bit_counter += 1;
 }
 
+static void ir_protocol_samsung_prepare_transmit_buffer(u8* p_data_buffer) {
+
+	u8 bit_mask = 0x80;
+	u8 byte_index = 0;
+
+	u8 i = 0;
+	for ( ; i < SAMSUNG_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT; i++ ) {
+
+		if (bit_mask == 0) {
+			bit_mask = 0x80;
+			byte_index += 1;
+		}
+
+		transmit_bit_buffer[i] = p_data[byte_index] & bit_mask;
+		bit_mask = bit_mask >> 1;
+	}
+}
+
 // --------------------------------------------------------------------------------
 
 void ir_protocol_samsung_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator) {
@@ -197,18 +215,6 @@ void ir_protocol_samsung_transmit(u8* p_data) {
 	DEBUG_PASS("ir_protocol_samsung_start()");
 
 	IR_MOD_OUT_drive_low();
-
-	// pre calculate bit-buffer
-
-	u8 i = 0;
-	for ( ; i < SAMSUNG_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT; i++ ) {
-
-		u8 byte_index = (i) / 8;
-		u8 bit_index = i - (byte_index * 8);
-		u8 bit_mask = (0x80 >> bit_index); // start transmit from the highest bit
-
-		transmit_bit_buffer[i] = p_data[byte_index] & bit_mask;		
-	}
 
 	transmit_state = SAMSUNG_IR_PROTOCOL_START_PREAMBLE;
 	data_bit_counter = 0;
@@ -227,6 +233,8 @@ void ir_protocol_samsung_transmit(u8* p_data) {
 	timer_config.mode = TIMER_MODE_FREQUENCY;
 
 	p_carrier->configure(&timer_config);
+
+	ir_protocol_buffer_samsung_prepare_transmit_buffer(p_data);
 
 	p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
 	p_modulator->start(ir_protocol_samsung_get_modulation_time());
