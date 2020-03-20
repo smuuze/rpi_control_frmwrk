@@ -2,7 +2,7 @@
 
  *****************************************************************************/
 
-#define TRACER_OF
+#define TRACER_OFF
 
 //-----------------------------------------------------------------------------
 
@@ -148,7 +148,8 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_560us");
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
 				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO_BY_8;
-				OCRA_backup = 460;
+				//OCRA_backup = 460;
+				OCRA_backup = 570;
 				interval_time_us = 80;
 				break;
 

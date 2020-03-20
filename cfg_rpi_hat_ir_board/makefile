@@ -67,6 +67,11 @@ DRIVER_MODULE_CFG += TIMER1
 
 #-----------------------------------------------------------------------------
 
+THIRD_PARTY_MODULES = 
+THIRD_PARTY_MODULES += IR_PROTOCOL_SAMSUNG
+
+#-----------------------------------------------------------------------------
+
 SENSOR_MODULE_CFG =
 #SENSOR_MODULE_CFG += LIGHT_SENSOR_GM5528
 

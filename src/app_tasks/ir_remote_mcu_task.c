@@ -12,8 +12,7 @@
 
 // --------------------------------------------------------------------------------
 
-#include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
+#include "config.h"
 
 // --------------------------------------------------------------------------------
 
@@ -29,9 +28,15 @@
 
 #include "driver/timer/timer_interface.h"
 
+#include "3rdparty/ir_protocol/ir_protocol_samsung.h"
+
 // --------------------------------------------------------------------------------
 
 #define IR_REMOTE_TASK_CHANGE_FREQ_INTERVAL_MS		5000
+
+// --------------------------------------------------------------------------------
+
+TIME_MGMN_BUILD_STATIC_TIMER_U16(CHANGE_FREQ_TIMER)
 
 // --------------------------------------------------------------------------------
 
@@ -78,6 +83,9 @@ void ir_remote_task_run(void) {
 	}
 
 	CHANGE_FREQ_TIMER_start();
+
+	u8 transmit_buffer[] = {0xAA, 0xAA, 0xAA, 0xAA};
+	ir_protocol_samsung_transmit(transmit_buffer);
 }
 
 void ir_remote_task_background_run(void) {

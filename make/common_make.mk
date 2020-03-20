@@ -157,6 +157,10 @@ ifneq '' '$(findstring GPIO_PCA9670,$(EXPANSION_BOARD_CFG))'
 	CSRCS += $(EXPANSION_BOARD_PATH)/driver_PCA9670.c
 endif
 
+# ---- 3rd PARTY MODULES ------------------------------------------------------------------
+
+include $(MAKE_PATH)/make_third_party.mk
+
 # ---- SENSOR_UNITS -----------------------------------------------------------------------
 
 include $(MAKE_PATH)/make_sensor.mk
