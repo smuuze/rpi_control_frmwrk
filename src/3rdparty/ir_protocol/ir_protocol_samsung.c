@@ -27,6 +27,10 @@
 
 // --------------------------------------------------------------------------------
 
+#include "3rdparty/ir_protocol/ir_protocol_samsung.h"
+
+// --------------------------------------------------------------------------------
+
 #ifndef SAMSUNG_IR_PROTOCOL_TRANSMIT_BUFFER_SIZE
 #define SAMSUNG_IR_PROTOCOL_TRANSMIT_BUFFER_SIZE				4
 #endif
@@ -40,8 +44,16 @@
 #define SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_START_US				560
 #define SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_0_US					560
 #define SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_1_US					1690
+#define SAMSUNG_IR_PROTOCOL_MOD_TIME_STOP_BIT					560
 
 #define SAMSUNG_IR_PROTOCOL_MOD_TIME_OFF					0xFFFF
+
+#define SASMUNG_IR_PROTOCOL_CMD_TO_BYTE_ARRAY(p_cmd)				{				\
+											p_cmd->address,		\	
+											p_cmd->address,		\
+											p_cmd->control,		\
+											p_cmd->control ^ 0xFF	\
+										}
 
 // --------------------------------------------------------------------------------
 
@@ -55,6 +67,7 @@ typedef enum {
 	SAMSUNG_IR_PROTOCOL_DATA_START,
 	SAMSUNG_IR_PROTOCOL_DATA_0,
 	SAMSUNG_IR_PROTOCOL_DATA_1,
+	SASMUNG_IR_PROTOCOL_STOP_BIT,
 	SAMSUNG_IR_PROTOCOL_END
 } SASMUNG_IR_PROTOCOL_STATE;
 
@@ -113,6 +126,8 @@ void ir_protocol_samsung_irq_callback(void) {
 	//DEBUG_TRACE_byte(IR_MOD_OUT_is_high_level(), "ir_protocol_samsung_irq_callback() - Pin-Level");
 
 	if (mod_time == SAMSUNG_IR_PROTOCOL_MOD_TIME_OFF) {
+	
+		IR_MOD_OUT_drive_low();
 
 		p_carrier->stop();
 		p_modulator->stop();
@@ -138,6 +153,7 @@ static u16 ir_protocol_samsung_get_modulation_time(void) {
 		case SAMSUNG_IR_PROTOCOL_DATA_START : 		return SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_START_US;
 		case SAMSUNG_IR_PROTOCOL_DATA_0 : 		return SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_0_US;
 		case SAMSUNG_IR_PROTOCOL_DATA_1 : 		return SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_1_US;
+		case SASMUNG_IR_PROTOCOL_STOP_BIT :		return SAMSUNG_IR_PROTOCOL_MOD_TIME_STOP_BIT;
 	}
 }
 
@@ -151,33 +167,29 @@ static inline void ir_protocol_samsung_control_modulation(void) {
 		case SAMSUNG_IR_PROTOCOL_DATA_START : 		IR_MOD_OUT_drive_high(); break;
 		case SAMSUNG_IR_PROTOCOL_DATA_0 : 		IR_MOD_OUT_drive_low(); break;
 		case SAMSUNG_IR_PROTOCOL_DATA_1 : 		IR_MOD_OUT_drive_low(); break;
+		case SASMUNG_IR_PROTOCOL_STOP_BIT :		IR_MOD_OUT_drive_high(); break;
 	}
 }
 
 static void ir_protocol_samsung_calculate_modulation_time(void) {
+	
+	switch (transmit_state) {
 
-	if (transmit_state == SAMSUNG_IR_PROTOCOL_START_PREAMBLE) {
-		transmit_state = SAMSUNG_IR_PROTOCOL_START_PAUSE;
-		return;
+		default: 					break;
+
+		case SAMSUNG_IR_PROTOCOL_START_PREAMBLE : 	transmit_state = SAMSUNG_IR_PROTOCOL_START_PAUSE; return;
+		case SAMSUNG_IR_PROTOCOL_START_PAUSE : 		transmit_state = SAMSUNG_IR_PROTOCOL_DATA_START; return;
+		case SASMUNG_IR_PROTOCOL_STOP_BIT :		transmit_state = SAMSUNG_IR_PROTOCOL_END; return;
+		case SAMSUNG_IR_PROTOCOL_END : 			transmit_state = SAMSUNG_IR_PROTOCOL_IDLE; return;
+
+		case SAMSUNG_IR_PROTOCOL_DATA_0 :		// no break;
+		case SAMSUNG_IR_PROTOCOL_DATA_1 : 		transmit_state = SAMSUNG_IR_PROTOCOL_DATA_START; return;
 	}
 
-	if (transmit_state == SAMSUNG_IR_PROTOCOL_START_PAUSE) {
-		transmit_state = SAMSUNG_IR_PROTOCOL_DATA_START;
-		return;
-	}
+	// case SAMSUNG_IR_PROTOCOL_DATA_START : 
 
 	if (data_bit_counter == SAMSUNG_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT) {
-		transmit_state = SAMSUNG_IR_PROTOCOL_END;
-		return;
-	}
-
-	if (transmit_state == SAMSUNG_IR_PROTOCOL_END) {
-		transmit_state = SAMSUNG_IR_PROTOCOL_IDLE;
-		return;
-	}
-
-	if (transmit_state == SAMSUNG_IR_PROTOCOL_DATA_0 || transmit_state == SAMSUNG_IR_PROTOCOL_DATA_1) {
-		transmit_state = SAMSUNG_IR_PROTOCOL_DATA_START;
+		transmit_state = SASMUNG_IR_PROTOCOL_STOP_BIT;
 		return;
 	}
 
@@ -185,10 +197,11 @@ static void ir_protocol_samsung_calculate_modulation_time(void) {
 	data_bit_counter += 1;
 }
 
-static void ir_protocol_samsung_prepare_transmit_buffer(u8* p_data_buffer) {
+static void ir_protocol_samsung_prepare_transmit_buffer(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 
 	u8 bit_mask = 0x80;
 	u8 byte_index = 0;
+	u8 data_buffer[SAMSUNG_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT] = SASMUNG_IR_PROTOCOL_CMD_TO_BYTE_ARRAY(p_command);
 
 	u8 i = 0;
 	for ( ; i < SAMSUNG_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT; i++ ) {
@@ -198,7 +211,7 @@ static void ir_protocol_samsung_prepare_transmit_buffer(u8* p_data_buffer) {
 			byte_index += 1;
 		}
 
-		transmit_bit_buffer[i] = p_data[byte_index] & bit_mask;
+		transmit_bit_buffer[i] = data_buffer[byte_index] & bit_mask;
 		bit_mask = bit_mask >> 1;
 	}
 }
@@ -210,14 +223,11 @@ void ir_protocol_samsung_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_
 	p_modulator = p_timer_modulator;
 }
 
-void ir_protocol_samsung_transmit(u8* p_data) {
+void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 
 	DEBUG_PASS("ir_protocol_samsung_start()");
 
 	IR_MOD_OUT_drive_low();
-
-	transmit_state = SAMSUNG_IR_PROTOCOL_START_PREAMBLE;
-	data_bit_counter = 0;
 
 	TIMER_CONFIGURATION_TYPE timer_config;
 	
@@ -234,11 +244,32 @@ void ir_protocol_samsung_transmit(u8* p_data) {
 
 	p_carrier->configure(&timer_config);
 
-	ir_protocol_buffer_samsung_prepare_transmit_buffer(p_data);
+	ir_protocol_samsung_prepare_transmit_buffer(p_command);
+
+	transmit_state = SAMSUNG_IR_PROTOCOL_START_PREAMBLE;
+	data_bit_counter = 0;
+	
+	ir_protocol_samsung_control_modulation();
 
 	p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
 	p_modulator->start(ir_protocol_samsung_get_modulation_time());
 
-	ir_protocol_samsung_control_modulation();
 	ir_protocol_samsung_calculate_modulation_time();
+}
+
+// --------------------------------------------------------------------------------
+
+inline void ir_protocol_samsung_cmd_power(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
+	p_command->address = 0b11100000;
+	p_command->control = 0b01000000;
+}
+
+inline void ir_protocol_samsung_cmd_volume_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
+	p_command->address = 0b11100000;
+	p_command->control = 0b11100000;
+}
+
+inline void ir_protocol_samsung_cmd_volume_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command){
+	p_command->address = 0b11100000;
+	p_command->control = 0b11010000;
 }

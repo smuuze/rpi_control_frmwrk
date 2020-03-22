@@ -149,7 +149,7 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
 				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO_BY_8;
 				//OCRA_backup = 460;
-				OCRA_backup = 570;
+				OCRA_backup = 569;
 				interval_time_us = 80;
 				break;
 

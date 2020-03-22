@@ -17,9 +17,42 @@
 
 // --------------------------------------------------------------------------------
 
+/*
+ *
+ */
+typedef struct {
+	u8 address;
+	u8 control;
+} SAMSUNG_IR_PROTOCOL_COMMAND_TYPE;
+
+// --------------------------------------------------------------------------------
+
+/*
+ *
+ */
 void ir_protocol_samsung_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator);
 
-void ir_protocol_samsung_transmit(u8* p_data);
+/*
+ *
+ */
+void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+// --------------------------------------------------------------------------------
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_power(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_volume_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_volume_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
 // --------------------------------------------------------------------------------
 

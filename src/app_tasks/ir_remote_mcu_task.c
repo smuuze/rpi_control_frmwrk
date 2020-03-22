@@ -32,7 +32,7 @@
 
 // --------------------------------------------------------------------------------
 
-#define IR_REMOTE_TASK_CHANGE_FREQ_INTERVAL_MS		5000
+#define IR_REMOTE_TASK_CHANGE_FREQ_INTERVAL_MS		108
 
 // --------------------------------------------------------------------------------
 
@@ -84,8 +84,10 @@ void ir_remote_task_run(void) {
 
 	CHANGE_FREQ_TIMER_start();
 
-	u8 transmit_buffer[] = {0xAA, 0xAA, 0xAA, 0xAA};
-	ir_protocol_samsung_transmit(transmit_buffer);
+	SAMSUNG_IR_PROTOCOL_COMMAND_TYPE samsung_ir_cmd;
+	ir_protocol_samsung_cmd_power(&samsung_ir_cmd);
+
+	ir_protocol_samsung_transmit(&samsung_ir_cmd);
 }
 
 void ir_remote_task_background_run(void) {
