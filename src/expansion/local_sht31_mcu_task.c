@@ -141,6 +141,11 @@ void local_sht31_mcu_task_init(void) {
 }
 
 
+u16 local_sht31_mcu_task_get_schedule_interval(void) {
+	return SHT31_TASK_RUN_INTERVAL_MS;
+}
+
+
 MCU_TASK_INTERFACE_TASK_STATE local_sht31_mcu_task_get_state(void) {
 
 	if (task_state == MCU_TASK_SLEEPING) {

@@ -20,7 +20,7 @@ BOARD_ID = 180920
 #-----------------------------------------------------------------------------
 
 VERSION_MAJOR		:= 4
-VERSION_MINOR		:= 2
+VERSION_MINOR		:= 3
 
 #-----------------------------------------------------------------------------
 
@@ -60,7 +60,8 @@ DRIVER_MODULE_CFG += GPIO
 DRIVER_MODULE_CFG += RTC
 DRIVER_MODULE_CFG += CLK
 DRIVER_MODULE_CFG += USART0
-DRIVER_MODULE_CFG += USART1
+DRIVER_MODULE_CFG += I2C0
+DRIVER_MODULE_CFG += SPI0
 
 #-----------------------------------------------------------------------------
 

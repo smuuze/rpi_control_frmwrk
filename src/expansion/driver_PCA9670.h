@@ -127,6 +127,11 @@ void pca9670_task_init(void);
 /*!
  *
  */
+u16 pca9670_task_get_schedule_interval(void);
+
+/*!
+ *
+ */
 MCU_TASK_INTERFACE_TASK_STATE pca9670_task_get_state(void);
 
 /*!

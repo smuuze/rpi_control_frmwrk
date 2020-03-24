@@ -28,6 +28,11 @@ void local_sht31_mcu_task_run(void);
 /*!
  *
  */
+u16 local_sht31_mcu_task_get_schedule_interval(void);
+
+/*!
+ *
+ */
 void local_sht31_mcu_task_background_run(void);
 
 /*!

@@ -133,6 +133,11 @@ void local_ads1115_mcu_task_init(void) {
 }
 
 
+u16 local_ads1115_mcu_task_get_schedule_interval(void) {
+	return ADS1115_TASK_RUN_INTERVAL_MS;
+}
+
+
 MCU_TASK_INTERFACE_TASK_STATE local_ads1115_mcu_task_get_state(void) {
 
 	if (task_state == MCU_TASK_SLEEPING) {

@@ -286,6 +286,10 @@ void pca9670_task_init(void) {
 	task_state = MCU_TASK_SLEEPING;
 }
 
+u16 pca9670_task_get_schedule_interval(void) {
+	return PCA9670_TASK_RUN_INTERVAL_MS;
+}
+
 /*!
  *
  */
