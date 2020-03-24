@@ -81,12 +81,7 @@ static void ir_protocol_samsung_calculate_modulation_time(void);
 /*
  *
  */
-static u16 ir_protocol_samsung_get_modulation_time(void);
-
-/*
- *
- */
-static void ir_protocol_samsung_control_modulation(void);
+static u16 ir_protocol_samsung_control_modulation(void);
 
 // --------------------------------------------------------------------------------
 
@@ -116,58 +111,58 @@ static u8 transmit_bit_buffer[SAMSUNG_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT];
  */
 static SASMUNG_IR_PROTOCOL_STATE transmit_state;
 
+/*
+ *
+ */
+static u8 transmit_guard = 0;
+
 // --------------------------------------------------------------------------------
 
 void ir_protocol_samsung_irq_callback(void) {
 
-	u16 mod_time = ir_protocol_samsung_get_modulation_time();
-	
-	//DEBUG_TRACE_word(mod_time, "ir_protocol_samsung_irq_callback() - Modulation time");
-	//DEBUG_TRACE_byte(IR_MOD_OUT_is_high_level(), "ir_protocol_samsung_irq_callback() - Pin-Level");
+	u16 mod_time = ir_protocol_samsung_control_modulation();
 
 	if (mod_time == SAMSUNG_IR_PROTOCOL_MOD_TIME_OFF) {
-	
-		IR_MOD_OUT_drive_low();
 
 		p_carrier->stop();
 		p_modulator->stop();
+
+		transmit_guard = 0;
 
 		return;
 	}
 
 	p_modulator->start(mod_time);
 
-	ir_protocol_samsung_control_modulation();
 	ir_protocol_samsung_calculate_modulation_time();
 }
 
 // --------------------------------------------------------------------------------
 
-static u16 ir_protocol_samsung_get_modulation_time(void) {
+static u16 ir_protocol_samsung_control_modulation(void) {
 	
 	switch (transmit_state) {
 
-		default: 					return SAMSUNG_IR_PROTOCOL_MOD_TIME_OFF;
-		case SAMSUNG_IR_PROTOCOL_START_PREAMBLE : 	return SAMSUNG_IR_PROTOCOL_MOD_TIME_START_PREAMBLE_US;
-		case SAMSUNG_IR_PROTOCOL_START_PAUSE : 		return SAMSUNG_IR_PROTOCOL_MOD_TIME_START_PAUSE_US;
-		case SAMSUNG_IR_PROTOCOL_DATA_START : 		return SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_START_US;
-		case SAMSUNG_IR_PROTOCOL_DATA_0 : 		return SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_0_US;
-		case SAMSUNG_IR_PROTOCOL_DATA_1 : 		return SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_1_US;
-		case SASMUNG_IR_PROTOCOL_STOP_BIT :		return SAMSUNG_IR_PROTOCOL_MOD_TIME_STOP_BIT;
-	}
-}
+		default: 					IR_MOD_OUT_drive_low();
+								return SAMSUNG_IR_PROTOCOL_MOD_TIME_OFF;
 
-static inline void ir_protocol_samsung_control_modulation(void) {
-	
-	switch (transmit_state) {
+		case SAMSUNG_IR_PROTOCOL_START_PREAMBLE : 	R_MOD_OUT_drive_high();
+								return SAMSUNG_IR_PROTOCOL_MOD_TIME_START_PREAMBLE_US;
 
-		default: 					IR_MOD_OUT_drive_low(); break;
-		case SAMSUNG_IR_PROTOCOL_START_PREAMBLE : 	IR_MOD_OUT_drive_high(); break;
-		case SAMSUNG_IR_PROTOCOL_START_PAUSE : 		IR_MOD_OUT_drive_low(); break;
-		case SAMSUNG_IR_PROTOCOL_DATA_START : 		IR_MOD_OUT_drive_high(); break;
-		case SAMSUNG_IR_PROTOCOL_DATA_0 : 		IR_MOD_OUT_drive_low(); break;
-		case SAMSUNG_IR_PROTOCOL_DATA_1 : 		IR_MOD_OUT_drive_low(); break;
-		case SASMUNG_IR_PROTOCOL_STOP_BIT :		IR_MOD_OUT_drive_high(); break;
+		case SAMSUNG_IR_PROTOCOL_START_PAUSE : 		IR_MOD_OUT_drive_low();
+								return SAMSUNG_IR_PROTOCOL_MOD_TIME_START_PAUSE_US;
+
+		case SAMSUNG_IR_PROTOCOL_DATA_START : 		IR_MOD_OUT_drive_high();
+								return SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_START_US;
+
+		case SAMSUNG_IR_PROTOCOL_DATA_0 : 		IR_MOD_OUT_drive_low();
+								return SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_0_US;
+
+		case SAMSUNG_IR_PROTOCOL_DATA_1 : 		IR_MOD_OUT_drive_low();
+								return SAMSUNG_IR_PROTOCOL_MOD_TIME_DATA_1_US;
+
+		case SASMUNG_IR_PROTOCOL_STOP_BIT : 		IR_MOD_OUT_drive_high();
+								return SAMSUNG_IR_PROTOCOL_MOD_TIME_STOP_BIT;
 	}
 }
 
@@ -225,7 +220,15 @@ void ir_protocol_samsung_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_
 
 void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 
+	if (transmit_guard != 0) {
+
+		DEBUG_PASS("ir_protocol_samsung_start() - Transmit guard is already set !!! ---");
+		return;
+	}
+
 	DEBUG_PASS("ir_protocol_samsung_start()");
+
+	transmit_guard = 1;
 
 	IR_MOD_OUT_drive_low();
 
@@ -249,10 +252,8 @@ void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 	transmit_state = SAMSUNG_IR_PROTOCOL_START_PREAMBLE;
 	data_bit_counter = 0;
 	
-	ir_protocol_samsung_control_modulation();
-
 	p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
-	p_modulator->start(ir_protocol_samsung_get_modulation_time());
+	p_modulator->start(ir_protocol_samsung_control_modulation());
 
 	ir_protocol_samsung_calculate_modulation_time();
 }
