@@ -33,11 +33,16 @@ void rpi_cmd_handler_set_request(PROTOCOL_INTERFACE* p_protocol_handler) {
 	p_act_protocol = p_protocol_handler;
 }
 
+PROTOCOL_INTERFACE* rpi_cmd_handler_get_protocol(void) {
+	return p_act_protocol;
+}
+
 void rpi_cmd_handler_set_unrequested(void) {
 
 	PASS(); // rpi_cmd_handler_set_unrequested()
 	p_act_protocol = 0;
 }
+
 
 u8 rpi_cmd_handler_is_requested(void) {
 

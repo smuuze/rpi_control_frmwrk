@@ -42,17 +42,17 @@ void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 /*
  *
  */
-void ir_protocol_samsung_cmd_power(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_power(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_volume_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_volume_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_volume_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_volume_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
 // --------------------------------------------------------------------------------
 

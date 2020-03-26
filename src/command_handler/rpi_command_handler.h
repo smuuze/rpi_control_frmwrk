@@ -37,6 +37,12 @@ void rpi_cmd_handler_set_request(PROTOCOL_INTERFACE* p_protocol_handler);
 
 /*!
  *
+ * @return
+ */
+PROTOCOL_INTERFACE* rpi_cmd_handler_get_protocol(void);
+
+/*!
+ *
  */
 void rpi_cmd_handler_set_unrequested(void);
 

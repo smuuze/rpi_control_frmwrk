@@ -85,7 +85,7 @@ void ir_remote_task_run(void) {
 	CHANGE_FREQ_TIMER_start();
 
 	SAMSUNG_IR_PROTOCOL_COMMAND_TYPE samsung_ir_cmd;
-	ir_protocol_samsung_cmd_power(&samsung_ir_cmd);
+	ir_protocol_samsung_cmd_tv_power(&samsung_ir_cmd);
 
 	ir_protocol_samsung_transmit(&samsung_ir_cmd);
 }

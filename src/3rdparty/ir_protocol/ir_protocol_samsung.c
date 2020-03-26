@@ -49,7 +49,7 @@
 #define SAMSUNG_IR_PROTOCOL_MOD_TIME_OFF					0xFFFF
 
 #define SASMUNG_IR_PROTOCOL_CMD_TO_BYTE_ARRAY(p_cmd)				{				\
-											p_cmd->address,		\	
+											p_cmd->address,		\
 											p_cmd->address,		\
 											p_cmd->control,		\
 											p_cmd->control ^ 0xFF	\
@@ -146,7 +146,7 @@ static u16 ir_protocol_samsung_control_modulation(void) {
 		default: 					IR_MOD_OUT_drive_low();
 								return SAMSUNG_IR_PROTOCOL_MOD_TIME_OFF;
 
-		case SAMSUNG_IR_PROTOCOL_START_PREAMBLE : 	R_MOD_OUT_drive_high();
+		case SAMSUNG_IR_PROTOCOL_START_PREAMBLE : 	IR_MOD_OUT_drive_high();
 								return SAMSUNG_IR_PROTOCOL_MOD_TIME_START_PREAMBLE_US;
 
 		case SAMSUNG_IR_PROTOCOL_START_PAUSE : 		IR_MOD_OUT_drive_low();
@@ -256,21 +256,4 @@ void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 	p_modulator->start(ir_protocol_samsung_control_modulation());
 
 	ir_protocol_samsung_calculate_modulation_time();
-}
-
-// --------------------------------------------------------------------------------
-
-inline void ir_protocol_samsung_cmd_power(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
-	p_command->address = 0b11100000;
-	p_command->control = 0b01000000;
-}
-
-inline void ir_protocol_samsung_cmd_volume_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
-	p_command->address = 0b11100000;
-	p_command->control = 0b11100000;
-}
-
-inline void ir_protocol_samsung_cmd_volume_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command){
-	p_command->address = 0b11100000;
-	p_command->control = 0b11010000;
 }
