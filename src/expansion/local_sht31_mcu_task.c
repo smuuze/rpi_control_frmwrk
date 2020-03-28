@@ -7,7 +7,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_OFF
+#define TRACER_ON
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -31,6 +31,7 @@
 
 //-----------------------------------------------------------------------------
 
+#define SHT31_TASK_SCHEDULE_INTERVAL_MS		50
 #define SHT31_TASK_RUN_INTERVAL_MS		60000 	/* once in a minute */
 #define SHT32_TASK_MAXMIN_INTERVAL_MS		900000	/* every 15 minutes*/
 #define SHT31_TASK_COMMAND_BUFFER_LENGHT	5
@@ -142,7 +143,7 @@ void local_sht31_mcu_task_init(void) {
 
 
 u16 local_sht31_mcu_task_get_schedule_interval(void) {
-	return SHT31_TASK_RUN_INTERVAL_MS;
+	return SHT31_TASK_SCHEDULE_INTERVAL_MS;
 }
 
 
@@ -199,7 +200,7 @@ void local_sht31_mcu_task_run(void) {
 		case SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR :
 
 			if (POWER_UNIT_5V_is_on() == 0) {
-				PASS(); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_INIT_ADC - Waiting for power-management
+				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Waiting for power-management
 				break;
 			}
 
