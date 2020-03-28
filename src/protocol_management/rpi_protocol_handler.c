@@ -2,7 +2,7 @@
 
  *****************************************************************************/
 
-#define TRACER_ON
+#define TRACER_OFF
 
 //-----------------------------------------------------------------------------
 
@@ -278,7 +278,7 @@ static RPI_CMD_RECEIVER_STATE _command_receiver(void) {
 
 		u16 num_bytes_available = p_com_driver->bytes_available();
 		if (num_bytes_available == 0) {
-			DEBUG_PASS("_com_driver_command_handler() - Only one byte available -> no valid command yet");
+			//DEBUG_PASS("_com_driver_command_handler() - Only one byte available -> no valid command yet");
 			return RPI_CMD_RECEIVER_IDLE;
 		}
 
@@ -308,8 +308,8 @@ static RPI_CMD_RECEIVER_STATE _command_receiver(void) {
 	u8 bytes_available = p_com_driver->bytes_available();
 	if (bytes_available < rpi_protocol_spi_interface.command_length) {
 		DEBUG_PASS("_com_driver_command_handler() - Command not complete yet");
-		DEBUG_TRACE_byte(rpi_protocol_spi_interface.command_length, "_com_driver_command_handler() - Command-Length");
-		DEBUG_TRACE_byte(bytes_available, "_com_driver_command_handler() - Bytes available");
+		//DEBUG_TRACE_byte(rpi_protocol_spi_interface.command_length, "_com_driver_command_handler() - Command-Length");
+		//DEBUG_TRACE_byte(bytes_available, "_com_driver_command_handler() - Bytes available");
 		return RPI_CMD_RECEIVER_WAIT_FOR_COMPLETION;
 	}
 
@@ -340,15 +340,15 @@ static RPI_CMD_RECEIVER_STATE _command_receiver(void) {
 
 		RPI_COMMAND_BUFFER_add_N_bytes(read_count, t_buffer);
 
-		DEBUG_TRACE_byte(read_count, "_com_driver_command_handler() - Bytes added");
-		DEBUG_TRACE_N(read_count, t_buffer, "_com_driver_command_handler() - Command Data");
+		//DEBUG_TRACE_byte(read_count, "_com_driver_command_handler() - Bytes added");
+		//DEBUG_TRACE_N(read_count, t_buffer, "_com_driver_command_handler() - Command Data");
 	}
 
 	RPI_COMMAND_BUFFER_stop_write();
 
 	p_com_driver->clear_buffer();
 
-	DEBUG_PASS("_com_driver_command_handler() - Requesting Command-Handler");
+	//DEBUG_PASS("_com_driver_command_handler() - Requesting Command-Handler");
 	rpi_cmd_handler_set_request(&rpi_protocol_spi_interface);
 
 	return RPI_CMD_RECEIVER_COMPLETE;
@@ -445,7 +445,11 @@ void rpi_protocol_task_init(void) {
 }
 
 u16 rpi_protocol_task_get_schedule_interval(void) {
-	return RPI_PROTOCOL_HANDLER_SCHEDULE_INTERVAL_MS;
+	if (actual_task_state != MCU_TASK_SLEEPING) {
+		return 0;
+	} else {
+		return RPI_PROTOCOL_HANDLER_SCHEDULE_INTERVAL_MS;
+	}
 }
 
 MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
@@ -506,7 +510,7 @@ void rpi_protocol_task_run(void) {
 			}
 			
 			if (READY_INOUT_is_low_level()) {
-				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST - Ready Pin still low !!! ---");
+				//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST - Ready Pin still low !!! ---");
 				break;
 			}
 
@@ -546,7 +550,7 @@ void rpi_protocol_task_run(void) {
 //				break;
 //			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_START_DATA_EXCHANGE - Starting data exchange"); 
+			//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_START_DATA_EXCHANGE - Starting data exchange"); 
 
 			actual_state = RPI_STATE_DATA_EXCHANGE;
 			operation_timer_start();
@@ -570,11 +574,11 @@ void rpi_protocol_task_run(void) {
 			READY_INOUT_drive_low();
 
 			cmd_receiver_state = _command_receiver(); // this information has to be remember
-			DEBUG_TRACE_byte(cmd_receiver_state, "rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - State of command-receiver:");
+			//DEBUG_TRACE_byte(cmd_receiver_state, "rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - State of command-receiver:");
 
 			if (cmd_receiver_state == RPI_CMD_RECEIVER_IDLE) {
 
-				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - No Command data available");
+				//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - No Command data available");
 
 				if (p_com_driver->is_ready_for_tx() != 0) {
 
@@ -587,11 +591,11 @@ void rpi_protocol_task_run(void) {
 
 			if (cmd_receiver_state == RPI_CMD_RECEIVER_WAIT_FOR_COMPLETION) {
 
-				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - Data Exchange still in Progress");
+				//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - Data Exchange still in Progress");
 				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - Command has been received");
+			//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_DATA_EXCHANGE - Command has been received");
 
 			rpi_protocol_spi_interface.arrival_time = time_mgmnt_gettime_u16();
 			actual_state = RPI_STATE_FINISH_DATA_EXCHANGE;
@@ -640,7 +644,7 @@ void rpi_protocol_task_run(void) {
 
 		case RPI_STATE_CANCEL : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_CANCEL");
 
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_CANCEL - Going to stop operation");
+			//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_CANCEL - Going to stop operation");
 
 			rpi_protocol_spi_interface.command_length = 0;
 			cmd_receiver_state = RPI_CMD_RECEIVER_IDLE;
@@ -668,6 +672,8 @@ void rpi_protocol_task_run(void) {
 				actual_state = RPI_PREPARE_FOR_REQUEST;
 				break;
 			}
+
+			DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_RELEASE - Entering state SLEEPING");
 
 			actual_state = RPI_STATE_SLEEP;
 			actual_task_state = MCU_TASK_SLEEPING;
