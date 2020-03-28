@@ -7,7 +7,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_OFF
+#define TRACER_ON
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -29,6 +29,7 @@
 
 //-----------------------------------------------------------------------------
 
+#define ADS1115_TASK_SCHEDULE_INTERVAL			50
 #define ADS1115_TASK_RUN_INTERVAL_MS			60000 /* once in a minute */
 #define ADS1115_TASK_COMMAND_BUFFER_LENGHT		5
 #define ADS1115_TASK_ANSWER_BUFFER_LENGTH		6
@@ -134,7 +135,7 @@ void local_ads1115_mcu_task_init(void) {
 
 
 u16 local_ads1115_mcu_task_get_schedule_interval(void) {
-	return ADS1115_TASK_RUN_INTERVAL_MS;
+	return ADS1115_TASK_SCHEDULE_INTERVAL;
 }
 
 
