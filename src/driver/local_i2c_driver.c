@@ -69,8 +69,8 @@
 #endif
 
 //----- Bufferbuilding -----
-BUILD_LOCAL_MSG_BUFFER(, i2c_tx_buffer, I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)	// build transmissionbuffer
-BUILD_LOCAL_MSG_BUFFER(, i2c_rx_buffer, I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)	// build receivingbuffer
+BUILD_LOCAL_MSG_BUFFER(, I2C0_TX_BUFFER, I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)	// build transmissionbuffer
+BUILD_LOCAL_MSG_BUFFER(, I2C0_RX_BUFFER, I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)	// build receivingbuffer
 
 
 BUILD_MUTEX(i2c_mutex)
@@ -92,8 +92,8 @@ void i2c_driver_initialize(void) {
 
 	PASS();	// i2c_driver_initialize()
 
-	i2c_rx_buffer_init();
-	i2c_tx_buffer_init();
+	I2C0_RX_BUFFER_init();
+	I2C0_TX_BUFFER_init();
 }
 
 void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
@@ -198,43 +198,43 @@ u8 i2c_driver_bytes_available (void) {
 
 	#if defined TRACES_ENABLED && defined I2C_RX_TRACES
 	{
-		u8 bytes_available = i2c_rx_buffer_bytes_available();
+		u8 bytes_available = I2C0_RX_BUFFER_bytes_available();
 		if (bytes_available) {
 			I2C_RX_TRACE_byte(bytes_available); // i2c_driver_bytes_available()
 		}
 	}
 	#endif
 
-	return i2c_rx_buffer_bytes_available();
+	return I2C0_RX_BUFFER_bytes_available();
 }
 
 u8 i2c_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 
 	PASS();	// local_i2c_driver_get_N_bytes()
 
-	u8 num_bytes_available = i2c_rx_buffer_bytes_available();
+	u8 num_bytes_available = I2C0_RX_BUFFER_bytes_available();
 	if (num_bytes < num_bytes_available) {
 		num_bytes_available = num_bytes;
 	}
 
-	i2c_rx_buffer_start_read();
-	i2c_rx_buffer_get_N_bytes(num_bytes_available, p_buffer_to);
-	i2c_rx_buffer_stop_read();
+	I2C0_RX_BUFFER_start_read();
+	I2C0_RX_BUFFER_get_N_bytes(num_bytes_available, p_buffer_to);
+	I2C0_RX_BUFFER_stop_read();
 
 	return num_bytes_available;
 }
 
 u8 i2c_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 
-	if (num_bytes > i2c_tx_buffer_size()) {
-		num_bytes = i2c_tx_buffer_size();
+	if (num_bytes > I2C0_TX_BUFFER_size()) {
+		num_bytes = I2C0_TX_BUFFER_size();
 	}
 
 	TRACE_N(num_bytes, p_buffer_from); // local_i2c_driver_set_N_bytes()
 
-	i2c_tx_buffer_start_write(); // this will delete all data added so far
-	i2c_tx_buffer_add_N_bytes(num_bytes, p_buffer_from);
-	i2c_tx_buffer_stop_write();
+	I2C0_TX_BUFFER_start_write(); // this will delete all data added so far
+	I2C0_TX_BUFFER_add_N_bytes(num_bytes, p_buffer_from);
+	I2C0_TX_BUFFER_stop_write();
 
 	return num_bytes;
 }
@@ -272,7 +272,7 @@ void i2c_driver_start_rx (u16 num_of_rx_bytes) {
 	_i2c_slave_address = _i2c_slave_address | (0x01);
 	_i2c_rx_counter = num_of_rx_bytes;
 
-	i2c_rx_buffer_start_write();
+	I2C0_RX_BUFFER_start_write();
 	i2c_driver_status_set(I2C_STATUS_RX_ACTIVE);
 
 	I2C_DRIVER_SEND_START_CONDITION();
@@ -291,7 +291,7 @@ void i2c_driver_stop_rx (void) {
 	I2C_DRIVER_SEND_STOP_CONDITION();
 
 	i2c_driver_status_unset(I2C_STATUS_RX_ACTIVE);
-	i2c_rx_buffer_stop_write();
+	I2C0_RX_BUFFER_stop_write();
 }
 
 void i2c_driver_start_tx (void) {
@@ -302,7 +302,7 @@ void i2c_driver_start_tx (void) {
 	_i2c_slave_address = _i2c_slave_address & ~(0x01);
 
 	i2c_driver_status_set(I2C_STATUS_TX_ACTIVE);
-	i2c_tx_buffer_start_read();
+	I2C0_TX_BUFFER_start_read();
 
 	I2C_DRIVER_SEND_START_CONDITION();
 }
@@ -318,14 +318,16 @@ void i2c_driver_stop_tx (void) {
 
 	I2C_DRIVER_SEND_STOP_CONDITION();
 
-	i2c_tx_buffer_stop_read();
+	I2C0_TX_BUFFER_stop_read();
 	i2c_driver_status_unset(I2C_STATUS_TX_ACTIVE);
 }
 
-void i2c_driver_clear_buffer (void) {
+void i2c_driver_clear_rx_buffer(void) {
+	I2C0_RX_BUFFER_clear_all();
+}
 
-	i2c_rx_buffer_clear_all();
-	i2c_tx_buffer_clear_all();
+void i2c_driver_clear_tx_buffer(void) {
+	I2C0_TX_BUFFER_clear_all();
 }
 
 void i2c_driver_set_address (u8 addr) {
@@ -365,9 +367,9 @@ ISR(TWI_vect) {
 		case I2C_STATE_MT_SLAW_ACK_RECEIVED:
 		case I2C_STATE_MT_DATA_ACK_RECEIVED:
 
-			if (i2c_tx_buffer_bytes_available() != 0) {
+			if (I2C0_TX_BUFFER_bytes_available() != 0) {
 
-				data_byte = i2c_tx_buffer_get_byte();
+				data_byte = I2C0_TX_BUFFER_get_byte();
 				I2C_DRIVER_SEND_DATA_BYTE(data_byte);
 
 				I2C_ISR_TRACE_byte(data_byte); // Sending next Data-Byte
@@ -385,7 +387,7 @@ ISR(TWI_vect) {
 		case I2C_STATE_MR_DATA_BYTE_ACK_RECEIVED:
 
 			data_byte = I2C_DRIVER_GET_DATA_REGISTER();
-			i2c_rx_buffer_add_byte(data_byte); // write DATA into buffer
+			I2C0_RX_BUFFER_add_byte(data_byte); // write DATA into buffer
 
 			I2C_ISR_TRACE_byte(data_byte); // Data-Byte received
 			// no break
