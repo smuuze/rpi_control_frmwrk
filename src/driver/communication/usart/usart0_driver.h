@@ -119,9 +119,14 @@ void usart0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms);
 void usart0_driver_stop_tx(void);
 
 /*
- * forces the module to clear all internal buffers and go back to the idle state.
+ * forces the module to clear the receive buffer
  */
-void usart0_driver_clear_buffer(void);
+void usart0_driver_clear_rx_buffer(void);
+
+/*
+ * forces the module to clear the transmit buffer
+ */
+void usart0_driver_clear_tx_buffer(void);
 
 /* this function allows the initial communication over
  * the address of the slave

@@ -93,8 +93,8 @@
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
-BUILD_LOCAL_MSG_BUFFER(static inline, __local_usart_tx_buffer, USART0_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
-BUILD_LOCAL_MSG_BUFFER(static inline, __local_usart_rx_buffer, USART0_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)
+BUILD_LOCAL_MSG_BUFFER(static inline, USART0_TX_BUFFER, USART0_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
+BUILD_LOCAL_MSG_BUFFER(static inline, USART0_RX_BUFFER, USART0_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(local_usart_status, 2)
 
@@ -113,10 +113,8 @@ void usart0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 	(void) p_cfg;
 	PASS();	// local_usart_driver_cfg()
 
-	__local_usart_rx_buffer_init();
-	__local_usart_tx_buffer_init();
-
-	usart0_driver_clear_buffer();
+	USART0_RX_BUFFER_init();
+	USART0_TX_BUFFER_init();
 
 	USART0_DRIVER_CLEAR_CONFIG();
 
@@ -167,22 +165,22 @@ void usart0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 void usart0_driver_power_off(void) {
 	PASS(); // local_usart_driver_power_off()
-	__local_usart_rx_buffer_clear_all();
-	__local_usart_tx_buffer_clear_all();
+	USART0_RX_BUFFER_clear_all();
+	USART0_TX_BUFFER_clear_all();
 }
 
 u8 usart0_driver_bytes_available (void) {
 
 	#if defined TRACES_ENABLED && defined LOCAL_USART_RX_TRACES
 	{
-		u8 bytes_available = __local_usart_rx_buffer_bytes_available();
+		u8 bytes_available = USART0_RX_BUFFER_bytes_available();
 		if (bytes_available) {
 			LOCAL_USART_RX_TRACE_byte(bytes_available); // i2c_driver_bytes_available()
 		}
 	}
 	#endif
 
-	return __local_usart_rx_buffer_bytes_available();
+	return USART0_RX_BUFFER_bytes_available();
 }
 
 
@@ -191,15 +189,15 @@ u8 usart0_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 
 	PASS();	// local_usart_driver_get_N_bytes()
 
-	u8 num_bytes_available = __local_usart_rx_buffer_bytes_available();
+	u8 num_bytes_available = USART0_RX_BUFFER_bytes_available();
 
 	if (num_bytes < num_bytes_available) {
 		num_bytes_available = num_bytes;
 	}
 
-	__local_usart_rx_buffer_start_read();
-	__local_usart_rx_buffer_get_N_bytes(num_bytes_available, p_buffer_to);
-	__local_usart_rx_buffer_stop_read();
+	USART0_RX_BUFFER_start_read();
+	USART0_RX_BUFFER_get_N_bytes(num_bytes_available, p_buffer_to);
+	USART0_RX_BUFFER_stop_read();
 
 	LOCAL_USART_RX_TRACE_N(num_bytes_available, p_buffer_to); // local_usart_driver_bytes_available()
 
@@ -207,15 +205,15 @@ u8 usart0_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 }
 
 u8 usart0_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
-	if (num_bytes > __local_usart_tx_buffer_size()) {
-		num_bytes = __local_usart_tx_buffer_size();
+	if (num_bytes > USART0_TX_BUFFER_size()) {
+		num_bytes = USART0_TX_BUFFER_size();
 	}
 
 	LOCAL_USART_TX_TRACE_N(num_bytes, p_buffer_from); // local_usart_driver_bytes_available()
 
-	__local_usart_tx_buffer_start_write(); // this will delete all data added so far
-	__local_usart_tx_buffer_add_N_bytes(num_bytes, p_buffer_from);
-	__local_usart_tx_buffer_stop_write();
+	USART0_TX_BUFFER_start_write(); // this will delete all data added so far
+	USART0_TX_BUFFER_add_N_bytes(num_bytes, p_buffer_from);
+	USART0_TX_BUFFER_stop_write();
 
 	return num_bytes;
 }
@@ -230,7 +228,7 @@ void usart0_driver_start_rx (u16 num_of_rx_bytes) {
 
 	remote_usart_rx_bytes = num_of_rx_bytes;
 
-	__local_usart_rx_buffer_start_write();
+	USART0_RX_BUFFER_start_write();
 	local_usart_status_set(LOCAL_USART_STATUS_RX_ACTIVE);
 }
 
@@ -244,7 +242,7 @@ void usart0_driver_stop_rx (void) {
 	LOCAL_USART_RX_PASS(); // local_usart_driver_stop_rx()
 
 	local_usart_status_unset(LOCAL_USART_STATUS_RX_ACTIVE);
-	__local_usart_rx_buffer_stop_write();
+	USART0_RX_BUFFER_stop_write();
 }
 
 u8 usart0_driver_is_ready_for_tx (void) {
@@ -257,18 +255,18 @@ void usart0_driver_start_tx (void) {
 	LOCAL_USART_TX_PASS(); // local_usart_driver_start_tx()
 
 	local_usart_status_set(LOCAL_USART_STATUS_TX_ACTIVE);
-	__local_usart_tx_buffer_start_read();
+	USART0_TX_BUFFER_start_read();
 
-	while (__local_usart_tx_buffer_bytes_available() > 0) {
+	while (USART0_TX_BUFFER_bytes_available() > 0) {
 
 		USART0_DRIVER_WAIT_UNTIL_TX_RDY();
 
-		u8 byte = __local_usart_tx_buffer_get_byte();
+		u8 byte = USART0_TX_BUFFER_get_byte();
 		LOCAL_USART_TX_TRACE_byte(byte); // local_usart_driver_start_tx
 		USART0_DRIVER_SET_BYTE(byte);
 	}
 
-	__local_usart_tx_buffer_stop_read();
+	USART0_TX_BUFFER_stop_read();
 }
 
 void usart0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
@@ -280,15 +278,22 @@ void usart0_driver_stop_tx (void) {
 
 	LOCAL_USART_TX_PASS(); // local_usart_driver_stop_tx()
 
-	__local_usart_tx_buffer_stop_read();
+	USART0_TX_BUFFER_stop_read();
 	local_usart_status_unset(LOCAL_USART_STATUS_TX_ACTIVE);
 }
 
-void usart0_driver_clear_buffer (void) {
+/*
+ * forces the module to clear the receive buffer
+ */
+void usart0_driver_clear_rx_buffer(void) {
+	USART0_RX_BUFFER_clear_all();
+}
 
-	PASS(); // local_usart_driver_clear_buffer()
-	__local_usart_rx_buffer_clear_all();
-	__local_usart_tx_buffer_clear_all();
+/*
+ * forces the module to clear the transmit buffer
+ */
+void usart0_driver_clear_tx_buffer(void) {
+	USART0_TX_BUFFER_clear_all();
 }
 
 void usart0_driver_set_address (u8 addr) {
@@ -308,8 +313,8 @@ ISR(USART0_TX_vect) {
 
 	PASS(); // TX complete
 
-	if (__local_usart_tx_buffer_bytes_available() > 0) {
-		USART0_DRIVER_SET_BYTE(__local_usart_tx_buffer_get_byte());
+	if (USART0_TX_BUFFER_bytes_available() > 0) {
+		USART0_DRIVER_SET_BYTE(USART0_TX_BUFFER_get_byte());
 
 	} else {
 		usart0_driver_stop_tx();
@@ -324,7 +329,7 @@ ISR(USART0_RX_vect) {
 	if (remote_usart_rx_bytes != 0) {
 
 		u8 byte = USART0_DRIVER_GET_BYTE();
-		__local_usart_rx_buffer_add_byte(byte);
+		USART0_RX_BUFFER_add_byte(byte);
 
 		if (remote_usart_rx_bytes != TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH) {
 
