@@ -385,7 +385,9 @@ void pca9670_task_run(void) {
 			
 			PCA9670_GEN_COMMAND_WRITE_IO(p_act_instance, command_buffer);
 
-			p_com_driver->clear_buffer();
+			p_com_driver->clear_rx_buffer();
+			p_com_driver->clear_tx_buffer();
+			
 			p_com_driver->set_address(p_act_instance->address);
 			p_com_driver->set_N_bytes(PCA9670_WRITE_IO_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();

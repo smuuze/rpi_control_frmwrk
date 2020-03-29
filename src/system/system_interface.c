@@ -32,7 +32,8 @@ static TRX_DRIVER_INTERFACE spi0_driver = {
 	&spi_driver_start_tx, 			//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
 	&spi_driver_wait_for_tx,		//
 	&spi_driver_stop_tx, 			//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
-	&spi_driver_clear_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&spi_driver_clear_rx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&spi_driver_clear_tx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
 	&spi_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
 	&spi_driver_mutex_request,		//
 	&spi_driver_mutex_release		//
@@ -62,7 +63,8 @@ static TRX_DRIVER_INTERFACE usart0_driver = {
 	&usart0_driver_start_tx, 		//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
 	&usart0_driver_wait_for_tx,		//
 	&usart0_driver_stop_tx, 		//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
-	&usart0_driver_clear_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&usart0_driver_clear_rx_buffer, 	//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&usart0_driver_clear_tx_buffer, 	//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
 	&usart0_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
 	&usart0_driver_mutex_request,		//
 	&usart0_driver_mutex_release		//
@@ -92,7 +94,8 @@ static TRX_DRIVER_INTERFACE usart1_driver = {
 	&usart1_driver_start_tx, 		//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
 	&usart1_driver_wait_for_tx,		//
 	&usart1_driver_stop_tx, 		//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
-	&usart1_driver_clear_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&usart1_driver_clear_rx_buffer, 	//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&usart1_driver_clear_tx_buffer, 	//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
 	&usart1_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
 	&usart1_driver_mutex_request,		//
 	&usart1_driver_mutex_release		//
@@ -124,7 +127,8 @@ static TRX_DRIVER_INTERFACE i2c0_driver = {
 	&i2c_driver_start_tx, 			//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
 	&i2c_driver_wait_for_tx,		//
 	&i2c_driver_stop_tx, 			//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
-	&i2c_driver_clear_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&i2c_driver_clear_rx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&i2c_driver_clear_tx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
 	&i2c_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
 	&i2c_driver_mutex_request,		//
 	&i2c_driver_mutex_release		//

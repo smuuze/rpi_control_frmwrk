@@ -221,7 +221,9 @@ void local_sht31_mcu_task_run(void) {
 
 			SHT31_SET_COMMAND(SHT31_COMMAND_CLEAR_STATUS_REGISTER, command_buffer);
 
-			p_com_driver->clear_buffer();
+			p_com_driver->clear_rx_buffer();
+			p_com_driver->clear_tx_buffer();
+
 			p_com_driver->set_address(SHT31_BUS_ADDRESS_1);
 			p_com_driver->set_N_bytes(SHT31_MEASUREMENT_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();
@@ -303,8 +305,10 @@ void local_sht31_mcu_task_run(void) {
 					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA - Timeout on waiting for data
 
 					p_com_driver->stop_tx();
+					p_com_driver->clear_tx_buffer();
+					
 					p_com_driver->stop_rx();
-					p_com_driver->clear_buffer();
+					p_com_driver->clear_rx_buffer();
 
 					operation_stage = SHT31_TASK_STATE_CANCEL_OPERATION;
 					break;

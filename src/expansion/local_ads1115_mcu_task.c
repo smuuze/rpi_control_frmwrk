@@ -207,7 +207,7 @@ void local_ads1115_mcu_task_run(void) {
 
 			ADS1115_BUILD_WRITE_CMD(command_buffer, ADS1115_CONVERSION_REG_ADDR, ADS1115_CONVERSION_RESET_VALUE);
 
-			p_com_driver->clear_buffer();
+			p_com_driver->clear_tx_buffer();
 			p_com_driver->set_address(ADS1115_BUS_ADDRESS_01);
 			p_com_driver->set_N_bytes(ADS1115_WRITE_COMMAND_LENGTH, command_buffer);
 			p_com_driver->start_tx();	// write reset commands to conversion register
@@ -271,8 +271,10 @@ void local_ads1115_mcu_task_run(void) {
 					PASS(); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_START_MEASSUREMENT_CHAN - Timeout on waiting for data
 
 					p_com_driver->stop_tx();
+					p_com_driver->clear_rx_buffer();
+
 					p_com_driver->stop_rx();
-					p_com_driver->clear_buffer();
+					p_com_driver->clear_tx_buffer();
 
 					actual_task_state = ADS1115_TASK_STATE_CANCEL_OPERATION;
 					break;
@@ -311,8 +313,10 @@ void local_ads1115_mcu_task_run(void) {
 					PASS(); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_PROCESS_DATA_CHAN - Timeout on waiting for data
 
 					p_com_driver->stop_tx();
+					p_com_driver->clear_rx_buffer();
+					
 					p_com_driver->stop_rx();
-					p_com_driver->clear_buffer();
+					p_com_driver->clear_tx_buffer();
 
 					actual_task_state = ADS1115_TASK_STATE_CANCEL_OPERATION;
 					break;
@@ -343,8 +347,10 @@ void local_ads1115_mcu_task_run(void) {
 					PASS(); // local_ads1115_mcu_task_run() - ADS1115_TASK_STATE_PROCESS_DATA_CHAN - Timeout on waiting for data
 
 					p_com_driver->stop_tx();
+					p_com_driver->clear_rx_buffer();
+					
 					p_com_driver->stop_rx();
-					p_com_driver->clear_buffer();
+					p_com_driver->clear_tx_buffer();
 
 					actual_task_state = ADS1115_TASK_STATE_CANCEL_OPERATION;
 					break;
