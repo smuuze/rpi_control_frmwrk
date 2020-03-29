@@ -2,12 +2,12 @@
 #define _LOCAL_SPI_DRIVER_H_
 
 
-#ifndef LOCAL_SPI_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER
-#define LOCAL_SPI_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER	512
+#ifndef SPI0_DRIVER_RX_BUFFER_SIZE
+#define SPI0_DRIVER_RX_BUFFER_SIZE	128
 #endif
 
-#ifndef LOCAL_SPI_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER
-#define LOCAL_SPI_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER	128
+#ifndef SPI0_DRIVER_TX_BUFFER_SIZE
+#define SPI0_DRIVER_TX_BUFFER_SIZE	128
 #endif
 
 #include "cfg_driver_interface.h"
@@ -96,9 +96,15 @@ void spi_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms);
 void spi_driver_stop_tx(void);
 
 /*
- * forces the module to clear all internal buffers and go back to the idle state.
+ * forces the module to clear the receive buffer
  */
-void spi_driver_clear_buffer(void);
+void spi_driver_clear_rx_buffer(void);
+
+
+/*
+ * forces the module to clear the transmit buffer
+ */
+void spi_driver_clear_tx_buffer(void);
 
 /*
  *
