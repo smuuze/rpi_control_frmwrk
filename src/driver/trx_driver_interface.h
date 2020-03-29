@@ -63,7 +63,12 @@ typedef void (*TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK)		(void);
 /*
  *
  */
-typedef void (*TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK)	(void);
+typedef void (*TRX_DRIVER_INTERFACE_CLEAR_RX_BUFFER_CALLBACK)	(void);
+
+/*
+ *
+ */
+typedef void (*TRX_DRIVER_INTERFACE_CLEAR_TX_BUFFER_CALLBACK)	(void);
 
 /*
  *
@@ -176,9 +181,14 @@ typedef struct TRX_DRIVER_INTERFACE {
 	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
 
 	/*
-	 * forces the module to clear all internal buffers and go back to the idle state.
+	 * forces the module to clear the internal receive buffer
 	 */
-	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	TRX_DRIVER_INTERFACE_CLEAR_RX_BUFFER_CALLBACK clear_rx_buffer;
+
+	/*
+	 * forces the module to clear the internal transmit buffer
+	 */
+	TRX_DRIVER_INTERFACE_CLEAR_RX_BUFFER_CALLBACK clear_tx_buffer;
 
 	/*
 	 * sets address of a device connected via bus if necessary
