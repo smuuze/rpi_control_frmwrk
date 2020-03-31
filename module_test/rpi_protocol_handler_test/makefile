@@ -26,7 +26,7 @@ BOARD_ID = 180920
 #-----------------------------------------------------------------------------
 
 VERSION_MAJOR		:= 2
-VERSION_MINOR		:= 0
+VERSION_MINOR		:= 1
 
 #-----------------------------------------------------------------------------
 
@@ -51,6 +51,7 @@ CSRCS += $(APP_PATH)/time_management/rpi/time_management.c
 CSRCS += $(APP_PATH)/common/local_msg_buffer.c
 CSRCS += $(APP_PATH)/common/signal_slot_interface.c
 CSRCS += $(APP_PATH)/common/local_mutex.c
+CSRCS += $(APP_PATH)/common/local_module_status.c
 
 ## STUBS
 CSRCS += $(APP_PATH)/driver/gpio/test/gpio_driver_test_atmega1284p.c
