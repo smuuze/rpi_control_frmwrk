@@ -61,6 +61,8 @@ int main( void ) {
 			
 	gpio_driver_init();
 
+	test_driver.initialize();
+
 	rpi_protocol_init(&test_driver);
 
 	testcase_command_answer_success(&test_driver);
