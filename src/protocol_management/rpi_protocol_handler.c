@@ -1,6 +1,7 @@
-/*! \file *********************************************************************
-
- *****************************************************************************/
+ /*
+  * \@file	protocol_management/rpi_protocl_handler.c
+  * \author	sebastian lesse
+  */
 
 #define TRACER_ON
 
@@ -75,7 +76,7 @@
 /*!
  *
  */
-#define RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS		250
+#define RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS		100
 
 /*!
  *
@@ -366,8 +367,6 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 		(rpi_protocol_spi_interface.answer_status)
 	};
 
-	DEBUG_TRACE_N(3, answer_header, "rpi_protocol_transmit_answer() - Answer-Header (incl Length byte)");
-
 	p_com_driver->configure(&driver_cfg);
 	p_com_driver->clear_tx_buffer();
 	p_com_driver->set_N_bytes(3, answer_header);
@@ -399,8 +398,6 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 
 		bytes_left -= read_length;
 		bytes_to_send += read_length;
-
-		DEBUG_TRACE_N(read_length, t_buffer, "rpi_protocol_transmit_answer() - Answer-Data");
 	}
 
 	RPI_ANSWER_BUFFER_stop_read();
@@ -411,16 +408,15 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 	p_com_driver->start_tx();
 	
 	READY_INOUT_drive_low();
-	TRX_TIMER_start();
 
 	p_com_driver->wait_for_tx(bytes_to_send, 500);
 
 	if (p_com_driver->is_ready_for_tx() == 0 ) {
-		DEBUG_PASS("rpi_protocol_receive_command() - Transmitting answer-data has FAILED (TIMEOUT) !!! ---");
+		DEBUG_PASS("rpi_protocol_transmit_answer() - Transmitting answer-data has FAILED (TIMEOUT) !!! ---");
 		error_code = RPI_TRX_STATE_TIMEOUT;
 	}
 
-	p_com_driver->stop_rx();
+	p_com_driver->stop_tx();
 	p_com_driver->mutex_rel(driver_mutex_id);
 
 	return error_code;
@@ -505,11 +501,12 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_SLEEP -> RPI_PREPARE_FOR_REQUEST");
 			// no break;
 
 		case RPI_PREPARE_FOR_REQUEST : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_PREPARE_FOR_REQUEST");
 
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_SLEEP - Request detected - Going to work");
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_PREPARE_FOR_REQUEST -> RPI_STATE_WAIT_FOR_REQUEST_RX");
 
 			actual_state = RPI_STATE_WAIT_FOR_REQUEST_RX;
 			actual_task_state = MCU_TASK_RUNNING;
@@ -521,6 +518,7 @@ void rpi_protocol_task_run(void) {
 
 			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST_RX - OPERATION TIMEOUT!!! ---");
+				DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_RX -> RPI_STATE_SLEEP");
 				actual_state = RPI_STATE_SLEEP;
 				actual_task_state = MCU_TASK_SLEEPING;
 				break;
@@ -531,8 +529,10 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			operation_timer_start();
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_RX -> RPI_STATE_RX");
 			actual_state = RPI_STATE_RX;
+
+			operation_timer_start();
 			// no break;
 
 		case RPI_STATE_RX :
@@ -560,9 +560,10 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			operation_timer_start();
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_RX -> RPI_STATE_PROCESS_COMMAND");
 			actual_state = RPI_STATE_PROCESS_COMMAND;
 
+			operation_timer_start();
 			break;
 
 		case RPI_STATE_PROCESS_COMMAND : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_PROCESS_COMMAND");
@@ -577,17 +578,19 @@ void rpi_protocol_task_run(void) {
 			if (rpi_status_is_set(RPI_STATUS_COMMAND_PENDING) != 0) {
 
 				if (rpi_status_is_set(RPI_STATUS_ANSWER_PENDING) == 0) {
-					DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_PROCESS_COMMAND - Answer not finished yet");
+					//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_PROCESS_COMMAND - Answer not finished yet");
 					break;
 				}
 
 				rpi_status_unset(RPI_STATUS_COMMAND_PENDING);
 			}
+
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_PROCESS_COMMAND -> RPI_STATE_WAIT_FOR_REQUEST_TX");
+			actual_state = RPI_STATE_WAIT_FOR_REQUEST_TX;
 			
 			READY_INOUT_pull_up();
 
 			operation_timer_start();
-			actual_state = RPI_STATE_WAIT_FOR_REQUEST_TX;
 			// no break;
 
 		case RPI_STATE_WAIT_FOR_REQUEST_TX:
@@ -604,8 +607,10 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			operation_timer_start();
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_TX -> RPI_STATE_RX");
 			actual_state = RPI_STATE_RX;
+
+			operation_timer_start();
 			// no break;
 
 	 	case RPI_STATE_TX:
@@ -620,30 +625,36 @@ void rpi_protocol_task_run(void) {
 
 			if (trx_state == RPI_TRX_STATE_TIMEOUT) {
 
-				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_TX - Receiving command has FAILED (TIMEOUT) !!! --- ");
+				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_TX - Transmitting answer has FAILED (TIMEOUT) !!! --- ");
+				DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_TX -> RPI_STATE_WAIT_FOR_RELEASE");
 				actual_state = RPI_STATE_WAIT_FOR_RELEASE;
 
 				break;
 			}
 
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_TX -> RPI_STATE_FINISH");
 			actual_state = RPI_STATE_FINISH;
+
 			break;
 
 		case RPI_STATE_FINISH:
 
 			READY_INOUT_pull_up();
+
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_FINISH -> RPI_STATE_WAIT_FOR_RELEASE");
 			actual_state = RPI_STATE_WAIT_FOR_RELEASE;
+
 			break;
 
-		case RPI_STATE_WAIT_FOR_RELEASE : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_WAIT_FOR_RELEASE");
+		case RPI_STATE_WAIT_FOR_RELEASE :
 
 			if (READY_INOUT_is_low_level()) {
-				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_RELEASE - Request Still pending");
+				DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_RELEASE -> RPI_PREPARE_FOR_REQUEST");
 				actual_state = RPI_PREPARE_FOR_REQUEST;
 				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_RELEASE - Entering state SLEEPING");
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_RELEASE -> RPI_STATE_SLEEP");
 
 			actual_state = RPI_STATE_SLEEP;
 			actual_task_state = MCU_TASK_SLEEPING;
