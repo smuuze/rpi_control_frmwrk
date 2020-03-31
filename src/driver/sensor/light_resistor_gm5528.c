@@ -1,13 +1,17 @@
-/*! \file *********************************************************************
 
- *****************************************************************************/
-
-#include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
-
-//---------- Implementation of Traces -----------------------------------------
+ /*
+  * \@file	driver/sensor/light_resistor_gm5528.c
+  * \author	sebastian lesse
+  */
 
 #define TRACER_OFF
+
+//-----------------------------------------------------------------------------
+
+#include "config.h"  // immer als erstes einbinden!
+
+//-----------------------------------------------------------------------------
+
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -70,7 +74,8 @@ void light_resistor_gm5528_calibrate(void) {
 	DEBUG_TRACE_word(steigung, "light_resistor_gm5528_calibrate() - Steigung");
 }
 
-void light_resistor_gm5528_callback(void) {
+void light_resistor_gm5528_callback(void* p_arg) {
+	(void) p_arg;
 
 	DEBUG_PASS("light_resistor_gm5528_callback()");
 
