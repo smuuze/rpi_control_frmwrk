@@ -12,7 +12,7 @@
 /*!
  *
  */
-typedef void (*SIGNAL_SLOT_INTERFACE_CALLBACK)	(void);
+typedef void (*SIGNAL_SLOT_INTERFACE_CALLBACK)	(void* p_arg);
 
 /*!
  *
@@ -42,8 +42,8 @@ typedef struct SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT {
 		signal_slot_init(&_##signal_name##_context);						\
 	}												\
 													\
-	static void signal_name##_send(void) {								\
-		signal_slot_send(&_##signal_name##_context);						\
+	static void signal_name##_send(void* p_arg) {							\
+		signal_slot_send(&_##signal_name##_context, p_arg);					\
 	}												\
 													\
 	void signal_name##_connect(SIGNAL_SLOT_INTERFACE_SLOT_CONTEXT_TYPE* p_slot_context) {		\
@@ -74,7 +74,7 @@ void signal_slot_init(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_context);
 /*!
  *
  */
-void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_context);
+void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_context, void* p_arg);
 
 /*!
  *

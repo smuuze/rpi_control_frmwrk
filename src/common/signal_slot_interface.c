@@ -21,7 +21,7 @@ void signal_slot_init(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_contex
 /*!
  *
  */
-void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_context) {
+void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_context, void* p_arg) {
 
 	if (time_mgmnt_istimeup_u16(p_signal_context->send_timeout_ms, SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS) == 0) {
 		DEBUG_PASS("signal_slot_send() - Timeout stil active - A'int sending signal !!! ---");
@@ -39,7 +39,7 @@ void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_contex
 		}
 
 		if (p_act->p_event_callback != 0) {
-			p_act->p_event_callback();
+			p_act->p_event_callback(p_arg);
 		}
 
 		p_act = p_act->p_next;
