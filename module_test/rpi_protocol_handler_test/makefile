@@ -13,7 +13,7 @@
 # VERSION        = 0x107
 
 # PROJEKT Name des Hexfiles
-PROJECT = Module_Test_RPI_PROTOCOL_HANDLER
+PROJECT = Unittest_RPI_PROTOCOL_HANDLER
 
 # HW_DEVICE_TYPE ( siehe http://ew.deister-gmbh.de/cgi-bin/ibase/gertyp.cgi )
 HW_DEVICE_TYPE = 0x22B2
@@ -25,7 +25,7 @@ BOARD_ID = 180920
 
 #-----------------------------------------------------------------------------
 
-VERSION_MAJOR		:= 1
+VERSION_MAJOR		:= 2
 VERSION_MINOR		:= 0
 
 #-----------------------------------------------------------------------------
@@ -36,28 +36,27 @@ MAKE_PATH   = ../../make
 
 #-----------------------------------------------------------------------------
 
-CSRCS += main.c
-
-CSRCS += rpi_protocol_handler_test_send_version_command_and_receive_answer.c
-CSRCS += rpi_protocol_handler_test_activate_ready_pin.c
-
-CSRCS += $(APP_PATH)/platine/board_180920.c
+## FILE TO TEST
 CSRCS += $(APP_PATH)/protocol_management/rpi_protocol_handler.c
 
-#CSRCS += $(APP_PATH)/command_handler/rpi_command_handler.c
+## TESTBENCH
+CSRCS += testbench_rpi_protocol_handler.c
 
-#CSRCS += $(APP_PATH)/io_management/io_input_controller.c
-#CSRCS += $(APP_PATH)/io_management/io_output_controller.c
+## TESTCASES
+CSRCS += testcase_command_answer_success.c
 
+## MODULES
+CSRCS += $(APP_PATH)/platine/board_180920.c
 CSRCS += $(APP_PATH)/time_management/rpi/time_management.c
-
 CSRCS += $(APP_PATH)/common/local_msg_buffer.c
+CSRCS += $(APP_PATH)/common/signal_slot_interface.c
 CSRCS += $(APP_PATH)/common/local_mutex.c
 
+## STUBS
 CSRCS += $(APP_PATH)/driver/gpio/test/gpio_driver_test_atmega1284p.c
 CSRCS += $(APP_PATH)/driver/communication/test/communication_driver_test.c
 
-# --------- Tracer
+#-----------------------------------------------------------------------------
 
 TRACER_CFG = CONSOLE
 include $(MAKE_PATH)/make_tracer.mk
