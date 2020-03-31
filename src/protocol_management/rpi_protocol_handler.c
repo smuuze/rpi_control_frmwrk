@@ -2,12 +2,11 @@
 
  *****************************************************************************/
 
-#define TRACER_OFF
+#define TRACER_ON
 
 //-----------------------------------------------------------------------------
 
 #include "config.h"
-#include "specific.h"
 
 //-----------------------------------------------------------------------------
 
@@ -17,7 +16,7 @@
 
 #include "system/system_interface.h"
 
-#include "common/local_context.h"
+//#include "common/local_context.h"
 #include "common/local_msg_buffer.h"
 #include "common/local_module_status.h"
 #include "common/local_mutex.h"
@@ -28,10 +27,12 @@
 #include "driver/cfg_driver_interface.h"
 #include "driver/driver_specific_spi.h"
 
-#include "protocol_management/rpi_protocol_handler.h"
-#include "command_handler/rpi_command_handler.h"
+//#include "command_handler/rpi_command_handler.h"
 #include "command_management/protocol_interface.h"
 #include "time_management/time_management.h"
+#include "common/signal_slot_interface.h"
+
+#include "protocol_management/rpi_protocol_handler.h"
 
 //-----------------------------------------------------------------------------
 
@@ -110,21 +111,22 @@ typedef enum {
 
 //-----------------------------------------------------------------------------
 
-
 BUILD_LOCAL_MSG_BUFFER( , RPI_COMMAND_BUFFER, 32)
 BUILD_LOCAL_MSG_BUFFER( , RPI_ANSWER_BUFFER,  32)
 
 TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
-
 TIME_MGMN_BUILD_STATIC_TIMER_U16(TRX_TIMER)
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(rpi_status, 2)
 
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SIGNAL_CMD_RECEIVED)
+
+//-----------------------------------------------------------------------------
 
 /*!
  *
  */
-static void _set_finished_debus(u8 err_code);
+//static void _set_finished_debus(u8 err_code);
 
 /*!
  *
@@ -187,6 +189,7 @@ static ANSWER_BUFFER_INTERFACE rpi_cmd_handler_answer_buffer = {
 /*!
  *
  */
+/*
 static PROTOCOL_INTERFACE rpi_protocol_debus_interface = {
 
 	0, // commnand-length
@@ -197,6 +200,7 @@ static PROTOCOL_INTERFACE rpi_protocol_debus_interface = {
 	&rpi_cmd_handler_command_buffer,
 	&rpi_cmd_handler_answer_buffer
 };
+*/
 
 /*!
  *
@@ -218,42 +222,6 @@ static PROTOCOL_INTERFACE rpi_protocol_spi_interface = {
  *
  * @param err_code
  */
-static void _set_finished_debus(u8 err_code) {
-
-	#if defined HAS_DEBUS_INTERFACE && HAS_DEBUS_INTERFACE == 1
-	{
-		DEBUG_TRACE_byte(err_code, "rpi_protocol_set_finished_debus()");
-
-		rpi_cmd_handler_set_unrequested();
-
-		if (err_code != CMD_NO_ERR) {
-			debus_error_message(ERR_INVALID_DATA);
-			return;
-		}
-
-		debus_start_answer();
-		debus_put_byte(RPI_ANSWER_BUFFER_bytes_available());
-		debus_put_byte(rpi_protocol_debus_interface.command_code);
-		debus_put_byte(err_code);
-
-		RPI_ANSWER_BUFFER_start_read();
-
-		while (RPI_ANSWER_BUFFER_bytes_available()) {
-			debus_put_byte(RPI_ANSWER_BUFFER_get_byte());
-		}
-
-		RPI_ANSWER_BUFFER_stop_read();
-		debus_stop_message();
-	}
-	#else
-	(void) err_code;
-	#endif
-}
-
-/*!
- *
- * @param err_code
- */
 static void _set_finished_spi(u8 err_code) {
 
 	DEBUG_TRACE_byte(err_code, "_set_finished_spi() - Error: ");
@@ -262,7 +230,7 @@ static void _set_finished_spi(u8 err_code) {
 
 	rpi_status_unset(RPI_STATUS_COMMAND_PENDING);
 	rpi_status_set(RPI_STATUS_ANSWER_PENDING);
-	rpi_cmd_handler_set_unrequested();
+	//rpi_cmd_handler_set_unrequested();
 }
 
 /*!
@@ -357,7 +325,9 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 	RPI_COMMAND_BUFFER_stop_write();
 
 	rpi_status_set(RPI_STATUS_COMMAND_PENDING);
-	rpi_cmd_handler_set_request(&rpi_protocol_spi_interface);
+
+	//rpi_cmd_handler_set_request(&rpi_protocol_spi_interface);
+	SIGNAL_CMD_RECEIVED_send(&rpi_protocol_spi_interface);
 
 	EXIT_rpi_protocol_receive_command :
 	{
@@ -380,7 +350,7 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 	u8 driver_mutex_id = p_com_driver->mutex_req();
 	if (driver_mutex_id == MUTEX_INVALID_ID) {
 		DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST_RX - Requesting MUTEX has FAILED !!! ---");
-		RPI_TRX_STATE_BUSY;
+		return RPI_TRX_STATE_BUSY;
 	}
 
 	DEBUG_PASS("rpi_protocol_transmit_answer()");
@@ -467,11 +437,13 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 	rpi_protocol_spi_interface.command_length = 0;
 	rpi_protocol_spi_interface.arrival_time = 0;
 
-	rpi_protocol_debus_interface.command_length = 0;
-	rpi_protocol_debus_interface.arrival_time = 0;
+	//rpi_protocol_debus_interface.command_length = 0;
+	//rpi_protocol_debus_interface.arrival_time = 0;
 
 	RPI_COMMAND_BUFFER_init();
 	RPI_ANSWER_BUFFER_init();
+
+	SIGNAL_CMD_RECEIVED_init();
 
 	driver_cfg.module.spi = _com_driver_cfg_spi;
 
@@ -678,53 +650,6 @@ void rpi_protocol_task_run(void) {
 
 			break;
 	}
-}
-
-void rpi_protocol_handler_debus_handler(void) {
-
-	#if defined HAS_DEBUS_INTERFACE && HAS_DEBUS_INTERFACE == 1
-	{
-		if (rpi_protocol_debus_interface.command_length == 0) {
-
-			rpi_protocol_debus_interface.command_length = debus_get_byte();
-			if (rpi_protocol_debus_interface.command_length != 0xFF) {
-				rpi_protocol_debus_interface.command_length = 0;
-			}
-		}
-
-		if (rpi_protocol_debus_interface.command_length == 0) {
-			return;
-		}
-
-		if (rpi_protocol_debus_interface.command_length != debus_bytes_available()) {
-			return;
-		}
-
-		rpi_protocol_debus_interface.arrival_time = time_mgmnt_gettime_u16;
-		TRACE_byte(rpi_protocol_debus_interface.command_length); // rpi_protocol_handler_debus_handler() - Command-Length
-
-		rpi_protocol_debus_interface.command_code = debus_get_byte();
-		TRACE_byte(rpi_protocol_debus_interface.command_code); // rpi_protocol_handler_debus_handler() - Command-Code
-
-		u8 byte_count = debus_bytes_available();
-		const u8* p_buffer = debus_get_pointer(byte_count);
-
-		if (byte_count > RPI_COMMAND_BUFFER_size()) {
-			byte_count = RPI_COMMAND_BUFFER_size();
-		}
-
-		rpi_status_set(RPI_STATUS_COMMAND_PENDING);
-
-		RPI_COMMAND_BUFFER_clear_all();
-		RPI_ANSWER_BUFFER_clear_all();
-
-		RPI_COMMAND_BUFFER_start_write();
-		RPI_COMMAND_BUFFER_add_N_bytes(byte_count, p_buffer);
-		RPI_COMMAND_BUFFER_stop_write();
-
-		rpi_cmd_handler_set_request(&rpi_protocol_debus_interface);
-	}
-	#endif
 }
 
 u8 rpi_protocol_handler_get_actual_state(void) {
