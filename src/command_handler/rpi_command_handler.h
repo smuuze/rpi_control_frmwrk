@@ -6,8 +6,6 @@
 #define RPI_COMMAND_HANDLER_H_
 
 #include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
-
 
 #include "command_management/command_handler_interface.h"
 

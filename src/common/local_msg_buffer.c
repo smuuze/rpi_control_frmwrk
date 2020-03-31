@@ -1,17 +1,27 @@
-
-
-#include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
-
-#include "local_msg_buffer.h"
-
-//---------- Implementation of Traces -----------------------------------------
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * 	@file		common/msg_buffer.c
+ * 	@author		sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
 #define TRACER_OFF
+
+//-----------------------------------------------------------------------------
+
+#include "config.h"  // immer als erstes einbinden!
+
+//-----------------------------------------------------------------------------
+
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
 
+#include "local_msg_buffer.h"
+
+//-----------------------------------------------------------------------------
 
 void local_msg_buffer_init(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr) {
 

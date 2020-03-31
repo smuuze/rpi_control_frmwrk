@@ -1,9 +1,20 @@
-/*! \file *********************************************************************
 
- *****************************************************************************/
+ /*
+  * \@file	command_handler/rpi_command_handler.c
+  * \author	sebastian lesse
+  */
+
+#define TRACER_OFF
+
+//-----------------------------------------------------------------------------
 
 #include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
+
+//-----------------------------------------------------------------------------
+
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #include "command_management/command_handler_interface.h"
 #include "command_management/command_buffer_interface.h"
@@ -11,20 +22,32 @@
 #include "command_management/protocol_interface.h"
 
 #include "common/local_context.h"
+#include "common/signal_slot_interface.h"
+
 #include "io_management/io_input_controller.h"
 #include "io_management/io_output_controller.h"
 
-//---------- Implementation of Traces -----------------------------------------
+#include "command_handler/rpi_command_handler.h"
 
-#define TRACER_OFF
-#include "tracer.h"
+//-----------------------------------------------------------------------------
+
+static void rpi_command_handler_slot_cmd_received_CALLBACK(void* p_arg) {
+	rpi_cmd_handler_set_request((PROTOCOL_INTERFACE*)p_arg);
+}
+
+//-----------------------------------------------------------------------------
+
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SIGNAL_CMD_RECEIVED, RPI_CMD_HANDLER_SLOT_CMD_RECEIVED, rpi_command_handler_slot_cmd_received_CALLBACK)
 
 //-----------------------------------------------------------------------------
 
 static PROTOCOL_INTERFACE* p_act_protocol;
 
+//-----------------------------------------------------------------------------
+
 void rpi_cmd_handler_init(void) {
 	p_act_protocol = 0;
+	RPI_CMD_HANDLER_SLOT_CMD_RECEIVED_connect();
 }
 
 void rpi_cmd_handler_set_request(PROTOCOL_INTERFACE* p_protocol_handler) {

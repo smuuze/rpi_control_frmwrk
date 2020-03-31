@@ -1,10 +1,27 @@
-#ifndef _SYSTEM_INTERFACE_H_
-#define _SYSTEM_INTERFACE_H_
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * 	@file		system/system_interface.c
+ * 	@author		sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
+
+#define TRACER_OFF
+
+//-----------------------------------------------------------------------------
 
 #include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
+
+//-----------------------------------------------------------------------------
+
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
 
 #include "system_interface.h"
+
+//-----------------------------------------------------------------------------
 
 
 #if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
@@ -40,6 +57,8 @@ static TRX_DRIVER_INTERFACE spi0_driver = {
 };
 #endif // #if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 
+//-----------------------------------------------------------------------------
+
 #if defined HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
 
 #include "driver/communication/usart/usart0_driver.h"
@@ -71,6 +90,8 @@ static TRX_DRIVER_INTERFACE usart0_driver = {
 };
 #endif // HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
 
+//-----------------------------------------------------------------------------
+
 #if defined HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
 
 #include "driver/communication/usart/usart1_driver.h"
@@ -101,6 +122,8 @@ static TRX_DRIVER_INTERFACE usart1_driver = {
 	&usart1_driver_mutex_release		//
 };
 #endif // HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
+
+//-----------------------------------------------------------------------------
 
 #if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
 
@@ -134,6 +157,8 @@ static TRX_DRIVER_INTERFACE i2c0_driver = {
 	&i2c_driver_mutex_release		//
 };
 #endif // #if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
+
+//-----------------------------------------------------------------------------
 
 
 #ifndef config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE
@@ -285,7 +310,7 @@ SYSTEM_INTERFACE_IO_PIN_LEVEL __system_interface_gpio_get_level(const GPIO_DRIVE
 #define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK __system_interface_gpio_get_level
 #endif
 
-
+//-----------------------------------------------------------------------------
 
 config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE
 config_SYSTEM_INTERFACE_GET_TIME_U16_PROTOTYPE
@@ -308,6 +333,7 @@ config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_PROTOTYPE
 config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_PROTOTYPE
 config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
 
+//-----------------------------------------------------------------------------
 
 const SYSTEM_INTERFACE i_system = {
 	{
@@ -354,5 +380,3 @@ const SYSTEM_INTERFACE i_system = {
 		#endif
 	}
 };
-
-#endif // _PROTOCOL_DRIVER_INTERFACE_H_
