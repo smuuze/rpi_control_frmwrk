@@ -157,14 +157,14 @@ BUILD_MUTEX(spi_mutex)
 BUILD_LOCAL_MSG_BUFFER( , SPI0_TX_BUFFER, SPI0_DRIVER_TX_BUFFER_SIZE)
 BUILD_LOCAL_MSG_BUFFER( , SPI0_RX_BUFFER, SPI0_DRIVER_RX_BUFFER_SIZE)
 
-BUILD_MODULE_STATUS_FAST(spi_driver_status, 2)
+BUILD_MODULE_STATUS_FAST(SPI0_STATUS, 2)
 
 TIME_MGMN_BUILD_STATIC_TIMER_U16(TRX_TIMER)
 
 SPI0_BUILD_CFG()
 
-#define SPI_DRIVER_STATUS_RX_ACTIVE	0
-#define SPI_DRIVER_STATUS_TX_ACTIVE	1
+#define SPI0_STATUS_RX_ACTIVE	0
+#define SPI0_STATUS_TX_ACTIVE	1
 
 /*!
  *
@@ -375,11 +375,11 @@ u8 spi_driver_set_N_bytes(u8 num_bytes, const u8* p_buffer_from) {
 }
 
 u8 spi_driver_is_ready_for_tx(void) {
-	return spi_driver_status_is_set(SPI_DRIVER_STATUS_TX_ACTIVE) == 0 ? 1 : 0;
+	return SPI0_STATUS_is_set(SPI0_STATUS_TX_ACTIVE) == 0 ? 1 : 0;
 }
 
 u8 spi_driver_is_ready_for_rx(void) {
-	return spi_driver_status_is_set(SPI_DRIVER_STATUS_RX_ACTIVE) == 0 ? 1 : 0;
+	return SPI0_STATUS_is_set(SPI0_STATUS_RX_ACTIVE) == 0 ? 1 : 0;
 }
 
 
@@ -390,7 +390,7 @@ void spi_driver_start_rx(u16 num_of_rx_bytes) {
 	(void) num_of_rx_bytes;
 
 	SPI0_RX_BUFFER_start_write();
-	spi_driver_status_set(SPI_DRIVER_STATUS_RX_ACTIVE);
+	SPI0_STATUS_set(SPI0_STATUS_RX_ACTIVE);
 }
 
 void spi_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
@@ -443,7 +443,7 @@ void spi_driver_stop_rx(void) {
 
 	SPI_RX_PASS(); // spi_driver_stop_rx()
 
-	spi_driver_status_unset(SPI_DRIVER_STATUS_RX_ACTIVE);
+	SPI0_STATUS_unset(SPI0_STATUS_RX_ACTIVE);
 	SPI0_RX_BUFFER_stop_write();
 }
 
@@ -452,7 +452,7 @@ void spi_driver_start_tx(void) {
 
 	SPI_TX_PASS(); // spi_driver_start_tx()
 
-	spi_driver_status_set(SPI_DRIVER_STATUS_TX_ACTIVE);
+	SPI0_STATUS_set(SPI0_STATUS_TX_ACTIVE);
 	SPI0_TX_BUFFER_start_read();
 
 	if (SPI0_TX_BUFFER_bytes_available() == 0) {
@@ -485,15 +485,18 @@ void spi_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
 	u8 bytes_transmitted = 0;
 	u16 time_reference_ms = time_mgmnt_gettime_u16();
 
-	while (time_mgmnt_istimeup_u16(time_reference_ms, timeout_ms) == 0) {
+	while (bytes_transmitted < num_bytes) {
+
+		if (time_mgmnt_istimeup_u16(time_reference_ms, timeout_ms) == 0) {
+			return;
+		}
 
 		if (SPI0_IS_TRX_COMPLETE() != 0) {
 
 			u8 rx_byte = SPI0_GET_BYTE();
 
-			if (spi_driver_status_is_set(SPI_DRIVER_STATUS_RX_ACTIVE)) {
+			if (SPI0_STATUS_is_set(SPI0_STATUS_RX_ACTIVE)) {
 				SPI0_RX_BUFFER_add_byte(rx_byte);
-				bytes_transmitted += 1;
 			}
 
 			u8 tx_byte = SPI0_TX_BUFFER_get_byte();
@@ -501,9 +504,7 @@ void spi_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
 
 			SPI_TX_TRACE_byte(tx_byte); // ISR(SPI_STC_vect) - new byte transmitted
 
-			if (bytes_transmitted >= num_bytes) {
-				break;
-			}
+			bytes_transmitted += 1;
 		}
 	}
 
@@ -516,7 +517,7 @@ void spi_driver_stop_tx(void) {
 	//SPI_TX_PASS(); // spi_driver_stop_tx()
 
 	SPI0_TX_BUFFER_stop_read();
-	spi_driver_status_unset(SPI_DRIVER_STATUS_TX_ACTIVE);
+	SPI0_STATUS_unset(SPI0_STATUS_TX_ACTIVE);
 }
 
 
@@ -557,7 +558,7 @@ ISR(SPI_STC_vect) {
 
 	SPI_ISR_TRACE_byte(_status_register); // ISR(SPI_STC_vect) -----------------------------------------------------------------
 
-	if (spi_driver_status_is_set(SPI_DRIVER_STATUS_TX_ACTIVE)) {
+	if (SPI0_STATUS_is_set(SPI0_STATUS_TX_ACTIVE)) {
 
 		u8 tx_byte = SPI0_TX_BUFFER_get_byte();
 		SPI0_SET_BYTE(tx_byte);
@@ -572,7 +573,7 @@ ISR(SPI_STC_vect) {
 		SPI0_SET_BYTE(DRIVER_SPI_PADDING_BYTE);
 	}
 
-	if (spi_driver_status_is_set(SPI_DRIVER_STATUS_RX_ACTIVE)) {
+	if (SPI0_STATUS_is_set(SPI0_STATUS_RX_ACTIVE)) {
 		SPI_ISR_TRACE_byte(rx_byte); // ISR(SPI_STC_vect) - new byte received
 		SPI0_RX_BUFFER_add_byte(rx_byte);
 	}
