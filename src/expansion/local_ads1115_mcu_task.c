@@ -1,13 +1,17 @@
-/*! \file *********************************************************************
 
- *****************************************************************************/
+ /*
+  * \@file	expansion/ads1115_mcu_task.c
+  * \author	sebastian lesse
+  */
+
+#define TRACER_OFF
+
+//-----------------------------------------------------------------------------
 
 #include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
 
-//---------- Implementation of Traces -----------------------------------------
+//-----------------------------------------------------------------------------
 
-#define TRACER_ON
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -365,21 +369,23 @@ void local_ads1115_mcu_task_run(void) {
 			p_com_driver->get_N_bytes(ADS1115_MEASUREMENT_ANSWER_LENGTH, answer_buffer);
 			TRACE_N(ADS1115_MEASUREMENT_ANSWER_LENGTH, answer_buffer); // raw value of adc-channel <<<<<<<<<<<<<<
 
+			u16 new_adc_value = ((u16)answer_buffer[0] << 8 ) | (u16)answer_buffer[1];
+
 			switch (adc_channel_index) {
 				case 0:
-					GET_SYSTEM(data).adc.channel_0 = (answer_buffer[0] << 8 ) | answer_buffer[1];
+					GET_SYSTEM(data).adc.channel_0 = new_adc_value;
 					break;
 
 				case 1:
-					GET_SYSTEM(data).adc.channel_1 = (answer_buffer[0] << 8 ) | answer_buffer[1];
+					GET_SYSTEM(data).adc.channel_1 = new_adc_value;
 					break;
 
 				case 2:
-					GET_SYSTEM(data).adc.channel_2 = (answer_buffer[0] << 8 ) | answer_buffer[1];
+					GET_SYSTEM(data).adc.channel_2 = new_adc_value;
 					break;
 
 				case 3 :
-					GET_SYSTEM(data).adc.channel_3 = (answer_buffer[0] << 8 ) | answer_buffer[1];
+					GET_SYSTEM(data).adc.channel_3 = new_adc_value;
 					break;
 
 				default: break;
@@ -391,8 +397,8 @@ void local_ads1115_mcu_task_run(void) {
 
 			}
 
-			SIGNAL_ADC_NEW_VALUES_AVAILABLE_send();
-
+			SIGNAL_ADC_NEW_VALUES_AVAILABLE_send(&new_adc_value);
+			actual_task_state = ADS1115_TASK_STATE_CANCEL_OPERATION;
 			// no break;
 
 		case ADS1115_TASK_STATE_CANCEL_OPERATION :
