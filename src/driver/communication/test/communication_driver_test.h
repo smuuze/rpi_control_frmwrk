@@ -31,7 +31,9 @@ void test_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms);
 
 void test_driver_stop_tx (void);
 
-void test_driver_clear_buffer (void);
+void test_driver_clear_rx_buffer (void);
+
+void test_driver_clear_tx_buffer (void);
 
 void test_driver_set_address (u8 addr);
 
