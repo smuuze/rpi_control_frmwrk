@@ -102,6 +102,8 @@ void command_controller_handle_command(void) {
 		i++;
 	}
 
+	_act_cmd_handler->unset_reqeust();
+
 	if (cmd_ret_code == 0xFF) {
 		cmd_ret_code = _act_cmd_handler->default_handler();
 	}
