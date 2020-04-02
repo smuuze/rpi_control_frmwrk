@@ -118,7 +118,7 @@ BUILD_LOCAL_MSG_BUFFER( , RPI_ANSWER_BUFFER,  32)
 TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
 TIME_MGMN_BUILD_STATIC_TIMER_U16(TRX_TIMER)
 
-BUILD_MODULE_STATUS_FAST_VOLATILE(rpi_status, 2)
+BUILD_MODULE_STATUS_FAST_VOLATILE(RPI_STATUS, 2)
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SIGNAL_CMD_RECEIVED)
 
@@ -225,12 +225,16 @@ static PROTOCOL_INTERFACE rpi_protocol_spi_interface = {
  */
 static void _set_finished_spi(u8 err_code) {
 
+	if (RPI_STATUS_is_set(RPI_STATUS_COMMAND_PENDING) == 0) {
+		return;
+	}
+
 	DEBUG_TRACE_byte(err_code, "_set_finished_spi() - Error: ");
 
 	rpi_protocol_spi_interface.answer_status = err_code;
 
-	rpi_status_unset(RPI_STATUS_COMMAND_PENDING);
-	rpi_status_set(RPI_STATUS_ANSWER_PENDING);
+	RPI_STATUS_unset(RPI_STATUS_COMMAND_PENDING);
+	RPI_STATUS_set(RPI_STATUS_ANSWER_PENDING);
 	//rpi_cmd_handler_set_unrequested();
 }
 
@@ -325,7 +329,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
 	RPI_COMMAND_BUFFER_stop_write();
 
-	rpi_status_set(RPI_STATUS_COMMAND_PENDING);
+	RPI_STATUS_set(RPI_STATUS_COMMAND_PENDING);
 
 	//rpi_cmd_handler_set_request(&rpi_protocol_spi_interface);
 	SIGNAL_CMD_RECEIVED_send(&rpi_protocol_spi_interface);
@@ -401,7 +405,7 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 	}
 
 	RPI_ANSWER_BUFFER_stop_read();
-	rpi_status_unset(RPI_STATUS_ANSWER_PENDING);
+	RPI_STATUS_unset(RPI_STATUS_ANSWER_PENDING);
 
 	RPI_TRX_STATE error_code = RPI_TRX_STATE_COMPLETE;
 
@@ -428,7 +432,7 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	DEBUG_PASS("rpi_protocol_init() - START");
 
-	rpi_status_clear_all();
+	RPI_STATUS_clear_all();
 
 	rpi_protocol_spi_interface.command_length = 0;
 	rpi_protocol_spi_interface.arrival_time = 0;
@@ -570,19 +574,19 @@ void rpi_protocol_task_run(void) {
 
 			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS) != 0) {
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_PROCESS_COMMAND - Command has TIMED OUT !!! ---");
-				rpi_status_unset(RPI_STATUS_ANSWER_PENDING);
+				RPI_STATUS_unset(RPI_STATUS_ANSWER_PENDING);
 				actual_state = RPI_STATE_FINISH;
 				break;
 			}
 
-			if (rpi_status_is_set(RPI_STATUS_COMMAND_PENDING) != 0) {
+			if (RPI_STATUS_is_set(RPI_STATUS_COMMAND_PENDING) != 0) {
 
-				if (rpi_status_is_set(RPI_STATUS_ANSWER_PENDING) == 0) {
+				if (RPI_STATUS_is_set(RPI_STATUS_ANSWER_PENDING) == 0) {
 					//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_PROCESS_COMMAND - Answer not finished yet");
 					break;
 				}
 
-				rpi_status_unset(RPI_STATUS_COMMAND_PENDING);
+				RPI_STATUS_unset(RPI_STATUS_COMMAND_PENDING);
 			}
 
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_PROCESS_COMMAND -> RPI_STATE_WAIT_FOR_REQUEST_TX");
@@ -598,7 +602,6 @@ void rpi_protocol_task_run(void) {
 			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST_T - OPERATION TIMEOUT!!! ---");
 				actual_state = RPI_STATE_FINISH;
-				actual_task_state = MCU_TASK_SLEEPING;
 				break;
 			}
 			
@@ -607,13 +610,24 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_TX -> RPI_STATE_RX");
-			actual_state = RPI_STATE_RX;
+			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_TX -> RPI_STATE_TX");
+			actual_state = RPI_STATE_TX;
 
 			operation_timer_start();
 			// no break;
 
 	 	case RPI_STATE_TX:
+
+			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
+				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_TX - OPERATION TIMEOUT!!! ---");
+				actual_state = RPI_STATE_FINISH;
+				break;
+			}
+			
+			if (READY_INOUT_is_low_level()) {
+				//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST_RX - Ready Pin still low !!! ---");
+				break;
+			}
 
 			// block until answer tx complete or timeout
 			trx_state = rpi_protocol_transmit_answer();
@@ -626,8 +640,8 @@ void rpi_protocol_task_run(void) {
 			if (trx_state == RPI_TRX_STATE_TIMEOUT) {
 
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_TX - Transmitting answer has FAILED (TIMEOUT) !!! --- ");
-				DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_TX -> RPI_STATE_WAIT_FOR_RELEASE");
-				actual_state = RPI_STATE_WAIT_FOR_RELEASE;
+				DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_TX -> RPI_STATE_FINISH");
+				actual_state = RPI_STATE_FINISH;
 
 				break;
 			}
