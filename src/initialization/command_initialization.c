@@ -37,6 +37,7 @@ static COMMAND_HANDLER_INTERFACE rpi_command_handler = {
 	(sizeof(rpi_cmd_handler_table) / sizeof(COMMAND_TABLE_INTERFACE)),//rpi_command_handler_table_size, 	// u8 num_command_handler;
 	&rpi_cmd_handler_init, 			// CMD_PROTOCOL_INTERFACE_INITIALIZATION_CALLBACK	init;
 	&rpi_cmd_handler_set_request,		// CMD_PROTOCOL_INTERFACE_SET_REQUESTED_CALLBACK	set_request;
+	&rpi_cmd_handler_set_unrequested,
 	&rpi_cmd_handler_get_protocol,
 	&rpi_cmd_handler_is_requested,		// CMD_PROTOCOL_INTERFACE_IS_REQUESTED_CALLBACK		is_requested;
 	&rpi_cmd_handler_get_command_code,	// CMD_PROTOCOL_INTERFACE_GET_COMMAND_CODE_CALLBACK 	get_cmd_code;
