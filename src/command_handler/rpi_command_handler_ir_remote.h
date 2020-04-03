@@ -17,6 +17,23 @@
 
 // --------------------------------------------------------------------------------
 
+#define IR_MANUFACTOR_SAMSUNG		0x01
+#define IR_MANUFACTOR_JVC		0x02
+#define IR_MANUFACTOR_SONY		0x03
+
+#define IR_DEVICE_TV			0x01
+#define IR_DEVICE_RADIO			0x02
+#define IR_DEVICE_BLUE_RAY_PLAYER	0x03
+
+#define IR_COMMAND_POWER_ON		0x01
+#define IR_COMMAND_POWER_OFF		0x01
+#define IR_COMMAND_VOLUME_UP		0x01
+#define IR_COMMAND_VOLUME_DOWN		0x01
+#define IR_COMMAND_CHANNEL_UP		0x01
+#define IR_COMMAND_CHANNEL_DOWN		0x01
+
+// --------------------------------------------------------------------------------
+
 /*
  *
  */
