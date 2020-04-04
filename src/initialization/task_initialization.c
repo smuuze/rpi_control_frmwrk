@@ -81,24 +81,6 @@ static MCU_TASK_INTERFACE sht31_mcu_task = {
 #endif
 
 
-#include "command_controller.h"
-static MCU_TASK_INTERFACE cmd_mcu_task = {
-
-	0, 						// u8 identifier,
-	0, 						// u16 new_run_timeout,
-	0, 						// u16 last_run_time,
-	&command_controller_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
-	&command_controller_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
-	&command_controller_task_get_state, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
-	&command_controller_handle_command, 		// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
-	&command_controller_background_run,		// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
-	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
-	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
-	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
-	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
-	0						// next-task
-};
-
 #ifdef HAS_MANAGEMENT_MODULE_IO
 #include "io_management/io_input_controller.h"
 static MCU_TASK_INTERFACE io_input_controller_task = {
@@ -262,9 +244,6 @@ void task_initialization(void) {
 	DEBUG_PASS("task_initialization() - ADS1115 (ADC) task");
 	mcu_task_controller_register_task(&ads1115_mcu_task);
 	#endif
-	
-	mcu_task_controller_register_task(&cmd_mcu_task);
-	//-------mcu_task_controller_register_task(&debus_task);
 
 	#if defined (HAS_APP_TASK_TEST_TRACER) && (HAS_APP_TASK_TEST_TRACER) == 1
 	mcu_task_controller_register_task(&test_tracer_task);

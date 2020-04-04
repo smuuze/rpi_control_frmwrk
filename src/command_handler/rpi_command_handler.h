@@ -20,6 +20,7 @@
 #define RPI_COMMAND_GET_HUMIDTY			0x08
 #define RPI_COMMAND_GET_ADC			0x09
 #define RPI_COMMAND_GET_LIGHT			0x0A
+#define RPI_COMMAND_IR_REMOTE			0x0B
 
 
 /*!
@@ -60,7 +61,7 @@ u8 rpi_cmd_handler_is_requested(void);
  *
  * @return
  */
-u8 rpi_cmd_default_handler(void);
+u8 rpi_cmd_default_handler(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
@@ -68,60 +69,60 @@ u8 rpi_cmd_default_handler(void);
  * @param p_answ_buffer
  * @return
  */
-u8 rpi_cmd_get_version(void);
+u8 rpi_cmd_get_version(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
  * @return
  */
-u8 rpi_cmd_get_input_list(void);
+u8 rpi_cmd_get_input_list(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
  * @return
  */
-u8 rpi_cmd_get_output_list(void);
+u8 rpi_cmd_get_output_list(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
  * @return
  */
-u8 rpi_cmd_set_output(void);
+u8 rpi_cmd_set_output(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
  * @return
  */
-u8 rpi_cmd_get_input_state(void);
+u8 rpi_cmd_get_input_state(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
  * @return
  */
-u8 rpi_cmd_get_output_state(void);
+u8 rpi_cmd_get_output_state(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
  * @return
  */
-u8 rpi_cmd_get_temperature(void);
+u8 rpi_cmd_get_temperature(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
  * @return
  */
-u8 rpi_cmd_get_humidity(void);
+u8 rpi_cmd_get_humidity(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
  * @return
  */
-u8 rpi_cmd_get_adc(void);
+u8 rpi_cmd_get_adc(PROTOCOL_INTERFACE* p_protocol);
 
 /*!
  *
  * @return
  */
-u8 rpi_cmd_get_light(void);
+u8 rpi_cmd_get_light(PROTOCOL_INTERFACE* p_protocol);
 
 #endif //RPI_COMMAND_HANDLER_H_

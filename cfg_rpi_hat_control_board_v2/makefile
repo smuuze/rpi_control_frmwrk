@@ -77,6 +77,12 @@ MANAGEMENT_MODULE_CFG += RPI_PROTOCOL
 
 #-----------------------------------------------------------------------------
 
+COMMAND_INTERFACE_CFG = 
+COMMAND_INTERFACE_CFG += RPI_CMD_IO
+COMMAND_INTERFACE_CFG += RPI_CMD_SENSOR
+
+#-----------------------------------------------------------------------------
+
 TRACER_CFG =
 TRACER_CFG += USART1
 TRACER_CFG += BAUDRATE_230400

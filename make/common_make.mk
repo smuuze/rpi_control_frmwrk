@@ -81,20 +81,6 @@ endif
 
 # -----------------------------------------------------------------------
 
-COMMAND_MANAGEMENT_INC_PATH = $(APP_PATH)/command_management
-INC_PATH += $(COMMAND_MANAGEMENT_INC_PATH)
-
-CSRCS += $(COMMAND_MANAGEMENT_INC_PATH)/command_controller.c
-
-# -----------------------------------------------------------------------
-
-COMMAND_HANDLER_INC_PATH = $(APP_PATH)/command_handler
-INC_PATH += $(COMMAND_HANDLER_INC_PATH)
-
-CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_command_handler.c
-
-# -----------------------------------------------------------------------
-
 TIME_MANAGEMENT_INC_PATH = $(APP_PATH)/time_management
 INC_PATH += $(TIME_MANAGEMENT_INC_PATH)
 
@@ -115,8 +101,6 @@ ifneq '' '$(findstring EVENT,$(APP_TASK_CFG))'
 DEFS  += -D HAS_APP_TASK_EVENT=1
 CSRCS += $(APP_TASK_INC_PATH)/local_event_task.c
 endif
-
-CSRCS += $(APP_TASK_INC_PATH)/local_cmd_mcu_task.c
 
 ifneq '' '$(findstring LED_MATRIX,$(APP_TASK_CFG))'
 DEFS  += -D HAS_APP_TASK_LED_MATRIX=1
@@ -188,8 +172,13 @@ ifneq '' '$(findstring RPI_PROTOCOL,$(MANAGEMENT_MODULE_CFG))'
 	CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler.c
 endif
 
-# -----------------------------------------------------------------------
+# ---- COMMAND INTERFACE ------------------------------------------------
 
+ifdef COMMAND_INTERFACE_CFG
+include $(MAKE_PATH)/make_command_interface.mk
+endif
+
+# -----------------------------------------------------------------------
 
 INITIALIZATION_INC_PATH = $(APP_PATH)/initialization
 INC_PATH += $(INITIALIZATION_INC_PATH)

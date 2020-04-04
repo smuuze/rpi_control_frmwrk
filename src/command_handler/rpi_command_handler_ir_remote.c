@@ -50,15 +50,13 @@ u8 rpi_cmd_handler_ir_remote(PROTOCOL_INTERFACE* p_protocol) {
 	u8 err_code = CMD_NO_ERR;
 
 	switch (manufactor) {
-		case IR_MANUFACTOR_SAMSUNG :
-			err_code = rpi_cmd_handler_ir_remote_samsung(device, command);
+		default :			err_code = CMD_ERR_INVALID_ARGUMENT; break;
+		case IR_MANUFACTOR_SAMSUNG :	err_code = rpi_cmd_handler_ir_remote_samsung(device, command);
 
 	}
 
-	if (err_code == CMD_NO_ERR) {
-		p_act_protocol->set_finished(CMD_NO_ERR);
-		return CMD_NO_ERR;
-	}
+	p_act_protocol->set_finished(err_code);
+	return err_code;
 }
 
 // --------------------------------------------------------------------------------
