@@ -159,7 +159,7 @@ BUILD_LOCAL_MSG_BUFFER( , SPI0_RX_BUFFER, SPI0_DRIVER_RX_BUFFER_SIZE)
 
 BUILD_MODULE_STATUS_FAST(SPI0_STATUS, 2)
 
-TIME_MGMN_BUILD_STATIC_TIMER_U16(TRX_TIMER)
+TIME_MGMN_BUILD_STATIC_TIMER_U16(SPI0_TRX_TIMER)
 
 SPI0_BUILD_CFG()
 
@@ -402,7 +402,7 @@ void spi_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 		return;
 	}
 
-	TRX_TIMER_start();
+	SPI0_TRX_TIMER_start();
 	
 	while (num_bytes != 0) {
 
@@ -431,7 +431,7 @@ void spi_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 			}
 		}
 		
-		if (TRX_TIMER_is_up(timeout_ms) != 0) {
+		if (SPI0_TRX_TIMER_is_up(timeout_ms) != 0) {
 			SPI_RX_PASS(); // spi_driver_wait_for_rx() - Timeout !!! ---
 			break;
 		}
