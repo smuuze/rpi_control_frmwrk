@@ -20,7 +20,7 @@ BOARD_ID = 191005
 #-----------------------------------------------------------------------------
 
 VERSION_MAJOR		:= 1
-VERSION_MINOR		:= 1
+VERSION_MINOR		:= 2
 
 #-----------------------------------------------------------------------------
 
@@ -81,6 +81,11 @@ MANAGEMENT_MODULE_CFG =
 #MANAGEMENT_MODULE_CFG += POWER
 MANAGEMENT_MODULE_CFG += IO
 #MANAGEMENT_MODULE_CFG += RPI_PROTOCOL
+
+#-----------------------------------------------------------------------------
+
+COMMAND_INTERFACE_CFG = 
+COMMAND_INTERFACE_CFG += RPI_CMD_IR_REMOTE
 
 #-----------------------------------------------------------------------------
 
