@@ -47,10 +47,10 @@ void initialization(void) {
 
 	output_initialization();
 
+	task_initialization();
+
 	protocol_initialization();
 
 	command_initialization();
-
-	task_initialization();
 }
 
