@@ -4,7 +4,7 @@
   * @author	sebastian lesse
   */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 //-----------------------------------------------------------------------------
 
@@ -82,25 +82,26 @@ static COMMAND_HANDLER_INTERFACE* _last_cmd_handler = 0;
 //-----------------------------------------------------------------------------
 
 void command_controller_init(void) {
+	DEBUG_PASS("command_controller_init()");
 	mcu_task_controller_register_task(&cmd_mcu_task);
 }
 
 //-----------------------------------------------------------------------------
 
 static void command_controller_task_init(void) {
-	
+	DEBUG_PASS("command_controller_task_init()");
 }
 
 void command_controller_register_handler(COMMAND_HANDLER_INTERFACE* p_handler) {
 
 	if (_first_cmd_handler == 0) {
 
-		PASS(); // command_controller_register_handler() - First Handler
+		DEBUG_PASS("command_controller_register_handler() - First Handler");
 		_first_cmd_handler = p_handler;
 
 	} else {
 
-		PASS(); // command_controller_register_handler() - New Handler
+		DEBUG_PASS("command_controller_register_handler() - New Handler");
 		_last_cmd_handler->next = p_handler;
 	}
 
@@ -120,7 +121,8 @@ static MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void) {
 	while (_act_cmd_handler != 0) {
 
 		if (_act_cmd_handler->is_requested()) {
-			PASS(); // command_controller_cmd_is_pending() - Command-Handler has been requested
+
+			DEBUG_PASS("command_controller_cmd_is_pending() - Command-Handler has been requested");
 			return MCU_TASK_RUNNING;
 		}
 
@@ -130,14 +132,14 @@ static MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void) {
 
 static void command_controller_task_run(void) {
 
-	PASS(); // command_controller_task_run()
+	DEBUG_PASS("command_controller_task_run()");
 
 	if (_act_cmd_handler == 0) {
-		PASS(); // command_controller_task_run() - No command-handler selected !!! ---
+		DEBUG_PASS("command_controller_task_run() - No command-handler selected !!! ---");
 		return;
 	}
 
-	TRACE_byte(_act_cmd_handler->num_command_handler); // command_controller_task_run() - Processing Command-Handler Table
+	DEBUG_TRACE_byte(_act_cmd_handler->num_command_handler, "command_controller_task_run() - Processing Command-Handler Table");
 
 	u8 cmd_id = _act_cmd_handler->get_cmd_code();
 	u8 cmd_ret_code = 0xFF;
@@ -147,7 +149,7 @@ static void command_controller_task_run(void) {
 
 		if (_act_cmd_handler->command_handler_table[i].command_id == cmd_id || _act_cmd_handler->command_handler_table[i].command_id == 0x00) {
 
-			TRACE_byte(cmd_id); // command_controller_task_run() - Running Command-Handler
+			DEBUG_TRACE_byte(cmd_id, "command_controller_task_run() - Running Command-Handler");
 			cmd_ret_code = _act_cmd_handler->command_handler_table[i].handle(_act_cmd_handler->get_protocol());
 			break;
 		}
