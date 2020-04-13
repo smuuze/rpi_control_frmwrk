@@ -115,8 +115,8 @@ typedef enum {
 BUILD_LOCAL_MSG_BUFFER( , RPI_COMMAND_BUFFER, 32)
 BUILD_LOCAL_MSG_BUFFER( , RPI_ANSWER_BUFFER,  32)
 
-TIME_MGMN_BUILD_STATIC_TIMER_U16(operation_timer)
-TIME_MGMN_BUILD_STATIC_TIMER_U16(TRX_TIMER)
+TIME_MGMN_BUILD_STATIC_TIMER_U16(RPI_OP_TIMER)
+TIME_MGMN_BUILD_STATIC_TIMER_U16(RPI_TRX_TIMER)
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(RPI_STATUS, 2)
 
@@ -257,12 +257,12 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
 	RPI_TRX_STATE error_code = RPI_TRX_STATE_COMPLETE;
 			
-	TRX_TIMER_start();
+	RPI_TRX_TIMER_start();
 	READY_INOUT_drive_low();
 
 	while (rpi_protocol_spi_interface.command_length == 0) {
 
-		if (TRX_TIMER_is_up(1000)) {
+		if (RPI_TRX_TIMER_is_up(1000)) {
 			DEBUG_PASS("rpi_protocol_receive_command() - Receiving command-length has FAILED (TIMEOUT) !!! ---");
 			error_code = RPI_TRX_STATE_TIMEOUT;
 			goto EXIT_rpi_protocol_receive_command;
@@ -294,7 +294,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 		p_com_driver->wait_for_rx(rpi_protocol_spi_interface.command_length, 500); // blocking function
 		bytes_available = p_com_driver->bytes_available();
 
-		if (TRX_TIMER_is_up(1000)) {
+		if (RPI_TRX_TIMER_is_up(1000)) {
 			DEBUG_PASS("rpi_protocol_receive_command() - Receiving command-data has FAILED (TIMEOUT) !!! ---");
 			error_code = RPI_TRX_STATE_TIMEOUT;
 			goto EXIT_rpi_protocol_receive_command;
@@ -514,13 +514,13 @@ void rpi_protocol_task_run(void) {
 
 			actual_state = RPI_STATE_WAIT_FOR_REQUEST_RX;
 			actual_task_state = MCU_TASK_RUNNING;
-			operation_timer_start(); // operation_timeout_ms = i_system.time.now_u16();
+			RPI_OP_TIMER_start(); // operation_timeout_ms = i_system.time.now_u16();
 
 			// no break;
 
 		case RPI_STATE_WAIT_FOR_REQUEST_RX : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_WAIT_FOR_REQUEST_RX");
 
-			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
+			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST_RX - OPERATION TIMEOUT!!! ---");
 				DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_RX -> RPI_STATE_FINISH");
 				actual_state = RPI_STATE_FINISH;
@@ -535,12 +535,12 @@ void rpi_protocol_task_run(void) {
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_RX -> RPI_STATE_RX");
 			actual_state = RPI_STATE_RX;
 
-			operation_timer_start();
+			RPI_OP_TIMER_start();
 			// no break;
 
 		case RPI_STATE_RX :
 
-			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_DRIVER_TIMEOUT_MS) != 0) {
+			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_DRIVER_TIMEOUT_MS) != 0) {
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_RX - OPERATION TIMEOUT!!! ---");
 				DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_RX -> RPI_STATE_FINISH");
 				actual_state = RPI_STATE_FINISH;
@@ -567,12 +567,12 @@ void rpi_protocol_task_run(void) {
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_RX -> RPI_STATE_PROCESS_COMMAND");
 			actual_state = RPI_STATE_PROCESS_COMMAND;
 
-			operation_timer_start();
+			RPI_OP_TIMER_start();
 			break;
 
 		case RPI_STATE_PROCESS_COMMAND : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_PROCESS_COMMAND");
 
-			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS) != 0) {
+			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS) != 0) {
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_PROCESS_COMMAND - Command has TIMED OUT !!! ---");
 				RPI_STATUS_unset(RPI_STATUS_ANSWER_PENDING);
 				actual_state = RPI_STATE_FINISH;
@@ -594,12 +594,12 @@ void rpi_protocol_task_run(void) {
 			
 			READY_INOUT_pull_up();
 
-			operation_timer_start();
+			RPI_OP_TIMER_start();
 			// no break;
 
 		case RPI_STATE_WAIT_FOR_REQUEST_TX:
 
-			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
+			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST_T - OPERATION TIMEOUT!!! ---");
 				DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_TX -> RPI_STATE_FINISH");
 				actual_state = RPI_STATE_FINISH;
@@ -614,12 +614,12 @@ void rpi_protocol_task_run(void) {
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_TX -> RPI_STATE_TX");
 			actual_state = RPI_STATE_TX;
 
-			operation_timer_start();
+			RPI_OP_TIMER_start();
 			// no break;
 
 	 	case RPI_STATE_TX:
 
-			if (operation_timer_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
+			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_TX - OPERATION TIMEOUT!!! ---");
 				DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_TX -> RPI_STATE_FINISH");
 				actual_state = RPI_STATE_FINISH;
