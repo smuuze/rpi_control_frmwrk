@@ -4,7 +4,7 @@
   * \author	sebastian lesse
   */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 //-----------------------------------------------------------------------------
 
@@ -46,13 +46,16 @@ static PROTOCOL_INTERFACE* p_act_protocol;
 //-----------------------------------------------------------------------------
 
 void rpi_cmd_handler_init(void) {
+
+	DEBUG_PASS("rpi_cmd_handler_init()");
+
 	p_act_protocol = 0;
 	RPI_CMD_HANDLER_SLOT_CMD_RECEIVED_connect();
 }
 
 void rpi_cmd_handler_set_request(PROTOCOL_INTERFACE* p_protocol_handler) {
 
-	TRACE_byte(p_protocol_handler->command_code); // rpi_cmd_handler_set_request()
+	DEBUG_TRACE_byte(p_protocol_handler->command_code, "rpi_cmd_handler_set_request() - cmd_code");
 	p_act_protocol = p_protocol_handler;
 }
 
@@ -62,20 +65,19 @@ PROTOCOL_INTERFACE* rpi_cmd_handler_get_protocol(void) {
 
 void rpi_cmd_handler_set_unrequested(void) {
 
-	PASS(); // rpi_cmd_handler_set_unrequested()
+	DEBUG_PASS("rpi_cmd_handler_set_unrequested()");
 	p_act_protocol = 0;
 }
 
 
 u8 rpi_cmd_handler_is_requested(void) {
 
-	if (p_act_protocol != 0) {
-		TRACE_byte(p_act_protocol->command_code); // rpi_cmd_handler_is_requested()
-		return 1;
-
-	} else {
+	if (p_act_protocol == 0) {
 		return 0;
 	}
+
+	DEBUG_PASS("rpi_cmd_default_handler()");
+	return 1;
 }
 
 u8 rpi_cmd_handler_get_command_code(void) {
@@ -89,7 +91,7 @@ u8 rpi_cmd_handler_get_command_code(void) {
 
 u8 rpi_cmd_default_handler(PROTOCOL_INTERFACE* p_protocol) {
 
-	PASS(); // rpi_cmd_default_handler()
+	DEBUG_PASS("rpi_cmd_default_handler()");
 
 	p_protocol->set_finished(CMD_ERR_INVALID_COMMAND);
 	return CMD_ERR_INVALID_COMMAND;
