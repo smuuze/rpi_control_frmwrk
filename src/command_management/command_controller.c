@@ -106,7 +106,6 @@ void command_controller_register_handler(COMMAND_HANDLER_INTERFACE* p_handler) {
 	}
 
 	_last_cmd_handler = p_handler;
-	_last_cmd_handler->init();
 	_last_cmd_handler->next = 0;
 }
 
@@ -139,13 +138,13 @@ static void command_controller_task_run(void) {
 		return;
 	}
 
-	DEBUG_TRACE_byte(_act_cmd_handler->num_command_handler, "command_controller_task_run() - Processing Command-Handler Table");
+	DEBUG_TRACE_byte(_act_cmd_handler->get_table_size(), "command_controller_task_run() - Processing Command-Handler Table");
 
 	u8 cmd_id = _act_cmd_handler->get_cmd_code();
 	u8 cmd_ret_code = 0xFF;
 
 	u8 i = 0;
-	while (i < _act_cmd_handler->num_command_handler) {
+	while (i < _act_cmd_handler->get_table_size()) {
 
 		if (_act_cmd_handler->command_handler_table[i].command_id == cmd_id || _act_cmd_handler->command_handler_table[i].command_id == 0x00) {
 
