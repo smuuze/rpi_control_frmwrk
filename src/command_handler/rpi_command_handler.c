@@ -18,6 +18,7 @@
 
 #include "command_management/command_handler_interface.h"
 #include "command_management/command_buffer_interface.h"
+#include "command_management/command_handler_interface.h"
 #include "command_management/answer_buffer_interface.h"
 #include "command_management/protocol_interface.h"
 
@@ -27,7 +28,29 @@
 #include "io_management/io_input_controller.h"
 #include "io_management/io_output_controller.h"
 
+#include "command_management/command_controller.h"
+
 #include "command_handler/rpi_command_handler.h"
+
+//-----------------------------------------------------------------------------
+
+extern COMMAND_TABLE_INTERFACE rpi_cmd_handler_table[];
+extern u8 rpi_cmd_handler_table_get_size(void);
+
+//-----------------------------------------------------------------------------
+
+static COMMAND_HANDLER_INTERFACE rpi_command_handler = {
+	&rpi_cmd_handler_init, 			
+	&rpi_cmd_handler_set_request,		
+	&rpi_cmd_handler_set_unrequested,
+	&rpi_cmd_handler_get_protocol,
+	&rpi_cmd_handler_is_requested,		
+	&rpi_cmd_handler_get_command_code,
+	&rpi_cmd_handler_table_get_size,
+	rpi_cmd_handler_table, 			
+	&rpi_cmd_default_handler,
+	0 					
+};
 
 //-----------------------------------------------------------------------------
 
@@ -51,6 +74,8 @@ void rpi_cmd_handler_init(void) {
 
 	p_act_protocol = 0;
 	RPI_CMD_HANDLER_SLOT_CMD_RECEIVED_connect();
+
+	command_controller_register_handler(&rpi_command_handler);
 }
 
 void rpi_cmd_handler_set_request(PROTOCOL_INTERFACE* p_protocol_handler) {
