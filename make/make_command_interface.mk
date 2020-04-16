@@ -23,6 +23,7 @@ ifneq '' '$(findstring RPI_CMD,$(COMMAND_INTERFACE_CFG))'
 	DEFS += -D RPI_CMD_HANDLER_AVAILABLE=1
 
 	CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_command_handler.c
+	CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_command_handler_table.c
 	CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_handler_system.c
 endif
 
