@@ -1,24 +1,34 @@
-/*! \file *********************************************************************
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	driver/communication/i2c/i2c0_driver_atmega1284p.c
+ * \author	sebastian lesse
+ * \brief
+ *
+ * --------------------------------------------------------------------------------
+ */
 
- *****************************************************************************/
+#define TRACER_OFF
 
-#include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
+// --------------------------------------------------------------------------------
+
+#include "config.h"
+
+// --------------------------------------------------------------------------------
+
+#include "tracer.h"
+
+// --------------------------------------------------------------------------------
 
 #include "cfg_driver_interface.h"
 #include "local_msg_buffer.h"
-#include "local_i2c_driver.h"
 #include "local_module_status.h"
 #include "local_mutex.h"
 
-#include "driver_specific_i2c.h"
+#include "driver/communication/i2c/i2c0_driver.h"
+#include "driver/communication/i2c/i2c0_driver_atmega1284p.h"
 
-//---------- Implementation of Traces -----------------------------------------
-
-#define TRACER_OFF
-#include "tracer.h"
-
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define noI2C_RX_TRACES
 #define noI2C_TX_TRACES
@@ -68,27 +78,30 @@
 #define I2C_ISR_TRACE_N(n,v)
 #endif
 
-//----- Bufferbuilding -----
-BUILD_LOCAL_MSG_BUFFER(, I2C0_TX_BUFFER, I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)	// build transmissionbuffer
-BUILD_LOCAL_MSG_BUFFER(, I2C0_RX_BUFFER, I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)	// build receivingbuffer
-
-
-BUILD_MUTEX(i2c_mutex)
-
-//----- RX / TX activ status -----
-BUILD_MODULE_STATUS_FAST_VOLATILE(i2c_driver_status, 2)
-
-I2C_BUILD_CFG()
+// --------------------------------------------------------------------------------
 
 #define I2C_STATUS_RX_ACTIVE		0
 #define I2C_STATUS_TX_ACTIVE		1
 
-/*!-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+// --------------------------------------------------------------------------------
+
+BUILD_LOCAL_MSG_BUFFER(, I2C0_TX_BUFFER, I2C_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)	// build transmissionbuffer
+BUILD_LOCAL_MSG_BUFFER(, I2C0_RX_BUFFER, I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)	// build receivingbuffer
+
+BUILD_MUTEX(i2c_mutex)
+
+BUILD_MODULE_STATUS_FAST_VOLATILE(i2c_driver_status, 2)
+
+I2C_BUILD_CFG()
+
+// --------------------------------------------------------------------------------
 
 static u8 _i2c_slave_address = 0;
 static u8 _i2c_rx_counter = 0;
 
-void i2c_driver_initialize(void) {
+// --------------------------------------------------------------------------------
+
+void i2c0_driver_initialize(void) {
 
 	PASS();	// i2c_driver_initialize()
 
@@ -96,15 +109,17 @@ void i2c_driver_initialize(void) {
 	I2C0_TX_BUFFER_init();
 }
 
-void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
+void i2c0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
-	PASS();	// local_i2c_driver_cfg()
+	DEBUG_PASS("i2c0_driver_configure()");
 
 	I2C_POWER_UP();
 
 	if (p_cfg->module.i2c.is_master != 0) {
 
-		I2C_ENABLE_MASTER_MODE(); PASS(); //
+		DEBUG_PASS("i2c0_driver_configure() - MASTER");
+
+		I2C_ENABLE_MASTER_MODE();
 
 		I2C_SCL_drive_high();
 		I2C_SDA_drive_high();
@@ -114,12 +129,14 @@ void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	} else {
 
-		I2C_DISABLE_MASTER_MODE(); PASS(); //
+		DEBUG_PASS("i2c0_driver_configure() - SLAVE");
+
+		I2C_DISABLE_MASTER_MODE();
 
 		I2C_SCL_pull_up();
 		I2C_SDA_pull_up();
 
-		TRACE_byte(p_cfg->module.i2c.slave_addr); // i2c_driver_configure
+		DEBUG_TRACE_byte(p_cfg->module.i2c.slave_addr, "i2c0_driver_configure() - slave-address");
 		I2C_SET_SLAVE_ADDRESS(p_cfg->module.i2c.slave_addr);
 	}
 
@@ -144,19 +161,23 @@ void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 	switch (p_cfg->module.i2c.bit_rate) {
 		default:
 		case DRIVER_I2C_BITRATE_1KHZ 	:
-			I2C_BITRATE_1_KHZ(); PASS(); //
+			DEBUG_PASS("i2c0_driver_configure() - DRIVER_I2C_BITRATE_1KHZ");
+			I2C_BITRATE_1_KHZ();
 			break;
 
 		case DRIVER_I2C_BITRATE_10KHZ 	:
-			I2C_BITRATE_10_KHZ(); PASS(); //
+			DEBUG_PASS("i2c0_driver_configure() - DRIVER_I2C_BITRATE_10KHZ");
+			I2C_BITRATE_10_KHZ();
 			break;
 
 		case DRIVER_I2C_BITRATE_100KHZ 	:
-			I2C_BITRATE_100_KHZ(); PASS(); //
+			DEBUG_PASS("i2c0_driver_configure() - DRIVER_I2C_BITRATE_100KHZ");
+			I2C_BITRATE_100_KHZ();
 			break;
 
 		case DRIVER_I2C_BITRATE_1MHZ 	:
-			I2C_BITRATE_1_MHZ(); PASS(); //
+			DEBUG_PASS("i2c0_driver_configure() - DRIVER_I2C_BITRATE_1MHZ");
+			I2C_BITRATE_1_MHZ();
 			break;
 	}
 
@@ -167,23 +188,23 @@ void i2c_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	{
 		u8 temp = TWCR;
-		TRACE_byte(temp); // SPI - CONTROL-REGISTER
+		DEBUG_TRACE_byte(temp, "i2c0_driver_configure() - TWCR:");
 
 		temp = TWSR;
-		TRACE_byte(temp); // SPI - STATUS-REGISTER
+		DEBUG_TRACE_byte(temp, "i2c0_driver_configure() - TWSR:");
 
 		temp = PRR0;
-		TRACE_byte(temp); // SPI - PRR0-REGISTER
+		DEBUG_TRACE_byte(temp, "i2c0_driver_configure() - PRR0:");
 
 		temp = PRR1;
-		TRACE_byte(temp); // SPI - PRR1-REGISTER
+		DEBUG_TRACE_byte(temp, "i2c0_driver_configure() - PRR1:");
 
 		temp = SREG;
-		TRACE_byte(temp); // Global Status-Register
+		DEBUG_TRACE_byte(temp, "i2c0_driver_configure() - SREG:");
 	}
 }
 
-void i2c_driver_power_off(void) {
+void i2c0_driver_power_off(void) {
 
 	PASS(); // local_i2c_driver_power_off()
 
@@ -194,7 +215,7 @@ void i2c_driver_power_off(void) {
 	I2C_POWER_DOWN();
 }
 
-u8 i2c_driver_bytes_available (void) {
+u8 i2c0_driver_bytes_available (void) {
 
 	#if defined TRACES_ENABLED && defined I2C_RX_TRACES
 	{
@@ -208,7 +229,7 @@ u8 i2c_driver_bytes_available (void) {
 	return I2C0_RX_BUFFER_bytes_available();
 }
 
-u8 i2c_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
+u8 i2c0_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 
 	PASS();	// local_i2c_driver_get_N_bytes()
 
@@ -224,7 +245,7 @@ u8 i2c_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 	return num_bytes_available;
 }
 
-u8 i2c_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+u8 i2c0_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 
 	if (num_bytes > I2C0_TX_BUFFER_size()) {
 		num_bytes = I2C0_TX_BUFFER_size();
@@ -239,7 +260,7 @@ u8 i2c_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 	return num_bytes;
 }
 
-u8 i2c_driver_is_ready_for_tx (void) {
+u8 i2c0_driver_is_ready_for_tx (void) {
 
 	if (i2c_driver_status_is_set(I2C_STATUS_TX_ACTIVE) != 0) {
 		return 0;
@@ -252,7 +273,7 @@ u8 i2c_driver_is_ready_for_tx (void) {
 	}
 }
 
-u8 i2c_driver_is_ready_for_rx(void) {
+u8 i2c0_driver_is_ready_for_rx(void) {
 
 	if (i2c_driver_status_is_set(I2C_STATUS_TX_ACTIVE) != 0) {
 		return 0;
@@ -265,7 +286,7 @@ u8 i2c_driver_is_ready_for_rx(void) {
 	}
 }
 
-void i2c_driver_start_rx (u16 num_of_rx_bytes) {
+void i2c0_driver_start_rx (u16 num_of_rx_bytes) {
 
 	TRACE_byte(num_of_rx_bytes); // local_i2c_driver_start_rx()
 
@@ -278,12 +299,12 @@ void i2c_driver_start_rx (u16 num_of_rx_bytes) {
 	I2C_DRIVER_SEND_START_CONDITION();
 }
 
-void i2c_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+void i2c0_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 }
 
-void i2c_driver_stop_rx (void) {
+void i2c0_driver_stop_rx (void) {
 
 	PASS(); // local_i2c_driver_stop_rx()
 
@@ -294,7 +315,7 @@ void i2c_driver_stop_rx (void) {
 	I2C0_RX_BUFFER_stop_write();
 }
 
-void i2c_driver_start_tx (void) {
+void i2c0_driver_start_tx (void) {
 
 	PASS(); // local_i2c_driver_start_tx()
 
@@ -307,12 +328,12 @@ void i2c_driver_start_tx (void) {
 	I2C_DRIVER_SEND_START_CONDITION();
 }
 
-void i2c_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+void i2c0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 }
 
-void i2c_driver_stop_tx (void) {
+void i2c0_driver_stop_tx (void) {
 
 	I2C_TX_PASS(); // local_i2c_driver_stop_tx()
 
@@ -322,21 +343,21 @@ void i2c_driver_stop_tx (void) {
 	i2c_driver_status_unset(I2C_STATUS_TX_ACTIVE);
 }
 
-void i2c_driver_clear_rx_buffer(void) {
+void i2c0_driver_clear_rx_buffer(void) {
 	I2C0_RX_BUFFER_clear_all();
 }
 
-void i2c_driver_clear_tx_buffer(void) {
+void i2c0_driver_clear_tx_buffer(void) {
 	I2C0_TX_BUFFER_clear_all();
 }
 
-void i2c_driver_set_address (u8 addr) {
+void i2c0_driver_set_address (u8 addr) {
 
 	TRACE_byte(addr); // local_i2c_driver_set_address()
 	_i2c_slave_address = addr << 1;
 }
 
-u8 i2c_driver_mutex_request(void) {
+u8 i2c0_driver_mutex_request(void) {
 	if (i2c_mutex_is_requested() != 0) {
 		return MUTEX_INVALID_ID;
 	}
@@ -344,7 +365,7 @@ u8 i2c_driver_mutex_request(void) {
 	return i2c_mutex_request();
 }
 
-void i2c_driver_mutex_release(u8 m_id) {
+void i2c0_driver_mutex_release(u8 m_id) {
 	i2c_mutex_release(m_id);
 }
 
