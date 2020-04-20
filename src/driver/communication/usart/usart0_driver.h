@@ -8,8 +8,8 @@
  * --------------------------------------------------------------------------------
  */
 
-#ifndef _USART0_DRIVER_ATMEGA1284p_H_
-#define _USART0_DRIVER_ATMEGA1284p_H_
+#ifndef _USART0_DRIVER_H_
+#define _USART0_DRIVER_H_
 
 #include "trx_driver_interface.h"
 
@@ -145,4 +145,4 @@ u8 usart0_driver_mutex_request(void);
  */
 void usart0_driver_mutex_release(u8 m_id);
 
-#endif
+#endif // _USART0_DRIVER_H_
