@@ -54,6 +54,106 @@ void ir_protocol_samsung_cmd_tv_volume_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_co
  */
 void ir_protocol_samsung_cmd_tv_volume_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_0(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_1(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_2(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_3(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_4(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_5(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_6(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_7(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_8(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_9(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_enter(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_exit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_return(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_arrow_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_arrow_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_arrow_left(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_arrow_right(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_play(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_pause(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_stop(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
 // --------------------------------------------------------------------------------
 
 #endif // _IR_REMOTE_MCU_TASK_H_
