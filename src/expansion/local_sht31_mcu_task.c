@@ -24,7 +24,6 @@
 #include "time_management/time_management.h"
 #include "power_management/power_management.h"
 
-#include "local_i2c_driver.h"
 #include "cfg_driver_interface.h"
 
 #include "asic_information_sht31.h"
