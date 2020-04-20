@@ -26,7 +26,6 @@
 #include "time_management/time_management.h"
 #include "power_management/power_management.h"
 
-#include "local_i2c_driver.h"
 #include "asic_information_ads115.h"
 
 #include "local_ads1115_mcu_task.h"
