@@ -138,6 +138,9 @@ void i2c0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 		DEBUG_TRACE_byte(p_cfg->module.i2c.slave_addr, "i2c0_driver_configure() - slave-address");
 		I2C_SET_SLAVE_ADDRESS(p_cfg->module.i2c.slave_addr);
+
+		// Ack-Response must always be enabled in slave-mode
+		p_cfg->module.i2c.enable_ack = 1;
 	}
 
 	if (p_cfg->module.i2c.answer_general_call) {

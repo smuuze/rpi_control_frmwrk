@@ -51,6 +51,15 @@
 #define I2C_STATE_MR_DATA_BYTE_ACK_RECEIVED		0x50	// DATA received, ACK received
 #define I2C_STATE_MR_DATA_BYTE_NACK_RECEIVED		0x58	// DATA received, NACK received
 
+//----- slave receiver mode (MRM) -----
+#define I2C_STATE_SR_OWN_ADDR_RECEIVED			0x60
+#define I2C_STATE_SR_GENERAL_CALL_RECEIVED		0x70
+#define I2C_STATE_SR_DATA_RECEIVED_ACK_RETURNED		0x80
+#define I2C_STATE_SR_DATA_RECEIVED_NACK_RETURNED	0x88
+#define I2C_STATE_SR_GCA_DATA_RECEIVED_ACK_RETURNED	0x90
+#define I2C_STATE_SR_GCA_DATA_RECEIVED_NACK_RETURNED	0x98
+#define I2C_STATE_SR_STOP_REPEATED_START_RECEIVED	0xA0
+
 ///----- !! status codes for slave modes are not implemented !! -----
 
 //----- Miscellaneous States -----
@@ -94,7 +103,8 @@
 
 
 #define I2C_ENABLE_MASTER_MODE()
-#define I2C_DISABLE_MASTER_MODE()
+#define I2C_DISABLE_MASTER_MODE()			TWCR = 0;				\
+							i2c_cfg_control_reg = 0
 
 #define I2C_SET_PRESCALER(scaler)			i2c_status_reg |= (scaler & 0x03)
 #define I2C_SET_BITRATE(bitrate)			i2c_cfg_bitrate_reg = bitrate
@@ -117,7 +127,7 @@
 #define I2C_ENABLE_ANSWER_TO_GENERAL_CALL()		i2c_cfg_slaveaddr_reg |= I2C_CFGMASK_GENERAL_CALL_RECOGNITION
 #define I2C_DISABLE_ANSWER_TO_GENERAL_CALL()		i2c_cfg_slaveaddr_reg &= ~I2C_CFGMASK_GENERAL_CALL_RECOGNITION
 
-#define I2C_SET_SLAVE_ADDRESS(addr)			i2c_cfg_slaveaddr_reg |= (addr << 1)
+#define I2C_SET_SLAVE_ADDRESS(addr)			i2c_cfg_slaveaddr_reg = (addr << 1) | (i2c_cfg_slaveaddr_reg & I2C_CFGMASK_GENERAL_CALL_RECOGNITION)
 #define I2C_DELETE_SLAVE_ADDRESS()			i2c_cfg_slaveaddr_reg &= ~(0xFE)
 
 #define I2C_DRIVER_SET_BITARTE_1KHZ()			i2c_cfg_bitrate_reg = 0
