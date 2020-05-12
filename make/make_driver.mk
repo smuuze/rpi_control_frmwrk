@@ -3,6 +3,7 @@ DRIVER_INC_PATH = $(APP_PATH)/driver
 INC_PATH += $(DRIVER_INC_PATH)
 
 ifneq '' '$(findstring RTC,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_RTC0=1
 	CSRCS += $(APP_PATH)/driver/rtc/rtc_driver_atmega1284p.c
 endif
 
@@ -17,6 +18,7 @@ endif
 
 ifneq '' '$(findstring I2C0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_I2C0=1
+	CSRCS += $(APP_PATH)/driver/communication/i2c/i2c0_driver_status.c
 	CSRCS += $(APP_PATH)/driver/communication/i2c/i2c0_driver_atmega1284p.c
 endif
 

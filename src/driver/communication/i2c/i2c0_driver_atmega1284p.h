@@ -35,30 +35,35 @@
 
 //----- General status codes -----
 #define I2C_STATE_WAKEUP					0x01	// -not used yet, since only master mode is implemented- status before the decision of master or slavemode is done
-#define I2C_STATE_MASTER_START_COMPLETE			0x08	// Start sent
+#define I2C_STATE_MASTER_START_COMPLETE				0x08	// Start sent
 #define I2C_STATE_MASTER_REPEATED_START_COMPLETE		0x10	// Repeated Start sent
 #define I2C_STATE_MASTER_ARBITRATION_LOST			0x38	// Arbitration lost
 
 //----- master transmitter mode (MTM) -----
-#define I2C_STATE_MT_SLAW_ACK_RECEIVED			0x18	// SLA+W sent, ACK received
-#define I2C_STATE_MT_SLAW_NACK_RECEIVED			0x20	// SLA+W sent, NACK received
-#define I2C_STATE_MT_DATA_ACK_RECEIVED			0x28	// DATA sent, ACK received
-#define I2C_STATE_MT_DATA_NACK_RECEIVED			0x30	// DATA sent, NACK received
+#define I2C_STATE_MT_SLAW_ACK_RECEIVED				0x18	// SLA+W sent, ACK received
+#define I2C_STATE_MT_SLAW_NACK_RECEIVED				0x20	// SLA+W sent, NACK received
+#define I2C_STATE_MT_DATA_ACK_RECEIVED				0x28	// DATA sent, ACK received
+#define I2C_STATE_MT_DATA_NACK_RECEIVED				0x30	// DATA sent, NACK received
 
 //----- master receiver mode (MRM) -----
-#define I2C_STATE_MR_SLAR_ACK_RECEIVED			0x40	// SLA+R sent, ACK received
-#define I2C_STATE_MR_SLAR_NACK_RECEIVED			0x48	// SLA+R sent, NACK received
-#define I2C_STATE_MR_DATA_BYTE_ACK_RECEIVED		0x50	// DATA received, ACK received
-#define I2C_STATE_MR_DATA_BYTE_NACK_RECEIVED		0x58	// DATA received, NACK received
+#define I2C_STATE_MR_SLAR_ACK_RECEIVED				0x40	// SLA+R sent, ACK received
+#define I2C_STATE_MR_SLAR_NACK_RECEIVED				0x48	// SLA+R sent, NACK received
+#define I2C_STATE_MR_DATA_BYTE_ACK_RECEIVED			0x50	// DATA received, ACK received
+#define I2C_STATE_MR_DATA_BYTE_NACK_RECEIVED			0x58	// DATA received, NACK received
 
-//----- slave receiver mode (MRM) -----
-#define I2C_STATE_SR_OWN_ADDR_RECEIVED			0x60
-#define I2C_STATE_SR_GENERAL_CALL_RECEIVED		0x70
-#define I2C_STATE_SR_DATA_RECEIVED_ACK_RETURNED		0x80
-#define I2C_STATE_SR_DATA_RECEIVED_NACK_RETURNED	0x88
-#define I2C_STATE_SR_GCA_DATA_RECEIVED_ACK_RETURNED	0x90
-#define I2C_STATE_SR_GCA_DATA_RECEIVED_NACK_RETURNED	0x98
-#define I2C_STATE_SR_STOP_REPEATED_START_RECEIVED	0xA0
+//----- slave receiver mode (SRM) -----
+#define I2C_STATE_SR_OWN_ADDR_RECEIVED				0x60
+#define I2C_STATE_SR_GENERAL_CALL_RECEIVED			0x70
+#define I2C_STATE_SR_DATA_RECEIVED_ACK_RETURNED			0x80
+#define I2C_STATE_SR_DATA_RECEIVED_NACK_RETURNED		0x88
+#define I2C_STATE_SR_GCA_DATA_RECEIVED_ACK_RETURNED		0x90
+#define I2C_STATE_SR_GCA_DATA_RECEIVED_NACK_RETURNED		0x98
+#define I2C_STATE_SR_STOP_REPEATED_START_RECEIVED		0xA0
+
+//----- slave transmitter mode (SRM) -----
+#define I2C_STATE_ST_OWN_ADDR_RECEIVED				0xA8
+#define I2C_STATE_ST_DATA_TRANSMITTED_ACK_RECEIVED		0xB8
+#define I2C_STATE_ST_DATA_TRANSMITTED_NACK_RECEIVED		0xC0
 
 ///----- !! status codes for slave modes are not implemented !! -----
 
@@ -83,6 +88,8 @@
 
 #define I2C_DRIVER_SEND_NACK()				TWCR = (1 << TWINT) | (1 << TWEN) | (i2c_cfg_control_reg)
 
+#define I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE()		TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA) | (i2c_cfg_control_reg & 0x01)
+#define I2C_DRIVER_ENABLE_NACK_ON_NEXT_BYTE()		TWCR = (1 << TWINT) | (1 << TWEN) | (i2c_cfg_control_reg & 0x01)
 
 
 #define I2C_DRIVER_GET_MODULE_STATUS()			(TWSR & 0xF8)
@@ -105,6 +112,7 @@
 #define I2C_ENABLE_MASTER_MODE()
 #define I2C_DISABLE_MASTER_MODE()			TWCR = 0;				\
 							i2c_cfg_control_reg = 0
+#define I2C_IS_MASTER_MODE_ENABLED()			
 
 #define I2C_SET_PRESCALER(scaler)			i2c_status_reg |= (scaler & 0x03)
 #define I2C_SET_BITRATE(bitrate)			i2c_cfg_bitrate_reg = bitrate
