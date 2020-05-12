@@ -4,6 +4,7 @@
 MSG_COMPILING		:= Compiling
 MSG_DEPENDENCY		:= Generating dependency for 
 MSG_LINKING		:= Linking to
+MSG_RESET_DEVICE	:= RESETTING DEVICE !
 MSG_PROG_LOCATION	:= Your programm can be found at
 MSG_FLASH_LOCATION	:= Using this file for Flashing: 
 MSG_LISTING		:= - Generating Disassembly
@@ -138,6 +139,14 @@ fuses:
 	$(VERBOSE) $(AVR_DUDE) -C $(AVR_DUDE_CFG_FILE) -c $(AVR_DUDE_PROGRAMMER) -p $(AVR_DUDE_MCU_NAME) $(AVR_DUDE_PORT) -b $(AVR_DUDE_BAUDRATE) -U lfuse:w:$(AVR_LFUSE):m -U hfuse:w:$(AVR_HFUSE):m -U efuse:w:$(AVR_EFUSE):m
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
+reset:
+	$(VERBOSE) $(ECHO) $(MSG_RESET_DEVICE)
+	$(VERBOSE) gpio mode 5 out
+	$(VERBOSE) gpio write 5 0
+	$(VERBOSE) gpio write 5 1
+	$(VERBOSE) gpio mode 5 in
+	$(VERBOSE) gpio mode 5 up
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
 # ---------
 
