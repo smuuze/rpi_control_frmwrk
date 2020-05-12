@@ -54,22 +54,6 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 #define config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK		local_event_add
 #define config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK		local_event_get_next
 
-#define config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE		u8  local_rtc_timer_gettime_u8(void);
-#define config_SYSTEM_INTERFACE_GET_TIME_U16_PROTOTYPE		u16 local_rtc_timer_gettime_u16(void);
-#define config_SYSTEM_INTERFACE_GET_TIME_U32_PROTOTYPE		u32 local_rtc_timer_gettime_u32(void);
-
-#define config_SYSTEM_INTERFACE_GET_TIME_U8_CALLBACK		local_rtc_timer_gettime_u8
-#define config_SYSTEM_INTERFACE_GET_TIME_U16_CALLBACK		local_rtc_timer_gettime_u16
-#define config_SYSTEM_INTERFACE_GET_TIME_U32_CALLBACK		local_rtc_timer_gettime_u32
-
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U8_PROTOTYPE		u8 local_rtc_timer_istimeup_u8(u8 time_reference, u8 time_interval);
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U16_PROTOTYPE	u8 local_rtc_timer_istimeup_u16(u16 time_reference, u16 time_interval);
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U32_PROTOTYPE	u8 local_rtc_timer_istimeup_u32(u32 time_reference, u32 time_interval);
-
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U8_CALLBACK		local_rtc_timer_istimeup_u8
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U16_CALLBACK		local_rtc_timer_istimeup_u16
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK		local_rtc_timer_istimeup_u32
-
 //#define config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_PROTOTYPE	static u8 local_progmem_get_byte(u8* addr);
 //#define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE	static u16 local_progmem_get_word(u8* addr);
 //#define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_PROTOTYPE	static u32 local_progmem_get_long(u8* addr);
