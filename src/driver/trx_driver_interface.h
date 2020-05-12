@@ -1,13 +1,24 @@
+ /*
+  * \@file	driver/communication/communication_driver_interface.c
+  * \author	sebastian lesse
+  */
+
 #ifndef _TRX_DRIVER_INTERFACE_H_
 #define _TRX_DRIVER_INTERFACE_H_
 
+//-----------------------------------------------------------------------------
+
 #include "cfg_driver_interface.h"
+
+//-----------------------------------------------------------------------------
 
 typedef enum {
 	SPI,
 	USART,
 	I2C
 } TRX_DRIVER_INTERFACE_TYPE;
+
+//-----------------------------------------------------------------------------
 
 #define TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH		0xFFFF
 
@@ -90,10 +101,7 @@ typedef u8 (*TRX_DRIVER_INTERFACE_REQUEST_MUTEX_CALLBACK)	(void);
  */
 typedef void (*TRX_DRIVER_INTERFACE_RELEASE_MUTEX_CALLBACK)	(u8 m_id);
 
-/*
- *
- */
-
+//-----------------------------------------------------------------------------
 
 /*
  *
