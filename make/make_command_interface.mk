@@ -42,7 +42,8 @@ endif
 ifneq '' '$(findstring RPI_CMD_IR_REMOTE,$(COMMAND_INTERFACE_CFG))'
 
 	DEFS += -D RPI_CMD_HANDLER_IR_REMOTE_AVAILABLE=1
-	CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_ir_remote.c
+	CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_command_handler_ir_remote.c
+	CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_handler_ir_remote_samsung.c
 endif
 
 # -----------------------------------------------------------------------
