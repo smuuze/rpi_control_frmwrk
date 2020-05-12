@@ -21,8 +21,18 @@
 #include "command_management/answer_buffer_interface.h"
 #include "command_management/protocol_interface.h"
 
+#ifdef RPI_CMD_HANDLER_IO_AVAILABLE
 #include "io_management/io_input_controller.h"
 #include "io_management/io_output_controller.h"
+#endif
+
+#ifdef RPI_CMD_HANDLER_SENSOR_AVAILABLE
+#include "command_handler/rpi_cmd_handler_sensor.h"
+#endif
+
+#ifdef RPI_CMD_HANDLER_IR_REMOTE_AVAILABLE
+#include "command_handler/rpi_command_handler_ir_remote.h"
+#endif
 
 #include "command_handler/rpi_command_handler.h"
 
