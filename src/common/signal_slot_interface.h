@@ -38,17 +38,20 @@ typedef struct SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT {
 		.p_first_element = 0									\
 	};												\
 													\
-	static void signal_name##_init(void) {								\
+	void signal_name##_init(void) {									\
 		signal_slot_init(&_##signal_name##_context);						\
 	}												\
 													\
-	static void signal_name##_send(void* p_arg) {							\
+	void signal_name##_send(void* p_arg) {								\
 		signal_slot_send(&_##signal_name##_context, p_arg);					\
 	}												\
 													\
 	void signal_name##_connect(SIGNAL_SLOT_INTERFACE_SLOT_CONTEXT_TYPE* p_slot_context) {		\
 		signal_slot_connect(&_##signal_name##_context, p_slot_context);				\
 	}
+
+#define SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(signal_name)						\
+	void signal_name##_send(void* p_arg);								
 
 #define SIGNAL_SLOT_INTERFACE_CREATE_SLOT(signal_name, slot_name, callback_func)			\
 													\
