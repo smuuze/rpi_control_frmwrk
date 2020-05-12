@@ -37,6 +37,11 @@ void ir_protocol_samsung_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_
  */
 void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
+/*
+ *
+ */
+u8 ir_protocol_samsung_is_busy(void);
+
 // --------------------------------------------------------------------------------
 
 /*
@@ -53,6 +58,16 @@ void ir_protocol_samsung_cmd_tv_volume_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_co
  *
  */
 void ir_protocol_samsung_cmd_tv_volume_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
 /*
  *

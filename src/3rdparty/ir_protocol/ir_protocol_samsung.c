@@ -129,6 +129,8 @@ void ir_protocol_samsung_irq_callback(void) {
 
 		transmit_guard = 0;
 
+		DEBUG_PASS("ir_protocol_samsung_irq_callback() - FINISHED");
+
 		return;
 	}
 
@@ -213,6 +215,10 @@ static void ir_protocol_samsung_prepare_transmit_buffer(SAMSUNG_IR_PROTOCOL_COMM
 
 // --------------------------------------------------------------------------------
 
+u8 ir_protocol_samsung_is_busy(void) {
+	return transmit_guard != 0;
+}
+
 void ir_protocol_samsung_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator) {
 	p_carrier = p_timer_carrier;
 	p_modulator = p_timer_modulator;
@@ -222,11 +228,12 @@ void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 
 	if (transmit_guard != 0) {
 
-		DEBUG_PASS("ir_protocol_samsung_start() - Transmit guard is already set !!! ---");
+		DEBUG_PASS("ir_protocol_samsung_transmit() - Transmit guard is already set !!! ---");
 		return;
 	}
 
-	DEBUG_PASS("ir_protocol_samsung_start()");
+	DEBUG_TRACE_word(p_command->address, "ir_protocol_samsung_transmit() - Device Address:");
+	DEBUG_TRACE_word(p_command->control, "ir_protocol_samsung_transmit() - Device Control:");
 
 	transmit_guard = 1;
 
