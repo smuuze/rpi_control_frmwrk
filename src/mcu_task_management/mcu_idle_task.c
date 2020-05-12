@@ -54,19 +54,23 @@ MCU_TASK_INTERFACE_TASK_STATE mcu_idle_task_is_runable(void) {
 
 void mcu_idle_task_run(void) {
 
-	//SET_MODULE_POWER_SAFE(SLEEP_DRIVER_PRR_TIMER0 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_TIMER1 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_ADC);
-	set_sleep_mode(config_SLEEP_MODE);
+	#ifndef DISABLE_SLEEP_ON_IDLE
+	{
+		//SET_MODULE_POWER_SAFE(SLEEP_DRIVER_PRR_TIMER0 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_TIMER1 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_ADC);
+		set_sleep_mode(config_SLEEP_MODE);
 
-	cli();
-	sleep_enable();
-	sleep_bod_disable();
-	sei();
+		cli();
+		sleep_enable();
+		sleep_bod_disable();
+		sei();
 
-	sleep_cpu();
+		sleep_cpu();
 
-	cli();
-	sleep_disable();
-	sei();
+		cli();
+		sleep_disable();
+		sei();
+	}
+	#endif
 }
 
 void mcu_idle_task_background_run(void) {
