@@ -3,17 +3,21 @@
 
 ///-----------------------------------------------------------------------------
 
-#define BOARD_DESCRIPTION_FILE                          "platine/board_191005.h"
+#define BOARD_DESCRIPTION_FILE			"platine/board_191005.h"
 #include "platine/board_191005.h"
 
 //-------------------------------------------------------------------------
 
-#define config_WATCHDOG_TIMEOUT_VALUE                   WDTO_8S
+#define config_WATCHDOG_TIMEOUT_VALUE		WDTO_8S
 
 //-------------------------------------------------------------------------
 
-#define HOST_INTERFACE_I2C                                      1
-#define HOST_DRIVER			                        'I'
+#define HOST_INTERFACE_I2C			1
+#define HOST_DRIVER				'I'
+
+//-------------------------------------------------------------------------
+
+#define DISABLE_SLEEP_ON_IDLE			1
 
 //-------------------------------------------------------------------------
 
@@ -21,7 +25,7 @@
 
 //-------------------------------------------------------------------------
 
-#define config_DEBUG_WELCOME_MESSAGE			"Welcome to RPi - IR-BOARD V1"
+#define config_DEBUG_WELCOME_MESSAGE		"Welcome to RPi - IR-BOARD V1"
 
 //-------------------------------------------------------------------------
 
