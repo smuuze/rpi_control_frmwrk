@@ -73,9 +73,14 @@ ifneq '' '$(findstring SPI,$(HOST_INTERFACE_TYPE))'
 	DEFS += -D HOST_INTERFACE_SPI=1
 	DRIVER_MODULE_CFG += SPI0
 else
+ifneq '' '$(findstring I2C,$(HOST_INTERFACE_TYPE))'
+	DEFS += -D HOST_INTERFACE_I2C=1
+	DRIVER_MODULE_CFG += I2C0
+else
 ifneq '' '$(findstring HOST_INTERFACE_TYPE,$(APP_TASK_CFG))'
 	DEFS += -D HOST_INTERFACE_USART=1
 	DRIVER_MODULE_CFG += USART0
+endif
 endif
 endif
 
@@ -167,9 +172,15 @@ ifneq '' '$(findstring IO,$(MANAGEMENT_MODULE_CFG))'
 endif
 
 ifneq '' '$(findstring RPI_PROTOCOL,$(MANAGEMENT_MODULE_CFG))'
+
 	DEFS  += -D HAS_MANAGEMENT_MODULE_RPI_PROTOCOL=1
 	PROTOCOL_MANAGEMENT_PATH = $(APP_PATH)/protocol_management
-	CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler.c
+
+	ifneq '' '$(findstring RPI_PROTOCOL_I2C,$(MANAGEMENT_MODULE_CFG))'
+		CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler_i2c.c
+	else
+		CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler.c
+	endif
 endif
 
 # ---- COMMAND INTERFACE ------------------------------------------------
