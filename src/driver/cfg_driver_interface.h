@@ -1,8 +1,20 @@
+ /*
+  * \@file	driver/communication/communication_driver_cfg_interface.h
+  * \author	sebastian lesse
+  */
+
 #ifndef _CFG_DRIVER_INTERFACE_H_
 #define _CFG_DRIVER_INTERFACE_H_
 
-#define DRIVER_SPI_MASTER					1
-#define DRIVER_SPI_SLAVE					0
+//-----------------------------------------------------------------------------
+
+#define COM_DRIVER_IS_MASTER					1
+#define COM_DRIVER_IS_SLAVE					0
+
+#define COM_DRIVER_IRQ_ENABLE					1
+#define COM_DRIVER_IRQ_DISABLE					0
+
+//-----------------------------------------------------------------------------
 
 #define DRIVER_SPI_MODE_0					0
 #define DRIVER_SPI_MODE_1					1
@@ -22,13 +34,14 @@
 #define DRIVER_SPI_DATA_ORDER_MSB				0
 #define DRIVER_SPI_DATA_ORDER_LSB				1
 
-#define DRIVER_SPI_INTERRUPT_ENABLE				1
-#define DRIVER_SPI_INTERRUPT_DISABLE				0
+//-----------------------------------------------------------------------------
 
 #define DRIVER_I2C_BITRATE_1KHZ					0
 #define DRIVER_I2C_BITRATE_10KHZ				1
 #define DRIVER_I2C_BITRATE_100KHZ				2
 #define DRIVER_I2C_BITRATE_1MHZ					3
+
+//----------------------------------------------------------------------------- 
 
 #define TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH		0xFFFF
 
