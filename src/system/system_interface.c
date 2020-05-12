@@ -137,8 +137,8 @@ config_I2C_POWER_DOWN_PROTOTYPE
 static TRX_DRIVER_INTERFACE i2c0_driver = {
 	I2C,					//	TRX_DRIVER_INTERFACE_TYPE type;
 	&i2c0_driver_initialize,
-	&i2c0_driver_configure, 			//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
-	config_I2C_POWER_DOWN_FUNCTION_REF,	//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
+	&i2c0_driver_configure, 		//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
+	&i2c0_driver_power_off,			//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
 	&i2c0_driver_bytes_available, 		//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
 	&i2c0_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
 	&i2c0_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
@@ -160,30 +160,11 @@ static TRX_DRIVER_INTERFACE i2c0_driver = {
 
 //-----------------------------------------------------------------------------
 
-
-#ifndef config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE
-#define config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE
+#ifdef HAS_DRIVER_RTC0
+#include "driver/rtc/rtc_driver_interface.h"
 #endif
 
-#ifndef config_SYSTEM_INTERFACE_GET_TIME_U16_PROTOTYPE
-#define config_SYSTEM_INTERFACE_GET_TIME_U16_PROTOTYPE
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_GET_TIME_U32_PROTOTYPE
-#define config_SYSTEM_INTERFACE_GET_TIME_U32_PROTOTYPE
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_IS_TIME_UP_U8_PROTOTYPE
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U8_PROTOTYPE
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_IS_TIME_UP_U16_PROTOTYPE
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U16_PROTOTYPE
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_IS_TIME_UP_U32_PROTOTYPE
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U32_PROTOTYPE
-#endif
+//-----------------------------------------------------------------------------
 
 #ifndef config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
 #define config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
@@ -224,38 +205,6 @@ static TRX_DRIVER_INTERFACE i2c0_driver = {
 
 #ifndef config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
 #define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
-#endif
-
-
-
-#ifndef config_SYSTEM_INTERFACE_GET_TIME_U8_CALLBACK
-static u8 __system_interface_get_time_u8_dummy(void) { return 0;}
-#define config_SYSTEM_INTERFACE_GET_TIME_U8_CALLBACK	__system_interface_get_time_u8_dummy
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_GET_TIME_U16_CALLBACK
-static u16 __system_interface_get_time_u16_dummy(void) { return 0;}
-#define config_SYSTEM_INTERFACE_GET_TIME_U16_CALLBACK	__system_interface_get_time_u16_dummy
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_GET_TIME_U32_CALLBACK
-static u32 __system_interface_get_time_u32_dummy(void) { return 0;}
-#define config_SYSTEM_INTERFACE_GET_TIME_U32_CALLBACK	__system_interface_get_time_u32_dummy
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_IS_TIME_UP_U8_CALLBACK
-static u8 __system_interface_is_time_up_u8_dummy(u8 ref_time, u8 time_interval) { (void) ref_time; (void) time_interval; return 0; }
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U8_CALLBACK	__system_interface_is_time_up_u8_dummy
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_IS_TIME_UP_U16_CALLBACK
-static u8 __system_interface_is_time_up_u16_dummy(u16 ref_time, u16 time_interval) { (void) ref_time; (void) time_interval; return 0; }
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U16_CALLBACK	__system_interface_is_time_up_u16_dummy
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK
-static u8 __system_interface_is_time_up_u32_dummy(u32 ref_time, u32 time_interval) { (void) ref_time; (void) time_interval; return 0; }
-#define config_SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK	__system_interface_is_time_up_u32_dummy
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK
@@ -312,13 +261,6 @@ SYSTEM_INTERFACE_IO_PIN_LEVEL __system_interface_gpio_get_level(const GPIO_DRIVE
 
 //-----------------------------------------------------------------------------
 
-config_SYSTEM_INTERFACE_GET_TIME_U8_PROTOTYPE
-config_SYSTEM_INTERFACE_GET_TIME_U16_PROTOTYPE
-config_SYSTEM_INTERFACE_GET_TIME_U32_PROTOTYPE
-config_SYSTEM_INTERFACE_IS_TIME_UP_U8_PROTOTYPE
-config_SYSTEM_INTERFACE_IS_TIME_UP_U16_PROTOTYPE
-config_SYSTEM_INTERFACE_IS_TIME_UP_U32_PROTOTYPE
-
 config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
 config_SYSTEM_INTERFACE_GET_EVENT_PROTOTYPE
 
@@ -336,15 +278,18 @@ config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
 //-----------------------------------------------------------------------------
 
 const SYSTEM_INTERFACE i_system = {
-	{
-		&config_SYSTEM_INTERFACE_GET_TIME_U8_CALLBACK,
-		&config_SYSTEM_INTERFACE_GET_TIME_U16_CALLBACK,
-		&config_SYSTEM_INTERFACE_GET_TIME_U32_CALLBACK,
+	
+	#ifdef HAS_DRIVER_RTC0
+		.time = {			
+			.now_u8 = &local_rtc_timer_gettime_u8,
+			.now_u16 = &local_rtc_timer_gettime_u16,
+			.now_u32 = &local_rtc_timer_gettime_u32,
+			.isup_u8 = &local_rtc_timer_istimeup_u8,
+			.isup_u16 = &local_rtc_timer_istimeup_u16,
+			.isup_u32 = &local_rtc_timer_istimeup_u32
+		},
+	#endif
 
-		&config_SYSTEM_INTERFACE_IS_TIME_UP_U8_CALLBACK,
-		&config_SYSTEM_INTERFACE_IS_TIME_UP_U16_CALLBACK,
-		&config_SYSTEM_INTERFACE_IS_TIME_UP_U32_CALLBACK
-	},
 	{
 		&config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK,
 		&config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK
