@@ -19,8 +19,14 @@
 
 // --------------------------------------------------------------------------------
 
+#include "common/signal_slot_interface.h"
+#include "command_management/command_handler_interface.h"
 #include "command_handler/rpi_command_handler_ir_remote.h"
 #include "3rdparty/ir_protocol/ir_protocol_samsung.h"
+
+// --------------------------------------------------------------------------------
+
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SAMSUNG_IR_CMD_RECEIVED_SIGNAL)
 
 // --------------------------------------------------------------------------------
 
@@ -82,7 +88,7 @@ static inline u8 rpi_cmd_ir_samsung_tv(u8 cmd) {
 		case IR_COMMAND_STOP :		ir_protocol_samsung_cmd_tv_stop(&ir_command); break;
 	}
 
-	ir_protocol_samsung_transmit(ir_command);
+	SAMSUNG_IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
 
-	return CMD_NO_ERR
+	return CMD_NO_ERR;
 }
