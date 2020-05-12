@@ -144,20 +144,26 @@ void module_status_clear_all_u32(MODULE_STATUS_U32_TYPE* p_status);
 																	\
 	static u8 __##name##_module_status[size];											\
 																	\
-	inline static void name##_set(u8 index)		{ __##name##_module_status[index] = 1; }						\
-	inline static u8 name##_is_set(u8 index)	{ return __##name##_module_status[index] != 0 ? 1 : 0; }				\
-	inline static void name##_unset(u8 index)	{ __##name##_module_status[index] = 0; }						\
-	inline static void name##_clear_all(void)	{ memset(__##name##_module_status, 0x00, size); }					\
+	inline static void name##_set(u8 index)		{ __##name##_module_status[index] = 1; }					\
+	inline static u8 name##_is_set(u8 index)	{ return __##name##_module_status[index] != 0 ? 1 : 0; }			\
+	inline static void name##_unset(u8 index)	{ __##name##_module_status[index] = 0; }					\
+	inline static void name##_clear_all(void)	{ memset(__##name##_module_status, 0x00, size); }				\
 
 
 #define BUILD_MODULE_STATUS_FAST_VOLATILE(name, size)											\
 																	\
-	static volatile u8 __##name##_module_status[size];										\
+	volatile u8 __##name##_module_status[size];											\
 																	\
-	inline static void name##_set(u8 index)		{ __##name##_module_status[index] = 1; }					\
-	inline static u8 name##_is_set(u8 index)	{ return __##name##_module_status[index] != 0 ? 1 : 0; }			\
-	inline static void name##_unset(u8 index)	{ __##name##_module_status[index] = 0; }					\
-	inline static void name##_clear_all(void)	{ memset((u8*)&__##name##_module_status[0], 0x00, size); }				\
+	inline void name##_set(u8 index)		{ __##name##_module_status[index] = 1; }					\
+	inline u8 name##_is_set(u8 index)		{ return __##name##_module_status[index] != 0 ? 1 : 0; }			\
+	inline void name##_unset(u8 index)		{ __##name##_module_status[index] = 0; }					\
+	inline void name##_clear_all(void)		{ memset((u8*)&__##name##_module_status[0], 0x00, size); }			\
+
+#define INCLUDE_MODULE_STATUS_FAST_VOLATILE(name)											\
+	void name##_set(u8 index);													\
+	u8 name##_is_set(u8 index);													\
+	void name##_unset(u8 index);													\
+	void name##_clear_all(void);													\
 
 
 #endif // _LOCAL_MODULE_STATUS_H_
