@@ -24,6 +24,8 @@
 #include "command_management/answer_buffer_interface.h"
 #include "command_management/protocol_interface.h"
 
+#include "command_management/command_handler_interface.h"
+
 #include "command_handler/rpi_command_handler_ir_remote.h"
 #include "command_handler/rpi_cmd_handler_ir_remote_samsung.h"
 
@@ -31,21 +33,27 @@
 
 u8 rpi_cmd_handler_ir_remote(PROTOCOL_INTERFACE* p_protocol) {
 
-	if (p_act_protocol->cmd_buffer->bytes_available() == 0) {
+	if (p_protocol->cmd_buffer->bytes_available() == 0) {
 
-		PASS(); // rpi_cmd_handler_ir_remote() - No Argument given !!! ---
+		DEBUG_PASS("rpi_cmd_handler_ir_remote() - No Argument given !!! ---");
 
-		p_act_protocol->set_finished(CMD_ERR_INVALID_COMMAND);
+		p_protocol->set_finished(CMD_ERR_INVALID_COMMAND);
 		return CMD_ERR_INVALID_COMMAND;
 	}
 
-	p_act_protocol->cmd_buffer->start_read();
+	DEBUG_PASS("rpi_cmd_handler_ir_remote()");
+
+	p_protocol->cmd_buffer->start_read();
 
 	u8 manufactor = p_protocol->cmd_buffer->get_byte();	// samsung / jvc / sony / ...
 	u8 device     = p_protocol->cmd_buffer->get_byte();	// tv / radio / blueray-player / ..
 	u8 command    = p_protocol->cmd_buffer->get_byte();	// on/off, vol_up/vol_down, mute, ...
 
-	p_act_protocol->cmd_buffer->stop_read();
+	DEBUG_TRACE_byte(manufactor, "rpi_cmd_handler_ir_remote() - Manufactor:");
+	DEBUG_TRACE_byte(device,     "rpi_cmd_handler_ir_remote() - Device:");
+	DEBUG_TRACE_byte(command,    "rpi_cmd_handler_ir_remote() - Command:");
+
+	p_protocol->cmd_buffer->stop_read();
 
 	u8 err_code = CMD_NO_ERR;
 
@@ -55,7 +63,7 @@ u8 rpi_cmd_handler_ir_remote(PROTOCOL_INTERFACE* p_protocol) {
 
 	}
 
-	p_act_protocol->set_finished(err_code);
+	p_protocol->set_finished(err_code);
 	return err_code;
 }
 
