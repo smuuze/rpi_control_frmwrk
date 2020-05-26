@@ -24,6 +24,7 @@
 #include "local_clk_driver.h"
 #include "driver/rtc/rtc_driver_interface.h"
 #include "driver/gpio/gpio_interface.h"
+#include "copro/copro_interface.h"
 
 //-----------------------------------------------------------------------------
 
@@ -67,5 +68,11 @@ void system_initialization(void) {
 	#endif
 
 	TRACER_RESTART();
+
+	#ifdef COPRO_INTERFACE_AVAILABLE
+	{
+		copro_interface_initialize();
+	}
+	#endif
 }
 
