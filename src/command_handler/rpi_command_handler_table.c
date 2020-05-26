@@ -4,7 +4,7 @@
   * \author	sebastian lesse
   */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 //-----------------------------------------------------------------------------
 
@@ -34,6 +34,10 @@
 #include "command_handler/rpi_command_handler_ir_remote.h"
 #endif
 
+#ifdef RPI_CMD_HANDLER_ROUTING_AVAILABLE
+#include "command_handler/rpi_cmd_handler_routing.h"
+#endif
+
 #include "command_handler/rpi_command_handler.h"
 
 //-----------------------------------------------------------------------------
@@ -53,11 +57,15 @@ COMMAND_TABLE_INTERFACE rpi_cmd_handler_table[] = {
 	{RPI_COMMAND_GET_TEMPERATURE, &rpi_cmd_get_temperature},
 	{RPI_COMMAND_GET_HUMIDTY, &rpi_cmd_get_humidity},
 	{RPI_COMMAND_GET_ADC, &rpi_cmd_get_adc},
-	{RPI_COMMAND_GET_LIGHT, &rpi_cmd_get_light}
+	{RPI_COMMAND_GET_LIGHT, &rpi_cmd_get_light},
 	#endif
 
 	#ifdef RPI_CMD_HANDLER_IR_REMOTE_AVAILABLE
 	{RPI_COMMAND_IR_REMOTE, &rpi_cmd_handler_ir_remote},
+	#endif
+
+	#ifdef RPI_CMD_HANDLER_ROUTING_AVAILABLE
+	{RPI_COMMAND_ROUTING, &rpi_cmd_handler_routing},
 	#endif
 };
 

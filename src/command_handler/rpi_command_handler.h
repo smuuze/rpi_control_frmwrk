@@ -21,6 +21,7 @@
 #define RPI_COMMAND_GET_ADC			0x09
 #define RPI_COMMAND_GET_LIGHT			0x0A
 #define RPI_COMMAND_IR_REMOTE			0x0B
+#define RPI_COMMAND_ROUTING			0x0C
 
 
 /*!
