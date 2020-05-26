@@ -90,7 +90,7 @@ BUILD_LOCAL_MSG_BUFFER(, I2C0_RX_BUFFER, I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER
 
 // --------------------------------------------------------------------------------
 
-BUILD_MUTEX(i2c_mutex)
+BUILD_MUTEX(I2C_MUTEX)
 
 // --------------------------------------------------------------------------------
 
@@ -388,15 +388,15 @@ void i2c0_driver_set_address (u8 addr) {
 }
 
 u8 i2c0_driver_mutex_request(void) {
-	if (i2c_mutex_is_requested() != 0) {
+	if (I2C_MUTEX_is_requested() != 0) {
 		return MUTEX_INVALID_ID;
 	}
 
-	return i2c_mutex_request();
+	return I2C_MUTEX_request();
 }
 
 void i2c0_driver_mutex_release(u8 m_id) {
-	i2c_mutex_release(m_id);
+	I2C_MUTEX_release(m_id);
 }
 
 ISR(TWI_vect) {
