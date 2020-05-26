@@ -127,8 +127,6 @@ DEFS += -D HAS_APP_TASK_IR_REMOTE=1
 CSRCS += $(APP_TASK_INC_PATH)/ir_remote_mcu_task.c
 endif
 
-
-
 # ---- EXPANSION BOARDS -------------------------------------------------------------------
 
 EXPANSION_BOARD_PATH = $(APP_PATH)/expansion
@@ -145,6 +143,10 @@ ifneq '' '$(findstring GPIO_PCA9670,$(EXPANSION_BOARD_CFG))'
 	DEFS  += -D HAS_EXPANSION_BOARD_GPIO_PCA9670=1
 	CSRCS += $(EXPANSION_BOARD_PATH)/driver_PCA9670.c
 endif
+
+# ---- COPRO MODULES ----------------------------------------------------------------------
+
+include $(MAKE_PATH)/make_copro.mk
 
 # ---- 3rd PARTY MODULES ------------------------------------------------------------------
 
