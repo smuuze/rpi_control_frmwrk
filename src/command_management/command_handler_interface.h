@@ -22,6 +22,9 @@
 #define CMD_ERR_INVARG			1
 #define CMD_ERR_INVALID_COMMAND		2
 #define CMD_ERR_INVALID_ARGUMENT	3
+#define CMD_ERR_TIMEOUT			4
+#define CMD_ERR_BUSY			5
+#define CMD_ERR_NO_ROUTE_TO_HOST	6
 
 // --------------------------------------------------------------------------------
 
