@@ -21,6 +21,8 @@
 #define config_HAS_LED_MATRIX 0
 #endif
 
+//-----------------------------------------------------------------------------
+
 #if config_HAS_LED_MATRIX == 1
 #include "local_led_mcu_task.h"
 static MCU_TASK_INTERFACE led_mcu_task = {
@@ -40,7 +42,7 @@ static MCU_TASK_INTERFACE led_mcu_task = {
 };
 #endif
 
-
+//-----------------------------------------------------------------------------
 
 #ifdef HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115
 #include "local_ads1115_mcu_task.h"
@@ -61,6 +63,8 @@ static MCU_TASK_INTERFACE ads1115_mcu_task = {
 	0						// next-task
 };
 
+//-----------------------------------------------------------------------------
+
 #include "local_sht31_mcu_task.h"
 static MCU_TASK_INTERFACE sht31_mcu_task = {
 
@@ -80,6 +84,7 @@ static MCU_TASK_INTERFACE sht31_mcu_task = {
 };
 #endif
 
+//-----------------------------------------------------------------------------
 
 #ifdef HAS_MANAGEMENT_MODULE_IO
 #include "io_management/io_input_controller.h"
@@ -119,6 +124,8 @@ static MCU_TASK_INTERFACE io_output_controller_task = {
 };
 #endif
 
+//-----------------------------------------------------------------------------
+
 #ifdef HAS_MANAGEMENT_MODULE_RPI_PROTOCOL
 #include "protocol_management/rpi_protocol_handler.h"
 static MCU_TASK_INTERFACE rpi_protocol_task = {
@@ -138,6 +145,8 @@ static MCU_TASK_INTERFACE rpi_protocol_task = {
 	0						// next-task
 };
 #endif
+
+//-----------------------------------------------------------------------------
 
 #ifdef HAS_APP_TASK_EVENT
 #include "local_event_task.h"
@@ -159,8 +168,9 @@ static MCU_TASK_INTERFACE event_task = {
 };
 #endif
 
-#if defined (HAS_APP_TASK_TEST_TRACER) && (HAS_APP_TASK_TEST_TRACER) == 1
+//-----------------------------------------------------------------------------
 
+#if defined (HAS_APP_TASK_TEST_TRACER) && (HAS_APP_TASK_TEST_TRACER) == 1
 #include "test_tracer_mcu_task.h"
 static MCU_TASK_INTERFACE test_tracer_task = {
 
@@ -179,6 +189,8 @@ static MCU_TASK_INTERFACE test_tracer_task = {
 	0						// next-task
 };
 #endif
+
+//-----------------------------------------------------------------------------
 
 #ifdef HAS_EXPANSION_BOARD_GPIO_PCA9670
 #include "driver_PCA9670.h"
@@ -200,6 +212,8 @@ static MCU_TASK_INTERFACE pca9670_task = {
 };
 #endif
 
+//-----------------------------------------------------------------------------
+
 #if defined (HAS_APP_TASK_IR_REMOTE) && (HAS_APP_TASK_IR_REMOTE) == 1
 #include "app_tasks/ir_remote_mcu_task.h"
 static MCU_TASK_INTERFACE ir_remote_task = {
@@ -219,6 +233,30 @@ static MCU_TASK_INTERFACE ir_remote_task = {
 	0						// next-task
 };
 #endif
+
+//-----------------------------------------------------------------------------
+
+#if defined (HAS_APP_TASK_COPRO_ROUTING) && (HAS_APP_TASK_COPRO_ROUTING) == 1
+#include "app_tasks/copro_routing_mcu_task.h"
+static MCU_TASK_INTERFACE copro_routing_task = {
+
+	0, 						// u8 identifier,
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&copro_routing_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&copro_routing_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&copro_routing_task_get_state, 			// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&copro_routing_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	&copro_routing_task_background_run,		// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
+	0						// next-task
+};
+#endif
+
+//-----------------------------------------------------------------------------
 
 void task_initialization(void) {
 
@@ -268,6 +306,11 @@ void task_initialization(void) {
 	#ifdef HAS_MANAGEMENT_MODULE_IO
 	DEBUG_PASS("task_initialization() - IO output-controller task");
 	mcu_task_controller_register_task(&io_output_controller_task);
+	#endif
+
+	#if defined (HAS_APP_TASK_COPRO_ROUTING) && (HAS_APP_TASK_COPRO_ROUTING) == 1
+	DEBUG_PASS("task_initialization() - copro-routing task");
+	mcu_task_controller_register_task(&copro_routing_task);
 	#endif
 }
 
