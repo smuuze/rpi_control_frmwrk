@@ -27,6 +27,9 @@
 #include "time_management/time_management.h"
 #include "driver/timer/timer_interface.h"
 
+#include "command_management/protocol_interface.h"
+#include "command_management/command_handler_interface.h"
+
 #include "copro/copro_interface.h"
 
 // --------------------------------------------------------------------------------
@@ -102,8 +105,9 @@ void copro_routing_task_init(void) {
 
 	#ifdef COPRO1_AVAILABLE
 	{
-		COPRO1_COMMAND_ROUTING_SIGNAL_init();
-		COPRO1_COMMAND_ROUTING_SLOT_connect();
+		COPRO1_ROUTING_COMMAND_SIGNAL_init();
+		COPRO1_ROUTING_RESPONSE_SIGNAL_init();
+		COPRO1_ROUTING_COMMAND_SLOT_connect();
 	}
 	#endif
 
@@ -194,7 +198,7 @@ void copro_routing_task_run(void) {
 
 		case COPRO_ROUTING_TASK_TIMEOUT :
 
-			p_protocol->set_finished(CMD_ERR_TIMEOUT);
+			p_scheduled_protocol->set_finished(CMD_ERR_TIMEOUT);
 
 			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_TIMEOUT -> COPRO_ROUTING_TASK_STATE_FINISH");
 			task_state = COPRO_ROUTING_TASK_STATE_FINISH;
