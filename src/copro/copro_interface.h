@@ -100,7 +100,7 @@ typedef u8 (*COPRO_INTERFACE_REQUEST_MUTEX_CALLBACK)		(void);
 /*
  *
  */
-typedef void (*COPRO_INTERFACE_RELEASE_MUTEX_CALLBACK)		(u8 m_id);
+typedef void (*COPRO_INTERFACE_RELEASE_MUTEX_CALLBACK)		(void);
 
 //-----------------------------------------------------------------------------
 
@@ -215,7 +215,7 @@ typedef struct COPRO_INTERFACE {
 		return copro_mutex_request(&_##name##_copro_interface);					\
 	}												\
 													\
-	void name##_mutex_release(u8 m_id) {								\
+	void name##_mutex_release(void) {								\
 		copro_mutex_release(&_##name##_copro_interface);					\
 	}												\
 													\
