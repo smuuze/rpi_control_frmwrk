@@ -20,7 +20,7 @@ BOARD_ID = 180920
 #-----------------------------------------------------------------------------
 
 VERSION_MAJOR		:= 4
-VERSION_MINOR		:= 10
+VERSION_MINOR		:= 11
 
 #-----------------------------------------------------------------------------
 
@@ -44,6 +44,7 @@ HOST_INTERFACE_TYPE = SPI
 
 APP_TASK_CFG = 
 APP_TASK_CFG += EVENT
+APP_TASK_CFG += COPRO_ROUTING
 #APP_TASK_CFG += LED_MATRIX
 #APP_TASK_CFG += TEST_TRACER
 
@@ -85,7 +86,7 @@ COMMAND_INTERFACE_CFG += RPI_CMD_ROUTING
 #-----------------------------------------------------------------------------
 
 COPRO_INTERFACE_CFG =
-COPRO_INTERFACE_CFG += COPRO1
+COPRO_INTERFACE_CFG += COPRO1_I2C0
 
 #-----------------------------------------------------------------------------
 
