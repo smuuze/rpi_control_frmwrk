@@ -146,7 +146,7 @@ static void command_controller_task_run(void) {
 	u8 i = 0;
 	while (i < _act_cmd_handler->get_table_size()) {
 
-		if (_act_cmd_handler->command_handler_table[i].command_id == cmd_id || _act_cmd_handler->command_handler_table[i].command_id == 0x00) {
+		if (_act_cmd_handler->command_handler_table[i].command_id == cmd_id) {
 
 			DEBUG_TRACE_byte(cmd_id, "command_controller_task_run() - Running Command-Handler");
 			cmd_ret_code = _act_cmd_handler->command_handler_table[i].handle(_act_cmd_handler->get_protocol());
