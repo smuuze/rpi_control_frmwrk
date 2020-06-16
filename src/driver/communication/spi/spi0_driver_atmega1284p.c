@@ -395,7 +395,7 @@ void spi_driver_start_rx(u16 num_of_rx_bytes) {
 
 void spi_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 
-	//TRACE_byte(num_bytes); // spi_driver_wait_for_rx()
+	//DEBUG_TRACE_byte(num_bytes, "spi_driver_wait_for_rx() - Number of bytes:");
 	
 	if (SPI0_RX_BUFFER_bytes_available() >= num_bytes) {
 		DEBUG_PASS("spi_driver_wait_for_rx() - Number of bytes already available");
@@ -410,12 +410,12 @@ void spi_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 
 			u8 rx_byte = SPI0_GET_BYTE();
 			SPI0_RX_BUFFER_add_byte(rx_byte);
+
+			DEBUG_TRACE_byte(rx_byte, "spi_driver_wait_for_rx() - Byte received:");
 			
 			if (num_bytes != 0) {
 				num_bytes -= 1;
 			}
-
-			SPI_RX_TRACE_byte(rx_byte); // spi_driver_wait_for_rx() - new byte received
 
 			if (SPI0_TX_BUFFER_bytes_available() != 0) {
 
