@@ -46,7 +46,7 @@
 #define RPI_STATUS_COMMAND_PENDING				0
 #define RPI_STATUS_ANSWER_PENDING				1
 
-#define RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE			16
+#define RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE			32
 
 /*!
  *
@@ -76,7 +76,7 @@
 /*!
  *
  */
-#define RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS		100
+#define RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS		250
 
 /*!
  *
@@ -262,14 +262,14 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
 	while (rpi_protocol_spi_interface.command_length == 0) {
 
-		if (RPI_TRX_TIMER_is_up(1000)) {
+		// first byte gives the length of the command (how many bytes will follow)
+		p_com_driver->wait_for_rx(1, 50); // blocking function
+
+		if (RPI_TRX_TIMER_is_up(150)) {
 			DEBUG_PASS("rpi_protocol_receive_command() - Receiving command-length has FAILED (TIMEOUT) !!! ---");
 			error_code = RPI_TRX_STATE_TIMEOUT;
 			goto EXIT_rpi_protocol_receive_command;
 		}
-
-		// first byte gives the length of the command (how many bytes will follow)
-		p_com_driver->wait_for_rx(1, 100); // blocking function
 
 		if (p_com_driver->bytes_available() == 0) {
 			//DEBUG_PASS("rpi_protocol_receive_command() - Only one byte available -> no valid command yet");
@@ -291,10 +291,10 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
 	while (bytes_available < rpi_protocol_spi_interface.command_length) {
 
-		p_com_driver->wait_for_rx(rpi_protocol_spi_interface.command_length, 500); // blocking function
+		p_com_driver->wait_for_rx(rpi_protocol_spi_interface.command_length, 50); // blocking function
 		bytes_available = p_com_driver->bytes_available();
 
-		if (RPI_TRX_TIMER_is_up(1000)) {
+		if (RPI_TRX_TIMER_is_up(300)) {
 			DEBUG_PASS("rpi_protocol_receive_command() - Receiving command-data has FAILED (TIMEOUT) !!! ---");
 			error_code = RPI_TRX_STATE_TIMEOUT;
 			goto EXIT_rpi_protocol_receive_command;
@@ -307,6 +307,9 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
 	RPI_COMMAND_BUFFER_clear_all();
 	RPI_COMMAND_BUFFER_start_write();
+
+	DEBUG_TRACE_byte(rpi_protocol_spi_interface.command_length ,"rpi_protocol_receive_command() - Command-Length: ");
+	DEBUG_TRACE_byte(rpi_protocol_spi_interface.command_code ,"rpi_protocol_receive_command() - Command-Code: ");
 
 	while (bytes_available != 0) {
 
@@ -325,6 +328,8 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 		bytes_available -= read_count;
 
 		RPI_COMMAND_BUFFER_add_N_bytes(read_count, t_buffer);
+
+		DEBUG_TRACE_N(read_count, t_buffer ,"rpi_protocol_receive_command() - Command-Data: ");
 	}
 
 	RPI_COMMAND_BUFFER_stop_write();
@@ -337,7 +342,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 	EXIT_rpi_protocol_receive_command :
 	{
 		if (error_code != RPI_TRX_STATE_COMPLETE) {
-			READY_INOUT_pull_up();
+			READY_INOUT_no_drive();
 		}
 
 		p_com_driver->stop_rx();
@@ -454,7 +459,7 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	DEBUG_PASS("rpi_protocol_init() - FINISH");
 
-	READY_INOUT_pull_up();
+	READY_INOUT_no_drive();
 }
 
 void rpi_protocol_task_init(void) {
@@ -592,7 +597,7 @@ void rpi_protocol_task_run(void) {
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_PROCESS_COMMAND -> RPI_STATE_WAIT_FOR_REQUEST_TX");
 			actual_state = RPI_STATE_WAIT_FOR_REQUEST_TX;
 			
-			READY_INOUT_pull_up();
+			READY_INOUT_no_drive();
 
 			RPI_OP_TIMER_start();
 			// no break;
@@ -655,7 +660,7 @@ void rpi_protocol_task_run(void) {
 
 		case RPI_STATE_FINISH:
 
-			READY_INOUT_pull_up();
+			READY_INOUT_no_drive();
 
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_FINISH -> RPI_STATE_WAIT_FOR_RELEASE");
 			actual_state = RPI_STATE_WAIT_FOR_RELEASE;
