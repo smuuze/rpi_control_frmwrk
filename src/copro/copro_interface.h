@@ -24,7 +24,15 @@
 
 /*
  */
-typedef void (*COPRO_INTERFACE_INITIALIZE_CALLBACK)		(TRX_DRIVER_INTERFACE* p_configuration);
+typedef void (*COPRO_INTERFACE_INITIALIZE_CALLBACK)		(TRX_DRIVER_INTERFACE* p_configuration, TRX_DRIVER_CONFIGURATION* p_com_driver_cfg);
+
+/*
+ */
+typedef void (*COPRO_INTERFACE_POWER_ON_CALLBACK)		(void);
+
+/*
+ */
+typedef void (*COPRO_INTERFACE_POWER_OFF_CALLBACK)		(void);
 
 /*
  */
@@ -110,6 +118,8 @@ typedef void (*COPRO_INTERFACE_RELEASE_MUTEX_CALLBACK)		(void);
 typedef struct {
 
 	COPRO_INTERFACE_INITIALIZE_CALLBACK 		initialize;
+	COPRO_INTERFACE_POWER_ON_CALLBACK		power_on;
+	COPRO_INTERFACE_POWER_OFF_CALLBACK		power_off;
 	COPRO_INTERFACE_BYTES_AVAILABLE_CALLBACK 	bytes_available;
 	COPRO_INTERFACE_GET_N_BYTES_CALLBACK 		get_N_bytes;
 	COPRO_INTERFACE_SET_N_BYTES_CALLBACK 		set_N_bytes;
@@ -138,17 +148,28 @@ typedef struct {
 typedef struct COPRO_INTERFACE {
 	u8 address;
 	u8 mutex_id;
+	TRX_DRIVER_CONFIGURATION* p_com_driver_cfg;
 	TRX_DRIVER_INTERFACE* p_com_driver;
 } COPRO_INTERFACE;
 
 //-----------------------------------------------------------------------------
 
-#define COPRO_INTERFACE_CRATE(name)									\
+#define COPRO_INTERFACE_CRATE(name, power_on_callback, power_off_callback)				\
 													\
 	static COPRO_INTERFACE _##name##_copro_interface;						\
 													\
-	void name##_initialize(TRX_DRIVER_INTERFACE* p_com_driver_interface) {				\
+	void name##_initialize(TRX_DRIVER_INTERFACE* p_com_driver_interface, TRX_DRIVER_CONFIGURATION* p_com_driver_cfg) {	\
+		copro_initialize(&_##name##_copro_interface, p_com_driver_interface, p_com_driver_cfg);				\
+	}												\
 													\
+	void name##_power_on(void) {									\
+		power_on_callback();									\
+		copro_power_on(&_##name##_copro_interface);						\
+	}												\
+													\
+	void name##_power_off(void) {									\
+		power_off_callback();									\
+		copro_power_on(&_##name##_copro_interface);						\
 	}												\
 													\
 	u8 name##_bytes_available(void) {								\
@@ -221,6 +242,8 @@ typedef struct COPRO_INTERFACE {
 													\
 	const COPRO_INTERFACE_OBJECT name = {								\
 		.initialize = &name##_initialize,							\
+		.power_on = &name##_power_on,								\
+		.power_off = &name##_power_off,								\
 		.bytes_available = &name##_bytes_available,						\
 		.get_N_bytes = &name##_get_N_bytes,							\
 		.set_N_bytes = &name##_set_N_bytes,							\
@@ -242,7 +265,9 @@ typedef struct COPRO_INTERFACE {
 
 #define COPRO_INTERFACE_INCLUDE(name)									\
 	extern const COPRO_INTERFACE_OBJECT name;							\
-	void name##_initialize(TRX_DRIVER_INTERFACE* p_com_driver_interface);				\
+	void name##_initialize(TRX_DRIVER_INTERFACE* p_com_driver_interface, TRX_DRIVER_CONFIGURATION* p_com_driver_cfg); \
+	void name##_power_on(void);									\
+	void name##_power_off(void);									\
 	u8 name##_bytes_available(void);								\
 	u8 name##_get_N_bytes(u8 num_bytes, u8* p_buffer_to);						\
 	u8 name##_set_N_bytes(u8 num_bytes, const u8* p_buffer_from);					\
@@ -270,7 +295,17 @@ void copro_interface_initialize(void);
 /*!
  *
  */
-void copro_initialize(COPRO_INTERFACE* p_copro, TRX_DRIVER_INTERFACE* p_com_driver_interface);
+void copro_initialize(COPRO_INTERFACE* p_copro, TRX_DRIVER_INTERFACE* p_com_driver_interface, TRX_DRIVER_CONFIGURATION* p_com_driver_cfg);
+
+/*!
+ *
+ */
+void copro_power_on(COPRO_INTERFACE* p_copro);
+
+/*!
+ *
+ */
+void copro_power_off(COPRO_INTERFACE* p_copro);
 
 /*!
  *

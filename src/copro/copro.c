@@ -4,7 +4,7 @@
   * \author	sebastian lesse
   */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 //-----------------------------------------------------------------------------
 
@@ -19,41 +19,82 @@
 #include "system/system_interface.h"
 #include "copro/copro_interface.h"
 #include "common/local_mutex.h"
+#include "command_handler/rpi_cmd_handler_routing.h"
+
+#include "driver/cfg_driver_interface.h"
+
+//-----------------------------------------------------------------------------
+
+#ifndef COPRO1_DEFAULT_ADDRESS
+#define COPRO1_DEFAULT_ADDRESS						0x11
+#endif
 
 //-----------------------------------------------------------------------------
 
 #ifdef COPRO1_AVAILABLE
-COPRO_INTERFACE_CRATE(COPRO1)
+
+void copro1_POWER_ON_CALLBACK(void) { }
+void copro1_POWER_OFF_CALLBACK(void) { }
+
+COPRO_INTERFACE_CRATE(COPRO1, copro1_POWER_ON_CALLBACK, copro1_POWER_OFF_CALLBACK)
+ 
+static TRX_DRIVER_CONFIGURATION copro1_driver_cfg = { COPRO1_DRIVER_CFG };
+
 #endif
 
 #ifdef COPRO2_AVAILABLE
-COPRO_INTERFACE_CRATE(COPRO2)
+void copro2_POWER_ON_CALLBACK(void) { }
+void copro2_POWER_OFF_CALLBACK(void) { }
+COPRO_INTERFACE_CRATE(COPRO2, copro2_POWER_ON_CALLBACK, copro2_POWER_OFF_CALLBACK))
 #endif
 
 #ifdef COPRO3_AVAILABLE
-COPRO_INTERFACE_CRATE(COPRO3)
+void copro3_POWER_ON_CALLBACK(void) { }
+void copro3_POWER_OFF_CALLBACK(void) { }
+COPRO_INTERFACE_CRATE(COPRO3, copro3_POWER_ON_CALLBACK, copro3_POWER_OFF_CALLBACK))
 #endif
 
 #ifdef COPRO4_AVAILABLE
-COPRO_INTERFACE_CRATE(COPRO4)
+void copro4_POWER_ON_CALLBACK(void) { }
+void copro4_POWER_OFF_CALLBACK(void) { }
+COPRO_INTERFACE_CRATE(COPRO4, copro4_POWER_ON_CALLBACK, copro4_POWER_OFF_CALLBACK))
 #endif
 
 //-----------------------------------------------------------------------------
 
 void copro_interface_initialize(void) {
 
-	#ifdef COPRO1_I2C0
+	DEBUG_PASS("copro_interface_initialize()");
+
+	#ifdef COPRO1_AVAILABLE
 	{
-		DEBUG_PASS("copro_interface_initialize() - COPRO1 over I2C0");
-		COPRO1_initialize(i_system.driver.i2c0);
+		DEBUG_PASS("copro_interface_initialize() - COPRO1");
+
+		#ifdef COPRO1_I2C0
+		{
+			DEBUG_PASS("copro_interface_initialize() - COPRO1 over I2C0");
+			COPRO1_initialize(i_system.driver.i2c0, &copro1_driver_cfg);
+		}
+		#endif
+
+		COPRO1_set_address(COPRO1_DEFAULT_ADDRESS);
 	}
 	#endif
 }
 
 //-----------------------------------------------------------------------------
 
-void copro_initialize(COPRO_INTERFACE* p_copro, TRX_DRIVER_INTERFACE* p_com_driver_interface) {
+void copro_initialize(COPRO_INTERFACE* p_copro, TRX_DRIVER_INTERFACE* p_com_driver_interface, TRX_DRIVER_CONFIGURATION* p_com_driver_cfg) {
 	p_copro->p_com_driver = p_com_driver_interface;
+	p_copro->p_com_driver_cfg = p_com_driver_cfg;
+}
+
+void copro_power_on(COPRO_INTERFACE* p_copro) {
+	p_copro->p_com_driver->configure(p_copro->p_com_driver_cfg);
+}
+
+void copro_power_off(COPRO_INTERFACE* p_copro) {
+	
 }
 
 u8 copro_bytes_available(COPRO_INTERFACE* p_copro) {
@@ -110,9 +151,11 @@ void copro_clear_tx_buffer(COPRO_INTERFACE* p_copro) {
 
 void copro_set_address(COPRO_INTERFACE* p_copro, u8 addr) {
 	p_copro->address = addr;
+	DEBUG_TRACE_byte(p_copro->address, "copro_set_address()");
 }
 
 u8 copro_get_address(COPRO_INTERFACE* p_copro) {
+	DEBUG_TRACE_byte(p_copro->address, "copro_get_address()");
 	return p_copro->address;
 }
 
