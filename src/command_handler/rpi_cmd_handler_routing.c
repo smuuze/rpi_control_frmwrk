@@ -24,6 +24,7 @@
 #include "copro/copro_interface.h"
 
 #include "common/local_context.h"
+#include "common/signal_slot_interface.h"
 
 #include "command_handler/rpi_command_handler.h"
 
@@ -38,49 +39,65 @@ typedef void (*COPRO_TABLE_SIGNAL_CALLBACK)		(void* p_arg);
  *
  */
 typedef struct {
-	COPRO_INTERFACE_OBJECT* copro;
+	const COPRO_INTERFACE_OBJECT* copro;
 	COPRO_TABLE_SIGNAL_CALLBACK signal_send;
 } COPRO_TABLE_TYPE;
 
 //-----------------------------------------------------------------------------
 
-#ifdef COPRO1_IS_AVAILABLE
+#ifdef COPRO1_AVAILABLE
+
+static void copro1_slot_RESPONSE_RECEIVED(void* p_arg) {
+
+	PROTOCOL_INTERFACE* p_protocol = (PROTOCOL_INTERFACE*) p_arg;
+
+	if (p_protocol == 0) {
+		DEBUG_PASS("copro1_slot_RESPONSE_RECEIVED() - p_protocol is 0 - FAILEURE !!! ---");
+		return;
+	}
+
+	DEBUG_PASS("copro1_slot_RESPONSE_RECEIVED()");
+	p_protocol->set_finished(CMD_NO_ERR);
+}
+
 COPRO_INTERFACE_INCLUDE(COPRO1)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(COPRO1_ROUTING_COMMAND_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(COPRO1_ROUTING_RESPONSE_SIGNAL, COPRO1_ROUTING_RESPONSE_SLOT, copro1_slot_RESPONSE_RECEIVED)
+
 #endif
 
-#ifdef COPRO2_IS_AVAILABLE
+#ifdef COPRO2_AVAILABLE
 COPRO_INTERFACE_INCLUDE(COPRO2)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(COPRO2_ROUTING_COMMAND_SIGNAL)
 #endif
 
-#ifdef COPRO3_IS_AVAILABLE
+#ifdef COPRO3_AVAILABLE
 COPRO_INTERFACE_INCLUDE(COPRO3)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(COPRO3_ROUTING_COMMAND_SIGNAL)
 #endif
 
-#ifdef COPRO4_IS_AVAILABLE
+#ifdef COPRO4_AVAILABLE
 COPRO_INTERFACE_INCLUDE(COPRO4)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(COPRO4_ROUTING_COMMAND_SIGNAL)
 #endif
 
+//-----------------------------------------------------------------------------
 
+static COPRO_TABLE_TYPE copro_table[] = {
 
-COPRO_TABLE_TYPE copro_table[] = {
-
-	#ifdef COPRO1_IS_AVAILABLE
+	#ifdef COPRO1_AVAILABLE
 	{ &COPRO1, &COPRO1_ROUTING_COMMAND_SIGNAL_send },
 	#endif
 
-	#ifdef COPRO2_IS_AVAILABLE
+	#ifdef COPRO2_AVAILABLE
 	{ &COPRO2, &COPRO2_ROUTING_COMMAND_SIGNAL_send },
 	#endif
 
-	#ifdef COPRO3_IS_AVAILABLE
+	#ifdef COPRO3_AVAILABLE
 	{ &COPRO3, &COPRO3_ROUTING_COMMAND_SIGNAL_send },
 	#endif
 
-	#ifdef COPRO4_IS_AVAILABLE
+	#ifdef COPRO4_AVAILABLE
 	{ &COPRO4,  &COPRO4_ROUTING_COMMAND_SIGNAL_send }
 	#endif
 };
@@ -89,11 +106,24 @@ COPRO_TABLE_TYPE copro_table[] = {
 
 //-----------------------------------------------------------------------------
 
+void rpi_cmd_handler_routing_init(void) {
+
+	DEBUG_PASS("rpi_cmd_handler_routing_init()");
+
+	#ifdef COPRO1_AVAILABLE
+	{
+		DEBUG_PASS("rpi_cmd_handler_routing_init() - COPRO1_ROUTING_RESPONSE_SLOT_connect()");
+		COPRO1_ROUTING_RESPONSE_SLOT_connect();
+	}
+	#endif
+}
+
 u8 rpi_cmd_handler_routing(PROTOCOL_INTERFACE* p_protocol) {
 
 	u8 address = p_protocol->cmd_buffer->get_byte();
 
 	DEBUG_TRACE_byte(address, "rpi_cmd_handler_routing() - Address : ");
+	DEBUG_TRACE_byte(COPRO_TABLE_SIZE, "rpi_cmd_handler_routing() - Number of Copro's : ");
 
 	u8 i = 0;
 	for ( ; i < COPRO_TABLE_SIZE; i++) {
