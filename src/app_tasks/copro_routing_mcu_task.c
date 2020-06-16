@@ -7,7 +7,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -30,12 +30,15 @@
 #include "command_management/protocol_interface.h"
 #include "command_management/command_handler_interface.h"
 
+#include "command_handler/rpi_cmd_handler_routing.h"
+
 #include "copro/copro_interface.h"
 
 // --------------------------------------------------------------------------------
 
 #define COPRO_ROUTING_TASK_RUN_INTERVAL_MS		0
 #define COPRO_ROUTING_TASK_PREPARE_TIMEOUT_MS		500
+#define COPRO_ROUTING_TASK_PROCESS_TIMEOUT_MS		100
 #define COPRO_ROUTING_TASK_TEMP_DATA_BUFFER_SIZE	64
 
 // --------------------------------------------------------------------------------
@@ -47,9 +50,17 @@ typedef enum {
 	COPRO_ROUTING_TASK_STATE_IDLE,
 	COPRO_ROUTING_TASK_STATE_PREPARE,
 	COPRO_ROUTING_TASK_STATE_PROCESS,
+	COPRO_ROUTING_TASK_STATE_RESPONSE,
 	COPRO_ROUTING_TASK_STATE_FINISH,
 	COPRO_ROUTING_TASK_TIMEOUT
 } COPRO_ROUTING_TASK_STATE;
+
+//-----------------------------------------------------------------------------
+
+/*
+ *
+ */
+typedef void (*COPRO_TABLE_SIGNAL_CALLBACK)		(void* p_arg);
 
 // --------------------------------------------------------------------------------
 
@@ -91,6 +102,11 @@ static COPRO_INTERFACE_OBJECT* p_copro_obj = 0;
 /*!
  *
  */
+static COPRO_TABLE_SIGNAL_CALLBACK p_response_callback = 0;
+
+/*!
+ *
+ */
 static COPRO_ROUTING_TASK_STATE task_state;
 
 // --------------------------------------------------------------------------------
@@ -112,6 +128,12 @@ void copro_routing_task_init(void) {
 	#endif
 
 	task_state = COPRO_ROUTING_TASK_STATE_IDLE;
+	p_response_callback = 0;
+	p_scheduled_protocol = 0;
+	p_copro_obj = 0;
+
+	DEBUG_PASS("copro_routing_task_init() - rpi_cmd_handler_routing_init()");
+	rpi_cmd_handler_routing_init();
 }
 
 u16 copro_routing_task_get_schedule_interval(void) {
@@ -120,22 +142,34 @@ u16 copro_routing_task_get_schedule_interval(void) {
 
 MCU_TASK_INTERFACE_TASK_STATE copro_routing_task_get_state(void) {
 
-	#ifdef COPRO1_AVAILABLE
-	if (p_copro1_protocol != 0) {
-		return MCU_TASK_RUNNING;
-	}
-	#endif
-
 	if (task_state != COPRO_ROUTING_TASK_STATE_IDLE) {
 		return MCU_TASK_RUNNING;
 	}
+
+	if (p_scheduled_protocol != 0) {
+		return MCU_TASK_RUNNING;
+	}
+
+	#ifdef COPRO1_AVAILABLE
+	if (p_copro1_protocol != 0) {
+
+		DEBUG_PASS("copro_routing_task_get_state() - COPRO1 selected");
+
+		p_scheduled_protocol = p_copro1_protocol;
+		p_copro_obj = (COPRO_INTERFACE_OBJECT*) &COPRO1;
+		p_response_callback = &COPRO1_ROUTING_RESPONSE_SIGNAL_send;
+		p_copro1_protocol = 0;
+
+		return MCU_TASK_RUNNING;
+	}
+	#endif
 
 	return MCU_TASK_SLEEPING;
 }
 
 void copro_routing_task_run(void) {
 
-	DEBUG_PASS("copro_routing_task_run()");
+	//DEBUG_PASS("copro_routing_task_run()");
 
 	u8 num_bytes = 0;
 	u8 t_data_buffer[COPRO_ROUTING_TASK_TEMP_DATA_BUFFER_SIZE];
@@ -145,20 +179,12 @@ void copro_routing_task_run(void) {
 		default: // no break;
 		case COPRO_ROUTING_TASK_STATE_IDLE :
 
-			#ifdef COPRO1_AVAILABLE
-			if (p_copro1_protocol != 0) {
-				DEBUG_PASS("copro_routing_task_run() - COPRO_1 selected");
-				p_scheduled_protocol = p_copro1_protocol;
-				p_copro_obj = (COPRO_INTERFACE_OBJECT*) &COPRO1;
-				p_copro1_protocol = 0;
-			}
-			#endif
-
 			if (p_scheduled_protocol == 0) {
 				DEBUG_PASS("copro_routing_task_run() - No copro selected -> what's wrong ?!?");
 				break;
 			}
-
+				
+			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_IDLE -> COPRO_ROUTING_TASK_STATE_PREPARE");
 			task_state = COPRO_ROUTING_TASK_STATE_PROCESS;
 			COPRO_OP_TIMER_start();
 
@@ -173,6 +199,7 @@ void copro_routing_task_run(void) {
 			}
 
 			if (p_copro_obj->mutex_req() == 0)  {
+				DEBUG_PASS("copro_routing_task_run() - p_copro_obj->mutex_req() has FAILED !!! ---");
 				break;
 			}
 			
@@ -181,17 +208,44 @@ void copro_routing_task_run(void) {
 			p_scheduled_protocol->cmd_buffer->get_N_bytes(num_bytes, t_data_buffer);
 			p_scheduled_protocol->cmd_buffer->stop_read();
 
+			DEBUG_TRACE_N(num_bytes, t_data_buffer, "copro_routing_task_run() - Routing Command");
+
+			p_copro_obj->power_on();
 			p_copro_obj->clear_tx_buffer();
 			p_copro_obj->set_N_bytes(num_bytes, t_data_buffer);
 			p_copro_obj->start_tx();
 
 			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PREPARE -> COPRO_ROUTING_TASK_STATE_PROCESS");
 			task_state = COPRO_ROUTING_TASK_STATE_PROCESS;
+
+			COPRO_OP_TIMER_start();
 			// no break;
 
 		case COPRO_ROUTING_TASK_STATE_PROCESS :
 
-			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PROCESS -> COPRO_ROUTING_TASK_STATE_FINISH");
+			if (COPRO_OP_TIMER_is_up(COPRO_ROUTING_TASK_PROCESS_TIMEOUT_MS)) {
+				DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PROCESS -> COPRO_ROUTING_TASK_TIMEOUT");
+				task_state = COPRO_ROUTING_TASK_TIMEOUT;
+				break;
+			}
+
+			if (p_copro_obj->bytes_available() == 0) {
+				break;
+			}
+
+			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PROCESS -> COPRO_ROUTING_TASK_STATE_RESPONSE");
+			task_state = COPRO_ROUTING_TASK_STATE_RESPONSE;
+
+			break;
+
+		case COPRO_ROUTING_TASK_STATE_RESPONSE :
+
+			if (p_response_callback != 0) {
+				DEBUG_PASS("copro_routing_task_run() - p_response_callback()");
+				p_response_callback((void*) p_scheduled_protocol);
+			}
+
+			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_RESPONSE -> COPRO_ROUTING_TASK_STATE_FINISH");
 			task_state = COPRO_ROUTING_TASK_STATE_FINISH;
 
 			break;
