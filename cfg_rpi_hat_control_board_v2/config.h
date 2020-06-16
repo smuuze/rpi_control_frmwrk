@@ -33,6 +33,19 @@
 
 //-------------------------------------------------------------------------
 
+#define COPRO1_DRIVER_CFG		.module = {							\
+						.i2c = {						\
+								.is_master = 1,				\
+								.bit_rate = DRIVER_I2C_BITRATE_1KHZ,	\
+								.enable_ack = 1,			\
+								.interrupt_enable = 1,			\
+								.answer_general_call = 1,		\
+								.slave_addr = 0x01			\
+						}							\
+					}
+
+//-------------------------------------------------------------------------
+
 #include "../src/config_default.h"
 
 #endif /* _config_H_ */
