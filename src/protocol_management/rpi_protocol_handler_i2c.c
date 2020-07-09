@@ -197,6 +197,10 @@ static PROTOCOL_INTERFACE rpi_protocol_i2c_interface = {
 
 //-----------------------------------------------------------------------------
 
+static u8 driver_mutex_id = MUTEX_INVALID_ID;
+
+//-----------------------------------------------------------------------------
+
 /*!
  *
  * @param err_code
@@ -220,12 +224,6 @@ static void _set_finished_i2c(u8 err_code) {
  */
 static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
-	u8 driver_mutex_id = p_com_driver->mutex_req();
-	if (driver_mutex_id == MUTEX_INVALID_ID) {
-		DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST_RX - Requesting MUTEX has FAILED !!! ---");
-		return RPI_TRX_STATE_BUSY;
-	}
-
 	// Das Macht die Kommunikation eher kaputt : p_com_driver->configure(&driver_cfg);
 	//p_com_driver->clear_rx_buffer();
 	//p_com_driver->start_rx(TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH);
@@ -235,6 +233,10 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 	RPI_TRX_STATE error_code = RPI_TRX_STATE_COMPLETE;
 			
 	RPI_TRX_TIMER_start();
+
+	//p_com_driver->configure(&driver_cfg);
+	// - DO NOT CLEAR BUFFER, BECAUSE RX IS RUNNING IN BACKGROUND - p_com_driver->clear_rx_buffer();
+	// - RX IS STARTED AT INIT - p_com_driver->start_rx(TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH);
 
 	while (rpi_protocol_i2c_interface.command_length == 0) {
 
@@ -267,7 +269,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
 	while (bytes_available < rpi_protocol_i2c_interface.command_length) {
 
-		p_com_driver->wait_for_rx(rpi_protocol_i2c_interface.command_length, 500); // blocking function
+		p_com_driver->wait_for_rx(rpi_protocol_i2c_interface.command_length, RPI_PROTOCOL_HANDLER_DATA_EXCHANGE_TIMEOUT_MS); // blocking function
 		bytes_available = p_com_driver->bytes_available();
 
 		if (RPI_TRX_TIMER_is_up(1000)) {
@@ -313,8 +315,6 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 	EXIT_rpi_protocol_receive_command :
 	{
 		p_com_driver->stop_rx();
-		p_com_driver->mutex_rel(driver_mutex_id);
-
 		return error_code;
 	}
 }
@@ -324,17 +324,15 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
  */
 static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 
-	u8 driver_mutex_id = p_com_driver->mutex_req();
-	if (driver_mutex_id == MUTEX_INVALID_ID) {
-		DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_WAIT_FOR_REQUEST_RX - Requesting MUTEX has FAILED !!! ---");
-		return RPI_TRX_STATE_BUSY;
-	}
+	//DEBUG_PASS("rpi_protocol_prepare_answer()");
 
-	DEBUG_PASS("rpi_protocol_transmit_answer()");
+	if (RPI_STATUS_is_set(RPI_STATUS_ANSWER_PENDING) == 0) {
+		goto rpi_protocol_transmit_answer_TRANSMIT_ANSWER;
+	}
 
 	#ifdef TRACES_ENABLED
 	rpi_protocol_i2c_interface.arrival_time = time_mgmnt_gettime_u16- rpi_protocol_i2c_interface.arrival_time;
-	DEBUG_TRACE_word(rpi_protocol_i2c_interface.arrival_time, "rpi_protocol_transmit_answer() - Time past since command has arrived and processed");
+	DEBUG_TRACE_word(rpi_protocol_i2c_interface.arrival_time, "rpi_protocol_prepare_answer() - Time past since command has arrived and processed");
 	#endif
 
 	u8 answer_header[] = {
@@ -379,20 +377,15 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 	RPI_ANSWER_BUFFER_stop_read();
 	RPI_STATUS_unset(RPI_STATUS_ANSWER_PENDING);
 
-	RPI_TRX_STATE error_code = RPI_TRX_STATE_COMPLETE;
-
 	p_com_driver->start_tx();
-	p_com_driver->wait_for_tx(bytes_to_send, 500);
+
+	rpi_protocol_transmit_answer_TRANSMIT_ANSWER:
 
 	if (p_com_driver->is_ready_for_tx() == 0 ) {
-		DEBUG_PASS("rpi_protocol_transmit_answer() - Transmitting answer-data has FAILED (TIMEOUT) !!! ---");
-		error_code = RPI_TRX_STATE_TIMEOUT;
+		return RPI_TRX_STATE_BUSY;
 	}
 
-	p_com_driver->stop_tx();
-	p_com_driver->mutex_rel(driver_mutex_id);
-
-	return error_code;
+	return RPI_TRX_STATE_COMPLETE;
 }
 
 void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
@@ -409,14 +402,21 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	SIGNAL_CMD_RECEIVED_init();
 
+	p_com_driver = p_driver;
+	
+	driver_mutex_id = p_com_driver->mutex_req();
+	if (driver_mutex_id == MUTEX_INVALID_ID) {
+		DEBUG_PASS("rpi_protocol_init() - Requesting MUTEX has FAILED !!! ---");
+	}
+
 	driver_cfg.module.i2c = _com_driver_cfg_i2c;
 
-	p_com_driver = p_driver;
 	p_com_driver->configure(&driver_cfg);
 	p_com_driver->start_rx(TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH);
 
 	actual_task_state = MCU_TASK_SLEEPING;
 	actual_state = RPI_STATE_SLEEP;
+	
 
 	DEBUG_PASS("rpi_protocol_init() - I2C - FINISH");
 }
@@ -424,6 +424,8 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 void rpi_protocol_task_init(void) {
 
 	DEBUG_PASS("rpi_protocol_task_init()");
+
+	// only for debugging --- PROG_MISO_drive_low();
 }
 
 u16 rpi_protocol_task_get_schedule_interval(void) {
@@ -472,6 +474,7 @@ void rpi_protocol_task_run(void) {
 		case RPI_STATE_SLEEP : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_SLEEP");
 
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_SLEEP -> RPI_PREPARE_FOR_REQUEST");
+		 	PROG_MISO_drive_low();
 			// no break;
 
 		case RPI_PREPARE_FOR_REQUEST : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_PREPARE_FOR_REQUEST");
@@ -525,7 +528,7 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_RX -> RPI_STATE_PROCESS_COMMAND");
+			DEBUG_TRACE_word(RPI_OP_TIMER_elapsed(), "rpi_protocol_task_run() - change state - RPI_STATE_RX -> RPI_STATE_PROCESS_COMMAND");
 			actual_state = RPI_STATE_PROCESS_COMMAND;
 
 			RPI_OP_TIMER_start();
@@ -540,17 +543,12 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			if (RPI_STATUS_is_set(RPI_STATUS_COMMAND_PENDING) != 0) {
-
-				if (RPI_STATUS_is_set(RPI_STATUS_ANSWER_PENDING) == 0) {
-					//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_PROCESS_COMMAND - Answer not finished yet");
-					break;
-				}
-
-				RPI_STATUS_unset(RPI_STATUS_COMMAND_PENDING);
+			if (RPI_STATUS_is_set(RPI_STATUS_ANSWER_PENDING) == 0) {
+				//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_PROCESS_COMMAND - Answer not finished yet");
+				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_PROCESS_COMMAND -> RPI_STATE_WAIT_FOR_REQUEST_TX");
+			DEBUG_TRACE_word(RPI_OP_TIMER_elapsed(), "rpi_protocol_task_run() - change state - RPI_STATE_PROCESS_COMMAND -> RPI_STATE_WAIT_FOR_REQUEST_TX");
 			actual_state = RPI_STATE_WAIT_FOR_REQUEST_TX;
 
 			RPI_OP_TIMER_start();
@@ -565,13 +563,15 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_TX -> RPI_STATE_TX");
+			DEBUG_TRACE_word(RPI_OP_TIMER_elapsed(), "rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_REQUEST_TX -> RPI_STATE_TX");
 			actual_state = RPI_STATE_TX;
 
 			RPI_OP_TIMER_start();
 			// no break;
 
 	 	case RPI_STATE_TX:
+
+		 	// only for debugging --- PROG_MISO_drive_high();
 
 			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS) != 0) {
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_TX - OPERATION TIMEOUT!!! ---");
@@ -584,7 +584,7 @@ void rpi_protocol_task_run(void) {
 			trx_state = rpi_protocol_transmit_answer();
 
 			if (trx_state == RPI_TRX_STATE_BUSY) {
-				DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_TX - TRX-Driver is busy right now ..");
+				//DEBUG_PASS("rpi_protocol_task_run() - RPI_STATE_TX - TRX-Driver is busy right now ..");
 				break;
 			}
 
@@ -597,12 +597,17 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_TX -> RPI_STATE_FINISH");
+			DEBUG_TRACE_word(RPI_OP_TIMER_elapsed(), "rpi_protocol_task_run() - change state - RPI_STATE_TX -> RPI_STATE_FINISH");
 			actual_state = RPI_STATE_FINISH;
 
 			break;
 
 		case RPI_STATE_FINISH:
+
+			p_com_driver->stop_tx();
+			p_com_driver->start_rx(TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH);
+
+		 	// only for debugging --- PROG_MISO_drive_low();
 
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_FINISH -> RPI_STATE_WAIT_FOR_RELEASE");
 			actual_state = RPI_STATE_WAIT_FOR_RELEASE;
