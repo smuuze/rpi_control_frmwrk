@@ -45,7 +45,9 @@ typedef struct LOCAL_MSG_BUFFER_DESCR {
 	u16 name##_get_word(void);					\
 	u32 name##_get_long(void);					\
 	u16 name##_get_N_bytes(u16 length, u8* p_buffer);		\
-	void name##_stop_read(void);
+	void name##_stop_read(void);					\
+									\
+	prefix void name##_debug_print(void);
 
 #define BUILD_LOCAL_MSG_BUFFER(prefix, name, size)															\
 																					\
@@ -77,6 +79,8 @@ typedef struct LOCAL_MSG_BUFFER_DESCR {
 	prefix u32 name##_get_long(void) 					{ return local_msg_buffer_get_long(&__##name##_msg_buffer_descr); }			\
 	prefix u16 name##_get_N_bytes(u16 length, u8* p_buffer) 		{ return local_msg_buffer_get_N_bytes(&__##name##_msg_buffer_descr, length, p_buffer); }\
 	prefix void name##_stop_read(void)					{ local_msg_buffer_stop_read(&__##name##_msg_buffer_descr); }				\
+																					\
+	prefix void name##_debug_print(void)					{ local_msg_buffer_debug_print(&__##name##_msg_buffer_descr); }				\
 																					\
 	prefix u16 name##_size(void)						{ return size; }
 
@@ -246,5 +250,13 @@ void local_msg_buffer_stop_read(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr);
  * @param p_buffer_descr
  */
 void local_msg_buffer_clear_all(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr);
+
+
+/*!
+ *
+ * @param p_buffer_descr
+ */
+void local_msg_buffer_debug_print(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr);
+
 
 #endif // _LOCAL_MSG_BUFFER_H_

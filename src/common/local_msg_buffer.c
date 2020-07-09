@@ -51,7 +51,7 @@ void local_msg_buffer_add_byte(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr, u8 byte) 
 	}
 
 	if (p_buffer_descr->num_elements == p_buffer_descr->size) {
-		PASS(); // local_msg_buffer_add_byte() - Buffer Overflow !!!
+		//PASS(); // local_msg_buffer_add_byte() - Buffer Overflow !!!
 		return;
 	}
 
@@ -61,7 +61,7 @@ void local_msg_buffer_add_byte(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr, u8 byte) 
 		p_buffer_descr->num_elements += 1;
 
 		if (p_buffer_descr->write_pointer == p_buffer_descr->size) {
-			PASS(); // local_msg_buffer_add_byte() - Write-Ring Closed
+			//PASS(); // local_msg_buffer_add_byte() - Write-Ring Closed
 			p_buffer_descr->write_pointer = 0;
 		}
 	//}
@@ -127,7 +127,7 @@ u8 local_msg_buffer_get_byte(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr) {
 	}
 
 	if (p_buffer_descr->num_elements == 0) {
-		PASS(); // local_msg_buffer_get_byte() - Buffer Underrun !!!
+		//PASS(); // local_msg_buffer_get_byte() - Buffer Underrun !!!
 		return LOCAL_MSG_BUFFER_INVALID_CHARACTER;
 	}
 
@@ -140,7 +140,7 @@ u8 local_msg_buffer_get_byte(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr) {
 
 		if (p_buffer_descr->read_pointer == p_buffer_descr->size) {
 			p_buffer_descr->read_pointer = 0;
-			PASS(); // local_msg_buffer_get_byte() - Buffer Read-Ring Closed !!!
+			//PASS(); // local_msg_buffer_get_byte() - Buffer Read-Ring Closed !!!
 		}
 	//}
 
@@ -193,4 +193,8 @@ void local_msg_buffer_clear_all(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr) {
 	p_buffer_descr->read_pointer = 0;
 	p_buffer_descr->write_pointer = 0;
 	p_buffer_descr->num_elements = 0;
+}
+
+void local_msg_buffer_debug_print(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr) {
+	DEBUG_TRACE_N(p_buffer_descr->num_elements, p_buffer_descr->p_buffer, "local_msg_buffer_debug_print()");
 }
