@@ -114,6 +114,7 @@ u8 copro_is_ready_for_rx(COPRO_INTERFACE* p_copro) {
 }
 
 void copro_start_rx(COPRO_INTERFACE* p_copro, u16 num_of_rx_bytes) {
+	p_copro->p_com_driver->set_address(p_copro->address);
 	p_copro->p_com_driver->start_rx(num_of_rx_bytes);
 }
 
@@ -130,6 +131,7 @@ u8 copro_is_ready_for_tx(COPRO_INTERFACE* p_copro) {
 }
 
 void copro_start_tx(COPRO_INTERFACE* p_copro) {
+	p_copro->p_com_driver->set_address(p_copro->address);
 	p_copro->p_com_driver->start_tx();
 }
 
