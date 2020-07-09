@@ -29,11 +29,19 @@
 #include "driver/communication/i2c/i2c0_driver_status.h"
 #include "driver/communication/i2c/i2c0_driver_atmega1284p.h"
 
+#include "time_management/time_management.h"
+
+// --------------------------------------------------------------------------------
+
+#ifdef TRACER_ENABLED
+#define STATUS_SEQUENCE_LENGTH		64
+#endif
+
 // --------------------------------------------------------------------------------
 
 #define noI2C_RX_TRACES
 #define noI2C_TX_TRACES
-#define noI2C_ISR_TRACES
+#define I2C_ISR_TRACES
 
 #if defined TRACES_ENABLED && defined I2C_RX_TRACES
 #define I2C_RX_PASS()			PASS()
@@ -65,19 +73,21 @@
 #endif
 
 
-#if defined TRACES_ENABLED && defined I2C_ISR_TRACES
-#define I2C_ISR_PASS()			PASS()
-#define I2C_ISR_TRACE_byte(v)		TRACE_byte(v)
-#define I2C_ISR_TRACE_word(v)		TRACE_word(v)
-#define I2C_ISR_TRACE_long(v)		TRACE_long(v)
-#define I2C_ISR_TRACE_N(n,v)		TRACE_N(n,v)
+//#if defined TRACES_ENABLED && defined I2C_ISR_TRACES
+#define I2C_ISR_DEBUG_PASS(s)			DEBUG_PASS(s)
+#define I2C_ISR_DEBUG_TRACE_byte(b,s)		DEBUG_TRACE_byte(b,s)
+#define I2C_ISR_DEBUG_TRACE_word(w,s)		DEBUG_TRACE_word(w,s)
+#define I2C_ISR_DEBUG_TRACE_long(l,s)		DEBUG_TRACE_long(l,s)
+#define I2C_ISR_DEBUG_TRACE_N(l,b,s)		DEBUG_TRACE_N(l,b,s)
+/*
 #else
-#define I2C_ISR_PASS()
-#define I2C_ISR_TRACE_byte(v)
-#define I2C_ISR_TRACE_word(v)
-#define I2C_ISR_TRACE_long(v)
-#define I2C_ISR_TRACE_N(n,v)
+#define I2C_ISR_DEBUG_PASS(s)
+#define I2C_ISR_DEBUG_TRACE_byte(b,s)
+#define I2C_ISR_DEBUG_TRACE_word(w,s)
+#define I2C_ISR_DEBUG_TRACE_long(l,s)
+#define I2C_ISR_DEBUG_TRACE_N(l,b,s)
 #endif
+*/
 
 // --------------------------------------------------------------------------------
 
@@ -86,7 +96,17 @@ BUILD_LOCAL_MSG_BUFFER(, I2C0_RX_BUFFER, I2C_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER
 
 // --------------------------------------------------------------------------------
 
+#ifdef TRACER_ENABLED
+BUILD_LOCAL_MSG_BUFFER(, STATUS_SEQUENCE, STATUS_SEQUENCE_LENGTH)	
+#endif
+
+// --------------------------------------------------------------------------------
+
 //BUILD_MODULE_STATUS_FAST_VOLATILE(I2C0_STATUS, 2)
+
+// --------------------------------------------------------------------------------
+
+TIME_MGMN_BUILD_STATIC_TIMER_U16(I2C0_TIMEOUT_TIMER)
 
 // --------------------------------------------------------------------------------
 
@@ -295,6 +315,13 @@ u8 i2c0_driver_is_ready_for_rx(void) {
 
 void i2c0_driver_start_rx (u16 num_of_rx_bytes) {
 
+	#ifdef TRACER_ENABLED
+	{
+		STATUS_SEQUENCE_clear_all();
+		STATUS_SEQUENCE_start_write();
+	}
+	#endif
+
 	_i2c_rx_counter = num_of_rx_bytes;
 
 	I2C0_RX_BUFFER_start_write();
@@ -315,6 +342,19 @@ void i2c0_driver_start_rx (u16 num_of_rx_bytes) {
 void i2c0_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
+
+	I2C0_TIMEOUT_TIMER_start();
+
+	while (I2C0_STATUS_is_set(I2C_STATUS_RX_ACTIVE)) {
+
+		if (I2C0_TIMEOUT_TIMER_is_up(timeout_ms)) {
+			break;
+		}
+
+		if (I2C0_RX_BUFFER_bytes_available() >= num_bytes) {
+			break;
+		}
+	}
 }
 
 void i2c0_driver_stop_rx (void) {
@@ -331,9 +371,25 @@ void i2c0_driver_stop_rx (void) {
 
 	I2C0_STATUS_unset(I2C_STATUS_RX_ACTIVE);
 	I2C0_RX_BUFFER_stop_write();
+
+	#ifdef TRACER_ENABLED
+	{
+		STATUS_SEQUENCE_stop_write();
+		STATUS_SEQUENCE_debug_print();
+
+		I2C0_RX_BUFFER_debug_print();
+	}
+	#endif
 }
 
 void i2c0_driver_start_tx (void) {
+
+	#ifdef TRACER_ENABLED
+	{
+		STATUS_SEQUENCE_clear_all();
+		STATUS_SEQUENCE_start_write();
+	}
+	#endif
 
 	// for TX LSB needs to be '0'
 	i2c0_driver_destination_addr = i2c0_driver_destination_addr & ~(0x01);
@@ -361,8 +417,8 @@ void i2c0_driver_stop_tx (void) {
 
 	if (I2C0_STATUS_is_set(I2C_STATUS_IS_MASTER)) {
 
+		//I2C_DRIVER_SEND_STOP_CONDITION();
 		DEBUG_PASS("i2c0_driver_stop_tx() - MASTER");
-		I2C_DRIVER_SEND_STOP_CONDITION();
 
 	} else {
 		
@@ -371,6 +427,13 @@ void i2c0_driver_stop_tx (void) {
 
 	I2C0_TX_BUFFER_stop_read();
 	I2C0_STATUS_unset(I2C_STATUS_TX_ACTIVE);
+
+	#ifdef TRACER_ENABLED
+	{
+		STATUS_SEQUENCE_stop_write();
+		STATUS_SEQUENCE_debug_print();
+	}
+	#endif
 }
 
 void i2c0_driver_clear_rx_buffer(void) {
@@ -383,7 +446,7 @@ void i2c0_driver_clear_tx_buffer(void) {
 
 void i2c0_driver_set_address (u8 addr) {
 
-	TRACE_byte(addr); // local_i2c_driver_set_address()
+	DEBUG_TRACE_byte(addr, "i2c0_driver_set_address()");
 	i2c0_driver_destination_addr = addr << 1;
 }
 
@@ -405,12 +468,20 @@ ISR(TWI_vect) {
 
 	u8 data_byte = 0;
 
+		
+	#ifdef TRACER_ENABLED
+	{
+		STATUS_SEQUENCE_add_byte(i2c_module_status);
+	}
+	#endif
+
 	switch (i2c_module_status) {
 
-		case I2C_STATE_MASTER_START_COMPLETE:
-		case I2C_STATE_MASTER_REPEATED_START_COMPLETE:
+		case I2C_STATE_MASTER_START_COMPLETE: // 0x08
+		case I2C_STATE_MASTER_REPEATED_START_COMPLETE: // 0x10
 
 			I2C_DRIVER_SEND_SLAVE_ADDRESS(i2c0_driver_destination_addr);
+			//I2C_ISR_DEBUG_TRACE_byte(i2c0_driver_destination_addr >> 1, "ISR(TWI_vect) - I2C_STATE_MASTER_START_COMPLETE - 0x08 / 0x10");
 
 			break;
 
@@ -422,66 +493,85 @@ ISR(TWI_vect) {
 				data_byte = I2C0_TX_BUFFER_get_byte();
 				I2C_DRIVER_SEND_DATA_BYTE(data_byte);
 
-				I2C_ISR_TRACE_byte(data_byte); // Sending next Data-Byte
+				//I2C_ISR_DEBUG_TRACE_byte(data_byte, "ISR(TWI_vect - Sending next Data-Byte");
 
 			} else {
 
 				I2C_DRIVER_SEND_STOP_CONDITION();
 				I2C0_STATUS_unset(I2C_STATUS_TX_ACTIVE);
+				I2C0_TX_BUFFER_stop_read();
 
-				I2C_ISR_PASS(); // No more Data to send - sending stop-condition
+				//I2C_ISR_DEBUG_PASS("ISR(TWI_vect - No more Data to send - sending stop-condition");
 			}
 
 			break;
 
-		case I2C_STATE_MR_DATA_BYTE_ACK_RECEIVED:
+		case I2C_STATE_MR_DATA_BYTE_ACK_RECEIVED: // 0x50
 
-			data_byte = I2C_DRIVER_GET_DATA_REGISTER();
-			I2C0_RX_BUFFER_add_byte(data_byte); // write DATA into buffer
+			if (I2C0_STATUS_is_set(I2C_STATUS_RX_ACTIVE)) {
 
-			I2C_ISR_TRACE_byte(data_byte); // Data-Byte received
-			// no break
+				data_byte = I2C_DRIVER_GET_DATA_REGISTER();
+				I2C0_RX_BUFFER_add_byte(data_byte);
+			}
 
-		case I2C_STATE_MR_SLAR_ACK_RECEIVED:
-
-			if (_i2c_rx_counter > 0) {
-
-				I2C_DRIVER_SEND_ACK();
-
+			if (_i2c_rx_counter != 0) {
 				_i2c_rx_counter--;
-				I2C_ISR_TRACE_byte(_i2c_rx_counter); // More bytes to receive - sending ack
+			}
 
-			} else {
+			if (_i2c_rx_counter == 0) {
 
-//				I2C_DRIVER_SEND_STOP_CONDITION();
+				// inform slave, that no more data is needed	
 				I2C_DRIVER_SEND_NACK();
 				I2C0_STATUS_unset(I2C_STATUS_RX_ACTIVE);
-				I2C_ISR_PASS(); // No more bytes to receive - sending nack
+
+			} else {
+				I2C_DRIVER_SEND_ACK();
+			}
+
+			//I2C_ISR_DEBUG_TRACE_byte(data_byte, "ISR(TWI_vect) - I2C_STATE_MR_DATA_BYTE_ACK_RECEIVED - 0x50 - Data-Byte received");
+			break;
+
+		case I2C_STATE_MR_SLAR_ACK_RECEIVED: // 0x40
+				
+			if (_i2c_rx_counter == 1) {
+				I2C_DRIVER_ENABLE_NACK_ON_NEXT_BYTE();
+			} else {
+				I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
 			}
 
 			break;
 
-		case I2C_STATE_MASTER_ARBITRATION_LOST:
+		case I2C_STATE_MASTER_ARBITRATION_LOST: // 0x38
 
-			I2C_ISR_PASS(); // I2C_STATE_MASTER_ARBITRATION_LOST - not implemented yet
+			I2C_DRIVER_RELEASE();
+			I2C_ISR_DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_MASTER_ARBITRATION_LOST - Release Bus");
 			break;
 
-		case LOCAL_BUS_ERROR:
+		case LOCAL_BUS_ERROR: // 0x00
 
-			I2C_ISR_PASS(); // LOCAL_BUS_ERROR - not implemented yet
+			I2C_DRIVER_RELEASE();
+			I2C_ISR_DEBUG_PASS("ISR(TWI_vect) - LOCAL_BUS_ERROR - Release Bus");
 			break;
 
-		case I2C_STATE_MR_DATA_BYTE_NACK_RECEIVED:
+		case I2C_STATE_MR_DATA_BYTE_NACK_RECEIVED: // 0x58
 
-			I2C_ISR_PASS(); // NACK-Received - Reading Databyte from Module
-			data_byte = I2C_DRIVER_GET_DATA_REGISTER();
+			if (I2C0_STATUS_is_set(I2C_STATUS_RX_ACTIVE)) {
+
+				//I2C_ISR_DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_MR_DATA_BYTE_NACK_RECEIVED - 0x58 - send stop-condition");
+				data_byte = I2C_DRIVER_GET_DATA_REGISTER();
+				I2C0_RX_BUFFER_add_byte(data_byte);
+				
+				_i2c_rx_counter--;
+				I2C0_STATUS_unset(I2C_STATUS_RX_ACTIVE);
+			}
+
 			// no break
 
 		case I2C_STATE_MR_SLAR_NACK_RECEIVED:
 		case I2C_STATE_MT_SLAW_NACK_RECEIVED:
 		case I2C_STATE_MT_DATA_NACK_RECEIVED:
 
-			I2C_ISR_PASS(); // NACK received - Sending Stop-Condition
+			//I2C_ISR_DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_MT_DATA_NACK_RECEIVED - Sending Stop-Condition");
 
 			I2C_DRIVER_SEND_STOP_CONDITION();
 			I2C0_STATUS_unset(I2C_STATUS_TX_ACTIVE);
@@ -492,13 +582,13 @@ ISR(TWI_vect) {
 
 			I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
 			I2C0_RX_BUFFER_start_write();
-			DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_SR_OWN_ADDR_RECEIVED");
+			//DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_SR_OWN_ADDR_RECEIVED");
 			break;
 
 		case I2C_STATE_SR_GENERAL_CALL_RECEIVED:
 
 			I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
-			DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_SR_GENERAL_CALL_RECEIVED");
+			//DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_SR_GENERAL_CALL_RECEIVED");
 			break;
 
 		case I2C_STATE_SR_DATA_RECEIVED_ACK_RETURNED:
@@ -507,7 +597,7 @@ ISR(TWI_vect) {
 			I2C0_RX_BUFFER_add_byte(data_byte);
 			I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
 
-			DEBUG_TRACE_byte(data_byte, "ISR(TWI_vect) - I2C_STATE_SR_DATA_RECEIVED_ACK_RETURNED");
+			//DEBUG_TRACE_byte(data_byte, "ISR(TWI_vect) - I2C_STATE_SR_DATA_RECEIVED_ACK_RETURNED");
 			break;
 
 		case I2C_STATE_SR_DATA_RECEIVED_NACK_RETURNED:
@@ -516,33 +606,55 @@ ISR(TWI_vect) {
 			I2C0_RX_BUFFER_add_byte(data_byte);
 			I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
 
-			DEBUG_TRACE_byte(data_byte, "ISR(TWI_vect) - I2C_STATE_SR_DATA_RECEIVED_NACK_RETURNED");
+			//DEBUG_TRACE_byte(data_byte, "ISR(TWI_vect) - I2C_STATE_SR_DATA_RECEIVED_NACK_RETURNED");
 			break;
 
 		case I2C_STATE_SR_STOP_REPEATED_START_RECEIVED:
 			I2C0_RX_BUFFER_stop_write();
 			I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
-			DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_SR_STOP_REPEATED_START_RECEIVED");
+			//DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_SR_STOP_REPEATED_START_RECEIVED");
 			break;
 
 		case I2C_STATE_ST_OWN_ADDR_RECEIVED: // 0xA8
-		
-			I2C_DRIVER_SET_DATA_REGISTER(I2C0_TX_BUFFER_get_byte());
-			I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
 
-			DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_ST_OWN_ADDR_RECEIVED");
-			break;
+			//DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_ST_OWN_ADDR_RECEIVED - 0xA8");
+			// no break;
 
 		case I2C_STATE_ST_DATA_TRANSMITTED_ACK_RECEIVED: // 0xB8
+		
+			if (I2C0_STATUS_is_set(I2C_STATUS_TX_ACTIVE) == 0) {
+				I2C_DRIVER_SET_DATA_REGISTER(0);
+				I2C_DRIVER_ENABLE_NACK_ON_NEXT_BYTE();
+				break;
+			}
+		
 			I2C_DRIVER_SET_DATA_REGISTER(I2C0_TX_BUFFER_get_byte());
-			I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
-			DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_ST_DATA_TRANSMITTED_ACK_RECEIVED");
+			
+			if (I2C0_TX_BUFFER_bytes_available() != 0) {
+
+				I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
+				//DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_ST_DATA_TRANSMITTED_ACK_RECEIVED - 0xB8 - Sending ACK");
+
+			} else {
+		
+				I2C0_TX_BUFFER_stop_read();
+				I2C0_STATUS_unset(I2C_STATUS_TX_ACTIVE);
+
+				I2C_DRIVER_ENABLE_NACK_ON_NEXT_BYTE();
+				//DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_ST_DATA_TRANSMITTED_ACK_RECEIVED - Sending NACK");
+			}
+
 			break;
 
 		case I2C_STATE_ST_DATA_TRANSMITTED_NACK_RECEIVED: // 0xC0
-			I2C0_TX_BUFFER_stop_read();
+
+			//DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_ST_DATA_TRANSMITTED_NACK_RECEIVED - 0xC0");
+			// no break;
+
+		case I2C_STATE_ST_LAST_DATA_TRANSMITTED_ACK_RECEIVED: // 0xC8
+		
 			I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE();
-			DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_ST_DATA_TRANSMITTED_NACK_RECEIVED");
+			//DEBUG_PASS("ISR(TWI_vect) - I2C_STATE_ST_LAST_DATA_TRANSMITTED_ACK_RECEIVED - 0xC0");
 			break;
 
 		default:

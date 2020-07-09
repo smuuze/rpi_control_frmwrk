@@ -64,6 +64,7 @@
 #define I2C_STATE_ST_OWN_ADDR_RECEIVED				0xA8
 #define I2C_STATE_ST_DATA_TRANSMITTED_ACK_RECEIVED		0xB8
 #define I2C_STATE_ST_DATA_TRANSMITTED_NACK_RECEIVED		0xC0
+#define I2C_STATE_ST_LAST_DATA_TRANSMITTED_ACK_RECEIVED		0xC8
 
 ///----- !! status codes for slave modes are not implemented !! -----
 
@@ -80,17 +81,18 @@
 							TWCR = (1 << TWINT) | (1 << TWEN) | (i2c_cfg_control_reg)
 
 #define I2C_DRIVER_SEND_DATA_BYTE(byte)			TWDR = byte;	\
-							TWCR = (1 << TWINT) | (1 << TWEN) | (i2c_cfg_control_reg)
+							TWCR = (1 << TWINT) | (1 << TWEN) | (i2c_cfg_control_reg & 0x01)
 
-#define I2C_DRIVER_SEND_STOP_CONDITION()		TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO) | (i2c_cfg_control_reg)
+#define I2C_DRIVER_SEND_STOP_CONDITION()		TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO) | (i2c_cfg_control_reg & 0x01)
 
-#define I2C_DRIVER_SEND_ACK()				TWCR = (1 << TWINT) | (1 << TWEN) | (1<<TWEA) | (i2c_cfg_control_reg)
+#define I2C_DRIVER_SEND_ACK()				TWCR = (1 << TWINT) | (1 << TWEN) | (1<<TWEA) | (i2c_cfg_control_reg & 0x01)
 
-#define I2C_DRIVER_SEND_NACK()				TWCR = (1 << TWINT) | (1 << TWEN) | (i2c_cfg_control_reg)
+#define I2C_DRIVER_SEND_NACK()				TWCR = (1 << TWINT) | (1 << TWEN) | (i2c_cfg_control_reg & 0x01)
 
 #define I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE()		TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA) | (i2c_cfg_control_reg & 0x01)
 #define I2C_DRIVER_ENABLE_NACK_ON_NEXT_BYTE()		TWCR = (1 << TWINT) | (1 << TWEN) | (i2c_cfg_control_reg & 0x01)
 
+#define I2C_DRIVER_RELEASE()				I2C_DRIVER_SEND_ACK()
 
 #define I2C_DRIVER_GET_MODULE_STATUS()			(TWSR & 0xF8)
 
