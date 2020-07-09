@@ -38,7 +38,10 @@
 
 #define COPRO_ROUTING_TASK_RUN_INTERVAL_MS		0
 #define COPRO_ROUTING_TASK_PREPARE_TIMEOUT_MS		500
-#define COPRO_ROUTING_TASK_PROCESS_TIMEOUT_MS		100
+#define COPRO_ROUTING_TASK_PROCESS_TIMEOUT_MS		250
+#define COPRO_ROUTING_TASK_TRANSMIT_TIMEOUT_MS		50
+#define COPRO_ROUTING_TASK_POLLING_INTERVAL_MS		70
+
 #define COPRO_ROUTING_TASK_TEMP_DATA_BUFFER_SIZE	64
 
 // --------------------------------------------------------------------------------
@@ -49,6 +52,7 @@
 typedef enum {
 	COPRO_ROUTING_TASK_STATE_IDLE,
 	COPRO_ROUTING_TASK_STATE_PREPARE,
+	COPRO_ROUTING_TASK_STATE_TRANSMIT,
 	COPRO_ROUTING_TASK_STATE_PROCESS,
 	COPRO_ROUTING_TASK_STATE_RESPONSE,
 	COPRO_ROUTING_TASK_STATE_FINISH,
@@ -112,6 +116,7 @@ static COPRO_ROUTING_TASK_STATE task_state;
 // --------------------------------------------------------------------------------
 
 TIME_MGMN_BUILD_STATIC_TIMER_U16(COPRO_OP_TIMER)
+TIME_MGMN_BUILD_STATIC_TIMER_U16(COPRO_WAIT_TIMER)
 
 // --------------------------------------------------------------------------------
 
@@ -126,6 +131,8 @@ void copro_routing_task_init(void) {
 		COPRO1_ROUTING_COMMAND_SLOT_connect();
 	}
 	#endif
+	
+	EVENT_OUTPUT_drive_low();
 
 	task_state = COPRO_ROUTING_TASK_STATE_IDLE;
 	p_response_callback = 0;
@@ -183,6 +190,8 @@ void copro_routing_task_run(void) {
 				DEBUG_PASS("copro_routing_task_run() - No copro selected -> what's wrong ?!?");
 				break;
 			}
+
+			EVENT_OUTPUT_drive_low();
 				
 			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_IDLE -> COPRO_ROUTING_TASK_STATE_PREPARE");
 			task_state = COPRO_ROUTING_TASK_STATE_PROCESS;
@@ -193,7 +202,7 @@ void copro_routing_task_run(void) {
 		case COPRO_ROUTING_TASK_STATE_PREPARE :
 
 			if (COPRO_OP_TIMER_is_up(COPRO_ROUTING_TASK_PREPARE_TIMEOUT_MS)) {
-				DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PREPARE -> COPRO_ROUTING_TASK_TIMEOUT");
+				DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PREPARE -> COPRO_ROUTING_TASK_TIMEOUT --- !!! --- !!! ---");
 				task_state = COPRO_ROUTING_TASK_TIMEOUT;
 				break;
 			}
@@ -215,23 +224,74 @@ void copro_routing_task_run(void) {
 			p_copro_obj->set_N_bytes(num_bytes, t_data_buffer);
 			p_copro_obj->start_tx();
 
-			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PREPARE -> COPRO_ROUTING_TASK_STATE_PROCESS");
-			task_state = COPRO_ROUTING_TASK_STATE_PROCESS;
+			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PREPARE -> COPRO_ROUTING_TASK_STATE_TRANSMIT");
+			task_state = COPRO_ROUTING_TASK_STATE_TRANSMIT;
 
 			COPRO_OP_TIMER_start();
 			// no break;
 
-		case COPRO_ROUTING_TASK_STATE_PROCESS :
+		case COPRO_ROUTING_TASK_STATE_TRANSMIT :
 
-			if (COPRO_OP_TIMER_is_up(COPRO_ROUTING_TASK_PROCESS_TIMEOUT_MS)) {
-				DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PROCESS -> COPRO_ROUTING_TASK_TIMEOUT");
+			if (COPRO_OP_TIMER_is_up(COPRO_ROUTING_TASK_TRANSMIT_TIMEOUT_MS)) {
+				DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_TRANSMIT -> COPRO_ROUTING_TASK_TIMEOUT --- !!! --- !!! ---");
 				task_state = COPRO_ROUTING_TASK_TIMEOUT;
 				break;
 			}
 
+			if (p_copro_obj->is_ready_for_tx() == 0) {
+				break;
+			}
+
+			p_copro_obj->stop_tx();
+
+			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_TRANSMIT -> COPRO_ROUTING_TASK_STATE_PROCESS");
+			task_state = COPRO_ROUTING_TASK_STATE_PROCESS;
+
+			COPRO_OP_TIMER_start();
+			COPRO_WAIT_TIMER_start();
+			// no break;
+
+
+		case COPRO_ROUTING_TASK_STATE_PROCESS :
+
+			if (COPRO_OP_TIMER_is_up(COPRO_ROUTING_TASK_PROCESS_TIMEOUT_MS)) {
+				DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PROCESS -> COPRO_ROUTING_TASK_TIMEOUT --- !!! --- !!! ---");
+				task_state = COPRO_ROUTING_TASK_TIMEOUT;
+				break;
+			}
+
+			if (COPRO_WAIT_TIMER_is_up(COPRO_ROUTING_TASK_POLLING_INTERVAL_MS) == 0) {
+				break;
+			}
+
+			DEBUG_TRACE_word(COPRO_WAIT_TIMER_elapsed(), "copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PROCESS - Polling COPRO for response");
+
+			COPRO_WAIT_TIMER_start();
+
+			EVENT_OUTPUT_drive_high();
+
+			p_copro_obj->clear_rx_buffer();
+			p_copro_obj->start_rx(1); // get length of answer
+			p_copro_obj->wait_for_rx(1, 5);
+			p_copro_obj->stop_rx();
+
+			EVENT_OUTPUT_drive_low();
+
 			if (p_copro_obj->bytes_available() == 0) {
 				break;
 			}
+
+			num_bytes = p_copro_obj->get_N_bytes(1, t_data_buffer);
+
+			if (t_data_buffer[0] == 0) {
+				break;
+			}
+
+			DEBUG_TRACE_byte(t_data_buffer[0], "copro_routing_task_run() - Number of bytes to read from Copro");
+
+			p_copro_obj->start_rx(t_data_buffer[0]); // get length of answer
+			p_copro_obj->wait_for_rx(t_data_buffer[0], 50);
+			p_copro_obj->stop_rx();
 
 			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_PROCESS -> COPRO_ROUTING_TASK_STATE_RESPONSE");
 			task_state = COPRO_ROUTING_TASK_STATE_RESPONSE;
@@ -239,6 +299,21 @@ void copro_routing_task_run(void) {
 			break;
 
 		case COPRO_ROUTING_TASK_STATE_RESPONSE :
+
+			num_bytes = p_copro_obj->get_N_bytes(COPRO_ROUTING_TASK_TEMP_DATA_BUFFER_SIZE, t_data_buffer + 1);
+
+			if (num_bytes == 0) {
+				DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_RESPONSE -> COPRO_ROUTING_TASK_TIMEOUT --- !!! --- !!! ---");
+				task_state = COPRO_ROUTING_TASK_TIMEOUT;
+				COPRO_WAIT_TIMER_start();
+				break;
+			}
+
+			p_scheduled_protocol->answ_buffer->start_write();
+			p_scheduled_protocol->answ_buffer->add_N_bytes(t_data_buffer[0], t_data_buffer + 1);
+			p_scheduled_protocol->answ_buffer->stop_write();
+
+			DEBUG_TRACE_N(t_data_buffer[0] + 1, t_data_buffer, "copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_RESPONSE - Data received:");
 
 			if (p_response_callback != 0) {
 				DEBUG_PASS("copro_routing_task_run() - p_response_callback()");
