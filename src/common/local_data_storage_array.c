@@ -1,8 +1,29 @@
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	common/local_data_storage_array.c
+ * \author	sebastian lesse
+ * \brief
+ *
+ * --------------------------------------------------------------------------------
+ */
+
+#define TRACER_OFF
+
+// --------------------------------------------------------------------------------
 
 #include "config.h"
 
+// --------------------------------------------------------------------------------
+
+#include "tracer.h"
+
+// --------------------------------------------------------------------------------
+
 #include "common/local_data_storage_array.h"
 #include "common/math_module.h"
+
+// --------------------------------------------------------------------------------
 
 #define div_u32(divident, divisor)		math_div_u32((u32)divident, (u32) divisor)
 #define div_u16(divident, divisor)		(u16)math_div_u32((u32)divident, (u32) divisor)
@@ -139,6 +160,10 @@ u8 local_data_storage_array_get_min_u8(LOCAL_DATA_STORAGE_ARRAY_U8_TYPE* p_conte
 	}
 
 	return min;
+}
+
+void local_data_storage_array_debug_print_data_u8(LOCAL_DATA_STORAGE_ARRAY_U8_TYPE* p_context) {
+	DEBUG_TRACE_N(p_context->write_pointer, p_context->p_buffer, "local_data_storage_array_debug_print_data_u8");
 }
 
 // -------------------------------------------------------------------

@@ -121,6 +121,12 @@ u8 local_data_storage_array_get_min_u8(LOCAL_DATA_STORAGE_ARRAY_U8_TYPE* p_conte
  *
  * @param p_context
  */
+void local_data_storage_array_debug_print_data_u8(LOCAL_DATA_STORAGE_ARRAY_U8_TYPE* p_context);
+
+/*!
+ *
+ * @param p_context
+ */
 void local_data_storage_array_init_u16(LOCAL_DATA_STORAGE_ARRAY_U16_TYPE* p_context);
 
 /*!
@@ -231,6 +237,10 @@ u32 local_data_storage_array_get_max_u32(LOCAL_DATA_STORAGE_ARRAY_U32_TYPE* p_co
 																	\
 			inline static u8 name##_data_storage_array_get_min(void) {							\
 				return local_data_storage_array_get_min_u8(&_##name##_data_storage_context);				\
+			}														\
+																	\
+			inline static void name##_debug_print_data(void) {								\
+				local_data_storage_array_debug_print_data_u8(&_##name##_data_storage_context);				\
 			}
 
 #define BUILD_LOCAL_DATA_STORAGE_ARRAY_U16(name, size)											\
