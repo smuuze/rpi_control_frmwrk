@@ -132,7 +132,7 @@ void copro_routing_task_init(void) {
 	}
 	#endif
 	
-	EVENT_OUTPUT_drive_low();
+	// only for debugging --- EVENT_OUTPUT_drive_low();
 
 	task_state = COPRO_ROUTING_TASK_STATE_IDLE;
 	p_response_callback = 0;
@@ -268,14 +268,14 @@ void copro_routing_task_run(void) {
 
 			COPRO_WAIT_TIMER_start();
 
-			EVENT_OUTPUT_drive_high();
+			// only for debugging --- EVENT_OUTPUT_drive_high();
 
 			p_copro_obj->clear_rx_buffer();
 			p_copro_obj->start_rx(1); // get length of answer
 			p_copro_obj->wait_for_rx(1, 5);
 			p_copro_obj->stop_rx();
 
-			EVENT_OUTPUT_drive_low();
+			// only for debugging --- EVENT_OUTPUT_drive_low();
 
 			if (p_copro_obj->bytes_available() == 0) {
 				break;
