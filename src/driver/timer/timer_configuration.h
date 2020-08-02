@@ -36,6 +36,7 @@ typedef enum {
  *
  */
 typedef enum {
+	TIMER_TIME_INTERVAL_40us,
 	TIMER_TIME_INTERVAL_80us,
 	TIMER_TIME_INTERVAL_560us,
 	TIMER_TIME_INTERVAL_1ms,

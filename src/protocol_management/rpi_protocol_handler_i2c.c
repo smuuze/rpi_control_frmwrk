@@ -3,7 +3,7 @@
   * \author	sebastian lesse
   */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 //-----------------------------------------------------------------------------
 
