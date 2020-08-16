@@ -3,7 +3,7 @@
   * \author	sebastian lesse
   */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 //-----------------------------------------------------------------------------
 
@@ -243,23 +243,25 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 		if (RPI_TRX_TIMER_is_up(1000)) {
 			DEBUG_PASS("rpi_protocol_receive_command() - Receiving command-length has FAILED (TIMEOUT) !!! ---");
 			error_code = RPI_TRX_STATE_TIMEOUT;
-			goto EXIT_rpi_protocol_receive_command;
+			goto EXIT_rpi_protocol_receive_command_ON_ERROR;
 		}
 
 		// first byte gives the length of the command (how many bytes will follow)
 		p_com_driver->wait_for_rx(1, 100); // blocking function
 
 		if (p_com_driver->bytes_available() == 0) {
-			//DEBUG_PASS("rpi_protocol_receive_command() - Only one byte available -> no valid command yet");
+			DEBUG_PASS("rpi_protocol_receive_command() - No Data Bytes are available !!! ---");
 			continue;
 		}
 
 		p_com_driver->get_N_bytes(1, (u8*)&rpi_protocol_i2c_interface.command_length);
 		if (rpi_protocol_i2c_interface.command_length == 0) {
+			DEBUG_PASS("rpi_protocol_receive_command() - Length is 0x00 !!! ---");
 			continue;
 		}
 
 		if (rpi_protocol_i2c_interface.command_length == 0xFF) {
+			DEBUG_PASS("rpi_protocol_receive_command() - Length is 0xFF !!! ---");
 			rpi_protocol_i2c_interface.command_length = 0;
 			continue;
 		}
@@ -275,7 +277,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 		if (RPI_TRX_TIMER_is_up(1000)) {
 			DEBUG_PASS("rpi_protocol_receive_command() - Receiving command-data has FAILED (TIMEOUT) !!! ---");
 			error_code = RPI_TRX_STATE_TIMEOUT;
-			goto EXIT_rpi_protocol_receive_command;
+			goto EXIT_rpi_protocol_receive_command_ON_ERROR;
 		}
 	}
 
@@ -312,7 +314,12 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 	//rpi_cmd_handler_set_request(&rpi_protocol_i2c_interface);
 	SIGNAL_CMD_RECEIVED_send(&rpi_protocol_i2c_interface);
 
-	EXIT_rpi_protocol_receive_command :
+	EXIT_rpi_protocol_receive_command_ON_SUCCESS :
+	{
+		return error_code;
+	}
+
+	EXIT_rpi_protocol_receive_command_ON_ERROR :
 	{
 		p_com_driver->stop_rx();
 		return error_code;
@@ -474,7 +481,7 @@ void rpi_protocol_task_run(void) {
 		case RPI_STATE_SLEEP : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_SLEEP");
 
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_SLEEP -> RPI_PREPARE_FOR_REQUEST");
-		 	PROG_MISO_drive_low();
+		 	// only for debugging --- PROG_MISO_drive_low();
 			// no break;
 
 		case RPI_PREPARE_FOR_REQUEST : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_PREPARE_FOR_REQUEST");

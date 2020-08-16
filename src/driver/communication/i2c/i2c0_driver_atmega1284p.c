@@ -258,8 +258,6 @@ u8 i2c0_driver_bytes_available (void) {
 
 u8 i2c0_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 
-	DEBUG_PASS("local_i2c_driver_get_N_bytes()");
-
 	u8 num_bytes_available = I2C0_RX_BUFFER_bytes_available();
 	if (num_bytes < num_bytes_available) {
 		num_bytes_available = num_bytes;
@@ -268,6 +266,8 @@ u8 i2c0_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 	I2C0_RX_BUFFER_start_read();
 	I2C0_RX_BUFFER_get_N_bytes(num_bytes_available, p_buffer_to);
 	I2C0_RX_BUFFER_stop_read();
+
+	//DEBUG_TRACE_N(num_bytes_available, p_buffer_to, "i2c0_driver_get_N_bytes()");
 
 	return num_bytes_available;
 }
