@@ -20,7 +20,7 @@ BOARD_ID = 191005
 #-----------------------------------------------------------------------------
 
 VERSION_MAJOR		:= 1
-VERSION_MINOR		:= 4
+VERSION_MINOR		:= 5
 
 #-----------------------------------------------------------------------------
 
@@ -70,6 +70,7 @@ DRIVER_MODULE_CFG += I2C0
 
 THIRD_PARTY_MODULES = 
 THIRD_PARTY_MODULES += IR_PROTOCOL_SAMSUNG
+THIRD_PARTY_MODULES += IR_PROTOCOL_JVC
 
 #-----------------------------------------------------------------------------
 
@@ -87,7 +88,8 @@ MANAGEMENT_MODULE_CFG += RPI_PROTOCOL_I2C
 #-----------------------------------------------------------------------------
 
 COMMAND_INTERFACE_CFG = 
-COMMAND_INTERFACE_CFG += RPI_CMD_IR_REMOTE
+COMMAND_INTERFACE_CFG += RPI_CMD_IR_REMOTE_SAMSUNG
+COMMAND_INTERFACE_CFG += RPI_CMD_IR_REMOTE_JVC
 
 #-----------------------------------------------------------------------------
 
