@@ -47,6 +47,13 @@ u8 ir_protocol_samsung_is_busy(void);
 /*
  *
  */
+void ir_protocol_samsung_address_tv(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+// --------------------------------------------------------------------------------
+
+/*
+ *
+ */
 void ir_protocol_samsung_cmd_tv_power(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
 /*

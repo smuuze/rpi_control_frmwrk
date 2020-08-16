@@ -88,6 +88,8 @@ static inline u8 rpi_cmd_ir_samsung_tv(u8 cmd) {
 		case IR_COMMAND_STOP :		ir_protocol_samsung_cmd_tv_stop(&ir_command); break;
 	}
 
+	ir_protocol_samsung_address_tv(&ir_command);
+
 	SAMSUNG_IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
 
 	return CMD_NO_ERR;
