@@ -26,8 +26,11 @@
 
 #include "command_management/command_handler_interface.h"
 
+// --------------------------------------------------------------------------------
+
 #include "command_handler/rpi_command_handler_ir_remote.h"
 #include "command_handler/rpi_cmd_handler_ir_remote_samsung.h"
+#include "command_handler/rpi_cmd_handler_ir_remote_jvc.h"
 
 // --------------------------------------------------------------------------------
 
@@ -59,7 +62,14 @@ u8 rpi_cmd_handler_ir_remote(PROTOCOL_INTERFACE* p_protocol) {
 
 	switch (manufactor) {
 		default :			err_code = CMD_ERR_INVALID_ARGUMENT; break;
+
+		#ifdef RPI_CMD_HANDLER_IR_REMOTE_SAMSUNG_AVAILABLE
 		case IR_MANUFACTOR_SAMSUNG :	err_code = rpi_cmd_handler_ir_remote_samsung(device, command);
+		#endif
+
+		#ifdef RPI_CMD_HANDLER_IR_REMOTE_JVC_AVAILABLE
+		case IR_MANUFACTOR_JVC :	err_code = rpi_cmd_handler_ir_remote_jvc(device, command);
+		#endif
 
 	}
 

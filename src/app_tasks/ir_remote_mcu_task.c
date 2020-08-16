@@ -1,7 +1,7 @@
 /*! 
  * --------------------------------------------------------------------------------
  *
- * \file	main_rpi_hat.c
+ * \file	ir_remote_mcu_task.c
  * \brief
  * \author	sebastian lesse
  *
@@ -23,15 +23,17 @@
 #include "common/signal_slot_interface.h"
 #include "common/local_module_status.h"
 
+// --------------------------------------------------------------------------------
+
 #include "mcu_task_management/mcu_task_interface.h"
 #include "time_management/time_management.h"
+
+// --------------------------------------------------------------------------------
 
 #include "driver/timer/timer0_driver.h"
 #include "driver/timer/timer1_driver.h"
 
 #include "driver/timer/timer_interface.h"
-
-#include "3rdparty/ir_protocol/ir_protocol_samsung.h"
 
 // --------------------------------------------------------------------------------
 
@@ -42,19 +44,11 @@
 
 #define IR_REMOTE_TASK_STATUS_TX_ACTIVE			(1 << 0)
 #define IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED	(1 << 1)
-
-// --------------------------------------------------------------------------------
-
-static void ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED(void* p_arg);
+#define IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED		(1 << 2)
 
 // --------------------------------------------------------------------------------
 
 BUILD_MODULE_STATUS_U8(IR_REMOTE_TASK_STATUS)
-
-// --------------------------------------------------------------------------------
-
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SAMSUNG_IR_CMD_RECEIVED_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SAMSUNG_IR_CMD_RECEIVED_SIGNAL, SAMSUNG_IR_CMD_RECEIVED_SLOT, ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED)
 
 // --------------------------------------------------------------------------------
 
@@ -72,9 +66,13 @@ static TIMER_INTERFACE_TYPE timer_modulator = {
 	.stop = &timer1_driver_stop
 };
 
-static SAMSUNG_IR_PROTOCOL_COMMAND_TYPE samsung_ir_command;
-
 // --------------------------------------------------------------------------------
+
+#ifdef HAS_IR_PROTOCOL_SAMSUNG
+
+#include "3rdparty/ir_protocol/ir_protocol_samsung.h"
+
+static SAMSUNG_IR_PROTOCOL_COMMAND_TYPE samsung_ir_command;
 
 static void ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED(void* p_arg) {
 
@@ -91,26 +89,76 @@ static void ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED(void* p_arg) {
 	IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED);
 }
 
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SAMSUNG_IR_CMD_RECEIVED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SAMSUNG_IR_CMD_RECEIVED_SIGNAL, SAMSUNG_IR_CMD_RECEIVED_SLOT, ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED)
+
+#endif
+
+// --------------------------------------------------------------------------------
+
+#ifdef HAS_IR_PROTOCOL_JVC
+
+#include "3rdparty/ir_protocol/ir_protocol_jvc.h"
+
+static JVC_IR_PROTOCOL_COMMAND_TYPE jvc_ir_command;
+
+static void ir_remote_task_slot_JVC_IR_CMD_RECEIVED(void* p_arg) {
+
+	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED)) {
+		return;
+	}
+
+	DEBUG_PASS("ir_remote_task_slot_JVC_IR_CMD_RECEIVED()");
+
+	JVC_IR_PROTOCOL_COMMAND_TYPE* p_command = (JVC_IR_PROTOCOL_COMMAND_TYPE*) p_arg;
+	jvc_ir_command.address = p_command->address;
+	jvc_ir_command.control = p_command->control;
+
+	IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED);
+}
+
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(JVC_IR_CMD_RECEIVED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(JVC_IR_CMD_RECEIVED_SIGNAL, JVC_IR_CMD_RECEIVED_SLOT, ir_remote_task_slot_JVC_IR_CMD_RECEIVED)
+
+#endif
+
 // --------------------------------------------------------------------------------
 
 void ir_remote_task_init(void) {
 
 	DEBUG_PASS("ir_remote_task_init()");
 
-	SAMSUNG_IR_CMD_RECEIVED_SIGNAL_init();
-	SAMSUNG_IR_CMD_RECEIVED_SLOT_connect();
-
 	IR_REMOTE_TASK_STATUS_clear_all();
+
+	IR_CARRIER_IN_no_pull();
+	IR_CARRIER_OUT_drive_low();
+	IR_MOD_OUT_drive_low();
 
 	timer_carrier.init();
 	timer_modulator.init();
 	
-	ir_protocol_samsung_set_timer(&timer_carrier, &timer_modulator);
+	#ifdef HAS_IR_PROTOCOL_SAMSUNG
+	{
+		SAMSUNG_IR_CMD_RECEIVED_SIGNAL_init();
+		SAMSUNG_IR_CMD_RECEIVED_SLOT_connect();
+	
+		ir_protocol_samsung_set_timer(&timer_carrier, &timer_modulator);
+	}
+	#endif
+	
+	#ifdef HAS_IR_PROTOCOL_JVC
+	{
+		JVC_IR_CMD_RECEIVED_SIGNAL_init();
+		JVC_IR_CMD_RECEIVED_SLOT_connect();
+	
+		ir_protocol_jvc_set_timer(&timer_carrier, &timer_modulator);
+	}
+	#endif
 }
 
 u16 ir_remote_task_get_schedule_interval(void) {
 
-	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_TX_ACTIVE)) {
+	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE)) {
 		return 0;
 	} else {
 		return IR_REMOTE_TASK_RUN_INTERVAL_MS;
@@ -119,7 +167,7 @@ u16 ir_remote_task_get_schedule_interval(void) {
 
 MCU_TASK_INTERFACE_TASK_STATE ir_remote_task_get_state(void) {
 
-	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_TX_ACTIVE)) {
+	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE)) {
 		return MCU_TASK_RUNNING;
 	}
 	
@@ -130,6 +178,7 @@ void ir_remote_task_run(void) {
 
 	u8 is_active = 0;
 
+	#ifdef HAS_IR_PROTOCOL_SAMSUNG
 	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED)) {
 
 		if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
@@ -148,8 +197,34 @@ void ir_remote_task_run(void) {
 			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED);
 		}
 	}
+	#endif
+
+	#ifdef HAS_IR_PROTOCOL_JVC
+	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED)) {
+
+		if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
+
+			DEBUG_PASS("ir_remote_task_run() - Start Jvc IR-Command");
+			IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
+			ir_protocol_jvc_transmit(&jvc_ir_command);
+			is_active = 1;
+
+		} else  if (ir_protocol_jvc_is_busy()) {
+			is_active = 1;
+
+		} else {
+
+			DEBUG_PASS("ir_remote_task_run() - Jvc IR-Command finished");
+			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED);
+		}
+	}
+	#endif
 
 	if (is_active == 0) {
+
+		IR_CARRIER_IN_no_pull();
+		IR_CARRIER_OUT_drive_low();
+		IR_MOD_OUT_drive_low();
 
 		DEBUG_PASS("ir_remote_task_run() - All operations finished");
 		IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
