@@ -54,6 +54,7 @@
 #define TIMER1_CLOCK_SOURCE_MASK					(TIMER1_TCCRnB_CS2 | TIMER1_TCCRnB_CS1 | TIMER1_TCCRnB_CS0)
 #define TIMER1_CLOCK_SOURCE_NONE					(0)
 #define TIMER1_CLOCK_SOURCE_CLK_IO					TIMER1_TCCRnB_CS0
+#define TIMER1_CLOCK_SOURCE_NO_PRESCALER				(0)
 #define TIMER1_CLOCK_SOURCE_CLK_IO_BY_8					TIMER1_TCCRnB_CS1
 #define TIMER1_CLOCK_SOURCE_CLK_IO_BY_64				(TIMER1_TCCRnB_CS0 | TIMER1_TCCRnB_CS1)
 #define TIMER1_CLOCK_SOURCE_CLK_IO_BY_256				TIMER1_TCCRnB_CS2
@@ -65,6 +66,10 @@
 #define TIMER1_STOP_TIMER()						TCCR1B = 0;
 
 #define TIMER1_OCRnB_MAX_VALUE						255
+
+#define TIMER1_CLEAR_IRQ_FLAG()						TIFR1 |= (1 << ICF1)
+
+#define TIMER1_CLK_OP_TIME						0
 
 //-----------------------------------------------------------------------------
 
@@ -81,10 +86,6 @@ static u32 interval_time_us;
 //-----------------------------------------------------------------------------
 
 static TIMER_CONFIGURATION_IRQ_COUNTER_IRQ_CALLBACK p_irq_callback = 0;
-
-//-----------------------------------------------------------------------------
-
-extern void timer1_channela_irq_callback(void);
 
 //-----------------------------------------------------------------------------
 
@@ -139,15 +140,15 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 			case TIMER_TIME_INTERVAL_560us :
 				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_560us");
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
-				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO_BY_8;
-				OCRA_backup = 4020;
+				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_NO_PRESCALER;
+				OCRA_backup = 4160;
 				interval_time_us = 560;
 				break;
 
 			case TIMER_TIME_INTERVAL_80us :
 				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_80us");
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
-				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO_BY_8;
+				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_NO_PRESCALER;
 				//OCRA_backup = 460;
 				OCRA_backup = 569;
 				interval_time_us = 80;
@@ -156,10 +157,18 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 			case TIMER_TIME_INTERVAL_40us :
 				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_40us");
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
-				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO_BY_8;
+				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_NO_PRESCALER;
 				//OCRA_backup = 460;
 				OCRA_backup = 285;
 				interval_time_us = 40;
+				break;
+
+			case TIMER_TIME_INTERVAL_10us :
+				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_10us");
+				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
+				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_NO_PRESCALER;
+				OCRA_backup = 71;
+				interval_time_us = 10;
 				break;
 		}
 
@@ -223,13 +232,8 @@ void timer1_driver_start(u32 time_us) {
 
 	run_time_us = time_us;
 
-	//u8 sreg = SREG;
-	//_CLI();
-
 	TCNT1L = 0;
 	TCNT1H = 0;
-
-	//SREG = sreg;
 	
 	TCCR1B = TCCRB_backup;
 }
@@ -243,26 +247,31 @@ void timer1_driver_stop(void) {
 ISR(TIMER1_COMPA_vect) {
 
 	if (run_time_us == TIME_CONFIGURATION_RUN_FOREVER) {
+
+		if (p_irq_callback != 0) {
+			p_irq_callback();
+		}
+
 		return;
 	}
 
 	if (run_time_us > interval_time_us) {
-		run_time_us -= interval_time_us;
+		run_time_us -= (interval_time_us + TIMER1_CLK_OP_TIME);
 	} else {
 		run_time_us = 0;
 	}
 
-	DEBUG_TRACE_word(run_time_us, "ISR(TIMER1_COMPA_vect) - runtime left");
-
 	if (run_time_us == 0 && p_irq_callback != 0) {
-
-		//DEBUG_PASS("TIMER1_COMPA_vect() - p_irq_callback()");
-		p_irq_callback();
+		
+		if (p_irq_callback != 0) {
+			p_irq_callback();
+		}
 	}
 }
 
 ISR(TIMER1_COMPB_vect) {
- }
+
+}
 
 ISR (TIMER1_OVF_vect) {
 

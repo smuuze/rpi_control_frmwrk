@@ -73,6 +73,8 @@ static u8 OCR0A_backup = 0;
 static u8 OCR0B_backup = 0;
 static u8 TIMSK0_backup = 0;
 
+static u8 is_active = 0;
+
 //-----------------------------------------------------------------------------
 
 static TIMER_CONFIGURATION_IRQ_COUNTER_IRQ_CALLBACK p_irq_callback = 0;
@@ -104,28 +106,26 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 
 		case TIMER_FREQUENCY_36kHz:
 			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_36kHz");
-			TCCR0B_backup |= TIMER0_CLOCK_SOURCE_CLK_IO;
-			OCR0A_backup = 102;
+			OCR0A_backup = 102;			
 			break;
 
 		case TIMER_FREQUENCY_37_9kHz :
 			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_37_9kHz");
-			TCCR0B_backup |= TIMER0_CLOCK_SOURCE_CLK_IO;
-			OCR0A_backup = 99;
+			OCR0A_backup = 96;
 			break;
 
 		case TIMER_FREQUENCY_38kHz :
 			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_38kHz");
-			TCCR0B_backup |= TIMER0_CLOCK_SOURCE_CLK_IO;
-			OCR0A_backup = 97;
+			OCR0A_backup = 94;
 			break;
 
 		case TIMER_FREQUENCY_42kHz :
 			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_42kHz");
-			TCCR0B_backup |= TIMER0_CLOCK_SOURCE_CLK_IO;
 			OCR0A_backup = 88;
 			break;
 	}
+		
+	TIMSK0_backup |= TIMER0_TIMSK0_IE_COMPARE_MATCH_A;
 
 	switch (p_configuration->mode) {
 		case TIMER_MODE_TIMER :
@@ -134,8 +134,8 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 			break;
 
 		case TIMER_MODE_FREQUENCY:
-			TCCR0A_backup = TIMER0_TCCR0A_COM0A0 | TIMER0_TCCR0A_WGM1 | TIMER0_TCCR0A_WGM0;
-			TCCR0B_backup |= TIMER0_CLOCK_SOURCE_CLK_IO | TIMER0_TCCR0B_WGM2;
+			TCCR0A_backup = TIMER0_TCCR0A_COM0A0 | TIMER0_TCCR0A_WGM1;// | TIMER0_TCCR0A_WGM0;
+			TCCR0B_backup = TIMER0_CLOCK_SOURCE_CLK_IO;// | TIMER0_TCCR0B_WGM2;
 			break;
 	}
 
@@ -150,6 +150,8 @@ void timer0_driver_start(u32 time_us) {
 
 	(void) time_us;
 	DEBUG_PASS("timer0_driver_start()");
+
+	is_active = 1;
 
 	TCNT0 = 0;
 	TIMSK0 = TIMSK0_backup;
@@ -166,6 +168,7 @@ void timer0_driver_stop(void) {
 }
 
 ISR(TIMER0_COMPA_vect) {
+
 	if (p_irq_callback != 0) {
 		p_irq_callback();
 	}
