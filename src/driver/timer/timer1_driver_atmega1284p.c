@@ -145,6 +145,14 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 				interval_time_us = 560;
 				break;
 
+			case TIMER_TIME_INTERVAL_527us :
+				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_527us");
+				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
+				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_NO_PRESCALER;
+				OCRA_backup = 3868;
+				interval_time_us = 527;
+				break;
+
 			case TIMER_TIME_INTERVAL_80us :
 				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_80us");
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
