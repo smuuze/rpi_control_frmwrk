@@ -22,7 +22,7 @@
  */
 typedef struct {
 	u8 address;
-	u16 control;
+	u8 control;
 } JVC_IR_PROTOCOL_COMMAND_TYPE;
 
 // --------------------------------------------------------------------------------
@@ -90,6 +90,21 @@ void ir_protocol_jvc_cmd_radio_pause(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
  *
  */
 void ir_protocol_jvc_cmd_radio_stop(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_jvc_cmd_radio_bass_up(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_jvc_cmd_radio_bass_down(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_jvc_cmd_radio_sound_mode(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
 // --------------------------------------------------------------------------------
 
