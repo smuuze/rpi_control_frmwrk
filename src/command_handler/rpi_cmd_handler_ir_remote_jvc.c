@@ -64,6 +64,10 @@ static inline u8 rpi_cmd_ir_jvc_radio(u8 cmd) {
 		case IR_COMMAND_PLAY :		ir_protocol_jvc_cmd_radio_play(&ir_command); break;
 		case IR_COMMAND_PAUSE :		ir_protocol_jvc_cmd_radio_pause(&ir_command); break;
 		case IR_COMMAND_STOP :		ir_protocol_jvc_cmd_radio_stop(&ir_command); break;
+
+		case IR_COMMAND_BASS_UP :	ir_protocol_jvc_cmd_radio_bass_up(&ir_command); break;
+		case IR_COMMAND_BASS_DOWN :	ir_protocol_jvc_cmd_radio_bass_down(&ir_command); break;
+		case IR_COMMAND_SOUND_MODE :	ir_protocol_jvc_cmd_radio_sound_mode(&ir_command); break;
 	}
 
 	ir_protocol_jvc_address_radio(&ir_command);

@@ -57,6 +57,10 @@
 #define IR_COMMAND_PAUSE		0x19
 #define IR_COMMAND_STOP			0x1A
 
+#define IR_COMMAND_BASS_UP		0x1B
+#define IR_COMMAND_BASS_DOWN		0x1C
+#define IR_COMMAND_SOUND_MODE		0x1D
+
 // --------------------------------------------------------------------------------
 
 u8 rpi_cmd_handler_ir_remote(PROTOCOL_INTERFACE* p_protocol);

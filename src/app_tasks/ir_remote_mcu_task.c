@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -43,8 +43,9 @@
 // --------------------------------------------------------------------------------
 
 #define IR_REMOTE_TASK_STATUS_TX_ACTIVE			(1 << 0)
-#define IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED	(1 << 1)
-#define IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED		(1 << 2)
+#define IR_REMOTE_TASK_STATUS_CMD_PENDING		(1 << 1)
+#define IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED	(1 << 2)
+#define IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED		(1 << 3)
 
 // --------------------------------------------------------------------------------
 
@@ -86,7 +87,7 @@ static void ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED(void* p_arg) {
 	samsung_ir_command.address = p_command->address;
 	samsung_ir_command.control = p_command->control;
 
-	IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED);
+	IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
 }
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SAMSUNG_IR_CMD_RECEIVED_SIGNAL)
@@ -114,7 +115,7 @@ static void ir_remote_task_slot_JVC_IR_CMD_RECEIVED(void* p_arg) {
 	jvc_ir_command.address = p_command->address;
 	jvc_ir_command.control = p_command->control;
 
-	IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED);
+	IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
 }
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(JVC_IR_CMD_RECEIVED_SIGNAL)
@@ -139,6 +140,8 @@ void ir_remote_task_init(void) {
 	
 	#ifdef HAS_IR_PROTOCOL_SAMSUNG
 	{
+		DEBUG_PASS("ir_remote_task_init() - Samsung");
+
 		SAMSUNG_IR_CMD_RECEIVED_SIGNAL_init();
 		SAMSUNG_IR_CMD_RECEIVED_SLOT_connect();
 	
@@ -148,6 +151,8 @@ void ir_remote_task_init(void) {
 	
 	#ifdef HAS_IR_PROTOCOL_JVC
 	{
+		DEBUG_PASS("ir_remote_task_init() - JVC");
+
 		JVC_IR_CMD_RECEIVED_SIGNAL_init();
 		JVC_IR_CMD_RECEIVED_SLOT_connect();
 	
@@ -158,7 +163,7 @@ void ir_remote_task_init(void) {
 
 u16 ir_remote_task_get_schedule_interval(void) {
 
-	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE)) {
+	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE | IR_REMOTE_TASK_STATUS_CMD_PENDING)) {
 		return 0;
 	} else {
 		return IR_REMOTE_TASK_RUN_INTERVAL_MS;
@@ -167,7 +172,7 @@ u16 ir_remote_task_get_schedule_interval(void) {
 
 MCU_TASK_INTERFACE_TASK_STATE ir_remote_task_get_state(void) {
 
-	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE)) {
+	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE | IR_REMOTE_TASK_STATUS_CMD_PENDING)) {
 		return MCU_TASK_RUNNING;
 	}
 	
@@ -184,7 +189,10 @@ void ir_remote_task_run(void) {
 		if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
 
 			DEBUG_PASS("ir_remote_task_run() - Start Samsung IR-Command");
+
 			IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
+			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_PENDING);
+
 			ir_protocol_samsung_transmit(&samsung_ir_command);
 			is_active = 1;
 
@@ -205,7 +213,10 @@ void ir_remote_task_run(void) {
 		if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
 
 			DEBUG_PASS("ir_remote_task_run() - Start Jvc IR-Command");
+
 			IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
+			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_PENDING);
+
 			ir_protocol_jvc_transmit(&jvc_ir_command);
 			is_active = 1;
 
