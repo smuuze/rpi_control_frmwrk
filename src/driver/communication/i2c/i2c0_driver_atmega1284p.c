@@ -362,7 +362,6 @@ void i2c0_driver_stop_rx (void) {
 	if (I2C0_STATUS_is_set(I2C_STATUS_IS_MASTER)) {
 
 		DEBUG_PASS("i2c0_driver_stop_rx() - MASTER");
-		I2C_DRIVER_SEND_STOP_CONDITION();
 
 	} else {
 
@@ -417,7 +416,6 @@ void i2c0_driver_stop_tx (void) {
 
 	if (I2C0_STATUS_is_set(I2C_STATUS_IS_MASTER)) {
 
-		//I2C_DRIVER_SEND_STOP_CONDITION();
 		DEBUG_PASS("i2c0_driver_stop_tx() - MASTER");
 
 	} else {

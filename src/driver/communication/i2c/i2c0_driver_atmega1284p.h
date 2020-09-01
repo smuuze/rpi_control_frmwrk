@@ -92,7 +92,7 @@
 #define I2C_DRIVER_ENABLE_ACK_ON_NEXT_BYTE()		TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA) | (i2c_cfg_control_reg & 0x01)
 #define I2C_DRIVER_ENABLE_NACK_ON_NEXT_BYTE()		TWCR = (1 << TWINT) | (1 << TWEN) | (i2c_cfg_control_reg & 0x01)
 
-#define I2C_DRIVER_RELEASE()				I2C_DRIVER_SEND_ACK()
+#define I2C_DRIVER_RELEASE()				TWCR = (1 << TWINT) | (1 << TWSTO)
 
 #define I2C_DRIVER_GET_MODULE_STATUS()			(TWSR & 0xF8)
 
