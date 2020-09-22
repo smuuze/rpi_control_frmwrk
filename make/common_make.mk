@@ -17,7 +17,7 @@ DEFS += -D VERSION_MINOR=$(VERSION_MINOR)
 
 # -----------------------------------------------------------------------
 
-BASE_PATH	?= ..
+BASE_PATH	?= ../../rpi_control_frmwrk
 APP_PATH	?= $(BASE_PATH)/src
 MAKE_PATH	?= $(BASE_PATH)/make
 

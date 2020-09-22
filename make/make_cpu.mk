@@ -29,7 +29,7 @@ ifeq ($(MCU), ATMEGA1284P)
 	MCU_NAME = atmega1284p
 	CPU_FAMILY = avr
 	DEFS += -D__AVR_ATmega1284P__
-	INC_PATH += ../src/common/cpu/avr
+	INC_PATH += ../../rpi_control_frmwrk/src/common/cpu/avr
 endif
 
 MCU_FLAG = -mmcu=$(MCU_NAME)

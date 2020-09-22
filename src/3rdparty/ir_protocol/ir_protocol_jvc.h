@@ -49,6 +49,11 @@ u8 ir_protocol_jvc_is_busy(void);
  */
 void ir_protocol_jvc_address_tv(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
+/*
+ *
+ */
+void ir_protocol_jvc_address_radio(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
 // --------------------------------------------------------------------------------
 
 /*
