@@ -7,7 +7,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -27,6 +27,8 @@
 #include "time_management/time_management.h"
 #include "driver/timer/timer_interface.h"
 
+#include "power_management/power_management.h"
+
 #include "command_management/protocol_interface.h"
 #include "command_management/command_handler_interface.h"
 
@@ -37,7 +39,8 @@
 // --------------------------------------------------------------------------------
 
 #define COPRO_ROUTING_TASK_RUN_INTERVAL_MS		0
-#define COPRO_ROUTING_TASK_PREPARE_TIMEOUT_MS		500
+#define COPRO_ROUTING_TASK_POWER_UP_TIMEOUT_MS		5
+#define COPRO_ROUTING_TASK_PREPARE_TIMEOUT_MS		250
 #define COPRO_ROUTING_TASK_PROCESS_TIMEOUT_MS		250
 #define COPRO_ROUTING_TASK_TRANSMIT_TIMEOUT_MS		50
 #define COPRO_ROUTING_TASK_POLLING_INTERVAL_MS		70
@@ -51,6 +54,7 @@
  */
 typedef enum {
 	COPRO_ROUTING_TASK_STATE_IDLE,
+	COPRO_ROUTING_TASK_STATE_POWER_ON,
 	COPRO_ROUTING_TASK_STATE_PREPARE,
 	COPRO_ROUTING_TASK_STATE_TRANSMIT,
 	COPRO_ROUTING_TASK_STATE_PROCESS,
@@ -120,6 +124,10 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(COPRO_WAIT_TIMER)
 
 // --------------------------------------------------------------------------------
 
+POWER_MGMN_BUILD_UNIT(COPRO_POWER_UNIT_5V, COPRO_ROUTING_TASK_POWER_UP_TIMEOUT_MS, EXT_POWER_01_drive_high, EXT_POWER_01_drive_low)
+
+// --------------------------------------------------------------------------------
+
 void copro_routing_task_init(void) {
 
 	DEBUG_PASS("copro_routing_task_init()");
@@ -131,6 +139,8 @@ void copro_routing_task_init(void) {
 		COPRO1_ROUTING_COMMAND_SLOT_connect();
 	}
 	#endif
+
+	COPRO_POWER_UNIT_5V_init();
 	
 	// only for debugging --- EVENT_OUTPUT_drive_low();
 
@@ -191,10 +201,23 @@ void copro_routing_task_run(void) {
 				break;
 			}
 
-			EVENT_OUTPUT_drive_low();
+			// only for debugging --- EVENT_OUTPUT_drive_low();
 				
 			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_IDLE -> COPRO_ROUTING_TASK_STATE_PREPARE");
-			task_state = COPRO_ROUTING_TASK_STATE_PROCESS;
+			task_state = COPRO_ROUTING_TASK_STATE_POWER_ON;
+
+			COPRO_POWER_UNIT_5V_request();
+
+			// no break;
+
+		case COPRO_ROUTING_TASK_STATE_POWER_ON :
+
+			if (COPRO_POWER_UNIT_5V_is_on() == 0) {
+				//DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_POWER_ON - Waiting for power-management");
+				break;
+			}
+
+			task_state = COPRO_ROUTING_TASK_STATE_PREPARE;
 			COPRO_OP_TIMER_start();
 
 			// no break;
@@ -335,6 +358,8 @@ void copro_routing_task_run(void) {
 			break;
 
 		case COPRO_ROUTING_TASK_STATE_FINISH :
+
+			COPRO_POWER_UNIT_5V_release();
 
 			p_scheduled_protocol = 0;
 
