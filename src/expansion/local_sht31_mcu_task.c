@@ -7,7 +7,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_OFF
+#define TRACER_ON
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ static u8 com_driver_mutex_id = 0;
 
 void local_sht31_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 
-	PASS(); // local_sht31_module_init()
+	DEBUG_PASS("local_sht31_module_init()");
 
 	driver_cfg.module.i2c.answer_general_call = 0;
 	driver_cfg.module.i2c.bit_rate = DRIVER_I2C_BITRATE_1KHZ;
@@ -128,7 +128,7 @@ void local_sht31_module_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 void local_sht31_mcu_task_init(void) {
 
-	PASS(); // local_sht31_mcu_task_init()
+	DEBUG_PASS("local_sht31_mcu_task_init()");
 
 	operation_stage = SHT31_TASK_STATE_IDLE;
 	task_timer_start(); // task_run_interval_reference_actual = 0; //i_system.time.now_u16();
@@ -181,7 +181,7 @@ void local_sht31_mcu_task_run(void) {
 		case SHT31_TASK_STATE_IDLE :
 
 			if ((com_driver_mutex_id = p_com_driver->mutex_req()) == 0) {
-				PASS(); // local_sht31_mcu_task_run() - Can't get Mutex of communication-driver
+				DEBUG_PASS("local_sht31_mcu_task_run() - Can't get Mutex of communication-driver");
 				break;
 			}
 
@@ -192,29 +192,24 @@ void local_sht31_mcu_task_run(void) {
 			task_timer_start(); // task_run_interval_reference_actual = i_system.time.now_u16();
 			operation_stage = SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT;
 
-			PASS(); // local_sht31_mcu_task_run() - Going to start measurement ----
+			DEBUG_PASS("local_sht31_mcu_task_run() - Going to start measurement ----");
 
 			// no break;
 
 		case SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR :
 
 			if (POWER_UNIT_5V_is_on() == 0) {
-				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Waiting for power-management
+				DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Waiting for power-management");
 				break;
 			}
 
 			if (p_com_driver->is_ready_for_tx() == 0) {
-				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Waiting for communication-driver
+				DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Waiting for communication-driver");
 				break;
 			}
-
-			//if (task_timer_is_up(SHT31_STARTUP_TIME_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_STARTUP_TIME_MS) */ == 0) {
-			//	PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Wait for Start-Up of Sensor
-			//	break;
-			//}
 			
 			if (POWER_UNIT_5V_is_on() == 0) {
-				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Wait for Start-Up of Sensor
+				DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_INIT_TEMP_HUM_SENSOR - Wait for Start-Up of Sensor");
 				break;
 			}
 
@@ -237,11 +232,11 @@ void local_sht31_mcu_task_run(void) {
 			if (p_com_driver->is_ready_for_tx() == 0) {
 
 				task_state = MCU_TASK_IDLE;
-				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT - check if driver is ready for RX
+				DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT - check if driver is ready for RX");
 
 				if (task_timer_is_up(SHT31_OPERATION_TIMEOUT_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_OPERATION_TIMEOUT_MS) */ != 0) {
 
-					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT - Waiting for Driver to be Ready has FAILED !!! ---
+					DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_START_TEMP_HUM_MEASSUREMENT - Waiting for Driver to be Ready has FAILED !!! ---");
 					p_com_driver->stop_tx();
 					operation_stage = SHT31_TASK_STATE_CANCEL_OPERATION;
 				}
@@ -267,11 +262,11 @@ void local_sht31_mcu_task_run(void) {
 
 			if (p_com_driver->is_ready_for_rx() == 0) {
 
-				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA - Waiting for communication-driver
+				DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA - Waiting for communication-driver");
 
 				if (task_timer_is_up(SHT31_OPERATION_TIMEOUT_MS) /* i_system.time.isup_u16(task_run_interval_reference_actual, SHT31_OPERATION_TIMEOUT_MS) */ != 0) {
 
-					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA -Waiting for Driver to be Ready has FAILED !!! ---
+					DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA -Waiting for Driver to be Ready has FAILED !!! ---");
 					p_com_driver->stop_tx();
 					operation_stage = SHT31_TASK_STATE_CANCEL_OPERATION;
 				}
@@ -280,7 +275,7 @@ void local_sht31_mcu_task_run(void) {
 			}
 
 			if (operation_timer_is_up(SHT31_MEASUREMENT_TIME_LOW_REPEATABILITY_MS) /* i_system.time.isup_u32(operation_refrence_time, SHT31_MEASUREMENT_TIME_LOW_REPEATABILITY_MS) */ == 0) {
-				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA - Wait for meassurement to be done
+				DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_GET_TEMP_HUM_DATA - Wait for meassurement to be done");
 				break;
 			}
 
@@ -301,7 +296,7 @@ void local_sht31_mcu_task_run(void) {
 				task_state = MCU_TASK_IDLE;
 
 				if (operation_timer_is_up(SHT31_OPERATION_TIMEOUT_MS) /* i_system.time.isup_u32(operation_refrence_time, SHT31_OPERATION_TIMEOUT_MS) */ != 0) {
-					PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA - Timeout on waiting for data
+					DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA - Timeout on waiting for data");
 
 					p_com_driver->stop_tx();
 					p_com_driver->clear_tx_buffer();
@@ -313,57 +308,57 @@ void local_sht31_mcu_task_run(void) {
 					break;
 				}
 
-				PASS(); // local_sht31_mcu_task_run() - SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA - wait until all bytes are received
+				DEBUG_PASS("local_sht31_mcu_task_run() - SHT31_TASK_STATE_PROCESS_TEMP_HUM_DATA - wait until all bytes are received");
 				break;
 			}
 
 			task_state = MCU_TASK_RUNNING;
 
-			PASS(); ///----- Temperature ----------------------------------------------------
+			DEBUG_PASS("local_sht31_mcu_task_run() -  Temperature ------");
 
 			p_com_driver->get_N_bytes(SHT31_MEASRUEMENT_ANSWER_LENGTH, answer_buffer);
 
 			GET_SYSTEM(data).adc.temperature = (answer_buffer[SHT31_INDEX_OF_TEMPERATURE_MSB_IN_ANSWER] << 8 ) | answer_buffer[SHT31_INDEX_OF_TEMPERATURE_LSB_IN_ANSWER];
-			TRACE_word(GET_SYSTEM(data).adc.temperature); // local_sht31_mcu_task_run() - actual raw-value of temperature
+			DEBUG_TRACE_word(GET_SYSTEM(data).adc.temperature, "local_sht31_mcu_task_run() - actual raw-value of temperature");
 
 			calculation_temp = (u32)GET_SYSTEM(data).adc.temperature * (u32)SHT31_TEMPERATURE_FIXPOINT_FACTOR_M;
 			calculation_temp = calculation_temp >> 16;
 
 			GET_SYSTEM(data).temperature.actual = (i8)((i32)calculation_temp - SHT31_TEMPERATURE_FIXPOINT_FACTOR_B) + SHT31_TEMPERATURE_CORRECTION_OFFSET;
-			TRACE_byte(GET_SYSTEM(data).temperature.actual); // local_sht31_mcu_task_run() - actual temperature in �C
+			DEBUG_TRACE_byte(GET_SYSTEM(data).temperature.actual, "local_sht31_mcu_task_run() - actual temperature in Celsius");
 
 			if (GET_SYSTEM(data).temperature.actual > GET_SYSTEM(data).temperature.maximal) {
 				GET_SYSTEM(data).temperature.maximal = GET_SYSTEM(data).temperature.actual;
-				TRACE_byte(GET_SYSTEM(data).temperature.maximal); // local_sht31_mcu_task_run() - New Maximum Temperature
+				DEBUG_TRACE_byte(GET_SYSTEM(data).temperature.maximal, "local_sht31_mcu_task_run() - New Maximum Temperature");
 			}
 
 			if (GET_SYSTEM(data).temperature.actual < GET_SYSTEM(data).temperature.minimal) {
 				GET_SYSTEM(data).temperature.minimal = GET_SYSTEM(data).temperature.actual;
-				TRACE_byte(GET_SYSTEM(data).temperature.minimal); // local_sht31_mcu_task_run() - New Minimum Temperature
+				DEBUG_TRACE_byte(GET_SYSTEM(data).temperature.minimal, "local_sht31_mcu_task_run() - New Minimum Temperature");
 			}
 
-			PASS(); ///----- Humidity -----------------------------------------------------
+			DEBUG_PASS("local_sht31_mcu_task_run() -  Humidity ------");
 
 			GET_SYSTEM(data).adc.humidity = (answer_buffer[SHT31_INDEX_OF_HUMIDITY_MSB_IN_ANSWER] << 8 ) | answer_buffer[SHT31_INDEX_OF_HUMIDITY_LSB_IN_ANSWER];
-			TRACE_N(2, (u8*)&GET_SYSTEM(data).adc.humidity); // local_sht31_mcu_task_run() - raw value of humidity
+			DEBUG_TRACE_N(2, (u8*)&GET_SYSTEM(data).adc.humidity, "local_sht31_mcu_task_run() - raw value of humidity");
 
 			calculation_temp = (u32)GET_SYSTEM(data).adc.humidity * (u32)SHT31_HUMIDITY_FIXPOINT_FACTOR_M;
 			calculation_temp = calculation_temp >> 16;
 
 			GET_SYSTEM(data).humidity.actual = calculation_temp;
-			TRACE_byte(GET_SYSTEM(data).humidity.actual); // local_sht31_mcu_task_run() - actual relative humidity in %
+			DEBUG_TRACE_byte(GET_SYSTEM(data).humidity.actual, "local_sht31_mcu_task_run() - actual relative humidity in %");
 
 			if (GET_SYSTEM(data).humidity.actual > GET_SYSTEM(data).humidity.maximal) {
 				GET_SYSTEM(data).humidity.maximal = GET_SYSTEM(data).temperature.actual;
-				TRACE_byte(GET_SYSTEM(data).humidity.maximal); // local_sht31_mcu_task_run() - New Maximum Humidity
+				DEBUG_TRACE_byte(GET_SYSTEM(data).humidity.maximal, "local_sht31_mcu_task_run() - New Maximum Humidity");
 			}
 
 			if (GET_SYSTEM(data).humidity.actual < GET_SYSTEM(data).humidity.minimal) {
 				GET_SYSTEM(data).humidity.minimal = GET_SYSTEM(data).humidity.actual;
-				TRACE_byte(GET_SYSTEM(data).humidity.minimal); // local_sht31_mcu_task_run() - New Minimum Humidity
+				DEBUG_TRACE_byte(GET_SYSTEM(data).humidity.minimal, "local_sht31_mcu_task_run() - New Minimum Humidity");
 			}
 
-			PASS(); ///----- Max Min Values -----------------------------------------------
+			DEBUG_PASS("local_sht31_mcu_task_run() -  Max Min Values ------");
 
 			if (task_timer_maxmin_is_up(SHT32_TASK_MAXMIN_INTERVAL_MS) /* i_system.time.isup_u32(task_run_interval_reference_maxmin, SHT32_TASK_MAXMIN_INTERVAL_MS) */ == 0) {
 				task_timer_maxmin_start();// task_run_interval_reference_maxmin = i_system.time.now_u32();
@@ -373,18 +368,18 @@ void local_sht31_mcu_task_run(void) {
 				GET_SYSTEM(data).temperature.minimal = sht31_temp_24hour_data_storage_array_get_min();
 				GET_SYSTEM(data).temperature.mean = sht31_temp_24hour_data_storage_array_get_mean();
 
-				TRACE_byte(GET_SYSTEM(data).temperature.maximal); // local_sht31_mcu_task_run() - maximum temperature in Degree of Celsius
-				TRACE_byte(GET_SYSTEM(data).temperature.minimal); // local_sht31_mcu_task_run() - minimum temperature in Degree of Celsius
-				TRACE_byte(GET_SYSTEM(data).temperature.mean); // local_sht31_mcu_task_run() - mean temperature in Degree of Celsius
+				DEBUG_TRACE_byte(GET_SYSTEM(data).temperature.maximal, "local_sht31_mcu_task_run() - maximum temperature in Degree of Celsius");
+				DEBUG_TRACE_byte(GET_SYSTEM(data).temperature.minimal, "local_sht31_mcu_task_run() - minimum temperature in Degree of Celsius");
+				DEBUG_TRACE_byte(GET_SYSTEM(data).temperature.mean, "local_sht31_mcu_task_run() - mean temperature in Degree of Celsius");
 
 				sht31_hum_24hour_data_storage_array_add_value(GET_SYSTEM(data).humidity.actual);
 				GET_SYSTEM(data).humidity.maximal = sht31_hum_24hour_data_storage_array_get_max();
 				GET_SYSTEM(data).humidity.minimal = sht31_hum_24hour_data_storage_array_get_min();
 				GET_SYSTEM(data).humidity.mean = sht31_hum_24hour_data_storage_array_get_mean();
 
-				TRACE_byte(GET_SYSTEM(data).humidity.maximal); // maximum humidity in %
-				TRACE_byte(GET_SYSTEM(data).humidity.minimal); // minimum humidity in %
-				TRACE_byte(GET_SYSTEM(data).humidity.mean); // mean humidity in %
+				DEBUG_TRACE_byte(GET_SYSTEM(data).humidity.maximal, "local_sht31_mcu_task_run() - maximum humidity in %");
+				DEBUG_TRACE_byte(GET_SYSTEM(data).humidity.minimal, "local_sht31_mcu_task_run() - minimum humidity in %");
+				DEBUG_TRACE_byte(GET_SYSTEM(data).humidity.mean, "local_sht31_mcu_task_run() - mean humidity in %");
 			}
 
 			//no break;
@@ -395,7 +390,7 @@ void local_sht31_mcu_task_run(void) {
 			task_timer_start(); // task_run_interval_reference_actual = i_system.time.now_u16();
 			task_state = MCU_TASK_SLEEPING;
 
-			PASS(); // local_sht31_mcu_task_run() - Measurement has been finished ----
+			DEBUG_PASS("local_sht31_mcu_task_run() - Measurement has been finished ----");
 
 			p_com_driver->shut_down();
 			p_com_driver->mutex_rel(com_driver_mutex_id);
