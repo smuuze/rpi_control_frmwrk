@@ -3,7 +3,8 @@
 #-----------------------------------------------------------------------------
 
 
-TRACER_INC_PATH = $(APP_PATH)/tracer
+TRACER_INC_PATH = $(FRMWRK_PATH)/src/tracer
+#TRACER_INC_PATH = ../../rpi_control_frmwrk/src/tracer
 INC_PATH += $(TRACER_INC_PATH)
 
 ifdef TRACER_CFG

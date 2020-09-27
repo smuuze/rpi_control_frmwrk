@@ -12,7 +12,7 @@ AVR_DUDE_PROGRAMMER	:= linuxgpio
 AVR_DUDE_UPDATE_PATH	:= ../rpi_control_fw/cfg_rpi_hat_control_board_v2
 AVR_DUDE_UPDATE_FILE	:= RPI_Hat_ControlBoard_V2.hex
 
-AVR_DUDE_CFG_FILE	:= ../avrdude/avrdude.conf
+AVR_DUDE_CFG_FILE	:= $(FRMWRK_PATH)/avrdude/avrdude.conf
 AVR_DUDE_UPDATE_FORMAT	:= i
 
 GPIO_MODE		:= gpio mode
