@@ -123,7 +123,7 @@ void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 leng
 #define DEBUG_TRACE_byte(byte, str)	tracer_trace_byte(str, __FILE__, __LINE__, byte)
 #define DEBUG_TRACE_word(word, str)	tracer_trace_word(str, __FILE__, __LINE__, word)
 #define DEBUG_TRACE_long(integer, str)	tracer_trace_long(str, __FILE__, __LINE__, integer)
-#define DEBUG_TRACE_N(len, p_buf, str)	tracer_trace_n(str, __FILE__, __LINE__, len, (u8*)p_buf)
+#define DEBUG_TRACE_N(len, p_buf, str)	tracer_trace_n(str, __FILE__, __LINE__, len, p_buf)
 
 #else
 
