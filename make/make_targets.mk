@@ -9,6 +9,7 @@ MSG_PROG_LOCATION	:= Your programm can be found at
 MSG_FLASH_LOCATION	:= Using this file for Flashing: 
 MSG_LISTING		:= - Generating Disassembly
 MAP_LISTING		:= - Generating memory map
+MSG_TRACER		:= Starting Tracer in
 MSG_FINISH		:= --------------- Make done ---------------
 
 # --------- 
@@ -28,6 +29,8 @@ DEPENDENCY_OBJECTS	:= $(CSRCS:%.c=$(DEPENDENCY_DIRECTORY)/%.o)
 
 LOCAL_OBJECTS		:= $(notdir $(RELEASE_OBJECTS))
 LOCAL_DEBUG_OBJECTS	:= $(notdir $(DEBUG_OBJECTS))
+
+TRACER_PATH		:= $(BASE_PATH)/rpi_control_sw/cfg_TRACER/shcTracer
 
 # --------- 
 
@@ -112,11 +115,11 @@ release_dir:
 	$(VERBOSE) $(ECHO) - Creating Release directory: $(RELEASE_DIRECTORY)
 	$(VERBOSE) $(MK) $(RELEASE_DIRECTORY)
 
-# --------- 
+# ---------
 
-tracer: 
-	#$(TRACER_BIN_PATH)/$(TRACER_EXE_FILE) $(TRACER_WORKING_PATH)
-	$(TRACER_BIN_PATH)/$(TRACER_EXE_FILE)
+tracer:
+	$(VERBOSE) $(ECHO) $(MSG_TRACER) $(TRACER_PATH) -console -file $(PROJECT)_v$(VERSION)_trace_output.txt -path .
+	$(TRACER_PATH) -console -file $(PROJECT)_v$(VERSION)_trace_output.txt
 
 # --------- 
 
