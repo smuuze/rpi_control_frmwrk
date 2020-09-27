@@ -295,7 +295,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 		bytes_available = p_com_driver->bytes_available();
 
 		if (RPI_TRX_TIMER_is_up(300)) {
-			DEBUG_PASS("rpi_protocol_receive_command() - Receiving command-data has FAILED (TIMEOUT) !!! ---");
+			DEBUG_TRACE_byte(rpi_protocol_spi_interface.command_length, "rpi_protocol_receive_command() - Receiving command-data has FAILED (TIMEOUT) !!! ---");
 			error_code = RPI_TRX_STATE_TIMEOUT;
 			goto EXIT_rpi_protocol_receive_command;
 		}
