@@ -24,17 +24,31 @@ endif
 
 
 MCU ?=
+MCU_FLAG ?=
+CROSS_COMPILER_PREFIX ?= 
+
+MCU_SIZE_FLAGS ?=
 
 ifeq ($(MCU), ATMEGA1284P)
 	MCU_NAME = atmega1284p
 	CPU_FAMILY = avr
 	DEFS += -D__AVR_ATmega1284P__
+
 	INC_PATH += ../../rpi_control_frmwrk/src/common/cpu/avr
+	INC_PATH += $(AVR_INCLUDE_PATH)
+
+	MCU_FLAG = -mmcu=$(MCU_NAME)
+	CROSS_COMPILER_PREFIX = avr-
+
+	MCU_SIZE_FLAGS = --mcu=$(MCU_NAME)
 endif
 
-MCU_FLAG = -mmcu=$(MCU_NAME)
-
-CROSS_COMPILER_PREFIX = avr-
+ifeq ($(MCU), RASPBERRY_PI)
+	MCU_NAME 	= raspberrypi
+	CPU_FAMILY 	= arm
+	INC_PATH 	+= ../../rpi_control_frmwrk/src/common/cpu/rpi_arm
+	INC_PATH	+= /usr/include
+endif
 
 SECTIONS =
 SECTIONS += -j .text
@@ -50,9 +64,6 @@ CSLAGS += -g
 
 LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
 LDFLAGS += $(LD_EXTRA_FLAGS)
-
-
-INC_PATH += $(AVR_INCLUDE_PATH)
 
 #MCU_TARGET     = at90s2313
 #MCU_TARGET     = at90s2333

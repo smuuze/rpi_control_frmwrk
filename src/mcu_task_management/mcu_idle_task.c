@@ -8,19 +8,6 @@
 #include "system_interface.h"
 #include "mcu_task_interface.h"
 
-/*!
- * SLEEP_MODE_IDLE
- * SLEEP_MODE_ADC
- * SLEEP_MODE_PWR_DOWN
- * SLEEP_MODE_PWR_SAVE
- * SLEEP_MODE_STANDBY
- * SLEEP_MODE_EXT_STANDBY
- */
-
-#ifndef config_SLEEP_MODE
-#define config_SLEEP_MODE	SLEEP_MODE_PWR_SAVE
-#endif
-
 //---------- Implementation of Traces -----------------------------------------
 
 #define TRACER_OFF
@@ -56,19 +43,9 @@ void mcu_idle_task_run(void) {
 
 	#ifndef DISABLE_SLEEP_ON_IDLE
 	{
-		//SET_MODULE_POWER_SAFE(SLEEP_DRIVER_PRR_TIMER0 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_TIMER1 | SLEEP_DRIVER_PRR_USART1 | SLEEP_DRIVER_PRR_ADC);
-		set_sleep_mode(config_SLEEP_MODE);
-
-		cli();
-		sleep_enable();
-		sleep_bod_disable();
-		sei();
-
-		sleep_cpu();
-
-		cli();
-		sleep_disable();
-		sei();
+		CPU_PREPARE_SLEEP_MODE();
+		CPU_ENTER_SLEEP_MODE();
+		CPU_DEACTIVATE_SLEEP_MODE();
 	}
 	#endif
 }

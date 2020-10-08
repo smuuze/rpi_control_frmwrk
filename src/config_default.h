@@ -48,11 +48,15 @@ ASSERT_C(0, config_CPU_CLK_HZ_ALREADY_DEFINED);
 // -----------------------------------------------------------------------------
 // System Interface
 
+
+#ifdef HAS_APP_TASK_EVENT
+
 #define config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE		void local_event_add(SYSTEM_EVENT event);
 #define config_SYSTEM_INTERFACE_GET_EVENT_PROTOTYPE		SYSTEM_EVENT local_event_get_next(void);
 
 #define config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK		local_event_add
 #define config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK		local_event_get_next
+#endif
 
 //#define config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_PROTOTYPE	static u8 local_progmem_get_byte(u8* addr);
 //#define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE	static u16 local_progmem_get_word(u8* addr);

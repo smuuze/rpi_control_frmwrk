@@ -13,7 +13,6 @@
 // --------------------------------------------------------------------------------
 
 #include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
 
 // --------------------------------------------------------------------------------
 
@@ -21,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-#include "local_clk_driver.h"
+#include "driver/clock/clock_driver_interface.h"
 #include "driver/rtc/rtc_driver_interface.h"
 #include "driver/gpio/gpio_interface.h"
 #include "copro/copro_interface.h"
@@ -36,7 +35,7 @@ void system_initialization(void) {
 	}
 	#endif
 
-	local_clk_driver_init();
+	clock_driver_init();
 	rtc_driver_init();
 
 	#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1

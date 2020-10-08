@@ -99,7 +99,7 @@ obj_dir:
 	$(VERBOSE) $(MK) $(OBJECT_DIRECTORY)
 	
 prog_size:
-	$(CC_SIZE) --mcu=$(MCU_NAME) $(OBJECT_DIRECTORY)/$(TARGET).elf
+	$(CC_SIZE) $(MCU_SIZE_FLAGS) $(OBJECT_DIRECTORY)/$(TARGET).elf
 
 # --------- 
 	

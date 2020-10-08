@@ -24,6 +24,7 @@
 #define GPIO_PORT_B					2
 #define GPIO_PORT_C					3
 #define GPIO_PORT_D					4
+#define GPIO_PORT_E					5
 
 typedef struct  {
 
@@ -133,6 +134,59 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 #define GET_GPIO_REFERENCE(port_id, pin_id)			\
 	p_pin_##port_id##_##pin_id
 
-#define HAS_GPIO(name)			
+#define HAS_GPIO(name)
+
+#define GPIO_ALIAS(new_name, exisitng_name)										\
+															\
+	void exisitng_name##_drive_high(void);										\
+	void exisitng_name##_drive_low(void);										\
+	void exisitng_name##_no_drive(void);										\
+	void exisitng_name##_toggle_level(void);									\
+	void exisitng_name##_pull_up(void);										\
+	void exisitng_name##_pull_down(void);										\
+	void exisitng_name##_no_pull(void);										\
+	u8 exisitng_name##_is_high_level(void);										\
+	u8 exisitng_name##_is_low_level(void);										\
+	void exisitng_name##_print_state(void);										\
+															\
+	inline void new_name##_drive_high(void) {									\
+		exisitng_name##_drive_high();										\
+	}														\
+															\
+	inline void new_name##_drive_low(void) {									\
+		exisitng_name##_drive_low();										\
+	}														\
+															\
+	inline void new_name##_no_drive(void) {										\
+		exisitng_name##_no_drive();										\
+	}														\
+															\
+	inline void new_name##_toggle_level(void) {									\
+		exisitng_name##_toggle_level();										\
+	}														\
+															\
+	inline void new_name##_pull_up(void) {										\
+		exisitng_name##_pull_up();										\
+	}														\
+															\
+	inline void new_name##_pull_down(void) {									\
+		exisitng_name##_pull_down();										\
+	}														\
+															\
+	inline void new_name##_no_pull(void) {										\
+		exisitng_name##_no_pull();										\
+	}														\
+															\
+	inline u8 new_name##_is_high_level(void) {									\
+		return exisitng_name##_is_high_level();									\
+	}														\
+															\
+	inline u8 new_name##_is_low_level(void) {									\
+		return exisitng_name##_is_low_level();									\
+	}														\
+															\
+	inline void new_name##_print_state(void) {									\
+		exisitng_name##_print_state();										\
+	}
 
 #endif

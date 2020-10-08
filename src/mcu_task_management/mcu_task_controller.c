@@ -2,7 +2,7 @@
 
  *****************************************************************************/
 
-#define TRACER_OFF
+#define TRACER_ON
 
 //-----------------------------------------------------------------------------
 
@@ -70,6 +70,8 @@ static u32 _minimum_taks_schedule_interval = 0xFFFFFFFF;
 //-----------------------------------------------------------------------------
 
 void mcu_task_controller_init(void) {
+
+	DEBUG_PASS("mcu_task_controller_init()");
 
 	_first_task = 0;
 	_last_task = 0;
@@ -151,7 +153,7 @@ void mcu_task_controller_schedule(void) {
 	}
 
 	if (system_is_on_idle != 0) {
-		DEBUG_PASS("mcu_task_controller_schedule() xxxxxxx SYSTEM GOING TO SLEEP xxxxxxxxxx");
+		//DEBUG_PASS("mcu_task_controller_schedule() xxxxxxx SYSTEM GOING TO SLEEP xxxxxxxxxx");
 		mcu_idle_task.run();
 	}
 }

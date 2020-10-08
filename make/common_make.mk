@@ -185,6 +185,9 @@ ifneq '' '$(findstring RPI_PROTOCOL,$(MANAGEMENT_MODULE_CFG))'
 
 	ifneq '' '$(findstring RPI_PROTOCOL_I2C,$(MANAGEMENT_MODULE_CFG))'
 		CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler_i2c.c
+
+	else ifneq '' '$(findstring RPI_PROTOCOL_HOST,$(MANAGEMENT_MODULE_CFG))'
+		CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler_host.c
 	else
 		CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler.c
 	endif
@@ -235,13 +238,16 @@ WARNINGS += -Wstrict-prototypes
 # For further details, refer to the chapter "GCC Command Options" of the GCC manual.
 # OPTIMIZATION  += -O3 -mcall-prologues
 OPTIMIZATION  += -Os
-OPTIMIZATION += -mcall-prologues
-OPTIMIZATION += -ffunction-sections
-OPTIMIZATION += -fshort-enums
-OPTIMIZATION += -funsigned-char
-OPTIMIZATION += -funsigned-bitfields
-#OPTIMIZATION += -fpack-struct
-#OPTIMIZATION += -mshort-calls
+
+ifeq ($(MCU), ATMEGA1284P)
+	OPTIMIZATION += -mcall-prologues
+	OPTIMIZATION += -ffunction-sections
+	OPTIMIZATION += -fshort-enums
+	OPTIMIZATION += -funsigned-char
+	OPTIMIZATION += -funsigned-bitfields
+	#OPTIMIZATION += -fpack-struct
+	#OPTIMIZATION += -mshort-calls
+endif
 
 # -----------------------------------------------------------------------
 # Extra flags to use when preprocessing

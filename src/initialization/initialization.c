@@ -12,6 +12,10 @@
 
 //-----------------------------------------------------------------------------
 
+#include "cpu.h"
+
+//-----------------------------------------------------------------------------
+
 #include "local_context.h"
 #include "initialization/system_initialization.h"
 #include "initialization/power_initialization.h"
@@ -30,12 +34,8 @@ SYSTEM_T system_context;
 
 void initialization(void) {
 
-	#ifdef config_WATCHDOG_TIMEOUT_VALUE
-	{
-		wdt_enable(config_WATCHDOG_TIMEOUT_VALUE);
-		watchdog();
-	}
-	#endif
+	watchdog_enable();
+	watchdog();
 
 	system_initialization();
 
