@@ -125,13 +125,6 @@ tracer:
 
 # --------- 
 
-git_update: 
-	$(VERBOSE) git pull
-	$(VERBOSE) $(MAKE_FOLDER_RIGHTS)
-	$(VERBOSE) $(MAKE_FILE_RIGHTS)
-
-# ---------
-
 flash: 
 	$(VERBOSE) $(ECHO) $(MSG_FLASH_LOCATION) $(TARGET).hex
 	$(VERBOSE) $(AVR_DUDE) -C $(AVR_DUDE_CFG_FILE) -c $(AVR_DUDE_PROGRAMMER) -p $(AVR_DUDE_MCU_NAME) $(AVR_DUDE_PORT) -b $(AVR_DUDE_BAUDRATE) -U flash:w:"$(TARGET).hex":$(AVR_DUDE_UPDATE_FORMAT)
@@ -166,3 +159,77 @@ $(DEBUG_DIRECTORY)/%.o: %.c
 $(DEPENDENCY_DIRECTORY)/%.o: %.c
 	$(VERBOSE) $(ECHO) $(MSG_DEPENDENCY) $(notdir $<)
 	$(VERBOSE) $(CC) -M -c $(DEFS) $(CFLAGS) $(LIBS) $(MCU_FLAG) $(INC_PATH:%=-I%) $< -o $(DEPENDENCY_DIRECTORY)/$(notdir $@)
+
+# --------- 
+
+install:
+	$(VERBOSE) $(ECHO) - Copy service to target: /etc/init.d/$(TARGET_SERVICE)
+	$(VERBOSE) $(CP) service/shc_service /etc/init.d/$(TARGET_SERVICE)
+	$(VERBOSE) $(MAKE_EXE) /etc/init.d/$(TARGET_SERVICE)
+	$(VERBOSE) $(ECHO) - Copy daemon to target: /usr/sbin/$(TARGET_DAEMON)
+	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET) /usr/sbin/$(TARGET_DAEMON)
+	$(VERBOSE) $(MAKE_EXE) /usr/sbin/$(TARGET_DAEMON)
+	$(VERBOSE) $(ECHO) - Register service with inid.d
+	$(VERBOSE) update-rc.d $(TARGET_SERVICE) defaults
+	$(VERBOSE) update-rc.d $(TARGET_SERVICE) enable
+	$(VERBOSE) $(ECHO) - Starting service
+	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) start
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+uninstall: stop_service
+	$(VERBOSE) $(ECHO) - Disabling service
+	$(VERBOSE) update-rc.d $(TARGET_SERVICE) disable
+	$(VERBOSE) $(ECHO) - Removing service from init.d
+	$(VERBOSE) update-rc.d $(TARGET_SERVICE) remove
+	$(VERBOSE) $(ECHO) - Removing service from filesystem
+	$(VERBOSE) $(RM) /etc/init.d/$(TARGET_SERVICE)
+	$(VERBOSE) $(ECHO) - Removing Daemon from filesystem
+	$(VERBOSE) $(RM) /usr/sbin/$(TARGET_DAEMON)
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+update: stop_service
+	$(VERBOSE) $(ECHO) - Updateing daemon
+	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET) /usr/sbin/$(TARGET_DAEMON)
+	$(VERBOSE) $(MAKE_EXE) /usr/sbin/$(TARGET_DAEMON)
+	$(VERBOSE) $(ECHO) - Starting service
+	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) start
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+stop_service:
+	$(VERBOSE) $(ECHO) - Stopping service
+	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) stop
+
+start_service:
+	$(VERBOSE) $(ECHO) - Starting service
+	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) start
+
+# --------- 
+
+fw_update: stop_service
+	$(VERBOSE) $(AVR_DUDE) -C $(AVR_DUDE_CFG_FILE) -c $(AVR_DUDE_PROGRAMMER) -p $(AVR_DUDE_MCU_NAME) $(AVR_DUDE_PORT) -b $(AVR_DUDE_BAUDRATE) -U flash:w:"$(AVR_DUDE_UPDATE_PATH)/$(AVR_DUDE_UPDATE_FILE)":$(AVR_DUDE_UPDATE_FORMAT)
+	$(VERBOSE) $(GPIO_MODE) $(GPIO_PIN_SCK) $(GPIO_MODE_SCK)
+	$(VERBOSE) $(GPIO_MODE) $(GPIO_PIN_MOSI) $(GPIO_MODE_MOSI)
+	$(VERBOSE) $(GPIO_MODE) $(GPIO_PIN_MISO) $(GPIO_MODE_MISO)
+	$(VERBOSE) $(ECHO) - Starting service
+	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) start
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+fw_update_only: stop_service
+	$(VERBOSE) $(AVR_DUDE) -C $(AVR_DUDE_CFG_FILE) -c $(AVR_DUDE_PROGRAMMER) -p $(AVR_DUDE_MCU_NAME) $(AVR_DUDE_PORT) -b $(AVR_DUDE_BAUDRATE) -U flash:w:"$(AVR_DUDE_UPDATE_PATH)/$(AVR_DUDE_UPDATE_FILE)":$(AVR_DUDE_UPDATE_FORMAT)
+	$(VERBOSE) $(GPIO_MODE) $(GPIO_PIN_SCK) $(GPIO_MODE_SCK)
+	$(VERBOSE) $(GPIO_MODE) $(GPIO_PIN_MOSI) $(GPIO_MODE_MOSI)
+	$(VERBOSE) $(GPIO_MODE) $(GPIO_PIN_MISO) $(GPIO_MODE_MISO)
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+# --------- 
+
+create_user:
+	$(VERBOSE) $(ECHO) - Creating SHC user
+	$(VERBOSE) useradd -M -s /bin/false -G gpio,audio,spi shc
+
+git_update:
+	$(VERBOSE) git pull
+	$(VERBOSE) $(MAKE_FOLDER_RIGHTS)
+	$(VERBOSE) $(MAKE_FILE_RIGHTS)
+
+# --------- 
