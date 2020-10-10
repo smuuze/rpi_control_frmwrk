@@ -102,7 +102,7 @@
 
 #define SPI0_CLEAR_CONFIG()				SPCR = 0;							\
 							spi0_config = 0
-#define SPI0_RESET_REGISTERS()				do { volatile u8 temp = SPSR; temp = SPDR; } while(0)
+#define SPI0_RESET_REGISTERS()				do { /*volatile u8 temp = SPSR; temp = SPDR; */ } while(0)
 
 #define SPI0_ENABLE_MODULE()				SPCR = (DRIVER_SPI_CFGMASK_MODULE_EN | (spi0_config))
 #define SPI0_DISABLE_MODULE()				SPCR = 0
@@ -186,6 +186,7 @@ void spi_driver_initialize(void) {
 	SPI0_DISABLE_MODULE();
 	SPI0_POWER_DOWN();
 
+	#ifdef TRACER_ENABLED
 	{
 		u8 temp = SPCR;
 		TRACE_byte(temp); // SPI - CONTROL-REGISTER
@@ -199,6 +200,7 @@ void spi_driver_initialize(void) {
 		temp = PRR1;
 		TRACE_byte(temp); // SPI - PRR1-REGISTER
 	}
+	#endif
 }
 
 /*!
@@ -291,6 +293,7 @@ void spi_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 	SPI0_ENABLE_MODULE();
 	SPI0_RESET_REGISTERS();
 
+	#ifdef TRACER_ENABLED
 	{
 		u8 temp = SPCR;
 		TRACE_byte(temp); // SPI - CONTROL-REGISTER
@@ -307,6 +310,7 @@ void spi_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 		temp = SREG;
 		TRACE_byte(temp); // Global Status-Register
 	}
+	#endif
 
 	PASS(); // spi_driver_configure() - End ---
 }

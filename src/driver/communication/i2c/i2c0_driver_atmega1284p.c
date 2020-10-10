@@ -213,6 +213,7 @@ void i2c0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 	I2C_SET_PRESCALER(I2C_DRIVER_BITRATE_PRESCALER_64);
   	I2C_SET_BITRATE(I2C_DRIVER_BITRATE_1KHZ_PRESCALER_64);
 
+	#ifdef TRACES_ENABLED
 	{
 		u8 temp = TWCR;
 		DEBUG_TRACE_byte(temp, "i2c0_driver_configure() - Control-Register - TWCR:");
@@ -229,6 +230,7 @@ void i2c0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 		temp = i2c_cfg_control_reg;
 		DEBUG_TRACE_byte(temp, "i2c0_driver_configure() - Status-Register - i2c_cfg_control_reg:");
 	}
+	#endif
 }
 
 void i2c0_driver_power_off(void) {
