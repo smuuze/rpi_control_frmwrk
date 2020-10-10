@@ -56,7 +56,7 @@
 
 #define ATOMIC_OPERATION(operation)		cli();		\
 						operation	\
-						sei()
+						sei();
 
 //-----------------------------------------------------------------------------	
 
@@ -79,6 +79,12 @@ typedef uint_fast8_t ux8;
 typedef uint_fast16_t ux16;
 
 typedef uint_fast32_t ux32;
+
+//-----------------------------------------------------------------------------
+
+#ifndef __UNUSED__
+#define __UNUSED__ __attribute__((unused))
+#endif
 
 //-----------------------------------------------------------------------------
 
