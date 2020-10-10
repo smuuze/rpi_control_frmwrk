@@ -96,7 +96,7 @@ static TRX_DRIVER_INTERFACE* p_com_driver = 0;
 /*!
  *
  */
-static TRX_DRIVER_CONFIGURATION driver_cfg;
+__UNUSED__ static TRX_DRIVER_CONFIGURATION driver_cfg;
 
 /*!
  *
@@ -111,7 +111,7 @@ static u8 trace_footer[TRACER_FOTER_DATA_LENGTH + 1]; // +1 to avoid compiler wa
 /*!
  *
  */
-static u8 driver_mutex_id = 0xFF;
+__UNUSED__ static u8 driver_mutex_id = 0xFF;
 
 /*!
  *
