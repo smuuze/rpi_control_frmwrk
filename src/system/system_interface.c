@@ -280,34 +280,39 @@ config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
 const SYSTEM_INTERFACE i_system = {
 	
 	#ifdef HAS_DRIVER_RTC0
-		.time = {			
-			.now_u8 = &local_rtc_timer_gettime_u8,
-			.now_u16 = &local_rtc_timer_gettime_u16,
-			.now_u32 = &local_rtc_timer_gettime_u32,
-			.isup_u8 = &local_rtc_timer_istimeup_u8,
-			.isup_u16 = &local_rtc_timer_istimeup_u16,
-			.isup_u32 = &local_rtc_timer_istimeup_u32
-		},
+	.time = {			
+		.now_u8 = &local_rtc_timer_gettime_u8,
+		.now_u16 = &local_rtc_timer_gettime_u16,
+		.now_u32 = &local_rtc_timer_gettime_u32,
+		.isup_u8 = &local_rtc_timer_istimeup_u8,
+		.isup_u16 = &local_rtc_timer_istimeup_u16,
+		.isup_u32 = &local_rtc_timer_istimeup_u32
+	},
 	#endif
 
-	{
+	.event = {
 		&config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK,
 		&config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK
 	},
-	{
-		&config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK,
-		&config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK,
-		&config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK,
-		&config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK
+
+	.memory = {
+		.progmem = {
+			&config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK,
+			&config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK,
+			&config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK,
+			&config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK
+		}
 	},
-	{
+
+	.io = {
 		&config_SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK,
 		&config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK,
 		&config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK,
 		&config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK,
 		&config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK
 	},
-	{
+
+	.driver = {
 		#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 		&spi0_driver,
 		#endif
