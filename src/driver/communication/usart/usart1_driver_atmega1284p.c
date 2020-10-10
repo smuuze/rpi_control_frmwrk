@@ -20,11 +20,6 @@
 
 /*-------------------------------------------------------------------------------------------------------------------------------------*/
 
-#define USART1_STATUS_RX_ACTIVE				(1 << 0)
-#define USART1_STATUS_TX_ACTIVE				(1 << 1)
-
-/*-------------------------------------------------------------------------------------------------------------------------------------*/
-
 #define USART1_DRIVER_CLEAR_CONFIG()			UBRR1L = 0; UBRR1H = 0; UCSR1C = 0; UCSR1B = 0
 
 #define USART1_DRIVER_SET_BAUDRATE_9600()		UBRR1L = 47; UBRR1H = 0
@@ -58,6 +53,11 @@
 
 BUILD_LOCAL_MSG_BUFFER(static inline, USART1_TX_BUFFER, USART1_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER)
 BUILD_LOCAL_MSG_BUFFER(static inline, USART1_RX_BUFFER, USART1_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER)
+
+/*-------------------------------------------------------------------------------------------------------------------------------------*/
+
+#define USART1_STATUS_RX_ACTIVE				0
+#define USART1_STATUS_TX_ACTIVE				1
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(usart1_status, 2)
 
