@@ -194,7 +194,7 @@ static MCU_TASK_INTERFACE test_tracer_task = {
 
 #ifdef HAS_EXPANSION_BOARD_GPIO_PCA9670
 #include "driver_PCA9670.h"
-static MCU_TASK_INTERFACE pca9670_task = {
+__UNUSED__ static MCU_TASK_INTERFACE pca9670_task = {
 
 	0, 						// u8 identifier,
 	0, 						// u16 new_run_timeout,
