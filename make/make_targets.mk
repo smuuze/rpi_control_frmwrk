@@ -32,6 +32,8 @@ LOCAL_DEBUG_OBJECTS	:= $(notdir $(DEBUG_OBJECTS))
 
 TRACER_PATH		:= $(BASE_PATH)/rpi_control_sw/cfg_TRACER/shcTracer
 
+CFLAGS 			+= -pedantic -Wall
+
 # --------- 
 
 all: release_obj hex_file lss_file prog_size
