@@ -127,6 +127,8 @@ static MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void) {
 
 		_act_cmd_handler = _act_cmd_handler->next;
 	}
+
+	return MCU_TASK_SLEEPING;
 }
 
 static void command_controller_task_run(void) {
