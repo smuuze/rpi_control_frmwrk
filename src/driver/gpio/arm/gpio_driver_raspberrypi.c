@@ -231,10 +231,8 @@ void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_D
 
 void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
-	u8 pin_num = GPIO_DRIVER_GET_PIN(p_pin_descr);
-
 	if (GPIO_DRIVER_IS_OUTPUT(p_pin_descr) == 0) {
-		DEBUG_TRACE_byte(pin_num, "gpio_driver_toggle_level() - This is not an output");
+		DEBUG_TRACE_byte(GPIO_DRIVER_GET_PIN(p_pin_descr), "gpio_driver_toggle_level() - This is not an output");
 		return;
 	}
 
