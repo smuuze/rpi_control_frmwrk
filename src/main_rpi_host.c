@@ -34,28 +34,27 @@ void task_yield(void) {
 
 // --------------------------------------------------------------------------------
 
-void main_init(void) {
+static void parse_command_line_arguments(int argc, char* argv[]) {
+
+}
+
+static void command_line_usage(void) {
+	printf("\nUsage: spiHelper [options]]\n\n");
+	printf("Options:\n");
+	printf("-dev <device>                        : SPI-device to use for communication\t\n");
+	printf("-cmd <command>                       : command to send in hexadecimal form (e.g. 0101)\t\n");
+}
+
+// --------------------------------------------------------------------------------
+
+int main(int argc, char* argv[]) {
 
 	ATOMIC_OPERATION
 	(
 		initialization();
 	)
 
-
-	#ifdef HAS_GPIO_LED_RED
-	{
-		LED_RED_drive_low();
-	}
-	#endif
-
-	DEBUG_PASS("main_init() - Initialization done");
-}
-
-int main( void ) {
-
-	main_init();
-
-	DEBUG_PASS(config_DEBUG_WELCOME_MESSAGE);
+	DEBUG_PASS("main() - Initialization done - starting application");
 
 	for (;;) {
 		
@@ -63,4 +62,6 @@ int main( void ) {
 		task_yield();
 		watchdog();
 	}
+
+	return 0;
 }
