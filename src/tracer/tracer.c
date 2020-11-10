@@ -96,6 +96,11 @@ static TRX_DRIVER_INTERFACE* p_com_driver = 0;
 /*!
  *
  */
+static u8 is_enabled = 0;
+
+/*!
+ *
+ */
 __UNUSED__ static TRX_DRIVER_CONFIGURATION driver_cfg;
 
 /*!
@@ -151,6 +156,7 @@ void tracer_init(void) {
 		TRACER_INIT_FOOTER();
 
 		_is_initialized = 1;
+		is_enabled = 1;
 	}
 	#endif
 }
@@ -160,6 +166,10 @@ void tracer_pass(const char* str, const char* file_name, u16 line_id) {
 	(void) str;
 
 	if (_is_initialized == 0) {
+		return;
+	}
+
+	if (is_enabled == 0) {
 		return;
 	}
 
@@ -181,6 +191,10 @@ void tracer_trace_byte(const char* str, const char* file_name, u16 line_id, u8 b
 	(void) str;
 
 	if (_is_initialized == 0) {
+		return;
+	}
+
+	if (is_enabled == 0) {
 		return;
 	}
 
@@ -228,6 +242,10 @@ void tracer_trace_long(const char* str, const char* file_name, u16 line_id, u32 
 		return;
 	}
 
+	if (is_enabled == 0) {
+		return;
+	}
+
 	u16 file_name_length	= _get_string_length(file_name);
 	u16 byte_count		= TRACER_NUM_BYTES_TRACE_TYPE + 4 + TRACER_NUM_BYTES_LINE_NUMER + file_name_length + TRACER_FOTER_DATA_LENGTH;
 
@@ -242,11 +260,15 @@ void tracer_trace_long(const char* str, const char* file_name, u16 line_id, u32 
 	p_com_driver->start_tx();
 }
 
-void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 length, u8* p_buffer) {
+void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 length, const u8* p_buffer) {
 
 	(void) str;
 
 	if (_is_initialized == 0) {
+		return;
+	}
+
+	if (is_enabled == 0) {
 		return;
 	}
 
@@ -263,5 +285,14 @@ void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 leng
 	p_com_driver->set_N_bytes(file_name_length, (u8*)file_name);
 	p_com_driver->set_N_bytes(TRACER_FOTER_DATA_LENGTH, TRACER_GET_FOOTER());
 	p_com_driver->start_tx();
+}
+
+void tracer_enable(u8 enable) {
+
+	if (_is_initialized == 0) {
+		return;
+	}
+	
+	is_enabled = enable;
 }
 

@@ -192,6 +192,23 @@ void mcu_task_controller_wakeup(void) {
 	}
 }
 
+void mcu_task_controller_terminate_all(void) {
+
+	MCU_TASK_INTERFACE* act_task = _first_task;
+
+	while (act_task != 0) {
+
+		if (act_task->terminate == 0) {
+			goto SKIP_TASK_terminate;
+		}
+
+		act_task->terminate();
+
+		SKIP_TASK_terminate :
+		act_task = act_task->next_task;
+	}
+}
+
 void mcu_task_controller_background_run(void) {
 
 	MCU_TASK_INTERFACE* act_task = _first_task;

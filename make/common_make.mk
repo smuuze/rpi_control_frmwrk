@@ -1,3 +1,4 @@
+
 #-----------------------------------------------------------------------------
 #       Makefile fuer AVR-GCC Projekte
 #-----------------------------------------------------------------------------
@@ -23,9 +24,8 @@ MAKE_PATH	?= $(BASE_PATH)/make
 
 # -----------------------------------------------------------------------
 # Include path
-
-INC_PATH 	+= $(APP_PATH)
 INC_PATH 	+= .
+INC_PATH 	+= $(APP_PATH)
 
 # ---- DEFAULT APP CONFIGURATION ----
 
@@ -41,6 +41,9 @@ CSRCS += ${BOARD_INC_PATH}/board_${BOARD_ID}.c
 INC_PATH += $(APP_PATH)
 
 # ---- COMMON MODULES ---------------------------------------------------
+
+COMMON_MODULES ?= 
+
 COMMON_INC_PATH = $(APP_PATH)/common
 INC_PATH += $(COMMON_INC_PATH)
 
@@ -51,6 +54,12 @@ CSRCS += $(COMMON_INC_PATH)/local_data_storage_array.c
 CSRCS += $(COMMON_INC_PATH)/local_msg_buffer.c
 CSRCS += $(COMMON_INC_PATH)/signal_slot_interface.c
 CSRCS += $(COMMON_INC_PATH)/math_module.c
+CSRCS += $(COMMON_INC_PATH)/common_tools_string.c
+
+ifneq '' '$(findstring QEUE,$(COMMON_MODULES))'
+DEFS  += -D HAS_QEUE_INTERFACE=1
+CSRCS += $(COMMON_INC_PATH)/qeue_interface.c
+endif
 
 # Projekt-Spezifische Quelldateien --------------------------------------
 
@@ -82,6 +91,12 @@ ifneq '' '$(findstring HOST_INTERFACE_TYPE,$(APP_TASK_CFG))'
 	DRIVER_MODULE_CFG += USART0
 endif
 endif
+endif
+
+# -----------------------------------------------------------------------
+
+ifdef CONSOLE_OUTPUT
+CSRCS += $(TIME_MANAGEMENT_INC_PATH)/time_management.c
 endif
 
 # -----------------------------------------------------------------------
@@ -132,6 +147,13 @@ DEFS += -D HAS_APP_TASK_COPRO_ROUTING=1
 CSRCS += $(APP_TASK_INC_PATH)/copro_routing_mcu_task.c
 endif
 
+ifneq '' '$(findstring MSG_EXECUTER,$(APP_TASK_CFG))'
+DEFS += -D HAS_APP_TASK_MSG_EXECUTER=1
+CSRCS += $(APP_TASK_INC_PATH)/message_executer_task.c
+endif
+
+
+
 # ---- EXPANSION BOARDS -------------------------------------------------------------------
 
 EXPANSION_BOARD_PATH = $(APP_PATH)/expansion
@@ -161,6 +183,10 @@ include $(MAKE_PATH)/make_third_party.mk
 
 include $(MAKE_PATH)/make_sensor.mk
 
+# ---- PROTOCOL ---------------------------------------------------------------------------
+
+include $(MAKE_PATH)/make_protocol.mk
+
 # ---- MANAGEMENT MODULES -----------------------------------------------------------------
 	
 ifneq '' '$(findstring POWER,$(MANAGEMENT_MODULE_CFG))'
@@ -178,25 +204,16 @@ ifneq '' '$(findstring IO,$(MANAGEMENT_MODULE_CFG))'
 	CSRCS += $(IO_CONTROLLER_INC_PATH)/io_input_controller.c
 endif
 
-ifneq '' '$(findstring RPI_PROTOCOL,$(MANAGEMENT_MODULE_CFG))'
-
-	DEFS  += -D HAS_MANAGEMENT_MODULE_RPI_PROTOCOL=1
-	PROTOCOL_MANAGEMENT_PATH = $(APP_PATH)/protocol_management
-
-	ifneq '' '$(findstring RPI_PROTOCOL_I2C,$(MANAGEMENT_MODULE_CFG))'
-		CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler_i2c.c
-
-	else ifneq '' '$(findstring RPI_PROTOCOL_HOST,$(MANAGEMENT_MODULE_CFG))'
-		CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler_host.c
-	else
-		CSRCS += $(PROTOCOL_MANAGEMENT_PATH)/rpi_protocol_handler.c
-	endif
-endif
-
 # ---- COMMAND INTERFACE ------------------------------------------------
 
 ifdef COMMAND_INTERFACE_CFG
 include $(MAKE_PATH)/make_command_interface.mk
+endif
+
+include $(MAKE_PATH)/make_driver.mk
+
+ifdef USER_INTERFACE_CFG
+include $(MAKE_PATH)/make_user_interface.mk
 endif
 
 # -----------------------------------------------------------------------
@@ -213,10 +230,6 @@ CSRCS += $(INITIALIZATION_INC_PATH)/task_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/system_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/power_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/initialization.c
-
-# ---- DRIVER MODULES ---------------------------------------------------
-
-include $(MAKE_PATH)/make_driver.mk
 
 # -----------------------------------------------------------------------
 # Library path

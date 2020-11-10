@@ -77,7 +77,7 @@
 	}													\
 														\
 	static inline u8 name##_is_up(u32 time_interval) {							\
-		return time_mgmnt_istimeup_u16(_##name##_time_reference, time_interval);			\
+		return time_mgmnt_istimeup_u32(_##name##_time_reference, time_interval);			\
 	}													\
 														\
 	static inline u32 name##_start_time(void) {								\

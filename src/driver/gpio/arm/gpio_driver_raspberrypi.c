@@ -32,8 +32,8 @@
 #define GPIO_READ_PIN(pin_num)				digitalRead(pin_num)
 #define GPIO_WRITE_PIN(pin_num, state)			digitalWrite(pin_num, state)
 #define GPIO_INITIALIZE()				wiringPiSetup()
-#define GPIO_CONFIGURE_PIN(pin_num, is_input)		pinMode(pin_num, (is_input == GPIO_INPUT) ? INPUT : OUTPUT)
-#define GPIO_PULL_UP_DOWN(pin_num, pull_down)		pullUpDnControl(pin_num, (pull_down == GPIO_OFF) ? PUD_DOWN : (pull_down == GPIO_ON) ? PUD_UP : PUD_OFF )
+#define GPIO_CONFIGURE_PIN(pin_num, direction)		pinMode(pin_num, (direction == GPIO_DIRECTION_OUTPUT) ? OUTPUT : INPUT )
+#define GPIO_PULL_UP_DOWN(pin_num, pull_down)		pullUpDnControl(pin_num, (pull_down == 0) ? PUD_DOWN : (pull_down == 1) ? PUD_UP : PUD_OFF )
 
 #define GPIO_GET_PIN_NUMBER(p_descr)			(10)
 #define GPIO_DRIVER_IS_OUTPUT(p_pin_descr)		((p_pin_descr->pin_cfg & GPIO_OUTPUT) != 0 ? 1 : 0)
@@ -43,7 +43,12 @@
 
 #define GPIO_DRIVER_INVERT_LEVEL(level)			level = (level == GPIO_LEVEL_HIGH) ? GPIO_LEVEL_LOW : GPIO_LEVEL_HIGH
 
-#define GPIO_DRIVER_SET_PIN_LEVEL(pin, level)    	GPIO_WRITE_PIN(pin, level)
+#define GPIO_DRIVER_SET_PIN_LEVEL(pin, level)    	switch (level) {								\
+								case GPIO_LEVEL_HIGH   : GPIO_WRITE_PIN(pin, 1); break;			\
+								case GPIO_LEVEL_LOW    : GPIO_WRITE_PIN(pin, 0); break;			\
+								default:								\
+								case GPIO_LEVEL_HIGH_Z : GPIO_PULL_UP_DOWN(pin, 1); break;	\
+							}
 
 #define GPIO_DRIVER_GET_PIN(p_pin_descr)		gpio_driver_get_pin_id(p_pin_descr)
 
@@ -100,6 +105,7 @@ static u8 gpio_driver_get_pin_id(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) 
 
 		if (p_pin_descr->pin_id == GPIO_PIN_1) { return 5; }
 		if (p_pin_descr->pin_id == GPIO_PIN_5) { return 6; }
+		if (p_pin_descr->pin_id == GPIO_PIN_7) { return 10; }
 
 	} else if (p_pin_descr->port_id == GPIO_PORT_D) {
 
@@ -151,7 +157,7 @@ void gpio_driver_init(void) {
 	//gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_4)); // SPI_MISO
 	gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_5)); // GPIO25
 	//gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_6)); // SPI_SCLK
-	//gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_7)); // SPI_CE0
+	gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_7)); // SPI_CE0
 	
 	//gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_1)); // SPI_CE1
 	gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_4)); // GPIO05
@@ -207,8 +213,11 @@ void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) {
 
-	DEBUG_TRACE_byte(GPIO_DRIVER_GET_PIN(p_pin_descr),  "gpio_driver_init_pin() - PIN");
-	DEBUG_TRACE_byte(direction, "gpio_driver_get_level() - DIRECTION");
+	if (direction == GPIO_DIRECTION_INPUT) {
+		DEBUG_TRACE_byte(GPIO_DRIVER_GET_PIN(p_pin_descr), "gpio_driver_set_direction() - new direction: INPUT - PIN:");
+	} else {
+		DEBUG_TRACE_byte(GPIO_DRIVER_GET_PIN(p_pin_descr), "gpio_driver_set_direction() - new direction: OUTPUT - PIN:");
+	}
 
 	GPIO_CONFIGURE_PIN(GPIO_DRIVER_GET_PIN(p_pin_descr), direction);
 }
@@ -217,8 +226,13 @@ void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_D
 
 	u8 pin_num = GPIO_DRIVER_GET_PIN(p_pin_descr);
 
-	DEBUG_TRACE_byte(pin_num, "gpio_driver_set_level() - PIN");
-	DEBUG_TRACE_byte(level,   "gpio_driver_set_level() - LEVEL");
+	if (level == GPIO_LEVEL_HIGH) {
+		DEBUG_TRACE_byte(pin_num,   "gpio_driver_set_level() - new level: HIGH - PIN:");
+	} else if (level == GPIO_LEVEL_LOW) {
+		DEBUG_TRACE_byte(pin_num,   "gpio_driver_set_level() - new level: LOW - PIN:");
+	} else {
+		DEBUG_TRACE_byte(pin_num,   "gpio_driver_set_level() - new level: HIGH-Z - PIN:");
+	}
 
 	if (GPIO_DRIVER_PIN_IS_INVERTED(p_pin_descr) != 0) {
 
@@ -254,4 +268,8 @@ GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_
 	DEBUG_TRACE_byte(pin_level, "gpio_driver_get_level() - LEVEL");
 
 	return pin_level;
+}
+
+void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+	(void) p_pin_descr;
 }

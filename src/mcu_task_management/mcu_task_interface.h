@@ -1,7 +1,11 @@
 #ifndef _MCU_TASK_INTERFACE_H_
 #define _MCU_TASK_INTERFACE_H_
 
+// --------------------------------------------------------------------------------
+
 #include "config.h"
+
+// --------------------------------------------------------------------------------
 
 /*!
  *
@@ -13,6 +17,8 @@ typedef enum {
 	MCU_TASK_RUNNING = 2,   //!< MCU_TASK_RUNNING
 	MCU_TASK_TERMINATED = 3,//!< MCU_TASK_TERMINATED
 } MCU_TASK_INTERFACE_TASK_STATE;
+
+// --------------------------------------------------------------------------------
 
 /*!
  *
@@ -60,6 +66,7 @@ typedef void (*MCU_TASK_INTERFACE_FINISH_CALLBACK)	(void);
  */
 typedef void (*MCU_TASK_INTERFACE_TERMINATE_CALLBACK)	(void);
 
+// --------------------------------------------------------------------------------
 
 /*!
  *
@@ -85,8 +92,22 @@ typedef struct MCU_TASK_INTERFACE {
 
 } MCU_TASK_INTERFACE;
 
+// --------------------------------------------------------------------------------
 
 #define MCU_TASK_SCHEDULE_NO_TIMEOUT		0
 
+// --------------------------------------------------------------------------------
+
+/*!
+ *
+ */
+void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task);
+
+/*!
+ *
+ */
+void mcu_task_controller_schedule(void);
+
+// --------------------------------------------------------------------------------
 
 #endif // _MCU_TASK_INTERFACE_H_

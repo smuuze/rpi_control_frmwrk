@@ -46,7 +46,7 @@ endif
 ifeq ($(MCU), RASPBERRY_PI)
 	MCU_NAME 	= raspberrypi
 	CPU_FAMILY 	= arm
-	INC_PATH 	+= ../../rpi_control_frmwrk/src/common/cpu/rpi_arm
+	INC_PATH 	+= $(FRMWRK_PATH)/src/common/cpu/rpi_arm
 	INC_PATH	+= /usr/include
 endif
 

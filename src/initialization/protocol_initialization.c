@@ -15,6 +15,8 @@
 #include "protocol_management/rpi_protocol_handler.h"
 #include "system_interface.h"
 
+#include "protocol_management/mqtt/mqtt_interface.h"
+
 //-----------------------------------------------------------------------------
 
 void protocol_initialization(void) {
@@ -35,6 +37,12 @@ void protocol_initialization(void) {
 	{
 		DEBUG_PASS("protocol_initialization() - Set Hostinterface to I2C");
 		rpi_protocol_init(i_system.driver.i2c0);
+	}
+	#endif
+
+	#ifdef HAS_PROTOCOL_MQTT
+	{
+		mqtt_interface_init();
 	}
 	#endif
 }

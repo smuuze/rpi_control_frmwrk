@@ -25,6 +25,8 @@
 #include "initialization/command_initialization.h"
 #include "initialization/task_initialization.h"
 #include "initialization/sensor_initialization.h"
+#include "ui/command_line/command_line_interface.h"
+#include "ui/cfg_file_parser/cfg_file_parser.h"
 
 //-----------------------------------------------------------------------------
 
@@ -52,5 +54,17 @@ void initialization(void) {
 	protocol_initialization();
 
 	command_initialization();
+
+	#ifdef CLI_AVAILABLE
+	{
+		command_line_interface_init();
+	}
+	#endif
+
+	#ifdef CFG_FILE_PARSER_AVAILABLE
+	{
+		cfg_file_parser_init();
+	}
+	#endif
 }
 

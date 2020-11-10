@@ -7,6 +7,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdio.h>
 
 //-----------------------------------------------------------------------------
 
@@ -28,7 +29,7 @@
 //-----------------------------------------------------------------------------
 
 #define CPU_PREPARE_SLEEP_MODE()		do{}while(0)	
-#define CPU_ENTER_SLEEP_MODE()			usleep(50000);
+#define CPU_ENTER_SLEEP_MODE()			usleep(5000);
 #define CPU_DEACTIVATE_SLEEP_MODE()		do{}while(0)
 
 //-----------------------------------------------------------------------------

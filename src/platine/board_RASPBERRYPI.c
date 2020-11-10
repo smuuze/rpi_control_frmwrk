@@ -70,28 +70,46 @@
 // 	BUILD_GPIO ( GND,		GPIO_PORT_E, 	GPIO_PIN_6, 	UNUSEABLE			) // GND
 	BUILD_GPIO ( GPIO21, 		GPIO_PORT_E, 	GPIO_PIN_7, 	GPIO_INPUT | GPIO_IDLE_HIGH	) // GPIO21	GPIO_29
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// ALIAS - WiringPi
+//---------  		Alias-Name , 	Existing-Name
+
+	GPIO_ALIAS (	GPIO_07, 	GPIO04)
+
+	GPIO_ALIAS (	GPIO_00, 	GPIO17 )
+	GPIO_ALIAS (	GPIO_01, 	GPIO18 )
+	GPIO_ALIAS (	GPIO_02, 	GPIO27 )
+	GPIO_ALIAS (	GPIO_03, 	GPIO22 )
+	GPIO_ALIAS (	GPIO_04, 	GPIO23 )
+
+	GPIO_ALIAS (	GPIO_05, 	GPIO24 )
+	GPIO_ALIAS (	GPIO_06, 	GPIO25 )
+
+	GPIO_ALIAS ( 	GPIO_21, 	GPIO05 )
+	GPIO_ALIAS ( 	GPIO_22, 	GPIO06 )
+	GPIO_ALIAS ( 	GPIO_26, 	GPIO12 )
+
+	GPIO_ALIAS ( 	GPIO_23, 	GPIO13 )
+	GPIO_ALIAS ( 	GPIO_24, 	GPIO19 )
+	GPIO_ALIAS ( 	GPIO_27, 	GPIO16 )
+	GPIO_ALIAS ( 	GPIO_25, 	GPIO26 )
+	GPIO_ALIAS ( 	GPIO_28, 	GPIO20 )
+	GPIO_ALIAS ( 	GPIO_29, 	GPIO21 )
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// ALIAS
+// ALIAS - ControlBoaard v2
+//---------  		Alias-Name , 	Existing-Name
 
-GPIO_ALIAS(GPIO_07, GPIO04)
+	GPIO_ALIAS ( 	REQUEST_CLIENT, GPIO17 )
+	GPIO_ALIAS ( 	SPI0_CS, 	SPI_CE0 )
 
-GPIO_ALIAS(GPIO_00, GPIO17)
-GPIO_ALIAS(GPIO_01, GPIO18)
-GPIO_ALIAS(GPIO_02, GPIO27)
-GPIO_ALIAS(GPIO_03, GPIO22)
-GPIO_ALIAS(GPIO_04, GPIO23)
+//----------------------------------------------------------------------------------------------------------------------------------
+// ALIAS - LCD 16x2
+//---------  		Alias-Name , 	Existing-Name
 
-GPIO_ALIAS(GPIO_05, GPIO24)
-GPIO_ALIAS(GPIO_06, GPIO25)
-
-GPIO_ALIAS(GPIO_21, GPIO05)
-GPIO_ALIAS(GPIO_22, GPIO06)
-GPIO_ALIAS(GPIO_26, GPIO12)
-
-GPIO_ALIAS(GPIO_23, GPIO13)
-GPIO_ALIAS(GPIO_24, GPIO19)
-GPIO_ALIAS(GPIO_27, GPIO16)
-GPIO_ALIAS(GPIO_25, GPIO26)
-GPIO_ALIAS(GPIO_28, GPIO20)
-GPIO_ALIAS(GPIO_29, GPIO21)
+	GPIO_ALIAS ( 	LCD_RS, 	GPIO19 )
+	GPIO_ALIAS ( 	LCD_EN, 	GPIO26 )
+	GPIO_ALIAS ( 	LCD_D4, 	GPIO12 )
+	GPIO_ALIAS ( 	LCD_D5, 	GPIO16 )
+	GPIO_ALIAS ( 	LCD_D6, 	GPIO20 )
+	GPIO_ALIAS ( 	LCD_D7, 	GPIO21 )

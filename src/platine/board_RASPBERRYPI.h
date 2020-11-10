@@ -56,5 +56,22 @@
 	INCLUDE_GPIO ( GPIO20 ) // GPIO20
 	INCLUDE_GPIO ( GPIO21 ) // GPIO21
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// ALIAS - ControlBoaard v2
+//---------
+
+	INCLUDE_GPIO_ALIAS ( REQUEST_CLIENT ) // REQUEST_CLIENT	
+	INCLUDE_GPIO_ALIAS ( SPI0_CS )
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// ALIAS - LCD 16x2
+//---------
+
+	INCLUDE_GPIO ( 	LCD_RS )
+	INCLUDE_GPIO ( 	LCD_EN )
+	INCLUDE_GPIO ( 	LCD_D4 )
+	INCLUDE_GPIO ( 	LCD_D5 )
+	INCLUDE_GPIO ( 	LCD_D6 )
+	INCLUDE_GPIO ( 	LCD_D7 )
 
 #endif // _BOARD_RASPBERRYPI_H_

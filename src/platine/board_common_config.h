@@ -127,6 +127,18 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	u8 pin_name##_is_high_level(void);										\
 	u8 pin_name##_is_low_level(void);										\
 	void pin_name##_print_state(void);
+
+#define INCLUDE_GPIO_ALIAS(pin_name)											\
+	void pin_name##_drive_high(void);										\
+	void pin_name##_drive_low(void);										\
+	void pin_name##_no_drive(void);											\
+	void pin_name##_toggle_level(void);										\
+	void pin_name##_pull_up(void);											\
+	void pin_name##_pull_down(void);										\
+	void pin_name##_no_pull(void);											\
+	u8 pin_name##_is_high_level(void);										\
+	u8 pin_name##_is_low_level(void);										\
+	void pin_name##_print_state(void);
 	
 #define INCLUDE_GPIO_REFRENCE(port_id, pin_id)			\
 	extern const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id;
@@ -149,43 +161,43 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	u8 exisitng_name##_is_low_level(void);										\
 	void exisitng_name##_print_state(void);										\
 															\
-	inline void new_name##_drive_high(void) {									\
+	void new_name##_drive_high(void) {									\
 		exisitng_name##_drive_high();										\
 	}														\
 															\
-	inline void new_name##_drive_low(void) {									\
+	void new_name##_drive_low(void) {									\
 		exisitng_name##_drive_low();										\
 	}														\
 															\
-	inline void new_name##_no_drive(void) {										\
+	void new_name##_no_drive(void) {										\
 		exisitng_name##_no_drive();										\
 	}														\
 															\
-	inline void new_name##_toggle_level(void) {									\
+	void new_name##_toggle_level(void) {										\
 		exisitng_name##_toggle_level();										\
 	}														\
 															\
-	inline void new_name##_pull_up(void) {										\
+	void new_name##_pull_up(void) {											\
 		exisitng_name##_pull_up();										\
 	}														\
 															\
-	inline void new_name##_pull_down(void) {									\
+	void new_name##_pull_down(void) {										\
 		exisitng_name##_pull_down();										\
 	}														\
 															\
-	inline void new_name##_no_pull(void) {										\
+	void new_name##_no_pull(void) {											\
 		exisitng_name##_no_pull();										\
 	}														\
 															\
-	inline u8 new_name##_is_high_level(void) {									\
+	u8 new_name##_is_high_level(void) {										\
 		return exisitng_name##_is_high_level();									\
 	}														\
 															\
-	inline u8 new_name##_is_low_level(void) {									\
+	u8 new_name##_is_low_level(void) {										\
 		return exisitng_name##_is_low_level();									\
 	}														\
 															\
-	inline void new_name##_print_state(void) {									\
+	void new_name##_print_state(void) {										\
 		exisitng_name##_print_state();										\
 	}
 

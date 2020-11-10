@@ -12,7 +12,7 @@
 
 // ------------------------------------------------------------------------------------------------------------
 
-void tracer_hex_dump(u8* p_buffer, u16 length) {
+void tracer_hex_dump(const u8* p_buffer, u16 length) {
 
 	u16 i = 0;
 	u8 buffer_index = 0;
@@ -61,44 +61,112 @@ void tracer_hex_dump(u8* p_buffer, u16 length) {
 
 // ------------------------------------------------------------------------------------------------------------
 
-void tracer_init(void) {
+/*!
+ *
+ */
+static u8 is_initialized = 0;
 
+static u8 is_enabled = 0;
+
+// ------------------------------------------------------------------------------------------------------------
+
+void tracer_init(void) {
+	
+	is_enabled = 1;
+	is_initialized = 1;
+
+	printf("--- TRACER INITIALIZED AND ENABLED ---\n");
 }
 
 void tracer_pass(const char* str, const char* file_name, u16 line_id) {
-	(void) file_name;
-	(void) line_id;
+
+	if (is_initialized == 0) {
+		tracer_init();
+	}
+
+	if (is_enabled == 0) {
+		return;
+	}
 
 	printf("%s:%d - %s\n", file_name, line_id, str);
 }
 
 void tracer_trace_byte(const char* str, const char* file_name, u16 line_id, u8 byte) {
-	(void) file_name;
-	(void) line_id;
 
-	printf("%s:%d - %s - %02X\n", file_name, line_id, str, byte);
+	if (is_initialized == 0) {
+		tracer_init();
+	}
+
+	if (is_enabled == 0) {
+		return;
+	}
+
+	printf("%s:%d - %s \n - Data: %d (0x%02X)\n", file_name, line_id, str, byte, byte);
 }
 
 void tracer_trace_word(const char* str, const char* file_name, u16 line_id, u16 word) {
-	(void) file_name;
-	(void) line_id;
 
-	printf("%s:%d - %s - %02X\n", file_name, line_id, str, word);
+	if (is_initialized == 0) {
+		tracer_init();
+	}
+
+	if (is_enabled == 0) {
+		return;
+	}
+
+	printf("%s:%d - %s \n - Data: %d (0x%04X)\n", file_name, line_id, str, word, word);
 }
 
 void tracer_trace_long(const char* str, const char* file_name, u16 line_id, u32 integer) {
-	(void) file_name;
-	(void) line_id;
 
-	printf("%s:%d - %s - %02X\n", file_name, line_id, str, integer);
+	if (is_enabled == 0) {
+		return;
+	}
+
+	printf("%s:%d - %s \n - Data: %d (0x%08X)\n", file_name, line_id, str, integer, integer);
 }
 
-void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 length, u8* p_buffer) {
-	(void) file_name;
-	(void) line_id;
+void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 length, const u8* p_buffer) {
+
+	if (is_initialized == 0) {
+		tracer_init();
+	}
+
+	if (is_enabled == 0) {
+		return;
+	}
 
 	printf("%s:%d - %s\n", file_name, line_id, str);
 	
 	tracer_hex_dump(p_buffer, length);
+}
+
+void tracer_trace_string(const char* str, const char* file_name, u16 line_id, const char* p_string) {
+
+	if (is_initialized == 0) {
+		tracer_init();
+	}
+
+	if (is_enabled == 0) {
+		return;
+	}
+
+	printf("%s:%d - %s \n - String: %s\n", file_name, line_id, str, p_string);
+}
+
+void tracer_enable(u8 enable) {
+
+	if (is_initialized == 0) {
+		tracer_init();
+	}
+
+	if (enable) {
+		printf("\n--- TRACER ENABLED ---\n");
+		is_enabled = 1;
+	} else {
+		printf("\n--- TRACER DISABLED ---\n");
+		is_enabled = 0;
+	}
+
 }
 

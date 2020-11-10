@@ -1,15 +1,28 @@
 
 #define TRACER_OFF
 
+// --------------------------------------------------------------------------------------
+
 #include "config.h"
+
+// --------------------------------------------------------------------------------------
+
 #include "tracer.h"
+
+// --------------------------------------------------------------------------------------
+
+#include "cpu.h"
+
+#include <stdio.h>
+
+// --------------------------------------------------------------------------------------
 
 #include "common/signal_slot_interface.h"
 #include "time_management/time_management.h"
 
-// --------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 
-#ifdef TRACES_ENABLED
+#ifdef TRACER_ENABLED
 
 #define SIGNAL_SLOT_COUNTER_RESET()			u8 slot_counter = 0
 #define SIGNAL_SLOT_COUNTER_INCREMENT()			slot_counter += 1
@@ -23,7 +36,7 @@
 
 #endif
 
-// --------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 
 /*!
  *
@@ -32,16 +45,16 @@ void signal_slot_init(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_contex
 
 	DEBUG_PASS("signal_slot_init()");
 
-	p_signal_context->p_first_element = 0;
-	p_signal_context->send_timeout_ms = 1;
+	//p_signal_context->p_first_element = 0;
+	//p_signal_context->send_timeout_ms = 1;
 }
 
 /*!
  *
  */
-void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_context, void* p_arg) {
+void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_context, const void* p_arg) {
 
-	if (time_mgmnt_istimeup_u16(p_signal_context->send_timeout_ms, SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS) == 0) {
+	if (p_signal_context->timeout_ms != 0 && time_mgmnt_istimeup_u16(p_signal_context->send_timeout_ms, p_signal_context->timeout_ms) == 0) {
 		DEBUG_PASS("signal_slot_send() - Timeout stil active - A'int sending signal !!! ---");
 		return;
 	}
@@ -53,19 +66,17 @@ void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_contex
 
 	SIGNAL_SLOT_COUNTER_RESET();
 
-	do {
-		if (p_act == 0) {
-			break;
-		}
+	while (p_act != 0) {
 
 		if (p_act->p_event_callback != 0) {
+			DEBUG_PASS("signal_slot_send() - event_callback()");
 			p_act->p_event_callback(p_arg);
 			SIGNAL_SLOT_COUNTER_INCREMENT();
 		}
 
+		DEBUG_PASS("signal_slot_send() - next slot");
 		p_act = p_act->p_next;
-
-	} while (p_act != 0);
+	}
 
 	DEBUG_TRACE_byte(SIGNAL_SLOT_COUNTER_GET(), "signal_slot_send() - Number of slots received this signal: ");
 }
@@ -93,6 +104,7 @@ void signal_slot_connect(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_con
 	} 
 
 	p_act->p_next = p_slot_context;
+	p_act->p_next->p_next = 0;
 
 	DEBUG_TRACE_byte(SIGNAL_SLOT_COUNTER_GET(), "signal_slot_connect() - Number of slots connected to this signal: ");
 }

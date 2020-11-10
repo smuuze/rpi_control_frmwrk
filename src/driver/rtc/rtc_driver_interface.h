@@ -60,4 +60,26 @@ u8 local_rtc_timer_istimeup_u16(u16 time_reference, u16 time_interval);
  */
 u8 local_rtc_timer_istimeup_u32(u32 time_reference, u32 time_interval);
 
+
+/*!
+ *
+ * @param time_reference
+ * @return
+ */
+u8 rtc_timer_elapsed_u8(u8 time_reference);
+
+/*!
+ *
+ * @param time_reference
+ * @return
+ */
+u16 rtc_timer_elapsed_u16(u16 time_reference);
+
+/*!
+ *
+ * @param time_reference
+ * @return
+ */
+u32 rtc_timer_elapsed_u32(u32 time_reference);
+
 #endif // _LOCAL_RTC_DRIVER_H_

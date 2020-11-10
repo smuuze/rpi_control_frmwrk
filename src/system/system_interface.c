@@ -26,7 +26,7 @@
 
 #if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 
-#include "driver/communication/spi/spi0_driver_atmega1284p.h"
+#include "driver/communication/spi/spi0_driver.h"
 
 config_SPI_POWER_DOWN_PROTOTYPE
 
@@ -35,25 +35,25 @@ config_SPI_POWER_DOWN_PROTOTYPE
  */
 static TRX_DRIVER_INTERFACE spi0_driver = {
 	SPI,					//	TRX_DRIVER_INTERFACE_TYPE type;
-	&spi_driver_initialize,			//
-	&spi_driver_configure, 			//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
-	&spi_driver_power_off, 			//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
-	&spi_driver_bytes_available, 		//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
-	&spi_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
-	&spi_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
-	&spi_driver_start_rx, 			//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
-	&spi_driver_wait_for_rx,		//
-	&spi_driver_stop_rx, 			//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
-	&spi_driver_is_ready_for_tx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
-	&spi_driver_is_ready_for_rx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
-	&spi_driver_start_tx, 			//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
-	&spi_driver_wait_for_tx,		//
-	&spi_driver_stop_tx, 			//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
-	&spi_driver_clear_rx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
-	&spi_driver_clear_tx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
-	&spi_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
-	&spi_driver_mutex_request,		//
-	&spi_driver_mutex_release		//
+	&spi0_driver_initialize,			//
+	&spi0_driver_configure, 			//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
+	&spi0_driver_power_off, 			//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
+	&spi0_driver_bytes_available, 		//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
+	&spi0_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
+	&spi0_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
+	&spi0_driver_start_rx, 			//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
+	&spi0_driver_wait_for_rx,		//
+	&spi0_driver_stop_rx, 			//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
+	&spi0_driver_is_ready_for_tx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&spi0_driver_is_ready_for_rx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&spi0_driver_start_tx, 			//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
+	&spi0_driver_wait_for_tx,		//
+	&spi0_driver_stop_tx, 			//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
+	&spi0_driver_clear_rx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&spi0_driver_clear_tx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&spi0_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
+	&spi0_driver_mutex_request,		//
+	&spi0_driver_mutex_release		//
 };
 #endif // #if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 
