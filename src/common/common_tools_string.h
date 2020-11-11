@@ -74,6 +74,11 @@ u8 common_tools_byte_array_string_to_hex_string(u8* byte_array, u8 byte_array_le
 /*
  *
  */
+u16 common_tools_string_to_u16(const char* p_str);
+
+/*
+ *
+ */
 void string_get_time(char* time_string);
 
 #endif // COMMON_TOOLS_STRING_H_

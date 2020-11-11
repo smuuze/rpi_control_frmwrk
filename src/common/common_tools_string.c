@@ -22,6 +22,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 // --------------------------------------------------------------------------------
@@ -346,6 +347,10 @@ u8 common_tools_byte_array_string_to_hex_string(u8* byte_array, u8 byte_array_le
 	}
 	
 	return j;
+}
+
+u16 common_tools_string_to_u16(const char* p_str) {
+	return (u16)atoi(p_str);
 }
 
 /*
