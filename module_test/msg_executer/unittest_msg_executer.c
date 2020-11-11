@@ -46,6 +46,7 @@ UT_ACTIVATE()
 #define TEST_CASE_ID_FILE_NOT_EXISITING				2
 #define TEST_CASE_ID_FILE_NOT_OPEN				3
 #define TEST_CASE_ID_MESSAGE_RECIEVED				4
+#define TEST_CASE_ID_PROCESS_REPORT_LIST			5
 
 // --------------------------------------------------------------------------------
 
@@ -406,11 +407,13 @@ static void UNITTEST_msg_executer_configure(void) {
 		CFG_FILE_PARSER_CFG_OBJECT_TYPE report_file_path_cfg_obj 	= { .key = REPORT_FILE_PATH_CFG_NAME	, .value = UT_REPORT_FILE_PATH 	};
 		CFG_FILE_PARSER_CFG_OBJECT_TYPE unknown_cfg_obj 		= { .key = "UNKNOWN"			, .value = "I am unknown"	};
 		CFG_FILE_PARSER_CFG_OBJECT_TYPE invalid_cfg_obj 		= { .key = "INVALID"			, .value = "I am invalid"	};
+		CFG_FILE_PARSER_CFG_OBJECT_TYPE report_interval__cfg_obj 	= { .key = REPORT_INTERVAL_CFG_NAME	, .value = "5000"		};
 
 		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send((void*)&command_file_path_cfg_obj);
 		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send((void*)&report_file_path_cfg_obj);
 		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send((void*)&unknown_cfg_obj);
 		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send((void*)&invalid_cfg_obj);
+		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send((void*)&report_interval__cfg_obj);
 		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send(NULL);
 
 		CFG_PARSER_CFG_COMPLETE_SIGNAL_send(NULL);
@@ -629,6 +632,38 @@ static void UNITTEST_msg_executer_command_file_not_existing(void) {
 	UT_END_TEST_CASE()
 }
 
+static void UNITTEST_msg_executer_process_report_list(void) {
+	
+	UT_START_TEST_CASE("MSG_EXECUTER_PROCESS_REPORT_LIST")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_PROCESS_REPORT_LIST);
+
+		unittest_reset_counter();
+
+		UNITTEST_TIMER_start();
+
+		while (UNITTEST_TIMER_is_up(10000) == 0) {
+			mcu_task_controller_schedule();
+		}
+
+		UT_CHECK_IS_EQUAL(counter_FILE_SET_PATH, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
+		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
+		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, NULL_STRING);
+		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 1);
+	}
+	UT_END_TEST_CASE()
+}
+
 // --------------------------------------------------------------------------------
 
 int main(void) {
@@ -668,6 +703,10 @@ int main(void) {
 		UNITTEST_msg_executer_execution_command();
 		UNITTEST_msg_executer_invalid_command();
 		UNITTEST_msg_executer_command_file_not_existing();
+
+		TRACER_ENABLE();
+		UNITTEST_msg_executer_process_report_list();
+		TRACER_DISABLE();
 	}
 	UT_END_TESTBENCH()
 

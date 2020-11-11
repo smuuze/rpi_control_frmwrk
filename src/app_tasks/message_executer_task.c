@@ -347,6 +347,11 @@ static MCU_TASK_INTERFACE_TASK_STATE msg_executer_task_get_state(void) {
 		return MCU_TASK_RUNNING;
 	}
 
+	if (MSG_EXECUTER_REPORT_INTERVAL_TIMER_is_up(msg_executer_report_interval_timeout_ms)) {
+		DEBUG_PASS("msg_executer_task_get_state() - REPORT-INTERVAL TIMEOUT");
+		return MCU_TASK_RUNNING;
+	}
+
 	return MCU_TASK_SLEEPING;
 }
 
@@ -696,7 +701,7 @@ static void msg_executer_parse_command_message(const char* p_command_msg, char* 
 	CFG_PARSER_CFG_COMPLETE_SIGNAL_send(NULL);
 }
 
-static u8 msg_executer_parse_report_command(char* p_command_data) {
+static i8 msg_executer_parse_report_command(char* p_command_data) {
 
 	if ( ! REPORT_FILE_is_open()) {
 
@@ -739,6 +744,8 @@ static u8 msg_executer_parse_report_command(char* p_command_data) {
 
 		return -1;
 	}
+
+	return 1;
 }
 
 // --------------------------------------------------------------------------------
@@ -768,8 +775,11 @@ static void msg_executer_cfg_object_CALLBACK(const void* p_argument) {
 
 	if (cfg_file_parser_match_cfg_key(REPORT_INTERVAL_CFG_NAME, p_cfg_object->key)) {
 		
+		msg_executer_report_interval_timeout_ms = common_tools_string_to_u16(p_cfg_object->value);
+
 		DEBUG_TRACE_STR(p_cfg_object->value, "msg_executer_cfg_object_CALLBACK() - REPORT_INTERVAL_CFG_NAME cfg-object");
-		REPORT_FILE_set_path(p_cfg_object->value);
+		DEBUG_TRACE_word(msg_executer_report_interval_timeout_ms, "msg_executer_cfg_object_CALLBACK() - msg_executer_report_interval_timeout_ms : ");
+
 		return;
 	}
 
