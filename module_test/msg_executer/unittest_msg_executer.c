@@ -65,6 +65,8 @@ UT_ACTIVATE()
 
 // --------------------------------------------------------------------------------
 
+static u8 ut_cli_command_received = 0;
+
 char unittest_MSG_RECEIVED[MAX_MSG_LENGTH];
 char unittest_RESPONSE_RECEIVED[MAX_MSG_LENGTH];
 
@@ -250,35 +252,69 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 	static char line_has_no_value[] = "ihavenovalue=";
 	static char line_starts_with_whitespace[] = " whitespace_line=ok";
 	static char line_light_off_command[] = " light_01_off=COM:0101";
-	static char line_get_date_command[] = " date=EXE:date";
 	static char line_invalid_command[] = " light_03_off=COM:";
+	static char line_get_date_command[] = " date=EXE:date";
+	static char line_rpt_date_command[] = " rpt_date=EXE:date";
 
-	//DEBUG_TRACE_byte(line_counter, "file_read_next_line() - Line Number");
+	DEBUG_TRACE_byte(counter_FILE_LINE, "file_read_next_line() - Line Number");
 
-	switch (counter_FILE_LINE) {
-		default:
-		case 1:
-		case 2:
-		case 3: return 0;
-		case 4:
-		case 5:  return preapre_line(line_to, line_is_comment, sizeof(line_is_comment), max_line_length);
-		case 6:  return preapre_line(line_to, line_no_key_value_pair, sizeof(line_no_key_value_pair), max_line_length);
-		case 7:  return preapre_line(line_to, line_has_multiple_equals, sizeof(line_has_multiple_equals), max_line_length);
-		case 8:  return preapre_line(line_to, line_starts_with_tab, sizeof(line_starts_with_tab), max_line_length);
-		case 9:  return preapre_line(line_to, line_has_no_value, sizeof(line_has_no_value), max_line_length);
-		case 10: return preapre_line(line_to, line_has_no_key, sizeof(line_has_no_key), max_line_length);
-		case 11: return preapre_line(line_to, line_starts_with_whitespace, sizeof(line_starts_with_whitespace), max_line_length);
-		case 12: return preapre_line(line_to, line_light_off_command, sizeof(line_light_off_command), max_line_length);
-		case 13: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
-		case 14: return preapre_line(line_to, line_invalid_command, sizeof(line_invalid_command), max_line_length);
+	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_PROCESS_REPORT_LIST) {
 
-		case 15:
+		switch (counter_FILE_LINE) {
+			default:
+			case 1:
+			case 2:
+			case 3: return 0;
+			case 4:
+			case 5:  return preapre_line(line_to, line_is_comment, sizeof(line_is_comment), max_line_length);
+			case 6:  return preapre_line(line_to, line_no_key_value_pair, sizeof(line_no_key_value_pair), max_line_length);
+			case 7:  return preapre_line(line_to, line_has_multiple_equals, sizeof(line_has_multiple_equals), max_line_length);
+			case 8:  return preapre_line(line_to, line_starts_with_tab, sizeof(line_starts_with_tab), max_line_length);
+			case 9:  return preapre_line(line_to, line_has_no_value, sizeof(line_has_no_value), max_line_length);
+			case 10: return preapre_line(line_to, line_has_no_key, sizeof(line_has_no_key), max_line_length);
+			case 11: return preapre_line(line_to, line_starts_with_whitespace, sizeof(line_starts_with_whitespace), max_line_length);
+			case 12: return preapre_line(line_to, line_light_off_command, sizeof(line_light_off_command), max_line_length);
+			case 13: return preapre_line(line_to, line_invalid_command, sizeof(line_invalid_command), max_line_length);
+			case 14: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
+			case 15: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
+			case 16: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
+			case 17: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
 
-			counter_FILE_LINE = 14;
-			DEBUG_PASS("file_read_next_line() - END OF FILE");
+			case 18:
 
-			return -1;
-	}
+				counter_FILE_LINE = 17;
+				DEBUG_PASS("file_read_next_line() - END OF FILE");
+
+				return -1;
+		}
+
+	} else {
+
+		switch (counter_FILE_LINE) {
+			default:
+			case 1:
+			case 2:
+			case 3: return 0;
+			case 4:
+			case 5:  return preapre_line(line_to, line_is_comment, sizeof(line_is_comment), max_line_length);
+			case 6:  return preapre_line(line_to, line_no_key_value_pair, sizeof(line_no_key_value_pair), max_line_length);
+			case 7:  return preapre_line(line_to, line_has_multiple_equals, sizeof(line_has_multiple_equals), max_line_length);
+			case 8:  return preapre_line(line_to, line_starts_with_tab, sizeof(line_starts_with_tab), max_line_length);
+			case 9:  return preapre_line(line_to, line_has_no_value, sizeof(line_has_no_value), max_line_length);
+			case 10: return preapre_line(line_to, line_has_no_key, sizeof(line_has_no_key), max_line_length);
+			case 11: return preapre_line(line_to, line_starts_with_whitespace, sizeof(line_starts_with_whitespace), max_line_length);
+			case 12: return preapre_line(line_to, line_light_off_command, sizeof(line_light_off_command), max_line_length);
+			case 13: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
+			case 14: return preapre_line(line_to, line_invalid_command, sizeof(line_invalid_command), max_line_length);
+
+			case 15:
+
+				counter_FILE_LINE = 14;
+				DEBUG_PASS("file_read_next_line() - END OF FILE");
+
+				return -1;
+		}
+	}	
 }
 
 u16 file_read_specific_line(FILE_INTERFACE* p_file, u16 line_number, char* next_line, u16 max_length) {
@@ -330,6 +366,8 @@ void unittest_CLI_EXECUTER_COMMAND_RECEIVED_SLOT_CALLBACK(const void* p_argument
 
 	memset(unittest_RESPONSE_RECEIVED, '\0', MAX_MSG_LENGTH);
 	memcpy(unittest_RESPONSE_RECEIVED, response_msg, strlen(response_msg));
+
+	ut_cli_command_received = 1;
 }
 
 void unittest_MSG_EXECUTER_FILE_OPEN_FAILED_SLOT_CALLBACK(const void* p_argument) {
@@ -644,6 +682,11 @@ static void UNITTEST_msg_executer_process_report_list(void) {
 
 		while (UNITTEST_TIMER_is_up(10000) == 0) {
 			mcu_task_controller_schedule();
+
+			if (ut_cli_command_received) {
+				ut_cli_command_received = 0;
+				CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL_send(RESPONSE_RECEIVED_02);
+			}
 		}
 
 		UT_CHECK_IS_EQUAL(counter_FILE_SET_PATH, 0);

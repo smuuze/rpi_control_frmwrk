@@ -381,7 +381,8 @@ static void msg_executer_task_run(void) {
 		case MSG_EXECUTER_TASK_STATE_IDLE :
 
 			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_MSG_RECEIVED)) {
-				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_MSG_RECEIVED);
+
+				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_MSG_RECEIVED | MSG_EXECUTER_STATUS_REPORT_ACTIVE);
 
 				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_IDLE >> MSG_EXECUTER_TASK_STATE_OPEN_COMMAND_FILE");
 				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_OPEN_COMMAND_FILE;
@@ -495,7 +496,7 @@ static void msg_executer_task_run(void) {
 				break;
 			}
 
-			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_PREPARE_EXE >> MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE");
+			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_PREPARE_EXE >> MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE");
 
 			MSG_EXECUTER_OP_TIMER_start();
 			msg_executer_task_state = MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE;
@@ -526,6 +527,10 @@ static void msg_executer_task_run(void) {
 
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_SEND_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
 			
+			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE)) {
+				// prepare_report_response(report_name, msg_executer_pending_response);
+			}
+
 			MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
 			MSG_EXECUTER_RESPONSE_RECEIVED_SIGNAL_send(msg_executer_pending_response);
 
@@ -536,7 +541,28 @@ static void msg_executer_task_run(void) {
 
 			if (msg_executer_parse_report_command(msg_executer_pending_command) < 0) {
 				DEBUG_PASS("msg_executer_task_run() - Report-List complete");
+				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_REPORT_ACTIVE);
 				MSG_EXECUTER_REPORT_INTERVAL_TIMER_start();
+				break;
+			}
+
+			// status may was unset because of new command-message
+			MS_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE);
+
+			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_COMMUNICATAION_MSG_PENDING)) {
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_PROCESS_REPORT_LIST >> MSG_EXECUTER_TASK_STATE_PREPARE_COM");
+
+				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_COMMUNICATAION_MSG_PENDING);
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_PREPARE_COM;
+				break;
+			}
+
+			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_EXECUTION_MSG_PENDING)) {
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_PROCESS_REPORT_LIST >> MSG_EXECUTER_TASK_STATE_PREPARE_EXE");
+
+				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_EXECUTION_MSG_PENDING);
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_PREPARE_EXE;
+				break;
 			}
 
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_PROCESS_REPORT_LIST >> MSG_EXECUTER_TASK_STATE_IDLE");
@@ -715,8 +741,6 @@ static i8 msg_executer_parse_report_command(char* p_command_data) {
 		}
 
 		DEBUG_PASS("msg_executer_parse_report_command() - Report-File has been opened");
-
-		MSG_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE);
 	}
 
 	char line[MSG_EXECUTER_MAX_FILE_LINE_LENGTH];	
@@ -729,18 +753,18 @@ static i8 msg_executer_parse_report_command(char* p_command_data) {
 
 			common_tools_string_trim(line);
 			if (msg_executer_parse_line(line, NULL, p_command_data)) {
+				DEBUG_PASS("msg_executer_parse_report_command() - Valid Report-Command found");
 				break;
 			}
 		}
 
 	} while (num_bytes_line != -1);
 
-	if (num_bytes_line != -1) {
+	if (num_bytes_line < 0) {
 
 		DEBUG_PASS("msg_executer_parse_report_command() - END-OF-FILE");
 
 		REPORT_FILE_close();
-		MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_REPORT_ACTIVE);
 
 		return -1;
 	}
