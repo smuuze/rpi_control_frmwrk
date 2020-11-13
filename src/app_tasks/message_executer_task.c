@@ -248,6 +248,11 @@ static char msg_executer_pending_response[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
 /*!
  *
  */
+static char msg_executer_pending_report_name[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
+
+/*!
+ *
+ */
 static u32 msg_executer_report_interval_timeout_ms = 0;
 
 // --------------------------------------------------------------------------------
@@ -270,7 +275,7 @@ static u8 msg_executer_parse_execution_command(const char* p_exe_command);
 /*!
  *
  */
-static i8 msg_executer_parse_report_command(char* p_command_data);
+static i8 msg_executer_parse_report_command(char*p_report_name, char* p_command_data);
 
 // --------------------------------------------------------------------------------
 
@@ -528,7 +533,7 @@ static void msg_executer_task_run(void) {
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_SEND_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
 			
 			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE)) {
-				// prepare_report_response(report_name, msg_executer_pending_response);
+				// prepare_report_response(msg_executer_pending_report_name, msg_executer_pending_response);
 			}
 
 			MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
@@ -539,15 +544,16 @@ static void msg_executer_task_run(void) {
 
 		case MSG_EXECUTER_PROCESS_REPORT_LIST :
 
-			if (msg_executer_parse_report_command(msg_executer_pending_command) < 0) {
+			if (msg_executer_parse_report_command(msg_executer_pending_report_name, msg_executer_pending_command) < 0) {
 				DEBUG_PASS("msg_executer_task_run() - Report-List complete");
 				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_REPORT_ACTIVE);
 				MSG_EXECUTER_REPORT_INTERVAL_TIMER_start();
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
 				break;
 			}
 
 			// status may was unset because of new command-message
-			MS_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE);
+			MSG_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE);
 
 			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_COMMUNICATAION_MSG_PENDING)) {
 				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_PROCESS_REPORT_LIST >> MSG_EXECUTER_TASK_STATE_PREPARE_COM");
@@ -727,7 +733,7 @@ static void msg_executer_parse_command_message(const char* p_command_msg, char* 
 	CFG_PARSER_CFG_COMPLETE_SIGNAL_send(NULL);
 }
 
-static i8 msg_executer_parse_report_command(char* p_command_data) {
+static i8 msg_executer_parse_report_command(char* p_report_name, char* p_command_data) {
 
 	if ( ! REPORT_FILE_is_open()) {
 
@@ -752,8 +758,10 @@ static i8 msg_executer_parse_report_command(char* p_command_data) {
 		if (num_bytes_line > 0) {
 
 			common_tools_string_trim(line);
+
 			if (msg_executer_parse_line(line, NULL, p_command_data)) {
-				DEBUG_PASS("msg_executer_parse_report_command() - Valid Report-Command found");
+				common_tools_string_split(MSG_EXECUTER_KEY_VALUE_SPLITTER, line, p_report_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH, NULL, 0);
+				DEBUG_TRACE_STR(p_report_name, "msg_executer_parse_report_command() - Valid Report-Command found");
 				break;
 			}
 		}

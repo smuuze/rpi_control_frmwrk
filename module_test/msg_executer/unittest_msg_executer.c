@@ -172,7 +172,7 @@ u8 file_is_existing(FILE_INTERFACE* p_file) {
 }
 
 u8 file_is_open(FILE_INTERFACE* p_file) {
-	return 1;
+	return counter_FILE_OPEN != 0;
 }
 
 u32 file_get_size(FILE_INTERFACE* p_file) {
@@ -255,6 +255,7 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 	static char line_invalid_command[] = " light_03_off=COM:";
 	static char line_get_date_command[] = " date=EXE:date";
 	static char line_rpt_date_command[] = " rpt_date=EXE:date";
+	static char line_rpt_version_command[] = " rpt_version=COM:0101";
 
 	DEBUG_TRACE_byte(counter_FILE_LINE, "file_read_next_line() - Line Number");
 
@@ -272,17 +273,14 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 			case 8:  return preapre_line(line_to, line_starts_with_tab, sizeof(line_starts_with_tab), max_line_length);
 			case 9:  return preapre_line(line_to, line_has_no_value, sizeof(line_has_no_value), max_line_length);
 			case 10: return preapre_line(line_to, line_has_no_key, sizeof(line_has_no_key), max_line_length);
-			case 11: return preapre_line(line_to, line_starts_with_whitespace, sizeof(line_starts_with_whitespace), max_line_length);
-			case 12: return preapre_line(line_to, line_light_off_command, sizeof(line_light_off_command), max_line_length);
-			case 13: return preapre_line(line_to, line_invalid_command, sizeof(line_invalid_command), max_line_length);
-			case 14: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
-			case 15: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
-			case 16: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
-			case 17: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
+			case 11: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
+			case 12: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
+			case 13: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
+			case 14: return preapre_line(line_to, line_rpt_version_command, sizeof(line_rpt_version_command), max_line_length);
 
-			case 18:
+			case 15:
 
-				counter_FILE_LINE = 17;
+				counter_FILE_LINE = 14;
 				DEBUG_PASS("file_read_next_line() - END OF FILE");
 
 				return -1;
@@ -680,7 +678,7 @@ static void UNITTEST_msg_executer_process_report_list(void) {
 
 		UNITTEST_TIMER_start();
 
-		while (UNITTEST_TIMER_is_up(10000) == 0) {
+		while (UNITTEST_TIMER_is_up(6000) == 0) {
 			mcu_task_controller_schedule();
 
 			if (ut_cli_command_received) {
@@ -691,18 +689,18 @@ static void UNITTEST_msg_executer_process_report_list(void) {
 
 		UT_CHECK_IS_EQUAL(counter_FILE_SET_PATH, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
-		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
-		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 0);
-		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 0);
-		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 15);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 3);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 1);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
 		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, NULL_STRING);
-		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 3);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
 	}
 	UT_END_TEST_CASE()
 }
