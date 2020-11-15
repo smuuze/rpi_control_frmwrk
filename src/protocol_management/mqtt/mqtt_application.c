@@ -97,17 +97,17 @@ static void mqtt_interface_task_terminate(void);
 /*!
  *
  */
-static void mqtt_new_cfg_object_CALLBACK(void* p_argument);
+static void mqtt_new_cfg_object_CALLBACK(const void* p_argument);
 
 /*!
  *
  */
-static void mqtt_cfg_complete_CALLBACK(void* p_argument);
+static void mqtt_cfg_complete_CALLBACK(const void* p_argument);
 
 /*!
  *
  */
-static void mqtt_message_to_send_CALLBACK(void* p_argument);
+static void mqtt_message_to_send_CALLBACK(const void* p_argument);
 
 // --------------------------------------------------------------------------------
 
@@ -213,7 +213,7 @@ static void mqtt_process_msg(void) {
 	u16 msg_length = MQTT_HOST_get_msg(new_msg, MQTT_APPLICATION_MAX_MSG_LENGTH - 1);
 
 	if (msg_length != 0) {
-		MQTT_MESSAGE_RECEIVED_SIGNAL_send((void*)new_msg);
+		MQTT_MESSAGE_RECEIVED_SIGNAL_send((const void*)new_msg);
 	}
 }
 
@@ -417,7 +417,7 @@ static void mqtt_interface_task_terminate(void) {
 
 // --------------------------------------------------------------------------------
 
-static void mqtt_message_to_send_CALLBACK(void* p_argument) {
+static void mqtt_message_to_send_CALLBACK(const void* p_argument) {
 
 	if (p_argument == NULL) {
 		DEBUG_PASS("mqtt_message_to_send_CALLBACK() - NULL_POINTER_EXCEPTION !!! ---");
@@ -444,7 +444,7 @@ static u8 mqtt_match_cfg_key(const char* reference, const char* cfg_key) {
 	return 1;
 }
 
-static void mqtt_new_cfg_object_CALLBACK(void* p_argument) {
+static void mqtt_new_cfg_object_CALLBACK(const void* p_argument) {
 
 	CFG_FILE_PARSER_CFG_OBJECT_TYPE* p_cfg_object = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*) p_argument;
 
@@ -494,7 +494,7 @@ static void mqtt_new_cfg_object_CALLBACK(void* p_argument) {
 	DEBUG_TRACE_STR(p_cfg_object->key, "mqtt_new_cfg_object_CALLBACK() - Unknown cfg_object");
 }
 
-static void mqtt_cfg_complete_CALLBACK(void* p_argument) {
+static void mqtt_cfg_complete_CALLBACK(const void* p_argument) {
 
 	DEBUG_PASS("mqtt_cfg_complete_CALLBACK()");
 	MQTT_STATUS_set(MQTT_STATUS_USER_CFG_SET);

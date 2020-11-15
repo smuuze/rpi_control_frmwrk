@@ -80,7 +80,7 @@ typedef enum {
 /*!
  *
  */
-static void rpi_protocol_handler_host_COMMAND_RECEIVED_SLOT_CALLBACK(void* p_argument);
+static void rpi_protocol_handler_host_COMMAND_RECEIVED_SLOT_CALLBACK(const void* p_argument);
 
 //-----------------------------------------------------------------------------
 
@@ -128,9 +128,9 @@ static TRX_DRIVER_CONFIGURATION driver_cfg;
 
 //-----------------------------------------------------------------------------
 
-static void rpi_protocol_handler_host_COMMAND_RECEIVED_SLOT_CALLBACK(void* p_argument) {
+static void rpi_protocol_handler_host_COMMAND_RECEIVED_SLOT_CALLBACK(const void* p_argument) {
 
-	COMMON_GENERIC_BUFFER_TYPE* p_buffer = (COMMON_GENERIC_BUFFER_TYPE*) p_argument;
+	const COMMON_GENERIC_BUFFER_TYPE* p_buffer = (const COMMON_GENERIC_BUFFER_TYPE*) p_argument;
 	DEBUG_TRACE_N(p_buffer->length, p_buffer->data, "rpi_protocol_handler_host_COMMAND_RECEIVED_SLOT_CALLBACK()");
 
 	RPI_HOST_COMMAND_BUFFER_start_write();

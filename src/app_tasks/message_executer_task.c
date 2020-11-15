@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -275,7 +275,12 @@ static u8 msg_executer_parse_execution_command(const char* p_exe_command);
 /*!
  *
  */
-static i8 msg_executer_parse_report_command(char*p_report_name, char* p_command_data);
+static i8 msg_executer_parse_report_command(char* p_report_name, char* p_command_data);
+
+/*!
+ * 
+ */
+static void msg_executer_prepare_report(char* p_response_message, char* p_response_buffer, char* p_report_name, u16 max_response_length);
 
 // --------------------------------------------------------------------------------
 
@@ -533,7 +538,7 @@ static void msg_executer_task_run(void) {
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_SEND_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
 			
 			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE)) {
-				// prepare_report_response(msg_executer_pending_report_name, msg_executer_pending_response);
+				msg_executer_prepare_report(msg_executer_pending_response, msg_executer_pending_response, msg_executer_pending_report_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 			}
 
 			MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
@@ -778,6 +783,29 @@ static i8 msg_executer_parse_report_command(char* p_report_name, char* p_command
 	}
 
 	return 1;
+}
+
+static void msg_executer_prepare_report(char* p_response_message, char* p_response_buffer, char* p_report_name, u16 max_response_length) {
+
+	DEBUG_PASS("msg_executer_prepare_report()");
+
+	char t_message[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
+
+	memset(t_message, '\0', MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+
+	memcpy(t_message, p_report_name, strlen(p_report_name));
+	memcpy(t_message + strlen(p_report_name) + 1, p_response_buffer, strlen(p_response_buffer));
+
+	t_message[strlen(p_report_name)] = MSG_EXECUTER_KEY_VALUE_SPLITTER;
+
+	u16 length = strlen(t_message);
+
+	if (length > max_response_length) {
+		length = max_response_length;
+	} 
+
+	memset(p_response_message, '\0', max_response_length);
+	memcpy(p_response_message, t_message, strlen(t_message));
 }
 
 // --------------------------------------------------------------------------------

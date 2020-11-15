@@ -63,7 +63,7 @@ typedef enum {
 /*
  *
  */
-static void cfg_file_parser_CFG_FILE_SLOT_CALLBACK(void* p_argument);
+static void cfg_file_parser_CFG_FILE_SLOT_CALLBACK(const void* p_argument);
 
 // --------------------------------------------------------------------------------
 
@@ -282,7 +282,7 @@ void cfg_file_parser_task_terminate(void) {
 
 // --------------------------------------------------------------------------------
 
-static void cfg_file_parser_CFG_FILE_SLOT_CALLBACK(void* p_argument) {
+static void cfg_file_parser_CFG_FILE_SLOT_CALLBACK(const void* p_argument) {
 
 	if (p_argument == NULL) {
 		DEBUG_PASS("cfg_file_parser_CFG_FILE_SLOT_CALLBACK() - NULL_POINTER_EXEPTION");

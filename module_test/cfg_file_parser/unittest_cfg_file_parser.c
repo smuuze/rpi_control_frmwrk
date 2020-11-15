@@ -79,10 +79,22 @@ void file_set_path(FILE_INTERFACE* p_file, const char* path) {
 	memcpy(p_file->path, path, strlen(path));
 }
 
+const char* file_get_path(FILE_INTERFACE* p_file) {
+	return (const char*)p_file->path;
+}
+
 u8 file_has_changed(FILE_INTERFACE* p_file) {
 
 	DEBUG_PASS("file_has_changed()");
 	return 0;
+}
+
+u8 file_is_open(FILE_INTERFACE* p_file) {
+	if (test_case_counter == TEST_CASE_ID_FILE_NOT_OPEN) {
+		return 0;
+	}
+
+	return 1;
 }
 
 u8 file_is_readable(FILE_INTERFACE* p_file) {
@@ -235,7 +247,7 @@ u8 file_append_line(FILE_INTERFACE* p_file, const char* new_line) {
 
 static u8 counter_NEW_CFG_OBJECT_RECEIVED = 0;
 
-static void unittest_CFG_PARSER_NEW_OBJECT_CALLBACK(void* p_argument) {
+static void unittest_CFG_PARSER_NEW_OBJECT_CALLBACK(const void* p_argument) {
 
 	CFG_FILE_PARSER_CFG_OBJECT_TYPE* cfg_obj = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*)p_argument;
 
@@ -246,7 +258,7 @@ static void unittest_CFG_PARSER_NEW_OBJECT_CALLBACK(void* p_argument) {
 	counter_NEW_CFG_OBJECT_RECEIVED += 1;
 }
 
-static void unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK(void* p_argument) {
+static void unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK(const void* p_argument) {
 	(void) p_argument;
 
 	console_write_line(" - configuration is complete");

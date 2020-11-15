@@ -75,7 +75,7 @@ static TIMER_INTERFACE_TYPE timer_modulator = {
 
 static SAMSUNG_IR_PROTOCOL_COMMAND_TYPE samsung_ir_command;
 
-static void ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED(void* p_arg) {
+static void ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED(const void* p_arg) {
 
 	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED)) {
 		return;
@@ -103,7 +103,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SAMSUNG_IR_CMD_RECEIVED_SIGNAL, SAMSUNG_IR_CMD
 
 static JVC_IR_PROTOCOL_COMMAND_TYPE jvc_ir_command;
 
-static void ir_remote_task_slot_JVC_IR_CMD_RECEIVED(void* p_arg) {
+static void ir_remote_task_slot_JVC_IR_CMD_RECEIVED(const void* p_arg) {
 
 	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED)) {
 		return;

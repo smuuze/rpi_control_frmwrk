@@ -76,7 +76,7 @@ typedef void (*COPRO_TABLE_SIGNAL_CALLBACK)		(void* p_arg);
 
 static PROTOCOL_INTERFACE* p_copro1_protocol = 0;
 
-static void copro1_slot_CMD_RECEIVED(void* p_arg) {
+static void copro1_slot_CMD_RECEIVED(const void* p_arg) {
 
 	if (p_copro1_protocol != 0) {
 		DEBUG_PASS("copro1_slot_CMD_RECEIVED() - COPRO1 is busy");
