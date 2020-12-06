@@ -152,7 +152,10 @@ DEFS += -D HAS_APP_TASK_MSG_EXECUTER=1
 CSRCS += $(APP_TASK_INC_PATH)/message_executer_task.c
 endif
 
-
+ifneq '' '$(findstring CLI_EXECUTER,$(APP_TASK_CFG))'
+DEFS += -D HAS_APP_TASK_CLI_EXECUTER=1
+CSRCS += $(APP_TASK_INC_PATH)/cli_executer_task.c
+endif
 
 # ---- EXPANSION BOARDS -------------------------------------------------------------------
 

@@ -90,9 +90,16 @@ u16 common_tools_string_get_char_count(char char_to_count, const char* p_string)
 void common_tools_string_trim(char* p_string) {
 
 	u16 length = strlen(p_string);
+
+	if (length == 0) {
+		DEBUG_PASS("common_tools_string_trim() - Length of string is zero");
+		return;
+	}
+
 	u16 index_of_start = 0;
 	u16 index_of_end = 0;
 
+	DEBUG_TRACE_STR(p_string, "common_tools_string_trim() - String-Length");
 	DEBUG_TRACE_word(length, "common_tools_string_trim() - String-Length:");
 	
 	u16 i = 0;
@@ -108,14 +115,17 @@ void common_tools_string_trim(char* p_string) {
 
 	DEBUG_TRACE_word(index_of_start, "common_tools_string_trim() - White-Spaces at start of string:");
 	
-	i = length;
-	for ( ; i != 0; i--) {
-		
+	i = length - 1;
+	index_of_end = length;
+	for ( ; i != 0 ; ) {
+
 		if (isspace(p_string[i]) && p_string[i] != '\0') {
+
+			i--;
+			index_of_end--;
 			continue;
 		}
-			
-		index_of_end = i;
+
 		break;
 	}
 
@@ -183,6 +193,22 @@ void common_tools_string_split(char splitter, const char* p_string_in, char* p_s
 			memset(p_string_out_2 + num_bytes_string2, '\0', string_out_2_max_len - num_bytes_string2);
 		}
 	}
+}
+
+void common_tools_string_append(char* p_string_base, char* p_string_to_append, u16 max_length_string_base) {
+
+	u16 length_of_string_base = strlen(p_string_base);
+	u16 length_of_string_append = strlen(p_string_to_append);
+	u16 length_of_new_string = length_of_string_base + length_of_string_append;
+
+	if (length_of_new_string > max_length_string_base) {
+		DEBUG_PASS("common_tools_string_append() - Cant append string - OVERFLOW !!! --- ");
+	}
+
+	memcpy((u8*)p_string_base + length_of_string_base, p_string_to_append, length_of_string_append);
+	memset(p_string_base + length_of_new_string, '\0', (max_length_string_base - length_of_new_string));
+
+	DEBUG_TRACE_STR(p_string_base, "common_tools_string_append() - New String: ");
 }
 
 

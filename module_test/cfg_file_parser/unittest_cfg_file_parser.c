@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -17,6 +17,11 @@
 // --------------------------------------------------------------------------------
 
 #include "tracer.h"
+// --------------------------------------------------------------------------------
+
+#include "../unittest.h"
+
+UT_ACTIVATE()
 
 // --------------------------------------------------------------------------------
 
@@ -36,6 +41,8 @@
 #define TEST_CASE_ID_FILE_NOT_READABLE			1
 #define TEST_CASE_ID_FILE_NOT_OPEN			2
 
+// --------------------------------------------------------------------------------
+
 #define TEST_CASE_ID_LINE_IS_EMPTY_01			3
 #define TEST_CASE_ID_LINE_IS_EMPTY_02			4
 #define TEST_CASE_ID_LINE_IS_COMMENT_01			5
@@ -50,8 +57,6 @@
 #define TEST_CASE_ID_LINE_STARTS_WITH_TAB		14
 
 #define TEST_CASE_ID_END_OF_FILE			15
-
-#define SET_TEST_CASE_ID(id)				test_case_counter = id
 
 // --------------------------------------------------------------------------------
 
@@ -273,9 +278,43 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONFIGURATION_SIGNAL)
 
 // --------------------------------------------------------------------------------
 
-static void TEST_CASE_file_not_existing(void);
+static void TEST_CASE_file_not_existing(void) {
 
-static void TEST_CASE_file_existing(void);
+	UT_START_TEST_CASE("CLI_EXECUTER_EXECUTION_COMMAND_UNKNOWN")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_FILE_NOT_OPEN);
+
+		const char cfg_file_path[] = UNITTEST_CFG_FILE_PATH;
+
+		CLI_CONFIGURATION_SIGNAL_send((void*)cfg_file_path);
+		cfg_file_parser_task_get_state();
+		cfg_file_parser_task_run();
+
+		//UT_CHECK_IS_EQUAL(counter_RESPONSE_RECEIVED_SIGANL, 0);
+		//UT_CHECK_IS_EQUAL(counter_COMMAND_TIMEOUT_SIGNAL, 0);
+		//UT_CHECK_IS_EQUAL(counter_COMMAND_NOT_FOUND_SIGNAL, 1);
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_file_existing(void) {
+
+	UT_START_TEST_CASE("CLI_EXECUTER_EXECUTION_COMMAND_UNKNOWN")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_LINE_IS_EMPTY_01);
+
+		const char cfg_file_path[] = UNITTEST_CFG_FILE_PATH;
+
+		CLI_CONFIGURATION_SIGNAL_send((void*)cfg_file_path);
+		cfg_file_parser_task_get_state();
+		cfg_file_parser_task_run();
+
+		//UT_CHECK_IS_EQUAL(counter_RESPONSE_RECEIVED_SIGANL, 0);
+		//UT_CHECK_IS_EQUAL(counter_COMMAND_TIMEOUT_SIGNAL, 0);
+		//UT_CHECK_IS_EQUAL(counter_COMMAND_NOT_FOUND_SIGNAL, 1);
+	}
+	UT_END_TEST_CASE()
+}
 
 // --------------------------------------------------------------------------------
 
@@ -285,65 +324,26 @@ int main(void) {
 	console_write_line("Welcome the the UNITTEST for cfg_file_parser v1.0");
 	console_write_line("-------------------------------------------------");
 
-	console_write_line(" - cfg_file_parser_init()");
-	cfg_file_parser_init();
+	UT_START_TESTBENCH("Welcome the the UNITTEST for cfg-file-parser v2.0")
+	{
 
-	console_write_line(" - cfg_file_parser_task_init()");
-	cfg_file_parser_task_init();
+		console_write_line(" - cfg_file_parser_init()");
+		cfg_file_parser_init();
 
-	console_write_line(" - UNITTEST_NEW_CFG_OBJECT_SLOT_connect()");
-	UNITTEST_NEW_CFG_OBJECT_SLOT_connect();
+		console_write_line(" - cfg_file_parser_task_init()");
+		cfg_file_parser_task_init();
 
-	console_write_line(" - UNITTEST_CFG_COMPLETE_SLOT_connect()");
-	UNITTEST_CFG_COMPLETE_SLOT_connect();
+		console_write_line(" - UNITTEST_NEW_CFG_OBJECT_SLOT_connect()");
+		UNITTEST_NEW_CFG_OBJECT_SLOT_connect();
 
-	TEST_CASE_file_not_existing();
+		console_write_line(" - UNITTEST_CFG_COMPLETE_SLOT_connect()");
+		UNITTEST_CFG_COMPLETE_SLOT_connect();
 
-	TEST_CASE_file_existing();
-}
+		TEST_CASE_file_not_existing();
 
-// --------------------------------------------------------------------------------
+		TEST_CASE_file_existing();
+	}
+	UT_END_TESTBENCH()
 
-static void TEST_CASE_file_not_existing(void) {
-
-	console_write_line(" ");
-	console_write_line("TEST_CASE: file not exisiting");
-	console_write_line("-----------------------------");
-	
-	SET_TEST_CASE_ID(TEST_CASE_ID_FILE_NOT_OPEN);
-
-	console_write_line(" - prepare file");
-
-	const char cfg_file_path[] = UNITTEST_CFG_FILE_PATH;
-
-	console_write_line(" - CLI_CONFIGURATION_SIGNAL_send()");
-	CLI_CONFIGURATION_SIGNAL_send((void*)cfg_file_path);
-
-	console_write_line(" - cfg_file_parser_task_get_state()");
-	cfg_file_parser_task_get_state();
-
-	console_write_line(" - cfg_file_parser_task_run()");
-	cfg_file_parser_task_run();
-}
-
-static void TEST_CASE_file_existing(void) {
-
-	console_write_line(" ");
-	console_write_line("TEST_CASE: file exisiting");
-	console_write_line("-----------------------------");
-	
-	SET_TEST_CASE_ID(TEST_CASE_ID_LINE_IS_EMPTY_01);
-
-	console_write_line(" - prepare file");
-
-	const char cfg_file_path[] = UNITTEST_CFG_FILE_PATH;
-
-	console_write_line(" - CLI_CONFIGURATION_SIGNAL_send()");
-	CLI_CONFIGURATION_SIGNAL_send((void*)cfg_file_path);
-
-	console_write_line(" - cfg_file_parser_task_get_state()");
-	cfg_file_parser_task_get_state();
-
-	console_write_line(" - cfg_file_parser_task_run()");
-	cfg_file_parser_task_run();
+	return UT_TEST_RESULT();
 }

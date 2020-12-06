@@ -53,11 +53,11 @@
 
 #define MQTT_CFG_PREFIX_STRING			"MQTT_"
 
-#define MQTT_HOST_CFG_STRING			"MQTT_HOST"
-#define MQTT_TOPIC_CFG_STRING			"MQTT_TOPIC"
+#define MQTT_HOST_CFG_STRING			"MQTT_HOST_ADDRESS"
+#define MQTT_TOPIC_CFG_STRING			"MQTT_TOPIC_NAME"
 #define MQTT_CLIENT_ID_CFG_STRING		"MQTT_CLIENT_ID"
 #define MQTT_TIMEOUT_CFG_STRING			"MQTT_TIMEOUT_MS"
-#define MQTT_WELCOME_MSG_CFG_STRING		"MQTT_WELCOME_MSG"
+#define MQTT_WELCOME_MSG_CFG_STRING		"MQTT_WELCOME_MESSAGE"
 
 // --------------------------------------------------------------------------------
 
@@ -208,7 +208,7 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 			.is_full = &__##name##_RX_QEUE_is_full,									\
 			.is_empty = &__##name##_RX_QEUE_is_empty,								\
 			.mutex_get = &__##name##_RX_QEUE_mutex_get,								\
-			.mutex_release = &__##name##_RX_QEUE_mutex_release								\
+			.mutex_release = &__##name##_RX_QEUE_mutex_release							\
 		},														\
 		.tx_qeue = {													\
 			.init = &__##name##_TX_QEUE_init,									\
@@ -217,7 +217,7 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 			.is_full = &__##name##_TX_QEUE_is_full,									\
 			.is_empty = &__##name##_TX_QEUE_is_empty,								\
 			.mutex_get = &__##name##_TX_QEUE_mutex_get,								\
-			.mutex_release = &__##name##_TX_QEUE_mutex_release								\
+			.mutex_release = &__##name##_TX_QEUE_mutex_release							\
 		}														\
 	};															\
 																\

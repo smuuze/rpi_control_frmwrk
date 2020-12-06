@@ -161,6 +161,11 @@ static MCU_TASK_INTERFACE mqtt_interface_task = {
 
 static MQTT_APPLICATION_TASK_STATE_TYPE mqtt_task_state = MQTT_APPLICATION_TASK_STATE_WAIT_FOR_USER_CONFIGURATION;
 
+/*!
+ *
+ */
+static char mqtt_task_welcome_message[MQTT_APPLICATION_MAX_MSG_LENGTH];
+
 // --------------------------------------------------------------------------------
 
 void mqtt_interface_init(void) {
@@ -339,10 +344,11 @@ static void mqtt_interface_task_run(void) {
 			}
 
 			MQTT_CONNECTION_ESTABLISHED_SIGNAL_send(NULL);
+			MQTT_HOST_enqeue_message(mqtt_task_welcome_message);
 			MQTT_STATUS_set(MQTT_STATUS_IS_CONNECTED);
 
-			DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST >> MQTT_APPLICATION_TASK_STATE_IDLE");
-			mqtt_task_state = MQTT_APPLICATION_TASK_STATE_IDLE;
+			DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST >> MQTT_APPLICATION_TASK_STATE_SEND_MESSAGE");
+			mqtt_task_state = MQTT_APPLICATION_TASK_STATE_SEND_MESSAGE;
 
 			break;
 
@@ -488,6 +494,9 @@ static void mqtt_new_cfg_object_CALLBACK(const void* p_argument) {
 	if (mqtt_match_cfg_key(MQTT_WELCOME_MSG_CFG_STRING, p_cfg_object->key)) {
 		
 		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_WELCOME_MSG cfg-object");
+		u16 length = strlen(p_cfg_object->value) > MQTT_APPLICATION_MAX_MSG_LENGTH ? MQTT_APPLICATION_MAX_MSG_LENGTH : strlen(p_cfg_object->value);
+		memset(mqtt_task_welcome_message, '\0', MQTT_APPLICATION_MAX_MSG_LENGTH);
+		memcpy(mqtt_task_welcome_message, p_cfg_object->value, length);
 		return;
 	}
 

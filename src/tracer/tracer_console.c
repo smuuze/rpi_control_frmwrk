@@ -151,7 +151,7 @@ void tracer_trace_string(const char* str, const char* file_name, u16 line_id, co
 		return;
 	}
 
-	printf("%s:%d - %s \n - String: %s\n", file_name, line_id, str, p_string);
+	printf("%s:%d - %s \n - String: \"%s\"\n", file_name, line_id, str, p_string);
 }
 
 void tracer_enable(u8 enable) {

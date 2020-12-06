@@ -47,6 +47,7 @@ UT_ACTIVATE()
 #define TEST_CASE_ID_FILE_NOT_OPEN				3
 #define TEST_CASE_ID_MESSAGE_RECIEVED				4
 #define TEST_CASE_ID_PROCESS_REPORT_LIST			5
+#define TEST_CASE_ID_NEW_COMMAND_WHILE_REPORT			6
 
 // --------------------------------------------------------------------------------
 
@@ -59,9 +60,11 @@ UT_ACTIVATE()
 #define UT_REPORT_FILE_PATH					"report_file.txt"
 
 #define RESPONSE_RECEIVED_01					"020100"
-#define RESPONSE_RECEIVED_02					"06.06.1984 - 08:03:00"
+#define RESPONSE_RECEIVED_02					"06.08.1984 - 08:03:00"
 
-#define NULL_STRING						"\0\0"
+#define RESPONSE_REPORT_EXECUTION_DATE				"rpt_date=06.08.1984 - 08:03:00"
+
+#define NULL_STRING						"\0"
 
 // --------------------------------------------------------------------------------
 
@@ -80,7 +83,8 @@ u8 counter_FILE_READ_NEXT_LINE = 0;
 u8 counter_COMMUNICATION_COMMAND_RECEIVED = 0;
 u8 counter_COMMUNICATION_RESPONSE_RECEIVED = 0;
 u8 counter_RESPONSE_TIMEOUT = 0;
-u8 counter_FILE_LINE = 0;
+u8 counter_FILE_LINE_REPORT_FILE = 0;
+u8 counter_FILE_LINE_COMMAND_FILE = 0;
 u8 counter_INVALID_COMMAND = 0;
 u8 counter_CLI_COMMAND_RECEIVED = 0;
 u8 counter_FILE_OPEN_FAILED = 0;
@@ -102,7 +106,8 @@ static void unittest_reset_counter(void) {
 	counter_COMMUNICATION_COMMAND_RECEIVED = 0;
 	counter_COMMUNICATION_RESPONSE_RECEIVED = 0;
 	counter_RESPONSE_TIMEOUT = 0;
-	counter_FILE_LINE = 0;
+	counter_FILE_LINE_REPORT_FILE = 0;
+	counter_FILE_LINE_COMMAND_FILE = 0;
 	counter_INVALID_COMMAND = 0;
 	counter_CLI_COMMAND_RECEIVED = 0;
 	counter_FILE_OPEN_FAILED = 0;
@@ -138,7 +143,7 @@ u8 cfg_file_parser_match_cfg_key(const char* reference, const char* cfg_key) {
 
 void file_set_path(FILE_INTERFACE* p_file, const char* path) {
 
-	DEBUG_PASS("file_set_path()");
+	DEBUG_TRACE_STR(path, "file_set_path()");
 	counter_FILE_SET_PATH += 1;
 
 	memset(p_file->path, '\0', FILE_PATH_MAX_STRING_LENGTH);
@@ -205,6 +210,20 @@ u8 file_create(FILE_INTERFACE* p_file) {
 
 u8 file_open(FILE_INTERFACE* p_file) {
 
+	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_MESSAGE_RECIEVED) {
+		if (memcmp(p_file->path, UT_COMMAND_FILEPATH, strlen(UT_COMMAND_FILEPATH)) != 0) {
+			DEBUG_TRACE_STR(p_file->path, "file_open() - unexpected file for this test-case (TEST_CASE_ID_MESSAGE_RECIEVED)");
+			return 0;
+		}
+	}
+
+	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_PROCESS_REPORT_LIST) {
+		if (memcmp(p_file->path, UT_REPORT_FILE_PATH, strlen(UT_REPORT_FILE_PATH)) != 0) {
+			DEBUG_TRACE_STR(p_file->path, "file_open() - unexpected file for this test-case (TEST_CASE_ID_PROCESS_REPORT_LIST)");
+			return 0;
+		}
+	}
+
 	counter_FILE_OPEN += 1;
 
 	if (file_is_existing(p_file) == 0) {
@@ -222,7 +241,7 @@ u8 file_open(FILE_INTERFACE* p_file) {
 		return 0;
 	}
 
-	DEBUG_TRACE_byte(UT_GET_TEST_CASE_ID(), "file_open() - UT_GET_TEST_CASE_ID()");
+	DEBUG_TRACE_STR(p_file->path, "file_open() - File opened : ");
 
 	return 1;
 }
@@ -241,8 +260,9 @@ i16 file_read_line(FILE* file_handle, char* line_to, u16 num_max_bytes) {
 
 i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_length) {
 
+	DEBUG_TRACE_STR(p_file->path, "file_read_next_line() - Reading from file: ");
+
 	counter_FILE_READ_NEXT_LINE += 1;
-	counter_FILE_LINE += 1;
 
 	static char line_is_comment[] = "#This is a comment line";
 	static char line_no_key_value_pair[] = "This line has no key value pair";
@@ -257,39 +277,10 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 	static char line_rpt_date_command[] = " rpt_date=EXE:date";
 	static char line_rpt_version_command[] = " rpt_version=COM:0101";
 
-	DEBUG_TRACE_byte(counter_FILE_LINE, "file_read_next_line() - Line Number");
+	if (memcmp(p_file->path, UT_COMMAND_FILEPATH, strlen(UT_COMMAND_FILEPATH)) == 0) {
+		counter_FILE_LINE_COMMAND_FILE += 1;
 
-	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_PROCESS_REPORT_LIST) {
-
-		switch (counter_FILE_LINE) {
-			default:
-			case 1:
-			case 2:
-			case 3: return 0;
-			case 4:
-			case 5:  return preapre_line(line_to, line_is_comment, sizeof(line_is_comment), max_line_length);
-			case 6:  return preapre_line(line_to, line_no_key_value_pair, sizeof(line_no_key_value_pair), max_line_length);
-			case 7:  return preapre_line(line_to, line_has_multiple_equals, sizeof(line_has_multiple_equals), max_line_length);
-			case 8:  return preapre_line(line_to, line_starts_with_tab, sizeof(line_starts_with_tab), max_line_length);
-			case 9:  return preapre_line(line_to, line_has_no_value, sizeof(line_has_no_value), max_line_length);
-			case 10: return preapre_line(line_to, line_has_no_key, sizeof(line_has_no_key), max_line_length);
-			case 11: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
-			case 12: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
-			case 13: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
-			case 14: return preapre_line(line_to, line_rpt_version_command, sizeof(line_rpt_version_command), max_line_length);
-
-			case 15:
-
-				counter_FILE_LINE = 14;
-				DEBUG_PASS("file_read_next_line() - END OF FILE");
-
-				return -1;
-		}
-
-	} else {
-
-		switch (counter_FILE_LINE) {
-			default:
+		switch (counter_FILE_LINE_COMMAND_FILE) {
 			case 1:
 			case 2:
 			case 3: return 0;
@@ -305,14 +296,44 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 			case 13: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
 			case 14: return preapre_line(line_to, line_invalid_command, sizeof(line_invalid_command), max_line_length);
 
+			default:
 			case 15:
 
-				counter_FILE_LINE = 14;
+				DEBUG_PASS("file_read_next_line() - END OF FILE");
+
+				return -1;
+		}
+	}
+
+	if (memcmp(p_file->path, UT_REPORT_FILE_PATH, strlen(UT_REPORT_FILE_PATH)) == 0) {
+		counter_FILE_LINE_REPORT_FILE += 1;
+		
+		switch (counter_FILE_LINE_REPORT_FILE) {
+			case 1:
+			case 2:
+			case 3: return 0;
+			case 4:
+			case 5:  return preapre_line(line_to, line_is_comment, sizeof(line_is_comment), max_line_length);
+			case 6:  return preapre_line(line_to, line_no_key_value_pair, sizeof(line_no_key_value_pair), max_line_length);
+			case 7:  return preapre_line(line_to, line_has_multiple_equals, sizeof(line_has_multiple_equals), max_line_length);
+			case 8:  return preapre_line(line_to, line_starts_with_tab, sizeof(line_starts_with_tab), max_line_length);
+			case 9:  return preapre_line(line_to, line_has_no_value, sizeof(line_has_no_value), max_line_length);
+			case 10: return preapre_line(line_to, line_has_no_key, sizeof(line_has_no_key), max_line_length);
+			case 11: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
+			case 12: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
+			case 13: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
+			case 14: return preapre_line(line_to, line_rpt_version_command, sizeof(line_rpt_version_command), max_line_length);
+
+			default:
+			case 15:
+
 				DEBUG_PASS("file_read_next_line() - END OF FILE");
 
 				return -1;
 		}
 	}	
+
+	return -1;
 }
 
 u16 file_read_specific_line(FILE_INTERFACE* p_file, u16 line_number, char* next_line, u16 max_length) {
@@ -356,6 +377,13 @@ void unittest_MSG_EXECUTER_INVALID_COMMAND_SLOT_CALLBACK(const void* p_argument)
 	counter_INVALID_COMMAND += 1;
 }
 
+void unittest_MSG_EXECUTER_FILE_OPEN_FAILED_SLOT_CALLBACK(const void* p_argument) {
+
+	__UNUSED__ const char* response_msg = (const char*)p_argument;
+	counter_FILE_OPEN_FAILED += 1;
+	DEBUG_TRACE_STR(response_msg, "unittest_MSG_EXECUTER_FILE_OPEN_FAILED_SLOT_CALLBACK() - File:");
+}
+
 void unittest_CLI_EXECUTER_COMMAND_RECEIVED_SLOT_CALLBACK(const void* p_argument) {
 
 	__UNUSED__ const char* response_msg = (const char*)p_argument;
@@ -366,13 +394,6 @@ void unittest_CLI_EXECUTER_COMMAND_RECEIVED_SLOT_CALLBACK(const void* p_argument
 	memcpy(unittest_RESPONSE_RECEIVED, response_msg, strlen(response_msg));
 
 	ut_cli_command_received = 1;
-}
-
-void unittest_MSG_EXECUTER_FILE_OPEN_FAILED_SLOT_CALLBACK(const void* p_argument) {
-
-	__UNUSED__ const char* response_msg = (const char*)p_argument;
-	counter_FILE_OPEN_FAILED += 1;
-	DEBUG_TRACE_STR(response_msg, "unittest_MSG_EXECUTER_FILE_OPEN_FAILED_SLOT_CALLBACK() - File:");
 }
 
 
@@ -427,6 +448,8 @@ static void UNITTEST_msg_executer_init(void) {
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -475,6 +498,8 @@ static void UNITTEST_msg_executer_configure(void) {
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -523,6 +548,8 @@ static void UNITTEST_msg_executer_message_received(void) {
 		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, RESPONSE_RECEIVED_01);
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 12);
 	}
 	UT_END_TEST_CASE()
 }
@@ -556,6 +583,8 @@ static void UNITTEST_msg_executer_response_timeout(void) {
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 12);
 	}
 	UT_END_TEST_CASE()
 }
@@ -596,6 +625,8 @@ static void UNITTEST_msg_executer_execution_command(void) {
 		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, RESPONSE_RECEIVED_02);
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 13);
 	}
 	UT_END_TEST_CASE()
 }
@@ -630,6 +661,8 @@ static void UNITTEST_msg_executer_invalid_command(void) {
 		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, NULL_STRING);
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 14);
 	}
 	UT_END_TEST_CASE()
 }
@@ -664,6 +697,8 @@ static void UNITTEST_msg_executer_command_file_not_existing(void) {
 		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, NULL_STRING);
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -698,9 +733,67 @@ static void UNITTEST_msg_executer_process_report_list(void) {
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 3);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 1);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
-		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, NULL_STRING);
+		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, RESPONSE_REPORT_EXECUTION_DATE);
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 3);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 15);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
+	}
+	UT_END_TEST_CASE()
+}
+
+static void UNITTEST_msg_executer_new_message_while_processing_report(void) {
+	
+	UT_START_TEST_CASE("MSG_EXECUTER_NEW_COMMAND_WHILE_PROCESSING_REPORT")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_NEW_COMMAND_WHILE_REPORT);
+
+		unittest_reset_counter();
+
+		UNITTEST_TIMER_start();
+
+		u8 signal_send = 0;
+
+		while (UNITTEST_TIMER_is_up(4500) == 0) {
+			mcu_task_controller_schedule();
+
+			if (ut_cli_command_received) {
+				ut_cli_command_received = 0;
+				CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL_send(RESPONSE_RECEIVED_02);
+
+				if (signal_send == 0) {
+					MQTT_MESSAGE_RECEIVED_send(TEST_CASE_MSG_RECEIVED_MSG_STRING);
+				}
+			}
+
+			if (counter_COMMUNICATION_COMMAND_RECEIVED == 1 && signal_send == 0) {
+				signal_send = 1;
+
+				COMMON_GENERIC_BUFFER_TYPE response_buffer = {
+					.length = 3,
+					.data = {0x02, 0x01, 0x00}
+				};
+
+				RPI_HOST_RESPONSE_RECEIVED_SIGNAL_send(&response_buffer);
+			}
+		}
+
+		UT_CHECK_IS_EQUAL(counter_FILE_SET_PATH, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 27);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 2);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 4);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 1);
+		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
+		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, RESPONSE_REPORT_EXECUTION_DATE);
+		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 3);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 15);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 12);
 	}
 	UT_END_TEST_CASE()
 }
@@ -744,10 +837,11 @@ int main(void) {
 		UNITTEST_msg_executer_execution_command();
 		UNITTEST_msg_executer_invalid_command();
 		UNITTEST_msg_executer_command_file_not_existing();
-
-		TRACER_ENABLE();
 		UNITTEST_msg_executer_process_report_list();
-		TRACER_DISABLE();
+
+		//TRACER_ENABLE();
+		UNITTEST_msg_executer_new_message_while_processing_report();
+		//TRACER_DISABLE();
 	}
 	UT_END_TESTBENCH()
 

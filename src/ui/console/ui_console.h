@@ -24,12 +24,22 @@
 /*
  *
  */
+void console_write(const char* p_string);
+
+/*
+ *
+ */
 void console_write_line(const char* p_string);
 
 /*
  *
  */
 void console_write_string(const char* p_string, const char* p_argment_string);
+
+/*
+ *
+ */
+void console_write_number(u32 number);
 
 /*
  *

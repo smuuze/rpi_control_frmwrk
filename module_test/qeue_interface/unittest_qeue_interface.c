@@ -306,12 +306,12 @@ int main(void) {
 	{
 		UNITTEST_qeue_interface_init();
 		UNITTEST_qeue_interface_enqeue_elements();
-	TRACER_ENABLE();
 		UNITTEST_qeue_interface_qeue_is_full();
-	TRACER_DISABLE();
 		UNITTEST_qeue_interface_qeue_is_empty();
 	}
 	UT_END_TESTBENCH()
+
+	return UT_TEST_RESULT();
 }
 
 // --------------------------------------------------------------------------------

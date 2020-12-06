@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ u8 file_has_changed(FILE_INTERFACE* p_file) {
 	return 0;
 }
 
-const char* file_get_path(void) {
+const char* file_get_path(FILE_INTERFACE* p_file) {
 	return (const char*)p_file->path;
 }
 
@@ -135,6 +135,11 @@ i16 file_read_line(FILE* file_handle, char* p_buffer_to, u16 num_max_bytes) {
 		return 0;
 	}
 	
+
+	if ( feof(file_handle) ) {
+		return -1;
+	}
+
 	char character;
 	u16 num_bytes_read = 0;
 	

@@ -27,6 +27,8 @@
 #include "initialization/sensor_initialization.h"
 #include "ui/command_line/command_line_interface.h"
 #include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "app_tasks/message_executer_task.h"
+#include "app_tasks/cli_executer_task.h"
 
 //-----------------------------------------------------------------------------
 
@@ -64,6 +66,18 @@ void initialization(void) {
 	#ifdef CFG_FILE_PARSER_AVAILABLE
 	{
 		cfg_file_parser_init();
+	}
+	#endif
+
+	#ifdef HAS_APP_TASK_MSG_EXECUTER
+	{
+		msg_executer_init();
+	}
+	#endif
+
+	#ifdef HAS_APP_TASK_CLI_EXECUTER
+	{
+		cli_executer_init();
 	}
 	#endif
 }

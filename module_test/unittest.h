@@ -60,7 +60,7 @@
 								UT_EQUATION_OK(value)											\
 							}
 
-#define UT_COMPARE_STRING(value, reference)		if (memcmp(value, reference, strlen(reference)) != 0) {								\
+#define UT_COMPARE_STRING(value, reference)		if (strlen(reference) != strlen(value) || memcmp(value, reference, strlen(reference)) != 0) {			\
 								counter_TEST_FAILED += 1;										\
 								__ut_number_of_test_failed += 1;									\
 								UT_STRING_ERROR(value, reference)									\

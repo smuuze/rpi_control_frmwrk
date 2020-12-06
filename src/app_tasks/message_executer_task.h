@@ -20,15 +20,15 @@
 // --------------------------------------------------------------------------------
 
 #ifndef COMMAND_FILE_PATH_CFG_NAME
-#define COMMAND_FILE_PATH_CFG_NAME					"COMMAND_FILE"
+#define COMMAND_FILE_PATH_CFG_NAME					"COMMAND_FILE_PATH"
 #endif
 
 #ifndef REPORT_FILE_PATH_CFG_NAME
-#define REPORT_FILE_PATH_CFG_NAME					"REPORT_FILE"
+#define REPORT_FILE_PATH_CFG_NAME					"REPORT_FILE_PATH"
 #endif
 
 #ifndef REPORT_INTERVAL_CFG_NAME
-#define REPORT_INTERVAL_CFG_NAME					"REPORT_INTERVAL_MS"
+#define REPORT_INTERVAL_CFG_NAME					"SCHEDULE_INTERVAL_REPORT_MS"
 #endif
 
 // --------------------------------------------------------------------------------

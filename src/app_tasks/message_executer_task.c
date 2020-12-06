@@ -61,11 +61,11 @@
 #endif
 
 #ifndef MSG_EXECUTER_COMMAND_TYPE_EXE_STR
-#define MSG_EXECUTER_COMMAND_TYPE_EXE_STR				"EXE"
+#define MSG_EXECUTER_COMMAND_TYPE_EXE_STR				"exe"
 #endif
 
 #ifndef MSG_EXECUTER_COMMAND_TYPE_COM_STR
-#define MSG_EXECUTER_COMMAND_TYPE_COM_STR				"COM"
+#define MSG_EXECUTER_COMMAND_TYPE_COM_STR				"com"
 #endif
 
 #ifndef MSG_EXECUTER_DEFAULT_REPORT_INTERVAL_MS
@@ -160,6 +160,11 @@ static void msg_executer_RPI_HOST_RESPONSE_RECEIVED_SLOT_CALLBACK(const void* p_
 /*!
  *
  */
+static void msg_executer_RPI_HOST_RESPONSE_TIMEOUT_SLOT_CALLBACK(const void* p_argument);
+
+/*!
+ *
+ */
 static void msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK(const void* p_argument);
 
 // --------------------------------------------------------------------------------
@@ -174,10 +179,12 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MSG_EXECUTER_EXECUTION_FAILED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CFG_PARSER_NEW_CFG_OBJECT_SIGNAL, MSG_EXECUTER_NEW_CFG_OBJECT_SLOT, msg_executer_cfg_object_CALLBACK)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CFG_PARSER_CFG_COMPLETE_SIGNAL, MSG_EXECUTER_CFG_COMPLETE_SLOT, msg_executer_cfg_complete_CALLBACK)
 
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(MQTT_MESSAGE_RECEIVED, MSG_EXECUTER_MQTT_MSG_RECEIVED_SLOT, msg_executer_MQTT_MESSAGE_RECEIVED_CALLBACK)
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(MQTT_MESSAGE_TO_SEND_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(MQTT_MESSAGE_RECEIVED_SIGNAL, MSG_EXECUTER_MQTT_MSG_RECEIVED_SLOT, msg_executer_MQTT_MESSAGE_RECEIVED_CALLBACK)
 
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(RPI_HOST_COMMAND_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(RPI_HOST_RESPONSE_RECEIVED_SIGNAL, MSG_EXECUTER_RPI_HOST_RESPONSE_RECEIVED_SLOT, msg_executer_RPI_HOST_RESPONSE_RECEIVED_SLOT_CALLBACK)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(RPI_HOST_RESPONSE_TIMEOUT_SIGNAL, MSG_EXECUTER_RPI_HOST_RESPONSE_TIMEOUT_SLOT, msg_executer_RPI_HOST_RESPONSE_TIMEOUT_SLOT_CALLBACK)
 
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_EXECUTER_COMMAND_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL, MSG_EXECUTER_CLI_EXECUTER_COMMAND_RESPONSE_SLOT, msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK)
@@ -190,6 +197,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL, MSG_EXEC
 #define MSG_EXECUTER_STATUS_COMMUNICATAION_MSG_PENDING		(1 << 3)
 #define MSG_EXECUTER_STATUS_EXECUTION_MSG_PENDING		(1 << 4)
 #define MSG_EXECUTER_STATUS_REPORT_ACTIVE			(1 << 5)
+#define MSG_EXECUTER_STATUS_RESPONSE_TIMEOUT			(1 << 6)
 
 BUILD_MODULE_STATUS_U8(MSG_EXECUTER_STATUS)
 
@@ -305,6 +313,7 @@ void msg_executer_init(void) {
 	MSG_EXECUTER_CFG_COMPLETE_SLOT_connect();
 	MSG_EXECUTER_MQTT_MSG_RECEIVED_SLOT_connect();
 	MSG_EXECUTER_RPI_HOST_RESPONSE_RECEIVED_SLOT_connect();
+	MSG_EXECUTER_RPI_HOST_RESPONSE_TIMEOUT_SLOT_connect();
 	MSG_EXECUTER_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_connect();
 
 	DEBUG_PASS("cfg_file_parser_init() - Register task");
@@ -480,7 +489,19 @@ static void msg_executer_task_run(void) {
 				DEBUG_PASS("msg_executer_task_run() - Timeout on waiting for communication response");
 				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
 
-				MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL_send(NULL);
+				MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL_send(msg_executer_pending_command);
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
+				break;
+			}
+
+			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_RESPONSE_TIMEOUT)) {
+
+				DEBUG_PASS("msg_executer_task_run() - Response-Timeout received");
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
+
+				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_RESPONSE_TIMEOUT);
+				MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL_send(msg_executer_pending_command);
+				
 				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
 				break;
 			}
@@ -520,7 +541,7 @@ static void msg_executer_task_run(void) {
 				DEBUG_PASS("msg_executer_task_run() - Timeout on waiting for execution response");
 				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
 
-				MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL_send(NULL);
+				MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL_send(msg_executer_pending_command);
 				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
 				break;
 			}
@@ -543,6 +564,7 @@ static void msg_executer_task_run(void) {
 
 			MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
 			MSG_EXECUTER_RESPONSE_RECEIVED_SIGNAL_send(msg_executer_pending_response);
+			MQTT_MESSAGE_TO_SEND_SIGNAL_send(msg_executer_pending_response);
 
 			msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
 			break;
@@ -617,7 +639,7 @@ static u8 msg_executer_parse_execution_command(const char* p_exe_command) {
 
 	DEBUG_TRACE_STR(command_string, "msg_executer_parse_communication_command() - Execution-Command: ");
 
-	CLI_EXECUTER_COMMAND_RECEIVED_SIGNAL_send((void*)p_exe_command);
+	CLI_EXECUTER_COMMAND_RECEIVED_SIGNAL_send((const void*)command_string);
 	return 1;
 }
 
@@ -711,7 +733,7 @@ static u8 msg_executer_parse_line(char* line, const char* p_command_msg, char* p
 		return 1;
 	}
 
-	DEBUG_PASS("msg_executer_parse_line() - Unknown command-type");
+	DEBUG_TRACE_STR(p_command_data, "msg_executer_parse_line() - Unknown command-type");
 	return 0;
 }
 
@@ -822,14 +844,14 @@ static void msg_executer_cfg_object_CALLBACK(const void* p_argument) {
 	if (cfg_file_parser_match_cfg_key(REPORT_FILE_PATH_CFG_NAME, p_cfg_object->key)) {
 
 		DEBUG_TRACE_STR(p_cfg_object->value, "msg_executer_cfg_object_CALLBACK() - REPORT_FILE_PATH_CFG_NAME cfg-object");
-		COMMAND_FILE_set_path(p_cfg_object->value);
+		REPORT_FILE_set_path(p_cfg_object->value);
 		return;
 	}
 
 	if (cfg_file_parser_match_cfg_key(COMMAND_FILE_PATH_CFG_NAME, p_cfg_object->key)) {
 		
 		DEBUG_TRACE_STR(p_cfg_object->value, "msg_executer_cfg_object_CALLBACK() - COMMAND_FILE_PATH_CFG_NAME cfg-object");
-		REPORT_FILE_set_path(p_cfg_object->value);
+		COMMAND_FILE_set_path(p_cfg_object->value);
 		return;
 	}
 
@@ -884,6 +906,13 @@ static void msg_executer_RPI_HOST_RESPONSE_RECEIVED_SLOT_CALLBACK(const void* p_
 	common_tools_byte_array_string_to_hex_string(p_com_buffer->data, p_com_buffer->length, msg_executer_pending_response, MSG_EXECUTER_MAX_MESSAGE_LENGTH); 
 
 	MSG_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
+}
+
+static void msg_executer_RPI_HOST_RESPONSE_TIMEOUT_SLOT_CALLBACK(const void* p_argument) {
+
+	DEBUG_PASS("msg_executer_RPI_HOST_RESPONSE_TIMEOUT_SLOT_CALLBACK()");
+
+	MSG_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_RESPONSE_TIMEOUT);
 }
 
 static void msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK(const void* p_argument) {

@@ -55,7 +55,7 @@
 #endif
 
 #ifndef RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS
-#define RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS		500
+#define RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS		200
 #endif
 
 //-----------------------------------------------------------------------------
@@ -75,6 +75,12 @@ typedef enum {
 	RPI_HOST_STATE_FINISH
 } RPI_HOST_STATE_TYPE;
 
+// --------------------------------------------------------------------------------
+
+#define RPI_HOST_STATUS_COMMAND_PENDING			(1 << 0)
+
+BUILD_MODULE_STATUS_U8(RPI_HOST_STATUS)
+
 //-----------------------------------------------------------------------------
 
 /*!
@@ -90,6 +96,7 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(RPI_OP_TIMER)
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_COMMAND_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_RESPONSE_RECEIVED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_RESPONSE_TIMEOUT_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(RPI_HOST_COMMAND_RECEIVED_SIGNAL, RPI_HOST_COMMAND_RECEIVED_SLOT, rpi_protocol_handler_host_COMMAND_RECEIVED_SLOT_CALLBACK)
 
 //-----------------------------------------------------------------------------
@@ -136,6 +143,8 @@ static void rpi_protocol_handler_host_COMMAND_RECEIVED_SLOT_CALLBACK(const void*
 	RPI_HOST_COMMAND_BUFFER_start_write();
 	RPI_HOST_COMMAND_BUFFER_add_N_bytes(p_buffer->length, p_buffer->data);
 	RPI_HOST_COMMAND_BUFFER_stop_write();
+
+	RPI_HOST_STATUS_set(RPI_HOST_STATUS_COMMAND_PENDING);
 }
 
 //-----------------------------------------------------------------------------
@@ -201,6 +210,8 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	DEBUG_PASS("rpi_protocol_init()");
 
+	RPI_HOST_STATUS_clear_all();
+
 	REQUEST_CLIENT_pull_up();
 
 	p_com_driver = p_driver;
@@ -213,6 +224,9 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_RESPONSE_RECEIVED_SIGNAL_init()");
 	RPI_HOST_RESPONSE_RECEIVED_SIGNAL_init();
+
+	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_RESPONSE_TIMEOUT_SIGNAL_init()");
+	RPI_HOST_RESPONSE_TIMEOUT_SIGNAL_init();
 
 	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_COMMAND_RECEIVED_SLOT_connect()");
 	RPI_HOST_COMMAND_RECEIVED_SLOT_connect();
@@ -243,7 +257,7 @@ MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 		return MCU_TASK_RUNNING;
 	}
 
-	if (RPI_HOST_COMMAND_BUFFER_bytes_available()) {
+	if (RPI_HOST_STATUS_is_set(RPI_HOST_STATUS_COMMAND_PENDING)) {
 		return MCU_TASK_RUNNING;
 	}
 
@@ -262,14 +276,15 @@ void rpi_protocol_task_run(void) {
 
 		case RPI_HOST_STATE_SLEEP:
 
-			if (RPI_HOST_COMMAND_BUFFER_bytes_available() == 0) {
+			if (RPI_HOST_STATUS_is_set(RPI_HOST_STATUS_COMMAND_PENDING) == 0) {
 				actual_task_state = MCU_TASK_SLEEPING;
 				break;
 			}
 
-			rpi_host_state = RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND;
 			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_SLEEP >> RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND");
 
+			RPI_HOST_STATUS_unset(RPI_HOST_STATUS_COMMAND_PENDING);
+			rpi_host_state = RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND;
 			RPI_OP_TIMER_start();
 
 			// no break;
@@ -335,6 +350,7 @@ void rpi_protocol_task_run(void) {
 
 			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS)) {
 				DEBUG_PASS("rpi_protocol_task_run() - TIMEOUT!!! - RPI_HOST_STATE_CLIENT_WAIT_FOR_RESPONSE >> RPI_HOST_STATE_FINISH");
+				RPI_HOST_RESPONSE_TIMEOUT_SIGNAL_send(NULL);
 				rpi_host_state = RPI_HOST_STATE_FINISH;
 				break;
 			}
@@ -371,6 +387,7 @@ void rpi_protocol_task_run(void) {
 
 			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS)) {
 				DEBUG_PASS("rpi_protocol_task_run() - TIMEOUT!!! - RPI_HOST_STATE_RECEIVE_RESPONSE >> RPI_HOST_STATE_FINISH");
+				RPI_HOST_RESPONSE_TIMEOUT_SIGNAL_send(NULL);
 				rpi_host_state = RPI_HOST_STATE_FINISH;
 				break;
 			}
