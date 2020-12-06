@@ -1,0 +1,31 @@
+@startuml
+
+skinparam monochrome true
+
+partition "activity: Message-Executer process EXE-command" {
+start
+
+:prepare command;
+
+if (command is valid) then (no)
+	#pink:INVALID_COMMAND>
+
+else (yes)
+
+	#pink:NEW_EXE_COMMAND_RECEIVED>
+	:wait for response;
+
+	if () then (TIMEOUT)
+		#pink:RESPONSE_TIMEOUT>
+	elseif () then (FAILED)
+		#pink:EXECUTION_FAILED>
+	else (SUCCEEDED)
+		:prepare response;
+		#pink:RESPONSE_RECEIVED<
+	endif
+endif
+
+end
+
+}
+@enduml

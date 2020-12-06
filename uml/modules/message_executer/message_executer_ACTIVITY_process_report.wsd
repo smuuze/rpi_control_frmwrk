@@ -1,0 +1,59 @@
+@startuml
+
+skinparam monochrome true
+
+partition "activity: Message-Executer process report" {
+start
+
+(I)
+:IDLE;
+
+if (new message pending) then (yes)
+
+	:UNSET_STATUS(REPORT_ACTIVE);
+	end
+
+elseif (report-interval timeout) then (yes)
+
+else (no)
+	end
+endif
+
+if (report-file is open) then (yes)
+
+else (no)
+	:open report-file;
+	if (open failed) then (yes)
+		#pink:OPEN_FILE_FAILED>
+		end
+	else (no)
+
+	endif
+
+endif
+
+:SET_STATUS(REPORT_ACTIVE);
+:read next file;
+
+if () then (line valid)
+	
+	:parse command;
+	if () then (is COM-command)
+		:process COM-command;
+	else (is EXE-command)
+		:process EXE-command;
+	endif
+
+else (EOF)
+	:close file;
+	:UNSET_STATUS(REPORT_ACTIVE);
+	:start report-interval timer;
+endif
+
+:prepare report-message;
+#pink:REPORT_MESSAGE>
+
+(I)
+
+}
+@enduml

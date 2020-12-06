@@ -1,0 +1,32 @@
+@startuml
+
+skinparam monochrome true
+
+partition "activity: Message-Executer configuration" {
+start
+(A)
+:Wait for User CFG;
+
+split
+	#pink:CFG-Object<
+split again
+	#pink:CFG Complete<
+	end
+end split
+
+if (Report-Interval obj) then (yes)
+	:Set Report-Interval;
+else (no)
+	if (Command-File obj) then (yes)
+		:Set Command-File;
+	else (no)
+		if (Report-File obj) then (yes)
+			:Set Report-File;
+		else (no)
+		endif
+	endif
+endif
+	
+(A)
+}
+@enduml

@@ -1,0 +1,63 @@
+@startuml
+
+skinparam monochrome true
+
+partition "activity: Message-Executer process message" {
+
+partition "activity: new message arrives" {
+	start
+	#pink:MESSAGE_RECEIVED<
+	:remember message;
+	:SET_STATUS(NEW_MESSAGE_PENDING);
+	end
+}
+
+start
+
+(I)
+:IDLE;
+
+if (STATUS_IS_SET(NEW_MESSAGE_PENDING)) then (no)
+	(I)
+else (yes)
+
+endif
+
+:open command-file;
+
+if (command-file is open) then (no)
+	:FILE_OPEN_FAILED>
+	end
+else (yes)
+
+endif
+
+repeat
+
+:read next line;
+
+if (EOF) then (yes)
+	:close file;
+	#pink:COMMAND_NOT_FOUND>
+	(I)
+	detach
+
+else (no)
+	:match command;
+endif
+
+repeatwhile (command does not match)
+:parse command;
+:close file;
+
+if () then (is COM-command)
+	:process COM-command;
+else (is EXE-command)
+	:process EXE-command;
+endif
+
+#pink:COMMAND_RESPONSE>
+end
+
+}
+@enduml
