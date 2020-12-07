@@ -1,0 +1,22 @@
+@startuml
+
+skinparam monochrome true
+
+partition "activity: MQTT-Interface - response received" {
+
+start
+
+#pink:RESPONSE_RECEIVED<
+
+if (qeue is full) then (no)
+	:enqeue response;
+	:SET_STATUS(response_received);
+else (yes)
+
+endif
+end
+
+footer Author: Sebastian Lesse
+
+}
+@enduml

@@ -60,4 +60,7 @@ endif
 end
 
 }
+
+footer Author: Sebastian Lesse
+
 @enduml

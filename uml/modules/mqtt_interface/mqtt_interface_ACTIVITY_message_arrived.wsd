@@ -1,0 +1,21 @@
+@startuml
+
+skinparam monochrome true
+
+partition "activity: MQTT-Interface - message arrived" {
+
+start
+
+if (qeue is full) then (no)
+	:load message from mqtt;
+	:enqeue new message;
+	:SET_STATUS(message_arrived);
+else (yes)
+
+endif
+end
+
+footer Author: Sebastian Lesse
+
+}
+@enduml

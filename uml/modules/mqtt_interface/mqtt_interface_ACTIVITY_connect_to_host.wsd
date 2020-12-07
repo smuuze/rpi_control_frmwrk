@@ -1,0 +1,25 @@
+@startuml
+
+skinparam monochrome true
+
+partition "activity: MQTT-Interface - response received" {
+
+start
+
+(A)
+:connect to host;
+
+if (is connected) then (yes)
+	:send hello-message;
+	#pink:CONNECTION_ESTABLISHED>
+	:SET_STATUS(is_connected);
+else (no) 
+(A)
+endif
+
+end
+
+footer Author: Sebastian Lesse
+
+}
+@enduml
