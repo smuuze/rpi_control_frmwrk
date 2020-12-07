@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -372,6 +372,7 @@ static u8 cli_executer_test_process(const char* p_command) {
 		return 0;
 	}
 
+	fclose(p_process_pipe);
 	DEBUG_PASS("cli_executer_test_process() - Command seems to be available");
 	return 1;
 }

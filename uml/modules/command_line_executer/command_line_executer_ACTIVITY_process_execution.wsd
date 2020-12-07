@@ -1,0 +1,55 @@
+@startuml
+
+skinparam monochrome true
+
+partition "activity: Command-Line-Executer process execution" {
+
+partition "activity: command arrived" {
+	start
+	:COMMAND_RECEIVED<
+	#pink:SET_STATUS(COMMAND_PENDING);
+	end
+}
+
+start
+
+(I)
+:IDLE;
+
+if (STATUS_IS_SET(COMMAND_PENDING)) then (no)
+	(I)
+	detach
+else (yes)
+
+endif
+
+:check for valid command;
+
+if (command is available) then (no)
+
+	#pink:COMMAND_NOT_FOUND>
+
+else (no)
+
+	:open process;
+
+	if () then (failed)
+
+		#pink:COMMAND_NOT_FOUND>
+
+	else (succeeded)
+		
+		repeat
+		:read process output;
+		repeatwhile (EOF)
+
+		:close process;
+
+		#pink:COMMAND_RESPONSE>
+	endif
+endif
+
+end
+
+}
+@enduml
