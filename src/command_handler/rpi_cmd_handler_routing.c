@@ -33,7 +33,7 @@
 /*
  *
  */
-typedef void (*COPRO_TABLE_SIGNAL_CALLBACK)		(void* p_arg);
+typedef void (*COPRO_TABLE_SIGNAL_CALLBACK)		(const void* p_arg);
 
 /*
  *
@@ -47,7 +47,7 @@ typedef struct {
 
 #ifdef COPRO1_AVAILABLE
 
-static void copro1_slot_RESPONSE_RECEIVED(void* p_arg) {
+static void copro1_slot_RESPONSE_RECEIVED(const void* p_arg) {
 
 	PROTOCOL_INTERFACE* p_protocol = (PROTOCOL_INTERFACE*) p_arg;
 
@@ -80,6 +80,8 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(COPRO3_ROUTING_COMMAND_SIGNAL)
 COPRO_INTERFACE_INCLUDE(COPRO4)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(COPRO4_ROUTING_COMMAND_SIGNAL)
 #endif
+
+COPRO_INTERFACE_INCLUDE(COPRO_BORADCAST)
 
 //-----------------------------------------------------------------------------
 

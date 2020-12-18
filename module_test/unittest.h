@@ -20,11 +20,30 @@
 
 // --------------------------------------------------------------------------------
 
+#define UT_PRINT_HEX_DUMP(array, length)		{														\
+								u8 i = 0;												\
+								for ( ; i < length; i++) {										\
+									printf("0x%02X ", array[i]);									\
+								}													\
+							}
+
+// --------------------------------------------------------------------------------
+
 #define UT_EQUATION_ERROR(value, reference)		printf(" - !! FAILED !! : %s = %d (expected: %d) in %s:%d\n", UT_GET_VAR_NAME(value), value, reference, __FILE__, __LINE__);
 #define UT_EQUATION_OK(value)				printf(" - OK : %s = %d\n", UT_GET_VAR_NAME(value), value);
 
 #define UT_STRING_ERROR(value, reference)		printf(" - !! FAILED !! : %s = %s (expected: %s) in %s:%d\n", UT_GET_VAR_NAME(value), value, reference, __FILE__, __LINE__);
 #define UT_STRING_OK(value)				printf(" - OK : %s = %s\n", UT_GET_VAR_NAME(value), value);
+
+#define UT_ARRAY_ERROR(value, reference, length)	printf(" - !! FAILED !! : %s  in %s:%d\n", UT_GET_VAR_NAME(value), __FILE__, __LINE__);				\
+							printf(" - - content  :");											\
+							UT_PRINT_HEX_DUMP(value, length)										\
+							printf(" - - expected :");											\
+							UT_PRINT_HEX_DUMP(reference, length)										\
+							do{}while(0)							
+#define UT_ARRAY_OK(array, length)			printf(" - OK : %s = { ", UT_GET_VAR_NAME(array));								\
+							UT_PRINT_HEX_DUMP(array, length);										\
+							printf(" } \n");
 
 // --------------------------------------------------------------------------------
 
@@ -68,6 +87,26 @@
 								counter_TEST_PASSED += 1;										\
 								__ut_number_of_test_passed += 1;									\
 								UT_STRING_OK(value)											\
+							}
+
+#define UT_COMPARE_ARRAY(array1, array2, length)	{														\
+								u8 i = 0;												\
+								u8 is_equal = 1;											\
+								for ( ; i < length; i++) {										\
+									if (array1[i] != array2[i]) {									\
+										UT_ARRAY_ERROR(array1, array1, length);							\
+										__ut_number_of_test_failed += 1;							\
+										counter_TEST_FAILED += 1;								\
+										is_equal = 0;										\
+										break;											\
+									}												\
+								}													\
+																					\
+								if (is_equal) {												\
+									UT_ARRAY_OK(array1, length)									\
+									__ut_number_of_test_passed += 1;								\
+									counter_TEST_PASSED += 1;									\
+								}													\
 							}
 
 // --------------------------------------------------------------------------------

@@ -38,6 +38,10 @@
 
 //-----------------------------------------------------------------------------
 
+static void light_resistor_gm5528_callback(const void* p_arg);
+
+//-----------------------------------------------------------------------------
+
 BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(GM5528_LIGHT_RESISTOR, GM5528_DATA_ARRAY_NUMBER_OF_ELEMENTS)
 TIME_MGMN_BUILD_STATIC_TIMER_U32(GM5528_MAXMIN_TIMER)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SIGNAL_ADC_NEW_VALUES_AVAILABLE, SLOT_LIGHT_RESISTOR_GM5528, light_resistor_gm5528_callback)
@@ -74,7 +78,7 @@ void light_resistor_gm5528_calibrate(void) {
 	DEBUG_TRACE_word(steigung, "light_resistor_gm5528_calibrate() - Steigung");
 }
 
-void light_resistor_gm5528_callback(void* p_arg) {
+static void light_resistor_gm5528_callback(const void* p_arg) {
 	(void) p_arg;
 
 	DEBUG_PASS("light_resistor_gm5528_callback()");

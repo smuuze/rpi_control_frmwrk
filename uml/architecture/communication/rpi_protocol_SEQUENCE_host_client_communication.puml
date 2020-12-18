@@ -1,0 +1,68 @@
+@startuml
+
+skinparam monochrome true
+
+header
+@autor: sebastian lesse
+endheader
+
+mainframe sequence: RPi-Protocol - Host-Client communication
+
+group IDLE
+HOST -> CLIENT : READY_PIN_no_pull()
+CLIENT -> HOST : READY_PIN_pull_up()
+end
+
+[-> HOST : message arrived
+
+group WAKE UP
+	activate HOST
+	HOST -> HOST : request client
+	activate HOST
+	HOST -> CLIENT : READY_PIN_drive_low()
+	HOST -> HOST : delay(50ms)
+	activate HOST
+	CLIENT -> CLIENT : wakeup
+	activate CLIENT
+end
+
+group READY
+	CLIENT -> CLIENT : ready for communication
+	activate CLIENT
+	deactivate HOST
+	HOST -> HOST : prepare command:
+end
+
+group OPERATE
+	deactivate HOST
+	HOST -> CLIENT : send command
+	HOST -> HOST : idle
+	activate HOST
+	CLIENT -> CLIENT : process
+	activate CLIENT
+	HOST -> CLIENT : poll
+	HOST -> CLIENT : poll
+	CLIENT --> CLIENT : response
+	deactivate CLIENT
+	HOST -> CLIENT : poll
+
+	HOST -> CLIENT : receive response
+	deactivate HOST
+	deactivate CLIENT
+end
+
+[<- HOST : response
+HOST -> CLIENT : READY_PIN_no_drive()
+HOST -> CLIENT : READY_PIN_no_pull()
+deactivate HOST
+
+group SLEEP
+	CLIENT -> CLIENT : wait for next command
+	activate CLIENT
+	CLIENT -> CLIENT : timeout
+	deactivate CLIENT
+	CLIENT -> CLIENT : enter sleep
+	deactivate CLIENT
+end
+
+@enduml

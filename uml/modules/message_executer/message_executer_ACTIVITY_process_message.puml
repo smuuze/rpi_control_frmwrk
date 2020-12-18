@@ -2,7 +2,11 @@
 
 skinparam monochrome true
 
-partition "activity: Message-Executer process message" {
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: Message-Executer process message
 
 partition "activity: new message arrives" {
 	start
@@ -57,10 +61,6 @@ else (is EXE-command)
 endif
 
 #pink:COMMAND_RESPONSE>
-end
-
-}
-
-footer Author: Sebastian Lesse
+stop
 
 @enduml

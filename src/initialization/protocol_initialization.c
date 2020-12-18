@@ -15,7 +15,9 @@
 #include "protocol_management/rpi_protocol_handler.h"
 #include "system_interface.h"
 
+#ifdef HAS_PROTOCOL_MQTT
 #include "protocol_management/mqtt/mqtt_interface.h"
+#endif
 
 //-----------------------------------------------------------------------------
 

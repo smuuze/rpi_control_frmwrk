@@ -1,0 +1,143 @@
+@startuml
+
+skinparam monochrome true
+
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: RPi-Protocol Client
+
+start
+
+:initialization;
+note left
+READY_PIN_pull_up()
+end note
+
+:driver mutex request;
+note left
+this interface is not
+allowed to be used by
+an other module
+end note
+
+partition "wait for request" {
+(A)
+:idle;
+
+if (READY_PIN_is_low()) then (no) 
+	(A)
+	detach
+else (no)
+endif
+
+#pink:LEAVE_SLEEP>
+
+}
+
+
+partition "prepare communication" {
+
+:driver power up;
+:start timer;
+
+(B)
+
+if (timer is up) then (yes)
+	(A)
+	detach
+else (no)
+
+endif
+
+if (mutex requested) then (no)
+	(B)
+	detach
+else (yes)
+
+endif
+
+}
+
+partition "transmission" {
+
+(C)
+
+if (READY_PIN_is_low()) then (no)
+	(D)
+	detach
+else (yes)
+
+endif
+
+if (STATUS_IS_SET(response_pending)) then (yes)
+	:prepare response;
+	:copy response to driver;
+else (no)
+
+endif
+
+fork
+:receive data;
+fork again
+:transmit data;
+end fork
+
+if (data available) then (no)
+	(C)
+	detach
+else (yes)
+
+endif
+
+if (invalid command) then (yes)
+	#pink:INVALID_COMMAND>
+	(C)
+	detach
+else (no)
+
+endif
+
+#pink:COMMAND_RECEIVED>
+(C)
+detach
+
+}
+
+partition "enter sleep" {
+
+(D)
+:start timer;
+(E)
+
+if (READY_PIN_is_low()) then (yes)
+	(C)
+	detach
+else (no)
+
+endif
+
+if (timer is up) then (no)
+	(E)
+else (yes)
+
+endif
+
+:driver power down;
+
+#pink:ENTER_SLEEP>
+
+(A)
+detach
+
+}
+
+partition "Response received" {
+	start
+	#pink:RESPONSE_RECEIVED<
+	:SET_STATUS(response_pending);
+	end
+}
+
+@enduml

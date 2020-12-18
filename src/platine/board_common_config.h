@@ -1,7 +1,10 @@
 #ifndef _PIN_MAP_CFG_H_
 #define _PIN_MAP_CFG_H_
+//-----------------------------------------------------------------------------
 
 #include "cpu.h"
+
+//-----------------------------------------------------------------------------
 
 #define GPIO_INVERTED					0x80
 #define GPIO_IDLE_HIGH					0x40
@@ -26,6 +29,8 @@
 #define GPIO_PORT_D					4
 #define GPIO_PORT_E					5
 
+//-----------------------------------------------------------------------------
+
 typedef struct  {
 
 	const u8 port_id;
@@ -45,6 +50,8 @@ typedef enum {
 	GPIO_DIRECTION_OUTPUT = 0x01,
 } GPIO_DRIVER_DIRECTION;
 
+//-----------------------------------------------------------------------------
+
 void gpio_driver_init(void);
 void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction);
@@ -52,6 +59,8 @@ void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_D
 void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+
+//-----------------------------------------------------------------------------
 
 #define BUILD_GPIO(pin_name, port_id, pin_id, pin_cfg)									\
 	const GPIO_DRIVER_PIN_DESCRIPTOR pin_name = {									\
@@ -115,6 +124,8 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 		gpio_driver_print_pin_state(&pin_name);									\
 	}
 
+//-----------------------------------------------------------------------------
+
 #define INCLUDE_GPIO(pin_name)												\
 	extern const GPIO_DRIVER_PIN_DESCRIPTOR pin_name;								\
 	void pin_name##_drive_high(void);										\
@@ -128,6 +139,8 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	u8 pin_name##_is_low_level(void);										\
 	void pin_name##_print_state(void);
 
+//-----------------------------------------------------------------------------
+
 #define INCLUDE_GPIO_ALIAS(pin_name)											\
 	void pin_name##_drive_high(void);										\
 	void pin_name##_drive_low(void);										\
@@ -139,6 +152,8 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	u8 pin_name##_is_high_level(void);										\
 	u8 pin_name##_is_low_level(void);										\
 	void pin_name##_print_state(void);
+
+//-----------------------------------------------------------------------------
 	
 #define INCLUDE_GPIO_REFRENCE(port_id, pin_id)			\
 	extern const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id;
@@ -146,7 +161,11 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 #define GET_GPIO_REFERENCE(port_id, pin_id)			\
 	p_pin_##port_id##_##pin_id
 
+//-----------------------------------------------------------------------------
+
 #define HAS_GPIO(name)
+
+//-----------------------------------------------------------------------------
 
 #define GPIO_ALIAS(new_name, exisitng_name)										\
 															\
@@ -161,11 +180,11 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	u8 exisitng_name##_is_low_level(void);										\
 	void exisitng_name##_print_state(void);										\
 															\
-	void new_name##_drive_high(void) {									\
+	void new_name##_drive_high(void) {										\
 		exisitng_name##_drive_high();										\
 	}														\
 															\
-	void new_name##_drive_low(void) {									\
+	void new_name##_drive_low(void) {										\
 		exisitng_name##_drive_low();										\
 	}														\
 															\
@@ -202,3 +221,61 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	}
 
 #endif
+
+//-----------------------------------------------------------------------------
+
+#define FAKE_GPIO(pin_name, port_id, pin_id, pin_cfg)									\
+															\
+	static GPIO_DRIVER_DIRECTION _##pin_name##_direction = GPIO_DIRECTION_INPUT;					\
+	static GPIO_DRIVER_LEVEL _##pin_name##_level = GPIO_DIRECTION_INPUT;						\
+	const GPIO_DRIVER_PIN_DESCRIPTOR pin_name = {									\
+		port_id,												\
+		pin_id,													\
+		(pin_cfg)												\
+	};														\
+	const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id = &pin_name;					\
+															\
+	void pin_name##_drive_high(void) {										\
+		_##pin_name##_direction = GPIO_DIRECTION_OUTPUT;							\
+		_##pin_name##_level = GPIO_LEVEL_HIGH;									\
+	}														\
+															\
+	void pin_name##_drive_low(void) {										\
+		_##pin_name##_direction = GPIO_DIRECTION_OUTPUT;							\
+		_##pin_name##_level = GPIO_LEVEL_LOW;									\
+	}														\
+															\
+	void pin_name##_no_drive(void) {										\
+		_##pin_name##_direction = GPIO_DIRECTION_INPUT;								\
+		_##pin_name##_level = GPIO_LEVEL_HIGH_Z;								\
+	}														\
+															\
+	void pin_name##_toggle_level(void) {										\
+	}														\
+															\
+	void pin_name##_pull_up(void) {											\
+		_##pin_name##_direction = GPIO_DIRECTION_INPUT;								\
+		_##pin_name##_level = GPIO_LEVEL_HIGH;									\
+	}														\
+															\
+	void pin_name##_pull_down(void) {										\
+		_##pin_name##_direction = GPIO_DIRECTION_INPUT;								\
+		_##pin_name##_level = GPIO_LEVEL_LOW;									\
+															\
+	}														\
+															\
+	void pin_name##_no_pull(void) {											\
+		_##pin_name##_direction = GPIO_DIRECTION_INPUT;								\
+		_##pin_name##_level = GPIO_LEVEL_HIGH_Z;								\
+	}														\
+															\
+	u8 pin_name##_is_high_level(void) {										\
+		return _##pin_name##_level == GPIO_LEVEL_HIGH ? 1 : 0;							\
+	}														\
+															\
+	u8 pin_name##_is_low_level(void) {										\
+		return _##pin_name##_level == GPIO_LEVEL_LOW ? 1 : 0;							\
+	}														\
+															\
+	void pin_name##_print_state(void) {										\
+	}

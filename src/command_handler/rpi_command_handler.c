@@ -54,13 +54,13 @@ static COMMAND_HANDLER_INTERFACE rpi_command_handler = {
 
 //-----------------------------------------------------------------------------
 
-static void rpi_command_handler_slot_cmd_received_CALLBACK(void* p_arg) {
+static void rpi_command_handler_slot_cmd_received_CALLBACK(const void* p_arg) {
 	rpi_cmd_handler_set_request((PROTOCOL_INTERFACE*)p_arg);
 }
 
 //-----------------------------------------------------------------------------
 
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SIGNAL_CMD_RECEIVED, RPI_CMD_HANDLER_SLOT_CMD_RECEIVED, rpi_command_handler_slot_cmd_received_CALLBACK)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(RPI_PROTOCOL_COMMAND_RECEIVED_SIGNAL, RPI_CMD_HANDLER_SLOT_CMD_RECEIVED, rpi_command_handler_slot_cmd_received_CALLBACK)
 
 //-----------------------------------------------------------------------------
 

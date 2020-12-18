@@ -2,7 +2,12 @@
 
 skinparam monochrome true
 
-partition "activity: Message-Executer process COM-command" {
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: Message-Executer process COM-command
+
 start
 
 :prepare command;
@@ -24,9 +29,5 @@ else (yes)
 endif
 
 end
-
-}
-
-footer Author: Sebastian Lesse
 
 @enduml

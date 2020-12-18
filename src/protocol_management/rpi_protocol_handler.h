@@ -24,7 +24,7 @@
 							DRIVER_SPI_CLK_DEVIDER_4, 	/*	u8 clk_divider;		*/ \
 							DRIVER_SPI_NO_DOUBLE_SPEED, 	/*	u8 clk_double_speed;	*/ \
 							DRIVER_SPI_DATA_ORDER_MSB, 	/*	u8 data_order;		*/ \
-							COM_DRIVER_IRQ_DISABLE	/*	u8 interrupt_enable;	*/
+							COM_DRIVER_IRQ_ENABLE		/*	u8 interrupt_enable;	*/
 #endif
 
 //-----------------------------------------------------------------------------
@@ -66,31 +66,5 @@ void rpi_protocol_com_driver_rx_complete_callback(void);
 void rpi_protocol_com_driver_tx_complete_callback(void);
 
 //-----------------------------------------------------------------------------
-
-/*!
- *
- */
-void rpi_protocol_task_init(void);
-
-/*!
- *
- */
-u16 rpi_protocol_task_get_schedule_interval(void);
-
-/*!
- *
- * @return
- */
-MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void);
-
-/*!
- *
- */
-void rpi_protocol_task_run(void);
-
-/*!
- *
- */
-u8 rpi_protocol_handler_get_actual_state(void);
 
 #endif //RPI_PROTOCOL_HANDLER_H_

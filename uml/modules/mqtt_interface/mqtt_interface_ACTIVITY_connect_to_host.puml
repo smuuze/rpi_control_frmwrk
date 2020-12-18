@@ -2,7 +2,11 @@
 
 skinparam monochrome true
 
-partition "activity: MQTT-Interface - response received" {
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: MQTT-Interface - response received
 
 start
 
@@ -19,7 +23,4 @@ endif
 
 end
 
-footer Author: Sebastian Lesse
-
-}
 @enduml

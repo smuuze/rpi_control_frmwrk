@@ -48,6 +48,11 @@ ifneq '' '$(findstring USART1,$(DRIVER_MODULE_CFG))'
 	CSRCS += $(APP_PATH)/driver/communication/usart/usart1_driver_atmega1284p.c
 endif
 
+ifneq '' '$(findstring UNITTEST,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_UNITTEST=1
+	CSRCS += $(APP_PATH)/driver/communication/test/communication_driver_test.c
+endif
+
 ifneq '' '$(findstring TIMER0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_TIMER0=1
 	CSRCS += $(APP_PATH)/driver/timer/timer0_driver_atmega1284p.c

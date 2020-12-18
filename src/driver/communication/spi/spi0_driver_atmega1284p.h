@@ -2,13 +2,6 @@
 #define _LOCAL_SPI_DRIVER_H_
 
 
-#ifndef SPI0_DRIVER_RX_BUFFER_SIZE
-#define SPI0_DRIVER_RX_BUFFER_SIZE	128
-#endif
-
-#ifndef SPI0_DRIVER_TX_BUFFER_SIZE
-#define SPI0_DRIVER_TX_BUFFER_SIZE	128
-#endif
 
 #include "cfg_driver_interface.h"
 

@@ -128,6 +128,7 @@ static MCU_TASK_INTERFACE io_output_controller_task = {
 
 #ifdef HAS_MANAGEMENT_MODULE_RPI_PROTOCOL
 #include "protocol_management/rpi_protocol_handler.h"
+/*
 static MCU_TASK_INTERFACE rpi_protocol_task = {
 
 	0, 						// u8 identifier,
@@ -144,6 +145,7 @@ static MCU_TASK_INTERFACE rpi_protocol_task = {
 	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
 	0						// next-task
 };
+*/
 #endif
 
 //-----------------------------------------------------------------------------
@@ -271,7 +273,8 @@ void task_initialization(void) {
 
 	#ifdef HAS_MANAGEMENT_MODULE_RPI_PROTOCOL
 	DEBUG_PASS("task_initialization() - rpi-protocol task");
-	mcu_task_controller_register_task(&rpi_protocol_task);
+	#pragma __WARNING__YOU_NEED_TO_REGISTER_THE_RPI_PROTOCOL_TASK_WITHIN_YOUR_IMPLEMENTATION
+	//mcu_task_controller_register_task(&rpi_protocol_task);
 	#endif
 
 	#ifdef HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115

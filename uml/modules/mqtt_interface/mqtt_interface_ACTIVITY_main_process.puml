@@ -2,7 +2,11 @@
 
 skinparam monochrome true
 
-partition "activity: MQTT-Interface - main process" {
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: MQTT-Interface - main process
 
 start
 
@@ -69,7 +73,4 @@ partition "activity: MQTT-Interface - check status" {
 	endif
 }
 
-footer Author: Sebastian Lesse
-
-}
 @enduml

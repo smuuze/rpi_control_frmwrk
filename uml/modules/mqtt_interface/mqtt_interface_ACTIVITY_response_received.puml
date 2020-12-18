@@ -2,7 +2,11 @@
 
 skinparam monochrome true
 
-partition "activity: MQTT-Interface - response received" {
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: MQTT-Interface - response received
 
 start
 
@@ -14,9 +18,6 @@ if (qeue is full) then (no)
 else (yes)
 
 endif
-end
+stop
 
-footer Author: Sebastian Lesse
-
-}
 @enduml

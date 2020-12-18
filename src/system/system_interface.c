@@ -311,7 +311,6 @@ const SYSTEM_INTERFACE i_system = {
 		&config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK,
 		&config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK
 	},
-
 	.driver = {
 		#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 		&spi0_driver,

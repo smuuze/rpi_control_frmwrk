@@ -2,7 +2,11 @@
 
 skinparam monochrome true
 
-partition "activity: Command-Line-Executer process execution" {
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: Command-Line-Executer process execution
 
 partition "activity: command arrived" {
 	start
@@ -50,9 +54,5 @@ else (no)
 endif
 
 end
-
-}
-
-footer Author: Sebastian Lesse
 
 @enduml

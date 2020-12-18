@@ -10,6 +10,9 @@ ifneq '' '$(findstring RPI_PROTOCOL,$(PROTOCOL_CFG))'
 
 	else ifneq '' '$(findstring RPI_PROTOCOL_HOST,$(PROTOCOL_CFG))'
 		CSRCS += $(PROTOCOL_PATH)/rpi_protocol_handler_host.c
+
+	else ifneq '' '$(findstring RPI_PROTOCOL_CLIENT,$(PROTOCOL_CFG))'
+		CSRCS += $(PROTOCOL_PATH)/rpi_protocol_handler_client.c
 	else
 		CSRCS += $(PROTOCOL_PATH)/rpi_protocol_handler.c
 	endif

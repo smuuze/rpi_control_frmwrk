@@ -176,6 +176,18 @@ u8 local_rtc_timer_istimeup_u32(u32 time_reference, u32 time_interval) {
 	return local_rtc_timer_gettime_u32() - time_reference > time_interval ? 1 : 0;
 }
 
+u8 rtc_timer_elapsed_u8(u8 time_reference) {
+	return local_rtc_timer_gettime_u8() - time_reference;
+}
+
+u16 rtc_timer_elapsed_u16(u16 time_reference) {
+	return local_rtc_timer_gettime_u16() - time_reference;
+}
+
+u32 rtc_timer_elapsed_u32(u32 time_reference) {
+	return local_rtc_timer_gettime_u32() - time_reference;
+}
+
 ISR(TIMER2_COMPA_vect) {
 
 	RTC_RESTART_TIMER();

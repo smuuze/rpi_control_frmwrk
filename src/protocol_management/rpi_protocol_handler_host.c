@@ -3,7 +3,7 @@
   * \author	sebastian lesse
   */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 //-----------------------------------------------------------------------------
 
@@ -51,11 +51,15 @@
 #endif
 
 #ifndef RPI_PROTOCOL_HOST_CLIENT_REQUEST_TIME_MS
-#define RPI_PROTOCOL_HOST_CLIENT_REQUEST_TIME_MS		60
+#define RPI_PROTOCOL_HOST_CLIENT_REQUEST_TIME_MS		64
 #endif
 
 #ifndef RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS
-#define RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS		200
+#define RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS		505
+#endif
+
+#ifndef RPI_PROTOCOL_CLIENT_POLL_INTERVAL_MS
+#define RPI_PROTOCOL_CLIENT_POLL_INTERVAL_MS			50
 #endif
 
 //-----------------------------------------------------------------------------
@@ -66,7 +70,7 @@
 typedef enum {
 	RPI_HOST_STATE_SLEEP,
 	RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND,
-	RPI_HOST_STATE_CLIENT_REQUEST_FOR_COMMAND,
+	RPI_HOST_STATE_REQUEST_CLIENT,
 	RPI_HOST_STATE_WAIT_FOR_CLIENT,
 	RPI_HOST_STATE_SEND_COMMAND,
 	RPI_HOST_STATE_CLIENT_WAIT_FOR_RESPONSE,
@@ -80,6 +84,28 @@ typedef enum {
 #define RPI_HOST_STATUS_COMMAND_PENDING			(1 << 0)
 
 BUILD_MODULE_STATUS_U8(RPI_HOST_STATUS)
+
+//-----------------------------------------------------------------------------
+
+/*!
+ *
+ */
+static void rpi_protocol_task_init(void);
+
+/*!
+ *
+ */
+static u16 rpi_protocol_task_get_schedule_interval(void);
+
+/*!
+ *
+ */
+static MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void);
+
+/*!
+ *
+ */
+static void rpi_protocol_task_run(void);
 
 //-----------------------------------------------------------------------------
 
@@ -177,7 +203,7 @@ static u8 rpi_host_receive_response(void) {
 	p_com_driver->start_rx(1);
 
 	if (p_com_driver->bytes_available() == 0) {
-		DEBUG_PASS("rpi_host_receive_response() - No data received");
+		//DEBUG_PASS("rpi_host_receive_response() - No data received");
 		return 0;
 	}
 
@@ -187,7 +213,7 @@ static u8 rpi_host_receive_response(void) {
 	p_com_driver->get_N_bytes(1, (u8*)&buffer.length);
 
 	if (buffer.length == 0) {
-		DEBUG_PASS("rpi_host_receive_response() - Received Length is zero");
+		//DEBUG_PASS("rpi_host_receive_response() - Received Length is zero");
 		return 0;
 	}
 
@@ -203,6 +229,25 @@ static u8 rpi_host_receive_response(void) {
 
 	return 1;
 }
+
+//-----------------------------------------------------------------------------
+
+static MCU_TASK_INTERFACE rpi_protocol_task = {
+
+	0, 						// u8 identifier,
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&rpi_protocol_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&rpi_protocol_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&rpi_protocol_task_get_state, 			// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&rpi_protocol_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	0,						// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
+	0						// next-task
+};
 
 //-----------------------------------------------------------------------------
 
@@ -230,11 +275,19 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_COMMAND_RECEIVED_SLOT_connect()");
 	RPI_HOST_COMMAND_RECEIVED_SLOT_connect();
+
+	mcu_task_controller_register_task(&rpi_protocol_task);
 }
 
-void rpi_protocol_task_init(void) {
+u8 rpi_protocol_handler_get_actual_state(void) {
+	return (u8) rpi_host_state;
+}
 
-	DEBUG_PASS("rpi_protocol_task_init()");
+//-----------------------------------------------------------------------------
+
+static void rpi_protocol_task_init(void) {
+
+	DEBUG_PASS("rpi_protocol_task_init() - HOST - ");
 
 	actual_task_state = MCU_TASK_SLEEPING;
 	rpi_host_state = RPI_HOST_STATE_SLEEP;
@@ -242,7 +295,7 @@ void rpi_protocol_task_init(void) {
 	RPI_OP_TIMER_start();
 }
 
-u16 rpi_protocol_task_get_schedule_interval(void) {
+static u16 rpi_protocol_task_get_schedule_interval(void) {
 
 	if (actual_task_state != MCU_TASK_SLEEPING) {
 		return 0;
@@ -251,7 +304,7 @@ u16 rpi_protocol_task_get_schedule_interval(void) {
 	}
 }
 
-MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
+static MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 
 	if (rpi_host_state != RPI_HOST_STATE_SLEEP) {
 		return MCU_TASK_RUNNING;
@@ -264,9 +317,11 @@ MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 	return MCU_TASK_SLEEPING;
 }
 
-void rpi_protocol_task_run(void) {
+static void rpi_protocol_task_run(void) {
 
 	//DEBUG_PASS("rpi_protocol_task_run()");
+
+	u32 client_poll_interval_ms = RPI_PROTOCOL_CLIENT_POLL_INTERVAL_MS;
 
 	switch (rpi_host_state) {
 
@@ -281,44 +336,32 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_SLEEP >> RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND");
+			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_SLEEP >> RPI_HOST_STATE_REQUEST_CLIENT");
 
 			RPI_HOST_STATUS_unset(RPI_HOST_STATUS_COMMAND_PENDING);
-			rpi_host_state = RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND;
-			RPI_OP_TIMER_start();
+			rpi_host_state = RPI_HOST_STATE_REQUEST_CLIENT;
 
 			// no break;
 
-		case RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND:
+		case RPI_HOST_STATE_REQUEST_CLIENT:
 
-			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS)) {
-				DEBUG_PASS("rpi_protocol_task_run() - TIMEOUT!!! - RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND >> RPI_HOST_STATE_FINISH");
-				rpi_host_state = RPI_HOST_STATE_FINISH;
-				break;
-			}
-
-			if (REQUEST_CLIENT_is_low_level()) {
-				break;
-			}
-
-			DEBUG_TRACE_word(RPI_OP_TIMER_elapsed(), "rpi_protocol_task_run() - RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND >> RPI_HOST_STATE_CLIENT_REQUEST_FOR_COMMAND - Time elapsed: ");
-
-			rpi_host_state = RPI_HOST_STATE_CLIENT_REQUEST_FOR_COMMAND;
+			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND >> RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND");
 
 			REQUEST_CLIENT_drive_low();
+
+			rpi_host_state = RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND;
 			RPI_OP_TIMER_start();
 
 			// no break;	
 
-		case RPI_HOST_STATE_CLIENT_REQUEST_FOR_COMMAND:
+		case RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND:
 
 			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HOST_CLIENT_REQUEST_TIME_MS) == 0) {
+				//DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND - waiting for client to wake up");
 				break;
 			}
-	
-			REQUEST_CLIENT_pull_up();
 
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_CLIENT_REQUEST_FOR_COMMAND >> RPI_HOST_STATE_SEND_COMMAND");
+			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_REQUEST_CLIENT >> RPI_HOST_STATE_SEND_COMMAND");
 
 			rpi_host_state = RPI_HOST_STATE_SEND_COMMAND;
 			RPI_OP_TIMER_start();
@@ -327,20 +370,11 @@ void rpi_protocol_task_run(void) {
 
 		case RPI_HOST_STATE_SEND_COMMAND:
 
-			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS)) {
-				DEBUG_PASS("rpi_protocol_task_run() - TIMEOUT!!! - RPI_HOST_STATE_SEND_COMMAND >> RPI_HOST_STATE_FINISH");
-				rpi_host_state = RPI_HOST_STATE_FINISH;
-				break;
-			}
-
-			if (REQUEST_CLIENT_is_high_level()) {
-				break;
-			}
-
 			rpi_host_send_command();
 
 			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_SEND_COMMAND >> RPI_HOST_STATE_CLIENT_WAIT_FOR_RESPONSE");
 
+			client_poll_interval_ms = RPI_PROTOCOL_CLIENT_POLL_INTERVAL_MS;
 			rpi_host_state = RPI_HOST_STATE_CLIENT_WAIT_FOR_RESPONSE;
 			RPI_OP_TIMER_start();
 
@@ -355,63 +389,29 @@ void rpi_protocol_task_run(void) {
 				break;
 			}
 
-			if (REQUEST_CLIENT_is_low_level()) {
+			if (RPI_OP_TIMER_is_up(client_poll_interval_ms) == 0) {
 				break;
 			}
-
-			DEBUG_TRACE_word(RPI_OP_TIMER_elapsed(), "rpi_protocol_task_run() - RPI_HOST_STATE_CLIENT_WAIT_FOR_RESPONSE >> RPI_HOST_STATE_CLIENT_REQUEST_FOR_RESPONSE - Time elapsed: ");
-
-			rpi_host_state = RPI_HOST_STATE_CLIENT_REQUEST_FOR_RESPONSE;
-
-			REQUEST_CLIENT_drive_low();
-			RPI_OP_TIMER_start();
-
-			// no break;
-
-		case RPI_HOST_STATE_CLIENT_REQUEST_FOR_RESPONSE:
-
-			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HOST_CLIENT_REQUEST_TIME_MS) == 0) {
-				break;
-			}
-	
-			REQUEST_CLIENT_pull_up();
-
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_CLIENT_REQUEST_FOR_RESPONSE >> RPI_HOST_STATE_RECEIVE_RESPONSE");
-
-			rpi_host_state = RPI_HOST_STATE_RECEIVE_RESPONSE;
-			RPI_OP_TIMER_start();
-
-			// no break;
-
-		case RPI_HOST_STATE_RECEIVE_RESPONSE:
-
-			if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS)) {
-				DEBUG_PASS("rpi_protocol_task_run() - TIMEOUT!!! - RPI_HOST_STATE_RECEIVE_RESPONSE >> RPI_HOST_STATE_FINISH");
-				RPI_HOST_RESPONSE_TIMEOUT_SIGNAL_send(NULL);
-				rpi_host_state = RPI_HOST_STATE_FINISH;
-				break;
-			}
-
-			if (REQUEST_CLIENT_is_high_level()) {
-				break;
-			}
+			
+			client_poll_interval_ms += RPI_PROTOCOL_CLIENT_POLL_INTERVAL_MS;
 
 			if (rpi_host_receive_response() == 0) {
 				break;
 			}
 
-			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_RECEIVE_RESPONSE >> RPI_HOST_STATE_FINISH");
+			DEBUG_TRACE_word(RPI_OP_TIMER_elapsed(), "rpi_protocol_task_run() - RPI_HOST_STATE_CLIENT_WAIT_FOR_RESPONSE >> RPI_HOST_STATE_FINISH - Time elapsed: ");
 
 			rpi_host_state = RPI_HOST_STATE_FINISH;
+
+			RPI_OP_TIMER_start();
+
+			// no break;
 
 		case RPI_HOST_STATE_FINISH:
 
 			DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_STATE_FINISH >> RPI_HOST_STATE_SLEEP");
 			rpi_host_state = RPI_HOST_STATE_SLEEP;
+			REQUEST_CLIENT_no_pull();
 			break;
 	}
-}
-
-u8 rpi_protocol_handler_get_actual_state(void) {
-	return (u8) rpi_host_state;
 }

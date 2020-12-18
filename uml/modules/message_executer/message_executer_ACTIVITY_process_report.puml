@@ -2,7 +2,12 @@
 
 skinparam monochrome true
 
-partition "activity: Message-Executer process report" {
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: Message-Executer process report
+
 start
 
 (I)
@@ -11,12 +16,14 @@ start
 if (new message pending) then (yes)
 
 	:UNSET_STATUS(REPORT_ACTIVE);
-	end
+	(I)
+	detach
 
 elseif (report-interval timeout) then (yes)
 
 else (no)
-	end
+	(I)
+	detach
 endif
 
 if (report-file is open) then (yes)
@@ -25,7 +32,8 @@ else (no)
 	:open report-file;
 	if (open failed) then (yes)
 		#pink:OPEN_FILE_FAILED>
-		end
+		(I)
+		detach
 	else (no)
 
 	endif
@@ -54,9 +62,5 @@ endif
 #pink:REPORT_MESSAGE>
 
 (I)
-
-}
-
-footer Author: Sebastian Lesse
 
 @enduml

@@ -2,7 +2,12 @@
 
 skinparam monochrome true
 
-partition "activity: Message-Executer process EXE-command" {
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: Message-Executer process EXE-command
+
 start
 
 :prepare command;
@@ -25,10 +30,7 @@ else (yes)
 	endif
 endif
 
-end
+stop
 
-}
-
-footer Author: Sebastian Lesse
 
 @enduml
