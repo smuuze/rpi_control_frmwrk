@@ -13,6 +13,7 @@ else
 	else
 		ifeq ($(UNAME_S),Darwin)
 		CCFLAGS += -D OSX
+		CROSS_COMPILER_PATH   = /usr/local/bin
 		endif
 	endif
     
