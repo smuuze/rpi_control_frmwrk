@@ -45,6 +45,18 @@
 #define LOG_INTERFACE_TASK_RUN_INTERVAL_MS				5
 #endif
 
+#ifndef LOG_INTERFACE_DEFAULT_LOG_FILE_PATH
+#define LOG_INTERFACE_DEFAULT_LOG_FILE_PATH				"logs"
+#endif
+
+#ifndef LOG_INTERFACE_MAX_LOG_FILE_SIZE_KB
+#define LOG_INTERFACE_MAX_LOG_FILE_SIZE_KB				2048
+#endif
+
+#ifndef LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH
+#define LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH				255
+#endif
+
 // --------------------------------------------------------------------------------
 
 #define LOG_INTERFACE_STATUS_QEUE_OVERFLOW				(1 << 0)
@@ -57,6 +69,7 @@ BUILD_MODULE_STATUS_U8(LOG_INTERFACE_STATUS)
 typedef enum {
 	LOG_INTERFACE_TASK_STATE_START_UP,
 	LOG_INTERFACE_TASK_STATE_IDLE,
+	LOG_INTERFACE_TASK_STATE_CHECK_FILE,
 	LOG_INTERFACE_TASK_STATE_OPEN_FILE,
 	LOG_INTERFACE_TASK_STATE_CLOSE_FILE,
 	LOG_INTERFACE_TASK_STATE_WRITE_LOG
@@ -141,8 +154,8 @@ static MCU_TASK_INTERFACE log_interface_task = {
 	0, 						// u8 identifier,
 	0, 						// u16 new_run_timeout,
 	0, 						// u16 last_run_time,
-	&log_interface_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
-	&log_interface_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&log_interface_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
+	&log_interface_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK		init,
 	&log_interface_task_get_state, 			// MCU_TASK_INTERFACE_GET_STATE_CALLBACK	get_sate,
 	&log_interface_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK		run,
 	&log_interface_task_background_run,		// MCU_TASK_INTERFACE_BG_RUN_CALLBACK		background_run,
@@ -158,7 +171,7 @@ static MCU_TASK_INTERFACE log_interface_task = {
 /*
  *
  */
-static char cfg_file_path[LOG_INTERFACE_MAX_LINE_LENGTH];
+static char log_file_path[LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH];
 
 /*
  *
@@ -172,6 +185,8 @@ void log_interface_init(void) {
 	LOG_INTERFACE_STATUS_clear_all();
 
 	LOG_QEUE_init();
+
+		LOG_FILE_set_path(p_cfg_object->value);
 
 	DEBUG_PASS("log_interface_init() - LOG_INTERFACE_CFG_COMPLETE_SLOT_connect()");
 	LOG_INTERFACE_CFG_COMPLETE_SLOT_connect();
@@ -236,9 +251,16 @@ static void log_interface_task_run(void) {
 			app_task_state = LOG_INTERFACE_TASK_STATE_OPEN_FILE;
 			// no break;
 
+		case LOG_INTERFACE_TASK_STATE_CHECK_FILE :
+
+			if (LOG_FILE_get_size > LOG_INTERFACE_MAX_LOG_FILE_SIZE_KB) {
+				// change log
+			}
+			break;
+
 		case LOG_INTERFACE_TASK_STATE_OPEN_FILE :
 
-			if (LOG_FILE_open_path(cfg_file_path) == 0) {
+			if (LOG_FILE_open() == 0) {
 				DEBUG_PASS("log_interface_task_run() - Open new cfg-file has FAILED !!! ---");
 				app_task_state = LOG_INTERFACE_TASK_STATE_OPEN_FILE;
 				break;
@@ -295,6 +317,28 @@ static void log_interface_task_terminate(void) {
 
 static void log_interface_new_cfg_object_SLOT_CALLBACK(const void* p_argument) {
 
+	if (LOG_INTERFACE_STATUS_is_set(LOG_INTERFACE_STATUS_USER_CFG_COMPLETE)) {
+		DEBUG_PASS("log_interface_new_cfg_object_SLOT_CALLBACK() - Configuration cant be changed after start-up");
+		return;
+	}
+
+	if (p_argument == NULL) {
+		DEBUG_PASS("log_interface_new_cfg_object_SLOT_CALLBACK() - NULL-POINTER-EXCEPTION");
+		return;
+	}
+
+	CFG_FILE_PARSER_CFG_OBJECT_TYPE* p_cfg_object = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*) p_argument;
+
+	if (common_tools_string_compare(LOG_FILE_PATH_CFG_NAME, p_cfg_object->key)) {
+
+		DEBUG_TRACE_STR(p_cfg_object->value, "log_interface_new_cfg_object_SLOT_CALLBACK() - LOG_FILE_PATH_CFG_NAME cfg-object");
+
+		if (common_tools_string_ends_with(p_cfg_object->value, '/')) {
+			common_tools_string_remove_last_character(char* p_string);
+		}
+
+		common_tools_string_copy_string(log_file_path, p_cfg_object->value, LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH);
+	}
 }
 
 static void log_interface_cfg_complete_SLOT_CALLBACK(const void* p_argument) {
@@ -305,4 +349,13 @@ static void log_interface_cfg_complete_SLOT_CALLBACK(const void* p_argument) {
 
 void log_message(const char* message) {
 
+	if (LOG_QEUE_is_full()) {
+		LOG_INTERFACE_STATUS_set(LOG_INTERFACE_STATUS_QEUE_OVERFLOW);
+		return;
+	}
+
+	u8 new_message[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+	common_tools_string_copy_string(new_message, message, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+
+	LOG_QEUE_enqeue(new_message);
 }
