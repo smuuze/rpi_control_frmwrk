@@ -62,7 +62,7 @@ ifeq ($(MCU), UNITTEST)
 	CPU_FAMILY 	= unittest
 	INC_PATH 	+= $(FRMWRK_PATH)/src/common/cpu/unittest
 	INC_PATH	+= /usr/include
-	LDFLAGS = -Wl,$(OBJECT_DIRECTORY)/$(TARGET).map
+	LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
 	LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 endif
 
