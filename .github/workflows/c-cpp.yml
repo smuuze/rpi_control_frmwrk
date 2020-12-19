@@ -15,5 +15,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: change directory
       run: cd module_test/rpi_protocol_client
+    - name: list content
+      run: ls
     - name: make
       run: make
