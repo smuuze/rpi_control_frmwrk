@@ -1,0 +1,22 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/rpi_protocol_client
+    steps:
+    - uses: actions/checkout@v2
+    - name: list content
+      run: ls
+    - name: build test
+      run: make
