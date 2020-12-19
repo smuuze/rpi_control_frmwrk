@@ -54,7 +54,7 @@ ifeq ($(MCU), RASPBERRY_PI)
 	INC_PATH	+= /usr/include
 	
 	LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
-LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
+	LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 endif
 
 ifeq ($(MCU), UNITTEST)
@@ -63,7 +63,7 @@ ifeq ($(MCU), UNITTEST)
 	INC_PATH 	+= $(FRMWRK_PATH)/src/common/cpu/unittest
 	INC_PATH	+= /usr/include
 	LDFLAGS = -Wl,$(OBJECT_DIRECTORY)/$(TARGET).map
-	LD_EXTRA_FLAGS += -W
+	LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 endif
 
 SECTIONS =
