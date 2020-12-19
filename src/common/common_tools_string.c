@@ -228,13 +228,13 @@ u8 common_tools_string_ends_with(const char* p_string, char character) {
 
 void common_tools_string_remove_last_character(char* p_string) {
 
-	u8 length = strlen(p_cfg_object->value);
+	u8 length = strlen(p_string);
 
 	if (length == 0) {
 		return 0;
 	}
 
-	_cfg_object->value[length - 1] = '\0';
+	p_string[length - 1] = '\0';
 }
 
 u8 common_tools_string_compare(const char* p_string1, const char* p_string2) {
