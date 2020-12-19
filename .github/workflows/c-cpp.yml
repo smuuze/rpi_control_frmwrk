@@ -1,0 +1,19 @@
+name: UNITTEST
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: change directory
+      run: cd module_test/rpi_protocol_client
+    - name: make
+      run: make
