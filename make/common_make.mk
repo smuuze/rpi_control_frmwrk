@@ -276,7 +276,7 @@ C_EXTRA_FLAGS +=
 AS_EXTRA_FLAGS +=
 
 # Extra flags to use when linking
-LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
+# is now in make_cpu.mk LD_EXTRA_FLAGS += -Wl,--relax
 #-Wl,--gc-sections
 
 # -----------------------------------------------------------------------

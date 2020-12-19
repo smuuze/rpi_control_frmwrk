@@ -26,6 +26,7 @@ endif
 MCU ?=
 MCU_FLAG ?=
 CROSS_COMPILER_PREFIX ?= 
+LD_EXTRA_FLAGS ?=
 
 MCU_SIZE_FLAGS ?=
 
@@ -41,6 +42,9 @@ ifeq ($(MCU), ATMEGA1284P)
 	CROSS_COMPILER_PREFIX = avr-
 
 	MCU_SIZE_FLAGS = --mcu=$(MCU_NAME)
+
+	LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
+	LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 endif
 
 ifeq ($(MCU), RASPBERRY_PI)
@@ -48,6 +52,18 @@ ifeq ($(MCU), RASPBERRY_PI)
 	CPU_FAMILY 	= arm
 	INC_PATH 	+= $(FRMWRK_PATH)/src/common/cpu/rpi_arm
 	INC_PATH	+= /usr/include
+	
+	LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
+LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
+endif
+
+ifeq ($(MCU), UNITTEST)
+	MCU_NAME 	= unittest
+	CPU_FAMILY 	= unittest
+	INC_PATH 	+= $(FRMWRK_PATH)/src/common/cpu/unittest
+	INC_PATH	+= /usr/include
+	LDFLAGS = -Wl,$(OBJECT_DIRECTORY)/$(TARGET).map
+	LD_EXTRA_FLAGS += -Wl
 endif
 
 SECTIONS =
@@ -62,7 +78,6 @@ SECTIONS += -j .data
 
 CSLAGS += -g
 
-LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
 LDFLAGS += $(LD_EXTRA_FLAGS)
 
 #MCU_TARGET     = at90s2313
