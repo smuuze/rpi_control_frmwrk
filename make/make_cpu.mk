@@ -63,7 +63,7 @@ ifeq ($(MCU), UNITTEST)
 	INC_PATH 	+= $(FRMWRK_PATH)/src/common/cpu/unittest
 	INC_PATH	+= /usr/include
 	LDFLAGS = -Wl,$(OBJECT_DIRECTORY)/$(TARGET).map
-	LD_EXTRA_FLAGS += -Wl
+	LD_EXTRA_FLAGS += -W
 endif
 
 SECTIONS =
