@@ -213,13 +213,13 @@ void common_tools_string_append(char* p_string_base, char* p_string_to_append, u
 
 u8 common_tools_string_ends_with(const char* p_string, char character) {
 
-	u8 length = strlen(p_cfg_object->value);
+	u8 length = strlen(p_string);
 
 	if (length == 0) {
 		return 0;
 	}
 
-	if (p_cfg_object->value[length - 1] == character) {
+	if (p_string[length - 1] == character) {
 		return 1;
 	} else {
 		return 0;
@@ -231,7 +231,7 @@ void common_tools_string_remove_last_character(char* p_string) {
 	u8 length = strlen(p_string);
 
 	if (length == 0) {
-		return 0;
+		return ;
 	}
 
 	p_string[length - 1] = '\0';
