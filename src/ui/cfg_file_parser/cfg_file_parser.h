@@ -53,11 +53,6 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CFG_PARSER_CFG_COMPLETE_SIGNAL)
  */
 void cfg_file_parser_init(void);
 
-/*
- *
- */
-u8 cfg_file_parser_match_cfg_key(const char* reference, const char* cfg_key);
-
 // --------------------------------------------------------------------------------
 
 /*

@@ -84,6 +84,26 @@ u16 common_tools_string_to_u16(const char* p_str);
 /*
  *
  */
+u8 common_tools_string_ends_with(const char* p_string, char character);
+
+/*
+ *
+ */
+common_tools_string_remove_last_character(char* p_string);
+
+/*
+ *
+ */
+u8 common_tools_string_compare(const char* p_string1, const char* p_string2);
+
+/*
+ *
+ */
+u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from, u16 max_length);
+
+/*
+ *
+ */
 void string_get_time(char* time_string);
 
 #endif // COMMON_TOOLS_STRING_H_

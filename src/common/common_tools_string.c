@@ -211,6 +211,59 @@ void common_tools_string_append(char* p_string_base, char* p_string_to_append, u
 	DEBUG_TRACE_STR(p_string_base, "common_tools_string_append() - New String: ");
 }
 
+u8 common_tools_string_ends_with(const char* p_string, char character) {
+
+	u8 length = strlen(p_cfg_object->value);
+
+	if (length == 0) {
+		return 0;
+	}
+
+	if (p_cfg_object->value[length - 1] == character) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+void common_tools_string_remove_last_character(char* p_string) {
+
+	u8 length = strlen(p_cfg_object->value);
+
+	if (length == 0) {
+		return 0;
+	}
+
+	_cfg_object->value[length - 1] = '\0';
+}
+
+u8 common_tools_string_compare(const char* p_string1, const char* p_string2) {
+
+	if (strlen(p_string1) != strlen(p_string2)) {
+		return 0;
+	}
+	
+	if (memcmp(p_string1, p_string2, strlen(p_string1)) != 0) {
+		return 0;
+	}
+
+	return 1;
+}
+
+u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from, u16 max_length) {
+
+	u16 length = strlen(p_string_from);
+
+	if (length > max_length - 1) {
+		length = max_length - 1;
+	}
+
+	memset(p_string_to, '\0', max_length);
+	memcpy(p_string_to, p_string_from, length);
+
+	return length;
+}
+
 
 /*
 

@@ -308,18 +308,3 @@ static void cfg_file_parser_CFG_FILE_SLOT_CALLBACK(const void* p_argument) {
 
 	CFG_FILE_PARSER_STATUS_set(CFG_FILE_PARSER_NEW_CFG_FILE_SET);
 }
-
-// --------------------------------------------------------------------------------
-
-u8 cfg_file_parser_match_cfg_key(const char* reference, const char* cfg_key) {
-
-	if (strlen(reference) != strlen(cfg_key)) {
-		return 0;
-	}
-	
-	if (memcmp(reference, cfg_key, strlen(reference)) != 0) {
-		return 0;
-	}
-
-	return 1;
-}

@@ -826,8 +826,9 @@ static void msg_executer_prepare_report(char* p_response_message, char* p_respon
 		length = max_response_length;
 	} 
 
-	memset(p_response_message, '\0', max_response_length);
-	memcpy(p_response_message, t_message, strlen(t_message));
+	//memset(p_response_message, '\0', max_response_length);
+	//memcpy(p_response_message, t_message, strlen(t_message));
+	common_tools_string_copy_string(p_response_message, t_message, max_response_length);
 }
 
 // --------------------------------------------------------------------------------
@@ -841,21 +842,21 @@ static void msg_executer_cfg_object_CALLBACK(const void* p_argument) {
 
 	CFG_FILE_PARSER_CFG_OBJECT_TYPE* p_cfg_object = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*) p_argument;
 
-	if (cfg_file_parser_match_cfg_key(REPORT_FILE_PATH_CFG_NAME, p_cfg_object->key)) {
+	if (common_tools_string_compare(REPORT_FILE_PATH_CFG_NAME, p_cfg_object->key)) {
 
 		DEBUG_TRACE_STR(p_cfg_object->value, "msg_executer_cfg_object_CALLBACK() - REPORT_FILE_PATH_CFG_NAME cfg-object");
 		REPORT_FILE_set_path(p_cfg_object->value);
 		return;
 	}
 
-	if (cfg_file_parser_match_cfg_key(COMMAND_FILE_PATH_CFG_NAME, p_cfg_object->key)) {
+	if (common_tools_string_compare(COMMAND_FILE_PATH_CFG_NAME, p_cfg_object->key)) {
 		
 		DEBUG_TRACE_STR(p_cfg_object->value, "msg_executer_cfg_object_CALLBACK() - COMMAND_FILE_PATH_CFG_NAME cfg-object");
 		COMMAND_FILE_set_path(p_cfg_object->value);
 		return;
 	}
 
-	if (cfg_file_parser_match_cfg_key(REPORT_INTERVAL_CFG_NAME, p_cfg_object->key)) {
+	if (common_tools_string_compare(REPORT_INTERVAL_CFG_NAME, p_cfg_object->key)) {
 		
 		msg_executer_report_interval_timeout_ms = common_tools_string_to_u16(p_cfg_object->value);
 
@@ -888,8 +889,9 @@ static void msg_executer_MQTT_MESSAGE_RECEIVED_CALLBACK(const void* p_argument) 
 		return;
 	}
 
-	memset(msg_executer_pending_msg, '\0', MSG_EXECUTER_MAX_MESSAGE_LENGTH);
-	memcpy(msg_executer_pending_msg, (const char*) p_argument, msg_length);
+	//memset(msg_executer_pending_msg, '\0', MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+	//memcpy(msg_executer_pending_msg, (const char*) p_argument, msg_length);
+	common_tools_string_copy_string(msg_executer_pending_msg, (const char*) p_argument, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 
 	DEBUG_TRACE_STR(msg_executer_pending_msg, "msg_executer_MQTT_MESSAGE_RECEIVED_CALLBACK()");
 
@@ -921,8 +923,9 @@ static void msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK(const void*
 
 	DEBUG_TRACE_STR(p_response, "msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK()");
 
-	memset(msg_executer_pending_response, '\0', MSG_EXECUTER_MAX_MESSAGE_LENGTH);
-	memcpy(msg_executer_pending_response, p_response, strlen(p_response));
+	//memset(msg_executer_pending_response, '\0', MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+	//memcpy(msg_executer_pending_response, p_response, strlen(p_response));
+	common_tools_string_copy_string(msg_executer_pending_response, p_response, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 
 	MSG_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
 }

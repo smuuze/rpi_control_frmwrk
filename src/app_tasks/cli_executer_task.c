@@ -473,8 +473,9 @@ static void cli_executer_CLI_EXECUTER_COMMAND_RECEIVED_SLOT_CALLBACK(const void*
 
 	const char* p_command = (const char*) p_argument;
 
-	memset(cli_executer_pending_command, '\0', CLI_EXECUTER_MAX_MESSAGE_LENGTH);
-	memcpy(cli_executer_pending_command, p_command, strlen(p_command));
+	//memset(cli_executer_pending_command, '\0', CLI_EXECUTER_MAX_MESSAGE_LENGTH);
+	//memcpy(cli_executer_pending_command, p_command, strlen(p_command));
+	common_tools_string_copy_string(cli_executer_pending_command, p_command, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
 
 	common_tools_string_trim(cli_executer_pending_command);
 
