@@ -58,7 +58,11 @@ release: release_dir release_obj hex_file lss_file prog_size
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(RELEASE_DIRECTORY)/$(TARGET)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
+# --------- 
+
 eclipse: dependency_obj 
+
+# --------- 
 
 clean:
 	$(VERBOSE) $(ECHO) - Removing object directory from filesystem
@@ -70,6 +74,11 @@ clean:
 	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET).map
 	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+# --------- 
+
+run:
+	./$(TARGET).$(PLATTFORM_EXTENSION)
 
 # --------- 
 
@@ -93,16 +102,18 @@ hex_file:
 	$(VERBOSE) $(CC_COPY) $(SECTIONS) $(HEXFLAGS) -O $(FORMAT) $(OBJECT_DIRECTORY)/$(TARGET).elf $(OBJECT_DIRECTORY)/$(TARGET).hex
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).hex $(TARGET).hex
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).map $(TARGET).map
-
-else
-
-hex_file:
-
-endif
 	
 lss_file:
 	$(VERBOSE) $(ECHO) $(MSG_LISTING)
 	$(VERBOSE) $(CC_DUMP) -h -S $(OBJECT_DIRECTORY)/$(TARGET).elf > $(OBJECT_DIRECTORY)/$(TARGET).lss
+
+else
+
+hex_file:
+	
+lss_file:
+
+endif
 	
 obj_dir:
 	$(VERBOSE) $(ECHO) - Creating Object directory: $(OBJECT_DIRECTORY)
