@@ -1,19 +1,9 @@
-#-----------------------------------------------------------------------------
-#       Makefile fuer AVR-GCC Projekte
-#-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
-# PROJECT: Name des Hexfiles usw.
-#-----------------------------------------------------------------------------
-# VERSION_STRING muss (!) zwei Ziffern nach dem '.' enthalten, weil
-# aus dem String noch weitere Varianten von Version erzeugt
-# werden. Beispiel:
-# VERSION_STRING = v1.07
-# VERSION_DIGITS = 107
-# VERSION        = 0x107
 
-# PROJEKT Name des Hexfiles
 PROJECT = UNITTEST_rpi_protocol_client
+
+PLATTFORM = MACOS
 
 BOARD_ID = UNITTEST
 
