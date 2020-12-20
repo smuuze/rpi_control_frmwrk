@@ -145,7 +145,7 @@ i16 file_read_line(FILE* file_handle, char* p_buffer_to, u16 num_max_bytes) {
 	
 	//DEBUG_PASS("read_line() - Line: ");
 	
-	while ((character = getc(file_handle)) != 255) {
+	while ((unsigned char)(character = getc(file_handle)) != 255) {
 		
 		if (num_bytes_read == num_max_bytes - 1) {
 			break;
@@ -156,7 +156,7 @@ i16 file_read_line(FILE* file_handle, char* p_buffer_to, u16 num_max_bytes) {
 			break;
 		}	
 		
-		if ((character  < 32 || character > 254)) {		
+		if ((character  < 32 || (unsigned char)character > 254)) {		
 			//DEBUG_PASS("----> Character is not supported (%d)\n", character);
 			continue;
 		}
