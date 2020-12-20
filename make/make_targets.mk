@@ -39,15 +39,14 @@ CFLAGS 			+= -pedantic -Wall
 all: release_obj hex_file lss_file prog_size
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).$(PLATTFORM_EXTENSION)
-	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).lss $(TARGET).lss
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
-	
+
 debug: debug_obj hex_file lss_file prog_size
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).hex $(TARGET).hex
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).lss $(TARGET).lss
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).map $(TARGET).map
-	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).elf
+	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
 release: release_dir release_obj hex_file lss_file prog_size
@@ -56,6 +55,16 @@ release: release_dir release_obj hex_file lss_file prog_size
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(RELEASE_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).map $(RELEASE_DIRECTORY)/$(TARGET).map
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(RELEASE_DIRECTORY)/$(TARGET)
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+unittest: release_obj prog_size
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).$(PLATTFORM_EXTENSION)
+	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).$(PLATTFORM_EXTENSION)
+	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+unittest_debug: debug_obj prog_size
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).$(PLATTFORM_EXTENSION)
+	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
 # --------- 
@@ -94,8 +103,6 @@ dependency_obj: dependency_dir $(DEPENDENCY_OBJECTS)
 
 # --------- 
 
-ifneq ($(PLATTFORM), MACOS)
-
 hex_file:
 	$(VERBOSE) $(ECHO) - Generating $(OBJECT_DIRECTORY)/$(TARGET).hex
 	$(VERBOSE) $(CC_COPY) $(SECTIONS) -O $(FORMAT) $(OBJECT_DIRECTORY)/$(TARGET).elf $(OBJECT_DIRECTORY)/$(TARGET).hex
@@ -106,14 +113,7 @@ hex_file:
 lss_file:
 	$(VERBOSE) $(ECHO) $(MSG_LISTING)
 	$(VERBOSE) $(CC_DUMP) -h -S $(OBJECT_DIRECTORY)/$(TARGET).elf > $(OBJECT_DIRECTORY)/$(TARGET).lss
-
-else
-
-hex_file:
-	
-lss_file:
-
-endif
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).lss $(TARGET).lss
 	
 obj_dir:
 	$(VERBOSE) $(ECHO) - Creating Object directory: $(OBJECT_DIRECTORY)
