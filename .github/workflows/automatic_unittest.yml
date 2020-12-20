@@ -7,18 +7,14 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build1:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     defaults:
       run:
         shell: bash
-        working-directory: module_test/rpi_protocol_client
+        working-directory: module_test/log_interface
     steps:
     - uses: actions/checkout@v2
-    - name: list content
-      run: ls
-    - name: install dependencies
-      run: npm install
     - name: build test
       run: make
