@@ -36,22 +36,10 @@ CFLAGS 			+= -pedantic -Wall
 
 # --------- 
 
-all: release_obj
-
-ifneq ($(PLATTFORM), MACOS)
-all: hex_file
-	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).hex $(TARGET).hex
-	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).map $(TARGET).map
-endif
-
-all: lss_file
-	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).lss $(TARGET).lss
-
-all: prog_size
-
-all:
+all: release_obj hex_file lss_file prog_size
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).$(PLATTFORM_EXTENSION)
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).lss $(TARGET).lss
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 	
 debug: debug_obj hex_file lss_file prog_size
@@ -96,11 +84,21 @@ debug_obj: debug_dir $(DEBUG_OBJECTS)
 dependency_obj: dependency_dir $(DEPENDENCY_OBJECTS)
 
 # --------- 
-	
+
+ifneq ($(PLATTFORM), MACOS)
+
 hex_file:
 	$(VERBOSE) $(ECHO) - Generating $(OBJECT_DIRECTORY)/$(TARGET).hex
 	$(VERBOSE) $(CC_COPY) $(SECTIONS) -O $(FORMAT) $(OBJECT_DIRECTORY)/$(TARGET).elf $(OBJECT_DIRECTORY)/$(TARGET).hex
 	$(VERBOSE) $(CC_COPY) $(SECTIONS) $(HEXFLAGS) -O $(FORMAT) $(OBJECT_DIRECTORY)/$(TARGET).elf $(OBJECT_DIRECTORY)/$(TARGET).hex
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).hex $(TARGET).hex
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).map $(TARGET).map
+
+else
+
+hex_file:
+
+endif
 	
 lss_file:
 	$(VERBOSE) $(ECHO) $(MSG_LISTING)
