@@ -36,18 +36,28 @@ CFLAGS 			+= -pedantic -Wall
 
 # --------- 
 
-all: release_obj hex_file lss_file prog_size
+all: release_obj
+
+ifneq ($(PLATTFORM), MACOS)
+all: hex_file
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).hex $(TARGET).hex
-	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).lss $(TARGET).lss
-	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).elf
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).map $(TARGET).map
-	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).elf
+endif
+
+all: lss_file
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).lss $(TARGET).lss
+
+all: prog_size
+
+all:
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).$(PLATTFORM_EXTENSION)
+	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 	
 debug: debug_obj hex_file lss_file prog_size
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).hex $(TARGET).hex
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).lss $(TARGET).lss
-	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).elf
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).map $(TARGET).map
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).elf
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
@@ -55,7 +65,7 @@ debug: debug_obj hex_file lss_file prog_size
 release: release_dir release_obj hex_file lss_file prog_size
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).hex $(RELEASE_DIRECTORY)/$(TARGET).hex
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).lss $(RELEASE_DIRECTORY)/$(TARGET).lss
-	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(RELEASE_DIRECTORY)/$(TARGET).elf
+	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(RELEASE_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).map $(RELEASE_DIRECTORY)/$(TARGET).map
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(RELEASE_DIRECTORY)/$(TARGET)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
@@ -68,7 +78,7 @@ clean:
 	$(VERBOSE) $(ECHO) - Removing generated program-files
 	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET).hex
 	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET).lss
-	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET).elf
+	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET).map
 	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)

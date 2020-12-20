@@ -28,6 +28,15 @@ endif
 
 # --------------------------------------------------------------------------------
 
+LOG_INTERFACE_PATH = $(USER_INTERFACE_PATH)/log_interface
+
+ifneq '' '$(findstring LOG_INTERFACE,$(USER_INTERFACE_CFG))'
+	DEFS += -D LOG_INTERFACE_AVAILABLE=1
+	CSRCS += $(LOG_INTERFACE_PATH)/log_interface.c
+endif
+
+# --------------------------------------------------------------------------------
+
 CFG_FILE_INTERFACE_PATH = $(USER_INTERFACE_PATH)/file_interface
 
 ifneq '' '$(findstring FILE_INTERFACE,$(USER_INTERFACE_CFG))'
