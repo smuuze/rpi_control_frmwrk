@@ -48,4 +48,3 @@ void protocol_initialization(void) {
 	}
 	#endif
 }
-

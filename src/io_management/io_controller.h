@@ -115,4 +115,3 @@
 	u32 name##_get_down_time(void);
 
 #endif // _IO_CONTROLLER_H_
-

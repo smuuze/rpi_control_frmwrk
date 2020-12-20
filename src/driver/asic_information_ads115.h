@@ -66,7 +66,3 @@
 #define ADS1115_MEASUREMENT_IS_READY(p_buf)					((p_buf[0] & 0x80) != 0 ? 1 : 0)
 
 #endif // _LOCAL_ASIC_INFORMATION_ADS115_H_
-
-
-
-

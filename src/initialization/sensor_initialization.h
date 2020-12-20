@@ -10,4 +10,3 @@
 void sensor_initialization(void);
 
 #endif // _SENSOR_INITIALIZATION_H_
-

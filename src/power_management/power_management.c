@@ -198,4 +198,3 @@ void power_management_task_finish(void) {
 void power_management_task_terminate(void) {
 
 }
-

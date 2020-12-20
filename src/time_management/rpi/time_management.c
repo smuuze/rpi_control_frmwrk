@@ -62,4 +62,3 @@ u16 time_mgmnt_elapsed_u16(u16 time_reference) {
 u32 time_mgmnt_elapsed_u32(u32 time_reference) {
 	return (time_mgmnt_gettime_u32() - time_reference);
 }
-

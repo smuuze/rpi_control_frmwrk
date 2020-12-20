@@ -25,6 +25,7 @@
 #include "common/signal_slot_interface.h"
 #include "common/common_tools_string.h"
 #include "common/qeue_interface.h"
+#include "ui/cfg_file_parser/cfg_file_parser.h"
 
 // --------------------------------------------------------------------------------
 
@@ -55,6 +56,10 @@
 
 #ifndef LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH
 #define LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH				255
+#endif
+
+#ifndef LOG_INTERFACE_CFG_NAME_LOG_FILE_PATH
+#define LOG_INTERFACE_CFG_NAME_LOG_FILE_PATH				"LOG_FILE_PATH"
 #endif
 
 // --------------------------------------------------------------------------------
@@ -186,8 +191,6 @@ void log_interface_init(void) {
 
 	LOG_QEUE_init();
 
-		LOG_FILE_set_path(p_cfg_object->value);
-
 	DEBUG_PASS("log_interface_init() - LOG_INTERFACE_CFG_COMPLETE_SLOT_connect()");
 	LOG_INTERFACE_CFG_COMPLETE_SLOT_connect();
 
@@ -253,7 +256,7 @@ static void log_interface_task_run(void) {
 
 		case LOG_INTERFACE_TASK_STATE_CHECK_FILE :
 
-			if (LOG_FILE_get_size > LOG_INTERFACE_MAX_LOG_FILE_SIZE_KB) {
+			if (LOG_FILE_get_size() > LOG_INTERFACE_MAX_LOG_FILE_SIZE_KB) {
 				// change log
 			}
 			break;
@@ -274,10 +277,12 @@ static void log_interface_task_run(void) {
 
 		case LOG_INTERFACE_TASK_STATE_WRITE_LOG :
 
-			log_interface_parse_configuration_file();
-
 			DEBUG_PASS("log_interface_task_run() - LOG_INTERFACE_TASK_STATE_LOAD_CONFIGURATION > LOG_INTERFACE_TASK_STATE_IDLE");
 			app_task_state = LOG_INTERFACE_TASK_STATE_IDLE;
+
+			if (LOG_QEUE_is_empty()) {
+				LOG_INTERFACE_STATUS_unset(LOG_INTERFACE_STATUS_QEUE_OVERFLOW);
+			}
 
 			break;
 
@@ -329,12 +334,12 @@ static void log_interface_new_cfg_object_SLOT_CALLBACK(const void* p_argument) {
 
 	CFG_FILE_PARSER_CFG_OBJECT_TYPE* p_cfg_object = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*) p_argument;
 
-	if (common_tools_string_compare(LOG_FILE_PATH_CFG_NAME, p_cfg_object->key)) {
+	if (common_tools_string_compare(LOG_INTERFACE_CFG_NAME_LOG_FILE_PATH, p_cfg_object->key)) {
 
 		DEBUG_TRACE_STR(p_cfg_object->value, "log_interface_new_cfg_object_SLOT_CALLBACK() - LOG_FILE_PATH_CFG_NAME cfg-object");
 
 		if (common_tools_string_ends_with(p_cfg_object->value, '/')) {
-			common_tools_string_remove_last_character(char* p_string);
+			common_tools_string_remove_last_character(p_cfg_object->value);
 		}
 
 		common_tools_string_copy_string(log_file_path, p_cfg_object->value, LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH);
@@ -354,7 +359,7 @@ void log_message(const char* message) {
 		return;
 	}
 
-	u8 new_message[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+	char new_message[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
 	common_tools_string_copy_string(new_message, message, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
 
 	LOG_QEUE_enqeue(new_message);

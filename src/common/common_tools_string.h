@@ -89,7 +89,7 @@ u8 common_tools_string_ends_with(const char* p_string, char character);
 /*
  *
  */
-common_tools_string_remove_last_character(char* p_string);
+void common_tools_string_remove_last_character(char* p_string);
 
 /*
  *

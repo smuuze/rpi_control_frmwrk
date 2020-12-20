@@ -45,7 +45,3 @@
 #define SHT31_ADC_TO_TEMPERATURE(p_u8_buffer)
 
 #endif // _LOCAL_ASIC_INFORMATION_SHT31_H_
-
-
-
-

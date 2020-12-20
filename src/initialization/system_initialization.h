@@ -5,4 +5,3 @@
 #include "config.h"  // immer als erstes einbinden!
 
 void system_initialization(void);
-

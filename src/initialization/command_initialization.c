@@ -39,4 +39,3 @@ void command_initialization(void) {
 	}
 	#endif
 }
-

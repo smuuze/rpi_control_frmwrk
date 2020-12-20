@@ -17,10 +17,3 @@ void local_rtc_timer_power_off(void);
 ISR(TIMER2_COMPA) {
 
 }
-
-
-
-
-
-
-

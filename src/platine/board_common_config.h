@@ -227,7 +227,7 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 #define FAKE_GPIO(pin_name, port_id, pin_id, pin_cfg)									\
 															\
 	static GPIO_DRIVER_DIRECTION _##pin_name##_direction = GPIO_DIRECTION_INPUT;					\
-	static GPIO_DRIVER_LEVEL _##pin_name##_level = GPIO_DIRECTION_INPUT;						\
+	static GPIO_DRIVER_LEVEL _##pin_name##_level = GPIO_LEVEL_HIGH_Z;						\
 	const GPIO_DRIVER_PIN_DESCRIPTOR pin_name = {									\
 		port_id,												\
 		pin_id,													\

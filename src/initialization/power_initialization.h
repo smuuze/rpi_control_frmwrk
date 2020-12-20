@@ -5,4 +5,3 @@
 #include "config.h"  // immer als erstes einbinden!
 
 void power_initialization(void);
-

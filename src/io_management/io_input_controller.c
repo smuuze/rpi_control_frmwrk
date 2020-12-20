@@ -304,5 +304,3 @@ void io_input_controller_iterator_get_next(ITERATOR_INTERFACE* p_iterator) {
 		p_iterator->is_last = 1;
 	}
 }
-
-

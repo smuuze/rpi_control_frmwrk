@@ -20,6 +20,102 @@
 //-----------------------------------------------------------------------------
 
 #include "system_interface.h"
+#include "common/local_mutex.h"
+
+//-----------------------------------------------------------------------------
+
+
+static void empty_driver_initialize(void) {
+}
+
+static void empty_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
+	(void) p_cfg;
+}
+
+static void empty_driver_power_off(void) {
+
+}
+
+static u8 empty_driver_bytes_available (void) {
+	return 0;
+}
+
+static u8 empty_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
+	(void) num_bytes;
+	(void) p_buffer_to;
+	return 0;
+}
+
+static u8 empty_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+	(void) num_bytes;
+	(void) p_buffer_from;
+	return 0;
+}
+
+static u8 empty_driver_is_ready_for_tx (void) {
+	return 0;
+}
+
+static u8 empty_driver_is_ready_for_rx(void) {
+	return 0;
+}
+
+static void empty_driver_start_rx (u16 num_of_rx_bytes) {
+	(void) num_of_rx_bytes;
+}
+
+static void empty_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+	(void) num_bytes;
+	(void) timeout_ms;
+}
+
+static void empty_driver_stop_rx (void) {
+}
+
+static void empty_driver_start_tx (void) {
+}
+
+static void empty_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+	(void) num_bytes;
+	(void) timeout_ms;
+}
+
+static void empty_driver_stop_tx (void) {
+}
+
+static void empty_driver_clear_rx_buffer (void) {
+}
+
+static void empty_driver_clear_tx_buffer (void) {
+}
+
+static void empty_driver_set_address (u8 addr) {
+	(void) addr;
+}
+
+static u8 empty_driver_mutex_request(void) {
+	return MUTEX_INVALID_ID;
+}
+
+static void empty_driver_mutex_release(u8 m_id) {
+
+}
+
+void empty_driver_set_rx_bytes(u8 num_bytes, u8* p_buffer_from) {
+	(void) num_bytes;
+	(void) p_buffer_from;
+
+}
+
+u8 empty_driver_get_tx_bytes(u8 num_bytes, u8* p_buffer_to) {
+	(void) num_bytes;
+	(void) p_buffer_to;
+	return 0;
+}
+
+u8 empty_driver_get_tx_bytes_num_available(void) {
+	return 0;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -30,9 +126,6 @@
 
 config_SPI_POWER_DOWN_PROTOTYPE
 
-/*!
- *
- */
 static TRX_DRIVER_INTERFACE spi0_driver = {
 	SPI,					//	TRX_DRIVER_INTERFACE_TYPE type;
 	&spi0_driver_initialize,			//
@@ -55,6 +148,32 @@ static TRX_DRIVER_INTERFACE spi0_driver = {
 	&spi0_driver_mutex_request,		//
 	&spi0_driver_mutex_release		//
 };
+
+#else
+
+static TRX_DRIVER_INTERFACE spi0_driver = {
+	SPI,					//	TRX_DRIVER_INTERFACE_TYPE type;
+	&empty_driver_initialize,			//
+	&empty_driver_configure, 			//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
+	&empty_driver_power_off, 			//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
+	&empty_driver_bytes_available, 		//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
+	&empty_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
+	&empty_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
+	&empty_driver_start_rx, 			//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
+	&empty_driver_wait_for_rx,		//
+	&empty_driver_stop_rx, 			//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
+	&empty_driver_is_ready_for_tx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&empty_driver_is_ready_for_rx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&empty_driver_start_tx, 			//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
+	&empty_driver_wait_for_tx,		//
+	&empty_driver_stop_tx, 			//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
+	&empty_driver_clear_rx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&empty_driver_clear_tx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&empty_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
+	&empty_driver_mutex_request,		//
+	&empty_driver_mutex_release		//
+};
+
 #endif // #if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 
 //-----------------------------------------------------------------------------
@@ -88,6 +207,32 @@ static TRX_DRIVER_INTERFACE usart0_driver = {
 	&usart0_driver_mutex_request,		//
 	&usart0_driver_mutex_release		//
 };
+
+#else
+
+static TRX_DRIVER_INTERFACE usart0_driver = {
+	USART,					//	TRX_DRIVER_INTERFACE_TYPE type;
+	&empty_driver_initialize,			//
+	&empty_driver_configure, 			//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
+	&empty_driver_power_off, 			//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
+	&empty_driver_bytes_available, 		//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
+	&empty_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
+	&empty_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
+	&empty_driver_start_rx, 			//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
+	&empty_driver_wait_for_rx,		//
+	&empty_driver_stop_rx, 			//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
+	&empty_driver_is_ready_for_tx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&empty_driver_is_ready_for_rx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&empty_driver_start_tx, 			//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
+	&empty_driver_wait_for_tx,		//
+	&empty_driver_stop_tx, 			//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
+	&empty_driver_clear_rx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&empty_driver_clear_tx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&empty_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
+	&empty_driver_mutex_request,		//
+	&empty_driver_mutex_release		//
+};
+
 #endif // HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
 
 //-----------------------------------------------------------------------------
@@ -121,6 +266,32 @@ static TRX_DRIVER_INTERFACE usart1_driver = {
 	&usart1_driver_mutex_request,		//
 	&usart1_driver_mutex_release		//
 };
+
+#else
+
+static TRX_DRIVER_INTERFACE usart1_driver = {
+	USART,					//	TRX_DRIVER_INTERFACE_TYPE type;
+	&empty_driver_initialize,			//
+	&empty_driver_configure, 			//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
+	&empty_driver_power_off, 			//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
+	&empty_driver_bytes_available, 		//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
+	&empty_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
+	&empty_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
+	&empty_driver_start_rx, 			//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
+	&empty_driver_wait_for_rx,		//
+	&empty_driver_stop_rx, 			//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
+	&empty_driver_is_ready_for_tx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&empty_driver_is_ready_for_rx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&empty_driver_start_tx, 			//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
+	&empty_driver_wait_for_tx,		//
+	&empty_driver_stop_tx, 			//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
+	&empty_driver_clear_rx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&empty_driver_clear_tx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&empty_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
+	&empty_driver_mutex_request,		//
+	&empty_driver_mutex_release		//
+};
+
 #endif // HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
 
 //-----------------------------------------------------------------------------
@@ -156,6 +327,32 @@ static TRX_DRIVER_INTERFACE i2c0_driver = {
 	&i2c0_driver_mutex_request,		//
 	&i2c0_driver_mutex_release		//
 };
+
+#else
+
+static TRX_DRIVER_INTERFACE i2c0_driver = {
+	I2C,					//	TRX_DRIVER_INTERFACE_TYPE type;
+	&empty_driver_initialize,			//
+	&empty_driver_configure, 			//	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
+	&empty_driver_power_off, 			//	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
+	&empty_driver_bytes_available, 		//	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
+	&empty_driver_get_N_bytes, 		//	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
+	&empty_driver_set_N_bytes, 		//	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
+	&empty_driver_start_rx, 			//	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
+	&empty_driver_wait_for_rx,		//
+	&empty_driver_stop_rx, 			//	TRX_DRIVER_INTERFACE_STOP_RX_CALLBACK stop_rx;
+	&empty_driver_is_ready_for_tx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&empty_driver_is_ready_for_rx,		//	TRX_DRIVER_INTERFACE_IS_READ_FOR_TX_CALLBACK is_ready_for_tx;
+	&empty_driver_start_tx, 			//	TRX_DRIVER_INTERFACE_START_TX_CALLBACK start_tx;
+	&empty_driver_wait_for_tx,		//
+	&empty_driver_stop_tx, 			//	TRX_DRIVER_INTERFACE_STOP_TX_CALLBACK stop_tx;
+	&empty_driver_clear_rx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&empty_driver_clear_tx_buffer, 		//	TRX_DRIVER_INTERFACE_CLEAR_BUFFER_CALLBACK clear_buffer;
+	&empty_driver_set_address,		//	TRX_DRIVER_INTERFACE_SET_ADDRESS_CALLBACK set_address;
+	&empty_driver_mutex_request,		//
+	&empty_driver_mutex_release		//
+};
+
 #endif // #if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
 
 //-----------------------------------------------------------------------------
@@ -165,6 +362,37 @@ static TRX_DRIVER_INTERFACE i2c0_driver = {
 #endif
 
 //-----------------------------------------------------------------------------
+
+#ifndef config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK
+static void __system_interface_add_event_dummy(SYSTEM_EVENT event) { (void) event; }
+#define config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK	__system_interface_add_event_dummy
+#endif
+
+#ifndef config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK
+static SYSTEM_EVENT __system_interface_get_event_dummy(void) { return SYS_EVT_NO_EVENT; }
+#define config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK	__system_interface_get_event_dummy
+#endif
+
+
+#ifndef config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK
+static u8 __system_interface_progmem_get_byte(u8* addr) { (void) addr; return 0;}
+#define config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK	__system_interface_progmem_get_byte
+#endif
+
+#ifndef config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK
+static u16 __system_interface_progmem_get_word(u8* addr) { (void) addr; return 0; }
+#define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK	__system_interface_progmem_get_word
+#endif
+
+#ifndef config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK
+static u32 __system_interface_progmem_get_long(u8* addr) { (void) addr; return 0; }
+#define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK	__system_interface_progmem_get_long
+#endif
+
+#ifndef config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK
+static void __system_interface_progmem_get_N_bytes(u8* addr, u8* p_buffer_to, u8 num_bytes) { (void) addr; (void) p_buffer_to; (void) num_bytes; }
+#define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	__system_interface_progmem_get_N_bytes
+#endif
 
 #ifndef config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
 #define config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
@@ -205,37 +433,6 @@ static TRX_DRIVER_INTERFACE i2c0_driver = {
 
 #ifndef config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
 #define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK
-static void __system_interface_add_event_dummy(SYSTEM_EVENT event) { (void) event; }
-#define config_SYSTEM_INTERFACE_ADD_EVENT_CALLBACK	__system_interface_add_event_dummy
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK
-static SYSTEM_EVENT __system_interface_get_event_dummy(void) { return SYS_EVT_NO_EVENT; }
-#define config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK	__system_interface_get_event_dummy
-#endif
-
-
-#ifndef config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK
-static u8 __system_interface_progmem_get_byte(u8* addr) { (void) addr; return 0;}
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK	__system_interface_progmem_get_byte
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK
-static u16 __system_interface_progmem_get_word(u8* addr) { (void) addr; return 0; }
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_CALLBACK	__system_interface_progmem_get_word
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK
-static u32 __system_interface_progmem_get_long(u8* addr) { (void) addr; return 0; }
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_CALLBACK	__system_interface_progmem_get_long
-#endif
-
-#ifndef config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK
-static void __system_interface_progmem_get_N_bytes(u8* addr, u8* p_buffer_to, u8 num_bytes) { (void) addr; (void) p_buffer_to; (void) num_bytes; }
-#define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	__system_interface_progmem_get_N_bytes
 #endif
 
 
@@ -311,21 +508,11 @@ const SYSTEM_INTERFACE i_system = {
 		&config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK,
 		&config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK
 	},
+
 	.driver = {
-		#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 		&spi0_driver,
-		#endif
-
-		#if defined HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
 		&usart0_driver,
-		#endif
-
-		#if defined HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
 		&usart1_driver,
-		#endif
-
-		#if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
 		&i2c0_driver
-		#endif
 	}
 };

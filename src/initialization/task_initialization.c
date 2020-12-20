@@ -316,5 +316,3 @@ void task_initialization(void) {
 	mcu_task_controller_register_task(&copro_routing_task);
 	#endif
 }
-
-
