@@ -1,0 +1,33 @@
+@startuml
+
+skinparam monochrome true
+
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: architecture - System-context (technical-view)
+
+component rpi_control [
+	<system>
+	RPi-Control
+]
+
+node SENSOR {
+}
+
+node OPEN_HAB2 {
+}
+
+node RELAIS {
+}
+
+node CONSUMER_ELECTRONIC {
+}
+
+[rpi_control] -- "n" SENSOR : I2C
+[rpi_control] -- "n" RELAIS : GPIO
+[rpi_control] -left- "1" OPEN_HAB2 : mqtt
+[rpi_control] -right- "n" CONSUMER_ELECTRONIC : ir-protocol
+
+@enduml
