@@ -106,4 +106,9 @@ u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from
  */
 void string_get_time(char* time_string);
 
+/*
+ *
+ */
+void common_tools_string_from_u8(char* string_to, u8 number);
+
 #endif // COMMON_TOOLS_STRING_H_
