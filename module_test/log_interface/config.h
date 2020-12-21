@@ -1,14 +1,18 @@
 #ifndef   _config_H_ /* parse include file only once */
 #define   _config_H_
 
-///-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
-#define BOARD_DESCRIPTION_FILE                          "platine/board_UNITTEST.h"
+#include "cpu.h"
+
+//-------------------------------------------------------------------------
+
+#define BOARD_DESCRIPTION_FILE                         			 "platine/board_UNITTEST.h"
 #include "platine/board_UNITTEST.h"
 
 //-------------------------------------------------------------------------
 
-#define config_DEBUG_WELCOME_MESSAGE			"Welcome to RPi - Control Board V2"
+#define config_DEBUG_WELCOME_MESSAGE					"Welcome to RPi - Control Board V2"
 
 //-------------------------------------------------------------------------
 
@@ -22,7 +26,12 @@
 #define config_LOCAL_COMMAND_HANDLER_TABLE_FUNC_CALLBACK	\
 	{CMD_VERSION, &cmd_handler_version},
 
-#define SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS	0
+#define SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS			0
+
+//-------------------------------------------------------------------------
+
+#define LOG_INTERFACE_QEUE_SIZE						6
+#define LOG_INTERFACE_MAX_LOG_FILE_SIZE_KB				2048
 
 //-------------------------------------------------------------------------
 

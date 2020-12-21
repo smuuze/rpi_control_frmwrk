@@ -1,6 +1,10 @@
 #ifndef   _config_H_ /* parse include file only once */
 #define   _config_H_
 
+//-------------------------------------------------------------------------
+
+#include "cpu.h"
+
 #define noTRACEAKTIV         // Schaltet generell meine TRACES EIN/AUS
 
 #define noTRACES_ENABLED
