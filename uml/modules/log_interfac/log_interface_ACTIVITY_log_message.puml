@@ -1,0 +1,72 @@
+@startuml
+
+skinparam monochrome true
+
+header
+@autor: sebastian lesse
+endheader
+
+mainframe activity: Message-Executer process COM-command
+
+partition "new_log_message" {
+	start
+	if (LOG_QEUE is full) then (yes)
+		:SET_STATUS(overflow);
+	else (no)
+		:enqeue new log message;
+	endif
+	stop
+}
+
+start
+
+(A)
+:idle;
+
+if (LOG_QEUE empty) then (yes)
+	(A)
+endif
+
+:add actual data to lig-file name;
+:check log-file;
+
+if (log-file not exisiting) then (yes)
+	:create log-file;
+
+else (no)
+	if (log-file size > limit) then (yes)
+		:counter = 0;
+		repeat
+		:increment counter;
+		:add counter to log-file name;
+		repeat while (file-exisitng)
+	endif
+endif
+
+:open log-file;
+
+if (log-file is open) then (no)
+	stop
+endif
+
+if (STATUS_is_set(overflow)) then (yes)
+	:write log-message overflow detected;
+	:STATUS_unset(overflow);
+endif
+
+(B)
+if (LOG_QEUE is empty) then (yes)
+
+	:close file;
+	stop
+
+else (no)
+
+	:deque next message;
+	:add actual datetime to message;
+	:write message to log-file;
+	(B)
+	detach
+endif
+
+@enduml
