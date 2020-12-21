@@ -24,6 +24,7 @@
 #include "common/local_module_status.h"
 #include "common/signal_slot_interface.h"
 #include "common/common_tools_string.h"
+#include "common/common_tools_datetime.h"
 #include "common/qeue_interface.h"
 #include "ui/cfg_file_parser/cfg_file_parser.h"
 
@@ -39,7 +40,7 @@
 #endif
 
 #ifndef LOG_INTERFACE_QEUE_SIZE
-#define LOG_INTERFACE_QEUE_SIZE						50
+#define LOG_INTERFACE_QEUE_SIZE						25
 #endif
 
 #ifndef LOG_INTERFACE_TASK_RUN_INTERVAL_MS
@@ -185,6 +186,69 @@ static LOG_INTERFACE_TASK_STATE_TYPE app_task_state = LOG_INTERFACE_TASK_STATE_I
 
 // --------------------------------------------------------------------------------
 
+static void log_interface_update_file_name(void) {
+
+	char date_string[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+	common_tools_datetime_now("%Y_%m_%d", date_string, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+
+	DEBUG_TRACE_STR(date_string, "log_interface_update_file_name() - Datetime:");
+
+	u8 counter = 1;
+	char counter_str[5];
+	char log_file[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+	
+	common_tools_string_from_u8(counter_str, counter);
+
+	common_tools_string_copy_string(log_file, log_file_path, LOG_INTERFACE_MAX_MESSAGE_LENGTH); 	// base directory
+	common_tools_string_append(log_file, date_string, LOG_INTERFACE_MAX_MESSAGE_LENGTH);		// date-string
+	common_tools_string_append(log_file, "__", LOG_INTERFACE_MAX_MESSAGE_LENGTH);			// seperator
+	common_tools_string_append(log_file, counter_str, LOG_INTERFACE_MAX_MESSAGE_LENGTH);		// log-file number
+	common_tools_string_append(log_file, ".log", LOG_INTERFACE_MAX_MESSAGE_LENGTH);			// extension
+
+	LOG_FILE_set_path(log_file);
+
+	while (LOG_FILE_is_existing()) {
+
+		DEBUG_TRACE_STR(log_file, "log_interface_update_file_name() - Log-File is existing: ");
+
+		if (LOG_FILE_get_size() < LOG_INTERFACE_MAX_LOG_FILE_SIZE_KB) {
+			DEBUG_PASS("log_interface_update_file_name() - file is less than limit");
+			return;
+		}
+
+		counter += 1;
+		common_tools_string_from_u8(counter_str, counter);
+
+		common_tools_string_copy_string(log_file, log_file_path, LOG_INTERFACE_MAX_MESSAGE_LENGTH); 	// base directory
+		common_tools_string_append(log_file, date_string, LOG_INTERFACE_MAX_MESSAGE_LENGTH);		// date-string
+		common_tools_string_append(log_file, "__", LOG_INTERFACE_MAX_MESSAGE_LENGTH);			// seperator
+		common_tools_string_append(log_file, counter_str, LOG_INTERFACE_MAX_MESSAGE_LENGTH);		// log-file number
+		common_tools_string_append(log_file, ".log", LOG_INTERFACE_MAX_MESSAGE_LENGTH);			// extension
+
+		LOG_FILE_set_path(log_file);
+	}
+		
+	DEBUG_PASS("log_interface_update_file_name() - create file");
+	LOG_FILE_create();
+}
+
+static void log_interface_process_qeue(void) {
+
+	char next_message[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+	char new_line[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+	memset(new_line, '\0', LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+
+	common_tools_datetime_now("%H:%M:%S - ", new_line, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+
+	while (LOG_QEUE_deqeue(next_message) ) {
+
+		common_tools_string_append(new_line, next_message, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+		LOG_FILE_append_line(new_line);
+	}
+}
+
+// --------------------------------------------------------------------------------
+
 void log_interface_init(void) {
 
 	LOG_INTERFACE_STATUS_clear_all();
@@ -216,6 +280,10 @@ static u16 log_interface_task_get_schedule_interval(void) {
 
 static MCU_TASK_INTERFACE_TASK_STATE log_interface_task_get_state(void) {
 
+	if (app_task_state != LOG_INTERFACE_TASK_STATE_IDLE) {
+		return MCU_TASK_RUNNING;
+	}
+
 	if (LOG_QEUE_is_empty() == 0) {
 		DEBUG_PASS("log_interface_task_get_state() - Log-Messages pending");
 		return MCU_TASK_RUNNING;
@@ -226,7 +294,7 @@ static MCU_TASK_INTERFACE_TASK_STATE log_interface_task_get_state(void) {
 
 static void log_interface_task_run(void) {
 	
-	DEBUG_PASS("log_interface_task_run()");
+	//DEBUG_PASS("log_interface_task_run()");
 
 	switch (app_task_state) {
 		
@@ -256,9 +324,8 @@ static void log_interface_task_run(void) {
 
 		case LOG_INTERFACE_TASK_STATE_CHECK_FILE :
 
-			if (LOG_FILE_get_size() > LOG_INTERFACE_MAX_LOG_FILE_SIZE_KB) {
-				// change log
-			}
+			log_interface_update_file_name();
+
 			break;
 
 		case LOG_INTERFACE_TASK_STATE_OPEN_FILE :
@@ -278,10 +345,12 @@ static void log_interface_task_run(void) {
 		case LOG_INTERFACE_TASK_STATE_WRITE_LOG :
 
 			DEBUG_PASS("log_interface_task_run() - LOG_INTERFACE_TASK_STATE_LOAD_CONFIGURATION > LOG_INTERFACE_TASK_STATE_IDLE");
-			app_task_state = LOG_INTERFACE_TASK_STATE_IDLE;
-
+			
+			log_interface_process_qeue();
+			
 			if (LOG_QEUE_is_empty()) {
 				LOG_INTERFACE_STATUS_unset(LOG_INTERFACE_STATUS_QEUE_OVERFLOW);
+				app_task_state = LOG_INTERFACE_TASK_STATE_CLOSE_FILE;
 			}
 
 			break;
@@ -338,11 +407,11 @@ static void log_interface_new_cfg_object_SLOT_CALLBACK(const void* p_argument) {
 
 		DEBUG_TRACE_STR(p_cfg_object->value, "log_interface_new_cfg_object_SLOT_CALLBACK() - LOG_FILE_PATH_CFG_NAME cfg-object");
 
-		if (common_tools_string_ends_with(p_cfg_object->value, '/')) {
-			common_tools_string_remove_last_character(p_cfg_object->value);
-		}
+		common_tools_string_copy_string(log_file_path, p_cfg_object->value, LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH - 1);
 
-		common_tools_string_copy_string(log_file_path, p_cfg_object->value, LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH);
+		if (common_tools_string_ends_with(p_cfg_object->value, '/') == 0) {
+			common_tools_string_append(log_file_path, "/", LOG_INTERFAC_MAX_LOG_FILE_PATH_LENGTH);
+		}
 	}
 }
 
@@ -355,6 +424,7 @@ static void log_interface_cfg_complete_SLOT_CALLBACK(const void* p_argument) {
 void log_message(const char* message) {
 
 	if (LOG_QEUE_is_full()) {
+		DEBUG_PASS("log_message() - The Qeue is full");
 		LOG_INTERFACE_STATUS_set(LOG_INTERFACE_STATUS_QEUE_OVERFLOW);
 		return;
 	}
@@ -363,4 +433,6 @@ void log_message(const char* message) {
 	common_tools_string_copy_string(new_message, message, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
 
 	LOG_QEUE_enqeue(new_message);
+
+	DEBUG_TRACE_STR(new_message, "log_message() - New log-message: ");
 }

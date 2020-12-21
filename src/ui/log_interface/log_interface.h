@@ -22,6 +22,11 @@
  */
 void log_interface_init(void);
 
+/*
+ *
+ */
+void log_message(const char* new_message);
+
 // --------------------------------------------------------------------------------
 
 #endif // LOG_INTERFACE_H_
