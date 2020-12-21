@@ -71,7 +71,7 @@ typedef struct {
 	}												\
 													\
 	u8 file_name##_is_existing(void) {								\
-		return file_has_changed(&_##file_name##_context);					\
+		return file_is_existing(&_##file_name##_context);					\
 	}												\
 													\
 	u8 file_name##_is_readable(void) {								\
