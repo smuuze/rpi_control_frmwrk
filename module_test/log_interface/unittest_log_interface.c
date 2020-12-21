@@ -376,7 +376,7 @@ static void UNITTEST_log_interface_log_file_size_too_big(void) {
 
 		log_message("First log message of the unittest");
 
-		while (UNITTEST_TIMER_is_up(50) == 0) {
+		while (UNITTEST_TIMER_is_up(250) == 0) {
 			mcu_task_controller_schedule();
 		}
 
