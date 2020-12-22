@@ -195,7 +195,7 @@ void common_tools_string_split(char splitter, const char* p_string_in, char* p_s
 	}
 }
 
-void common_tools_string_append(char* p_string_base, char* p_string_to_append, u16 max_length_string_base) {
+void common_tools_string_append(char* p_string_base, const char* p_string_to_append, u16 max_length_string_base) {
 
 	u16 length_of_string_base = strlen(p_string_base);
 	u16 length_of_string_append = strlen(p_string_to_append);
