@@ -459,6 +459,8 @@ void log_message(const char* message) {
 	}
 
 	char new_message[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+	memset(new_message, '\0', LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+	
 	common_tools_string_copy_string(new_message, message, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
 
 	LOG_QEUE_enqeue(new_message);
