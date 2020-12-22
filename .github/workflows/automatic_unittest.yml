@@ -8,6 +8,19 @@ on:
 
 jobs:
 
+  unittest_qeue_unterface:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/qeue_interface
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make unittest
+    - name: run unittest
+      run: make run
+
   unittest_log_unterface:
     runs-on: macos-latest
     defaults:
