@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -39,6 +39,10 @@
 #define LOG_INTERFACE_MAX_MESSAGE_LENGTH				255
 #endif
 
+#ifndef LOG_INTERFACE_MAX_LENGTH_DATE_STRING
+#define LOG_INTERFACE_MAX_LENGTH_DATE_STRING				32
+#endif
+
 #ifndef LOG_INTERFACE_QEUE_SIZE
 #define LOG_INTERFACE_QEUE_SIZE						25
 #endif
@@ -61,6 +65,10 @@
 
 #ifndef LOG_INTERFACE_CFG_NAME_LOG_FILE_PATH
 #define LOG_INTERFACE_CFG_NAME_LOG_FILE_PATH				"LOG_FILE_PATH"
+#endif
+
+#ifndef LOG_INTERFACE_QEUE_OVERFLOW_MESSAGE
+#define LOG_INTERFACE_QEUE_OVERFLOW_MESSAGE				"LOG-QEUE OVERFLOW_DETECTED"
 #endif
 
 // --------------------------------------------------------------------------------
@@ -235,14 +243,32 @@ static void log_interface_update_file_name(void) {
 static void log_interface_process_qeue(void) {
 
 	char next_message[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
-	char new_line[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
-	memset(new_line, '\0', LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+	char date_string[LOG_INTERFACE_MAX_LENGTH_DATE_STRING];
+	memset(date_string, '\0', LOG_INTERFACE_MAX_LENGTH_DATE_STRING);
 
-	common_tools_datetime_now("%H:%M:%S - ", new_line, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+	common_tools_datetime_now("%H:%M:%S - ", date_string, LOG_INTERFACE_MAX_LENGTH_DATE_STRING);
 
-	while (LOG_QEUE_deqeue(next_message) ) {
+	if (LOG_QEUE_deqeue(next_message) ) {
 
+		char new_line[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+		memset(new_line, '\0', LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+
+		common_tools_string_copy_string(new_line, date_string, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
 		common_tools_string_append(new_line, next_message, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+
+		LOG_FILE_append_line(new_line);
+	}
+
+	if (LOG_INTERFACE_STATUS_is_set(LOG_INTERFACE_STATUS_QEUE_OVERFLOW)) { 
+		
+		LOG_INTERFACE_STATUS_unset(LOG_INTERFACE_STATUS_QEUE_OVERFLOW);
+
+		char new_line[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+		memset(new_line, '\0', LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+
+		common_tools_string_copy_string(new_line, date_string, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+		common_tools_string_append(new_line, LOG_INTERFACE_QEUE_OVERFLOW_MESSAGE, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+		
 		LOG_FILE_append_line(new_line);
 	}
 }
@@ -274,6 +300,10 @@ static void log_interface_task_init(void) {
 }
 
 static u16 log_interface_task_get_schedule_interval(void) {
+
+	if (LOG_QEUE_is_empty() == 0) {
+		return 0;
+	}
 
 	return LOG_INTERFACE_TASK_RUN_INTERVAL_MS;
 }
@@ -349,7 +379,6 @@ static void log_interface_task_run(void) {
 			log_interface_process_qeue();
 			
 			if (LOG_QEUE_is_empty()) {
-				LOG_INTERFACE_STATUS_unset(LOG_INTERFACE_STATUS_QEUE_OVERFLOW);
 				app_task_state = LOG_INTERFACE_TASK_STATE_CLOSE_FILE;
 			}
 

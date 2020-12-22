@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -46,6 +46,7 @@ UT_ACTIVATE()
 #define TEST_CASE_ID_LOG_MESSAGE				2
 #define TEST_CASE_ID_WRITE_LOG_FILE				3
 #define TEST_CASE_ID_LOG_FILE_SIZE_EXCEEDED			4
+#define TEST_CASE_ID_LOG_QEUE_OVERFLOW				5
 
 // --------------------------------------------------------------------------------
 
@@ -120,6 +121,10 @@ u8 file_is_existing(FILE_INTERFACE* p_file) {
 		return 0;
 	}
 
+	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_LOG_QEUE_OVERFLOW) {
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -134,6 +139,10 @@ u32 file_get_size(FILE_INTERFACE* p_file) {
 
 	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_LOG_FILE_SIZE_EXCEEDED) {
 		return LOG_INTERFACE_MAX_LOG_FILE_SIZE_KB + 10;
+	}
+
+	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_LOG_QEUE_OVERFLOW) {
+		return 512;
 	}
 
 	return 0;
@@ -402,68 +411,35 @@ static void UNITTEST_log_interface_que_overflow(void) {
 	
 	UT_START_TEST_CASE("Log_interface- Qeue overflow")
 	{	
-		/*
-		UT_SET_TEST_CASE_ID(TEST_CASE_ID_INITIALIZE);
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_LOG_QEUE_OVERFLOW);
 
 		unittest_reset_counter();
 
-		UNITTEST_TIMER_start();
-
-		READY_INOUT_pull_up();
-
-		u8 re_requested = 0;
-
-		while (UNITTEST_TIMER_is_up(500) == 0) {
-
-			mcu_task_controller_schedule();
-
-			if (re_requested == 0 && UNITTEST_TIMER_is_up(125)) {
-				re_requested = 1;
-				READY_INOUT_drive_low();
-			}
-		}
-
-		UT_CHECK_IS_EQUAL(counter_LEAVE_SLEEP_SIGANL, 0);
-		UT_CHECK_IS_EQUAL(counter_ENTER_SLEEP_SIGNAL, 0);
-		UT_CHECK_IS_EQUAL(counter_COMMAND_RECEIVED_SIGNAL, 0);
-		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_RECEIVED_SIGNAL, 0);
-		*/
-	}
-	UT_END_TEST_CASE()
-}
-
-static void UNITTEST_log_interface_log_file_not_writeable(void) {
-	
-	UT_START_TEST_CASE("Log_interface - Log-File not writeable")
-	{	
-		/*
-		UT_SET_TEST_CASE_ID(TEST_CASE_ID_INITIALIZE);
-
-		unittest_reset_counter();
+		log_message("First log message of the unittest");
+		log_message("Second log message of the unittest");
+		log_message("Third log message of the unittest");
+		log_message("Fourth log message of the unittest");
+		log_message("Fivth log message of the unittest");
+		log_message("Sixth log message of the unittest");
+		log_message("Seventh log message of the unittest");
 
 		UNITTEST_TIMER_start();
-
-		u8 buffer[] = {0x02, 0x01};
-		test_driver_set_rx_bytes(2, buffer);
-
-		buffer[0] = 0;
-		u16 timeout = 10;
-
 		while (UNITTEST_TIMER_is_up(250) == 0) {
 			mcu_task_controller_schedule();
-
-			// polling for an answer
-			if (UNITTEST_TIMER_is_up(timeout)) {
-				timeout += 10;
-				test_driver_set_rx_bytes(1, buffer);
-			}
 		}
 
-		UT_CHECK_IS_EQUAL(counter_LEAVE_SLEEP_SIGANL, 0);
-		UT_CHECK_IS_EQUAL(counter_ENTER_SLEEP_SIGNAL, 0);
-		UT_CHECK_IS_EQUAL(counter_COMMAND_RECEIVED_SIGNAL, 0);
-		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_RECEIVED_SIGNAL, 1);
-		*/
+		UT_CHECK_IS_EQUAL(counter_FILE_SET_PATH, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_RENAME, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_CREATE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_APPEND_LINE, 7);
 	}
 	UT_END_TEST_CASE()
 }
@@ -485,7 +461,6 @@ int main(void) {
 		UNITTEST_log_interface_write_log_file();
 		UNITTEST_log_interface_log_file_size_too_big();
 		UNITTEST_log_interface_que_overflow();
-		UNITTEST_log_interface_log_file_not_writeable();
 	}
 	UT_END_TESTBENCH()
 

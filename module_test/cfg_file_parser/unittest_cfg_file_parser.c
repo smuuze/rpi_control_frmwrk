@@ -155,8 +155,7 @@ u8 file_open(FILE_INTERFACE* p_file) {
 
 	if (test_case_counter == TEST_CASE_ID_FILE_NOT_OPEN) {
 
-		DEBUG_PASS("file_open() - FAILED !!! ---");
-		console_write_line(p_file->path);
+		DEBUG_TRACE_STR(p_file->path, "file_open() - FAILED !!! ---");
 		return 0;
 	}
 
@@ -256,9 +255,9 @@ static void unittest_CFG_PARSER_NEW_OBJECT_CALLBACK(const void* p_argument) {
 
 	CFG_FILE_PARSER_CFG_OBJECT_TYPE* cfg_obj = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*)p_argument;
 
-	console_write_line(" - new cfg-object received");
-	console_write_string(" - key: ", cfg_obj->key);
-	console_write_string(" - key: ", cfg_obj->value);
+	DEBUG_PASS("unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK()");
+	DEBUG_TRACE_STR(cfg_obj->key, "unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK() - KEY: ");
+	DEBUG_TRACE_STR(cfg_obj->value, "unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK() - VALUE:");
 
 	counter_NEW_CFG_OBJECT_RECEIVED += 1;
 }
@@ -266,7 +265,7 @@ static void unittest_CFG_PARSER_NEW_OBJECT_CALLBACK(const void* p_argument) {
 static void unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK(const void* p_argument) {
 	(void) p_argument;
 
-	console_write_line(" - configuration is complete");
+	DEBUG_PASS("unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK()");
 }
 
 // --------------------------------------------------------------------------------
@@ -320,23 +319,11 @@ static void TEST_CASE_file_existing(void) {
 
 int main(void) {
 
-	console_write_line("-------------------------------------------------");
-	console_write_line("Welcome the the UNITTEST for cfg_file_parser v1.0");
-	console_write_line("-------------------------------------------------");
-
 	UT_START_TESTBENCH("Welcome the the UNITTEST for cfg-file-parser v2.0")
 	{
-
-		console_write_line(" - cfg_file_parser_init()");
 		cfg_file_parser_init();
-
-		console_write_line(" - cfg_file_parser_task_init()");
 		cfg_file_parser_task_init();
-
-		console_write_line(" - UNITTEST_NEW_CFG_OBJECT_SLOT_connect()");
 		UNITTEST_NEW_CFG_OBJECT_SLOT_connect();
-
-		console_write_line(" - UNITTEST_CFG_COMPLETE_SLOT_connect()");
 		UNITTEST_CFG_COMPLETE_SLOT_connect();
 
 		TEST_CASE_file_not_existing();
