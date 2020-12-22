@@ -465,3 +465,20 @@ void log_message(const char* message) {
 
 	DEBUG_TRACE_STR(new_message, "log_message() - New log-message: ");
 }
+
+void log_message_string(const char* message, const char* p_string) {
+
+	if (LOG_QEUE_is_full()) {
+		DEBUG_PASS("log_message() - The Qeue is full");
+		LOG_INTERFACE_STATUS_set(LOG_INTERFACE_STATUS_QEUE_OVERFLOW);
+		return;
+	}
+
+	char new_message[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
+	memset(new_message, '\0', LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+
+	common_tools_string_copy_string(new_message, message, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+	common_tools_string_append(new_message, p_string, LOG_INTERFACE_MAX_MESSAGE_LENGTH);
+
+	log_message(new_message);
+}
