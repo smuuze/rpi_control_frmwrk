@@ -59,8 +59,11 @@ MK			:= mkdir -p
 CP			:= cp
 MAKE_EXE		:= chmod ug=+rwx
 MAKE_FILE_RIGHTS	:= chmod ug=rw
+MAKE_DIR_RIGHTS		:= chmod ug=rwx
 MAKE_SERVICE_RIGHTS	:= chmod 644
 ECHO			:= echo
+
+MAKE_OWNER		:= chown shc:shc
 
 MAKE_FILE_RIGHTS	:= find ./$(APP_PATH) -type f -exec chmod ug+=rw {} \;
 MAKE_FOLDER_RIGHTS	:= find ./$(APP_PATH) -type d -exec chmod ug+rwx {} \;
