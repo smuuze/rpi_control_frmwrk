@@ -38,6 +38,7 @@ CFLAGS 			+= -pedantic -Wall
 
 SERVICE_DIRECTORY	= service
 TARGET_SERVICE_DIR	= /lib/systemd/system
+TARGET_SERVICE		= shcd.service
 TARGET_DAEMON		= shcd
 TARGET_HOME_DIRECTORY	= /etc/SmartHomeClient
 TARGET_LOG_DIRECTORY	= $(TARGET_HOME_DIRECTORY)/log
