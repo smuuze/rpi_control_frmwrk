@@ -300,11 +300,11 @@ update: clean release stop_service
 
 stop_service:
 	$(VERBOSE) $(ECHO) - Stopping service: $(TARGET_SERVICE)
-	$(VERBOSE) $(MAKE_SERVICE_START) $(TARGET_SERVICE)
+	$(VERBOSE) $(MAKE_SERVICE_STOP) $(TARGET_SERVICE)
 
 start_service:
 	$(VERBOSE) $(ECHO) - Starting service: $(TARGET_SERVICE)
-	$(VERBOSE) $(MAKE_SERVICE_STOP) $(TARGET_SERVICE)
+	$(VERBOSE) $(MAKE_SERVICE_START) $(TARGET_SERVICE)
 
 # --------- 
 
