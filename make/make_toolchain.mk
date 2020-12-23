@@ -58,7 +58,7 @@ RM			:= rm
 MK			:= mkdir -p
 CP			:= cp
 MAKE_EXE		:= chmod ug=+rwx
-MAKE_FILE_RIGHTS	:= chmod ug=rw
+MAKE_FILE_RIGHTS	:= chmod ug=+rw
 MAKE_DIR_RIGHTS		:= chmod ug=rwx
 MAKE_SERVICE_RIGHTS	:= chmod 644
 ECHO			:= echo
