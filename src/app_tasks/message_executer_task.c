@@ -858,7 +858,7 @@ static void msg_executer_cfg_object_CALLBACK(const void* p_argument) {
 
 	if (common_tools_string_compare(REPORT_INTERVAL_CFG_NAME, p_cfg_object->key)) {
 		
-		msg_executer_report_interval_timeout_ms = common_tools_string_to_u16(p_cfg_object->value);
+		msg_executer_report_interval_timeout_ms = common_tools_string_to_u32(p_cfg_object->value);
 
 		DEBUG_TRACE_STR(p_cfg_object->value, "msg_executer_cfg_object_CALLBACK() - REPORT_INTERVAL_CFG_NAME cfg-object");
 		DEBUG_TRACE_word(msg_executer_report_interval_timeout_ms, "msg_executer_cfg_object_CALLBACK() - msg_executer_report_interval_timeout_ms : ");
