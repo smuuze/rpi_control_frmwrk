@@ -36,9 +36,13 @@ CFLAGS 			+= -pedantic -Wall
 
 # --------- 
 
-SERVICE_DIRECTORY	= $(FRMWRK_PATH)/service
-TARGET_SERVICE		= shc_service
+SERVICE_DIRECTORY	= service
+TARGET_SERVICE_DIR	= /lib/systemd/system
 TARGET_DAEMON		= shcd
+TARGET_HOME_DIRECTORY	= /etc/SmartHomeClient
+TARGET_LOG_DIRECTORY	= $(TARGET_HOME_DIRECTORY)/log
+TARGET_CFG_DIRECTPRY	= $(TARGET_HOME_DIRECTORY)/cfg
+DEFAULT_CFG_FILE_PATH	= cfg
 
 # --------- 
 
@@ -188,17 +192,31 @@ $(DEPENDENCY_DIRECTORY)/%.o: %.c
 # --------- 
 
 install: clean release 
-	$(VERBOSE) $(ECHO) - Copy service to target: /etc/init.d/$(TARGET_SERVICE)
-	$(VERBOSE) $(CP) $(SERVICE_DIRECTORY)/shc_service /etc/init.d/$(TARGET_SERVICE)
-	$(VERBOSE) $(MAKE_EXE) /etc/init.d/$(TARGET_SERVICE)
-	$(VERBOSE) $(ECHO) - Copy daemon to target: /usr/sbin/$(TARGET_DAEMON)
-	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION) /usr/sbin/$(TARGET_DAEMON)
-	$(VERBOSE) $(MAKE_EXE) /usr/sbin/$(TARGET_DAEMON)
-	$(VERBOSE) $(ECHO) - Register service with inid.d
-	$(VERBOSE) update-rc.d $(TARGET_SERVICE) defaults
-	$(VERBOSE) update-rc.d $(TARGET_SERVICE) enable
-	$(VERBOSE) $(ECHO) - Starting service
-	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) start
+
+	$(VERBOSE) $(ECHO) - Create Program-Home: $(TARGET_HOME_DIRECTORY)
+	$(VERBOSE) $(MK) $(TARGET_HOME_DIRECTORY)
+	$(VERBOSE) $(MAKE_FILE_RIGHTS) $(TARGET_HOME_DIRECTORY)
+	$(VERBOSE) $(MK) $(TARGET_LOG_DIRECTORY)
+	$(VERBOSE) $(MAKE_FILE_RIGHTS) $(TARGET_LOG_DIRECTORY)
+	$(VERBOSE) $(MK) $(TARGET_CFG_DIRECTPRY)
+	$(VERBOSE) $(MAKE_FILE_RIGHTS) $(TARGET_CFG_DIRECTPRY)
+
+	$(VERBOSE) $(ECHO) - Install CFG-Files
+	$(VERBOSE) $(CP) $(DEFAULT_CFG_FILE_PATH)/smart_home_configuration_file.txt $(TARGET_CFG_DIRECTPRY)/shc_configuration.conf
+	$(VERBOSE) $(MAKE_FILE_RIGHTS) $(TARGET_CFG_DIRECTPRY)/shc_configuration.conf
+	$(VERBOSE) $(CP) $(DEFAULT_CFG_FILE_PATH)/smart_home_report_file.txt $(TARGET_CFG_DIRECTPRY)/shc_report.conf
+	$(VERBOSE) $(MAKE_FILE_RIGHTS) $(TARGET_CFG_DIRECTPRY)/shc_report.conf
+	$(VERBOSE) $(CP) $(DEFAULT_CFG_FILE_PATH)/smart_home_command_file.txt $(TARGET_CFG_DIRECTPRY)/shc_command.conf
+	$(VERBOSE) $(MAKE_FILE_RIGHTS) $(TARGET_CFG_DIRECTPRY)/shc_command.conf
+
+	$(VERBOSE) $(ECHO) - Install SHC-Daemon: $(TARGET_HOME_DIRECTORY)/$(TARGET_DAEMON)
+	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION) $(TARGET_HOME_DIRECTORY)/$(TARGET_DAEMON)
+	$(VERBOSE) $(MAKE_EXE) $(TARGET_HOME_DIRECTORY)/$(TARGET_DAEMON)
+
+	$(VERBOSE) $(ECHO) - Register Service at systemd ($(TARGET_SERVICE_DIR)/$(TARGET_SERVICE))
+	$(VERBOSE) $(CP) $(SERVICE_DIRECTORY)/$(TARGET_SERVICE) $(TARGET_SERVICE_DIR)/$(TARGET_SERVICE)
+	$(VERBOSE) $(MAKE_SERVICE_RIGHTS) $(TARGET_SERVICE_DIR)/$(TARGET_SERVICE)
+
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
 uninstall: stop_service
