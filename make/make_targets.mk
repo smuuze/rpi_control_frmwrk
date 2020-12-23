@@ -36,6 +36,7 @@ CFLAGS 			+= -pedantic -Wall
 
 # --------- 
 
+SERVICE_DIRECTORY	= $(FRMWRK_PATH)/service
 TARGET_SERVICE		= shc_service
 TARGET_DAEMON		= shcd
 
@@ -188,7 +189,7 @@ $(DEPENDENCY_DIRECTORY)/%.o: %.c
 
 install: clean release 
 	$(VERBOSE) $(ECHO) - Copy service to target: /etc/init.d/$(TARGET_SERVICE)
-	$(VERBOSE) $(CP) service/shc_service /etc/init.d/$(TARGET_SERVICE)
+	$(VERBOSE) $(CP) $(SERVICE_DIRECTORY)/shc_service /etc/init.d/$(TARGET_SERVICE)
 	$(VERBOSE) $(MAKE_EXE) /etc/init.d/$(TARGET_SERVICE)
 	$(VERBOSE) $(ECHO) - Copy daemon to target: /usr/sbin/$(TARGET_DAEMON)
 	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION) /usr/sbin/$(TARGET_DAEMON)
