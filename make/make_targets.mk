@@ -186,7 +186,7 @@ $(DEPENDENCY_DIRECTORY)/%.o: %.c
 
 # --------- 
 
-install:
+install: clean release 
 	$(VERBOSE) $(ECHO) - Copy service to target: /etc/init.d/$(TARGET_SERVICE)
 	$(VERBOSE) $(CP) service/shc_service /etc/init.d/$(TARGET_SERVICE)
 	$(VERBOSE) $(MAKE_EXE) /etc/init.d/$(TARGET_SERVICE)
