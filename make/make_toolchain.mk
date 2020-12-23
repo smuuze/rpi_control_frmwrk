@@ -65,6 +65,9 @@ ECHO			:= echo
 
 MAKE_OWNER		:= chown shc:shc
 
+MAKE_SERVVICE_RELOAD	:= sudo systemctl daemon-reload
+MAKE_SERVICE_ENABLE	:= sudo systemctl enable
+
 #MAKE_FILE_RIGHTS	:= find ./$(APP_PATH) -type f -exec chmod ug+=rw {} \;
 #MAKE_FOLDER_RIGHTS	:= find ./$(APP_PATH) -type d -exec chmod ug+rwx {} \;
 
