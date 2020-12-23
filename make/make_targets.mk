@@ -249,31 +249,62 @@ install: clean release
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
 uninstall: stop_service
-	$(VERBOSE) $(ECHO) - Disabling service
-	$(VERBOSE) update-rc.d $(TARGET_SERVICE) disable
-	$(VERBOSE) $(ECHO) - Removing service from init.d
-	$(VERBOSE) update-rc.d $(TARGET_SERVICE) remove
-	$(VERBOSE) $(ECHO) - Removing service from filesystem
-	$(VERBOSE) $(RM) /etc/init.d/$(TARGET_SERVICE)
-	$(VERBOSE) $(ECHO) - Removing Daemon from filesystem
-	$(VERBOSE) $(RM) /usr/sbin/$(TARGET_DAEMON)
+	$(VERBOSE) $(ECHO) - Disabling service: $(TARGET_SERVICE)
+	$(VERBOSE) $(MAKE_SERVICE_DISABLE) $(TARGET_SERVICE)
+
+	$(VERBOSE) $(ECHO) - Removing service: $(TARGET_SERVICE)
+	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET_SERVICE)
+
+	$(VERBOSE) $(MAKE_SERVVICE_RELOAD)
+
+	$(VERBOSE) $(ECHO) - Remove SHC-Daemon
+
+	$(VERBOSE) $(ECHO) $(TARGET_HOME_DIRECTORY)/$(TARGET_DAEMON)
+	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET_HOME_DIRECTORY)/$(TARGET_DAEMON)
+
+	$(VERBOSE) $(ECHO) - Remove CFG-Files
+
+	$(VERBOSE) $(ECHO) $(TARGET_CFG_DIRECTPRY)/shc_configuration.conf
+	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET_CFG_DIRECTPRY)/shc_configuration.conf
+
+	$(VERBOSE) $(ECHO) $(TARGET_CFG_DIRECTPRY)/shc_report.conf
+	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET_CFG_DIRECTPRY)/shc_report.conf
+
+	$(VERBOSE) $(ECHO) $(TARGET_CFG_DIRECTPRY)/shc_command.conf
+	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET_CFG_DIRECTPRY)/shc_command.conf
+
+	$(VERBOSE) $(ECHO) - Remove Program-Home: $(TARGET_HOME_DIRECTORY)
+
+	$(VERBOSE) $(ECHO) $(TARGET_LOG_DIRECTORY)
+	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET_LOG_DIRECTORY)
+
+	$(VERBOSE) $(ECHO) $(TARGET_CFG_DIRECTPRY)
+	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET_CFG_DIRECTPRY)
+
+	$(VERBOSE) $(ECHO) $(TARGET_HOME_DIRECTORY)
+	$(VERBOSE) $(RM) $(RM_FLAGS) $(TARGET_HOME_DIRECTORY)
+
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
 update: clean release stop_service
-	$(VERBOSE) $(ECHO) - Updateing daemon
-	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION) /usr/sbin/$(TARGET_DAEMON)
-	$(VERBOSE) $(MAKE_EXE) /usr/sbin/$(TARGET_DAEMON)
-	$(VERBOSE) $(ECHO) - Starting service
-	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) start
-	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+	$(VERBOSE) $(ECHO) - Install SHC-Daemon
+
+	$(VERBOSE) $(ECHO) $(TARGET_HOME_DIRECTORY)/$(TARGET_DAEMON)
+	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION) $(TARGET_HOME_DIRECTORY)/$(TARGET_DAEMON)
+	$(VERBOSE) $(MAKE_OWNER) $(TARGET_HOME_DIRECTORY)/$(TARGET_DAEMON)
+	$(VERBOSE) $(MAKE_EXE) $(TARGET_HOME_DIRECTORY)/$(TARGET_DAEMON)
+
+	$(VERBOSE) $(ECHO) - Starting service: $(TARGET_SERVICE)
+	$(VERBOSE) $(MAKE_SERVICE_STOP) $(TARGET_SERVICE)
 
 stop_service:
-	$(VERBOSE) $(ECHO) - Stopping service
-	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) stop
+	$(VERBOSE) $(ECHO) - Stopping service: $(TARGET_SERVICE)
+	$(VERBOSE) $(MAKE_SERVICE_START) $(TARGET_SERVICE)
 
 start_service:
-	$(VERBOSE) $(ECHO) - Starting service
-	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) start
+	$(VERBOSE) $(ECHO) - Starting service: $(TARGET_SERVICE)
+	$(VERBOSE) $(MAKE_SERVICE_STOP) $(TARGET_SERVICE)
 
 # --------- 
 
