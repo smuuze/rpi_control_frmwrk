@@ -36,6 +36,11 @@ CFLAGS 			+= -pedantic -Wall
 
 # --------- 
 
+TARGET_SERVICE		= shc_service
+TARGET_DAEMON		= shcd
+
+# --------- 
+
 all: release_obj hex_file lss_file prog_size
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).elf $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).$(PLATTFORM_EXTENSION)
@@ -186,7 +191,7 @@ install:
 	$(VERBOSE) $(CP) service/shc_service /etc/init.d/$(TARGET_SERVICE)
 	$(VERBOSE) $(MAKE_EXE) /etc/init.d/$(TARGET_SERVICE)
 	$(VERBOSE) $(ECHO) - Copy daemon to target: /usr/sbin/$(TARGET_DAEMON)
-	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET) /usr/sbin/$(TARGET_DAEMON)
+	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION) /usr/sbin/$(TARGET_DAEMON)
 	$(VERBOSE) $(MAKE_EXE) /usr/sbin/$(TARGET_DAEMON)
 	$(VERBOSE) $(ECHO) - Register service with inid.d
 	$(VERBOSE) update-rc.d $(TARGET_SERVICE) defaults
@@ -206,9 +211,9 @@ uninstall: stop_service
 	$(VERBOSE) $(RM) /usr/sbin/$(TARGET_DAEMON)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
-update: stop_service
+update: clean release stop_service
 	$(VERBOSE) $(ECHO) - Updateing daemon
-	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET) /usr/sbin/$(TARGET_DAEMON)
+	$(VERBOSE) $(CP) $(RELEASE_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION) /usr/sbin/$(TARGET_DAEMON)
 	$(VERBOSE) $(MAKE_EXE) /usr/sbin/$(TARGET_DAEMON)
 	$(VERBOSE) $(ECHO) - Starting service
 	$(VERBOSE) /etc/init.d/$(TARGET_SERVICE) start
