@@ -37,7 +37,7 @@ CFLAGS 			+= -pedantic -Wall
 # --------- 
 
 SERVICE_DIRECTORY	= service
-TARGET_SERVICE_DIR	= /lib/systemd/system
+TARGET_SERVICE_DIR	= /etc/systemd/system
 TARGET_SERVICE		= shcd.service
 TARGET_DAEMON		= shcd
 TARGET_HOME_DIRECTORY	= /etc/SmartHomeClient
@@ -243,8 +243,8 @@ install: clean release
 
 	$(VERBOSE) $(ECHO) - Enabling new Serice
 
-	$(MAKE_SERVVICE_RELOAD)
-	$(MAKE_SERVICE_ENABLE) $(TARGET_SERVICE)
+	$(VERBOSE) $(MAKE_SERVVICE_RELOAD)
+	$(VERBOSE) $(MAKE_SERVICE_ENABLE) $(TARGET_SERVICE)
 
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
