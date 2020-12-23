@@ -84,6 +84,11 @@ u16 common_tools_string_to_u16(const char* p_str);
 /*
  *
  */
+u32 common_tools_string_to_u32(const char* p_str);
+
+/*
+ *
+ */
 u8 common_tools_string_ends_with(const char* p_string, char character);
 
 /*

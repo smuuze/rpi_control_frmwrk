@@ -435,6 +435,10 @@ u16 common_tools_string_to_u16(const char* p_str) {
 	return (u16)atoi(p_str);
 }
 
+u32 common_tools_string_to_u32(const char* p_str) {
+	return (u32)atoi(p_str);
+}
+
 /*
 void string_get_time(char* time_string) {
 
