@@ -192,7 +192,7 @@ $(DEPENDENCY_DIRECTORY)/%.o: %.c
 
 # --------- 
 
-install: clean release 
+install_execute:
 
 	$(VERBOSE) $(ECHO) - Create Program-Home: $(TARGET_HOME_DIRECTORY)
 
@@ -247,6 +247,9 @@ install: clean release
 	$(VERBOSE) $(MAKE_SERVICE_ENABLE) $(TARGET_SERVICE)
 
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
+
+install: clean release install_execute clean
+
 
 uninstall: stop_service
 	$(VERBOSE) $(ECHO) - Disabling service: $(TARGET_SERVICE)
