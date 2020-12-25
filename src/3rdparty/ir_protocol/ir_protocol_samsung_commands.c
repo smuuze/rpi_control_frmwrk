@@ -159,3 +159,13 @@ inline void ir_protocol_samsung_cmd_tv_stop(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_
 	DEBUG_PASS("ir_protocol_samsung_cmd_tv_stop()");
 	p_command->control = 0b01100010;
 }
+
+inline void ir_protocol_samsung_cmd_tv_program_guide(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
+	DEBUG_PASS("ir_protocol_samsung_cmd_tv_program_guide()");
+	p_command->control = 0b01100010;
+}
+
+inline void ir_protocol_samsung_cmd_tv_home(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
+	DEBUG_PASS("ir_protocol_samsung_cmd_tv_home()");
+	p_command->control = 0b01100010;
+}

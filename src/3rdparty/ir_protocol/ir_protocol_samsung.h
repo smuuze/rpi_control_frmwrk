@@ -176,6 +176,16 @@ void ir_protocol_samsung_cmd_tv_pause(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_comman
  */
 void ir_protocol_samsung_cmd_tv_stop(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_program_guide(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_home(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
 // --------------------------------------------------------------------------------
 
 #endif // _IR_REMOTE_MCU_TASK_H_

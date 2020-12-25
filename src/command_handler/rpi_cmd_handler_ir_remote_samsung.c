@@ -60,6 +60,7 @@ static inline u8 rpi_cmd_ir_samsung_tv(u8 cmd) {
 
 		case IR_COMMAND_VOLUME_UP :	ir_protocol_samsung_cmd_tv_volume_up(&ir_command); break;
 		case IR_COMMAND_VOLUME_DOWN :	ir_protocol_samsung_cmd_tv_volume_down(&ir_command); break;
+		case IR_COMMAND_MUTE :		ir_protocol_samsung_cmd_tv_volume_mute(&ir_command); break;
 
 		case IR_COMMAND_CHANNEL_UP :	ir_protocol_samsung_cmd_tv_channel_up(&ir_command); break;
 		case IR_COMMAND_CHANNEL_DOWN :	ir_protocol_samsung_cmd_tv_channel_down(&ir_command); break;
@@ -86,6 +87,9 @@ static inline u8 rpi_cmd_ir_samsung_tv(u8 cmd) {
 		case IR_COMMAND_PLAY :		ir_protocol_samsung_cmd_tv_play(&ir_command); break;
 		case IR_COMMAND_PAUSE :		ir_protocol_samsung_cmd_tv_pause(&ir_command); break;
 		case IR_COMMAND_STOP :		ir_protocol_samsung_cmd_tv_stop(&ir_command); break;
+
+		case IR_COMMAND_PROGRAM_GUIDE :	ir_protocol_samsung_cmd_tv_program_guide(&ir_command); break;
+		case IR_COMMAND_HOME :		ir_protocol_samsung_cmd_tv_home(&ir_command); break;
 	}
 
 	ir_protocol_samsung_address_tv(&ir_command);
