@@ -5,7 +5,7 @@
 
 #include "cpu.h"
 
-///-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 #define BOARD_DESCRIPTION_FILE                          "platine/board_RASPBERRYPI.h"
 #include "platine/board_RASPBERRYPI.h"
@@ -32,6 +32,7 @@
 
 #define MQTT_APPLICATION_IDLE_SCHEDULE_INTERVAL_MS			32
 #define MQTT_APPLICATION_CONNECT_INTERVAL_TIMEOUT_MS			5000
+
 
 //-------------------------------------------------------------------------
 

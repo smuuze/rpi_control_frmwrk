@@ -7,8 +7,6 @@ BOARD_ID = UNITTEST
 
 PLATTFORM = MACOS
 
-BOARD_ID = RASPBERRYPI
-
 #-----------------------------------------------------------------------------
 
 VERSION_MAJOR		:= 1
