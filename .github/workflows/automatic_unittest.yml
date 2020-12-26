@@ -21,12 +21,25 @@ jobs:
     - name: run unittest
       run: make run
 
-  unittest_log_unterface:
+  unittest_log_interface:
     runs-on: macos-latest
     defaults:
       run:
         shell: bash
         working-directory: module_test/log_interface
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make unittest
+    - name: run unittest
+      run: make run
+
+  unittest_message_executer:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/msg_executer
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
