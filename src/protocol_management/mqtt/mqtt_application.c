@@ -275,6 +275,14 @@ static MCU_TASK_INTERFACE_TASK_STATE mqtt_interface_task_get_state(void) {
 	if (mqtt_task_state == MQTT_APPLICATION_TASK_STATE_TERMINATED) {
 		return MCU_TASK_SLEEPING;
 	}
+
+	if (mqtt_task_state == MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST) {
+
+		// reduce cpu-load while waiting for reconnect timeout
+		if (MQTT_CONNECT_INTERVAL_TIMER_is_active() && MQTT_CONNECT_INTERVAL_TIMER_is_up(mqtt_connect_interval_timeout_ms) == 0) {
+			return MCU_TASK_SLEEPING;
+		}
+	}
 	
 	if (mqtt_task_state != MQTT_APPLICATION_TASK_STATE_IDLE) {
 		DEBUG_PASS("mqtt_interface_task_get_state() - RUNNING (not sleeping)");
@@ -342,7 +350,7 @@ static void mqtt_interface_task_run(void) {
 		case MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST :
 
 			if (MQTT_CONNECT_INTERVAL_TIMER_is_active() && MQTT_CONNECT_INTERVAL_TIMER_is_up(mqtt_connect_interval_timeout_ms) == 0) {
-				DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST - wait for connect-interval");
+				//DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST - wait for connect-interval");
 				break;
 			}
 
