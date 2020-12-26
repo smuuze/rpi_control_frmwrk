@@ -250,7 +250,7 @@ static u16 mqtt_interface_task_get_schedule_interval(void) {
 
 	if (mqtt_task_state == MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST) {
 
-		DEBUG_PASS("mqtt_interface_task_get_schedule_interval() - connect to host");
+		//DEBUG_PASS("mqtt_interface_task_get_schedule_interval() - connect to host");
 		return MQTT_APPLICATION_IDLE_SCHEDULE_INTERVAL_MS;
 
 	} else if (mqtt_task_state == MQTT_APPLICATION_TASK_STATE_IDLE) {
