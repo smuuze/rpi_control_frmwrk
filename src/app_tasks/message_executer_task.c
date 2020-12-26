@@ -27,8 +27,11 @@
 #include "common/common_types.h"
 #include "time_management/time_management.h"
 #include "ui/cfg_file_parser/cfg_file_parser.h"
-#include "protocol_management/mqtt/mqtt_interface.h"
 #include "ui/file_interface/file_interface.h"
+
+// --------------------------------------------------------------------------------
+
+#include "protocol_management/mqtt/mqtt_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -172,6 +175,7 @@ static void msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK(const void*
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MSG_EXECUTER_FILE_OPEN_FAILED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MSG_EXECUTER_INVALID_COMMAND_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MSG_EXECUTER_INVALID_COMMAND_SYNTAX_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MSG_EXECUTER_RESPONSE_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MSG_EXECUTER_EXECUTION_SUCCEEDED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MSG_EXECUTER_EXECUTION_FAILED_SIGNAL)
@@ -306,6 +310,7 @@ void msg_executer_init(void) {
 	MSG_EXECUTER_EXECUTION_SUCCEEDED_SIGNAL_init();
 	MSG_EXECUTER_EXECUTION_FAILED_SIGNAL_init();
 	MSG_EXECUTER_INVALID_COMMAND_SIGNAL_init();
+	MSG_EXECUTER_INVALID_COMMAND_SYNTAX_SIGNAL_init();
 
 	DEBUG_PASS("msg_executer_init() - Connect slots");
 
@@ -459,7 +464,7 @@ static void msg_executer_task_run(void) {
 			DEBUG_PASS("msg_executer_task_run() - command not found!");
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_PARSE_COMMAND_MSG >> MSG_EXECUTER_TASK_STATE_IDLE");
 
-			MSG_EXECUTER_INVALID_COMMAND_SIGNAL_send(NULL);
+			MSG_EXECUTER_INVALID_COMMAND_SIGNAL_send(msg_executer_pending_msg);
 			msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
 			break;
 
@@ -733,7 +738,9 @@ static u8 msg_executer_parse_line(char* line, const char* p_command_msg, char* p
 		return 1;
 	}
 
+	MSG_EXECUTER_INVALID_COMMAND_SYNTAX_SIGNAL_send(command_str);
 	DEBUG_TRACE_STR(p_command_data, "msg_executer_parse_line() - Unknown command-type");
+
 	return 0;
 }
 

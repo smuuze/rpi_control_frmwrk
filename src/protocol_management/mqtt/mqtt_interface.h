@@ -24,6 +24,8 @@
 
 #include <MQTTClient.h>
 
+// --------------------------------------------------------------------------------
+
 
 #define MQTT_DEFAULT_HOST_ADDR			"tcp://192.168.110.12:1883"
 #define MQTT_DEFAULT_CLIENT_ID			"Smart_Home_Dev_Client"

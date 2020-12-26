@@ -13,7 +13,7 @@ partition "activity: new message arrives" {
 	#pink:MESSAGE_RECEIVED<
 	:remember message;
 	:SET_STATUS(NEW_MESSAGE_PENDING);
-	end
+	stop
 }
 
 start
@@ -30,8 +30,8 @@ endif
 :open command-file;
 
 if (command-file is open) then (no)
-	:FILE_OPEN_FAILED>
-	end
+	#pink:FILE_OPEN_FAILED>
+	stop
 else (yes)
 
 endif
@@ -54,10 +54,17 @@ repeatwhile (command does not match)
 :parse command;
 :close file;
 
-if () then (is COM-command)
+if (is COM-command) then (yes)
 	:process COM-command;
-else (is EXE-command)
-	:process EXE-command;
+else 
+	if (is EXE-command) then (yes)
+		:process EXE-command;
+
+	else (no)
+		#pink:INVALID_COMMAND_SYNTAX>
+		(I)
+		detach
+	endif
 endif
 
 #pink:COMMAND_RESPONSE>
