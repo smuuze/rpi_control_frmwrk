@@ -129,6 +129,7 @@ MQTT_INTERFACE_BUILD_HOST(MQTT_HOST)
 // --------------------------------------------------------------------------------
 
 TIME_MGMN_BUILD_STATIC_TIMER_U16(MQTT_OP_TIMER)
+TIME_MGMN_BUILD_STATIC_TIMER_U32(MQTT_CONNECT_INTERVAL_TIMER)
 
 // --------------------------------------------------------------------------------
 
@@ -166,12 +167,19 @@ static MQTT_APPLICATION_TASK_STATE_TYPE mqtt_task_state = MQTT_APPLICATION_TASK_
  */
 static char mqtt_task_welcome_message[MQTT_APPLICATION_MAX_MSG_LENGTH];
 
+/*!
+ *
+ */
+static u32 mqtt_connect_interval_timeout_ms = 0;
+
 // --------------------------------------------------------------------------------
 
 void mqtt_interface_init(void) {
 	
 	DEBUG_PASS("mqtt_interface_init() - MQTT_STATUS_init()");
 	MQTT_STATUS_clear_all();
+
+	mqtt_connect_interval_timeout_ms = MQTT_APPLICATION_CONNECT_INTERVAL_TIMEOUT_MS;
 
 	DEBUG_PASS("mqtt_interface_init() - MQTT_CONNECTION_ESTABLISHED_SIGNNAL_init()");
 	MQTT_CONNECTION_ESTABLISHED_SIGNAL_init();
@@ -311,10 +319,11 @@ static void mqtt_interface_task_run(void) {
 			}
 	
 			DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_WAIT_FOR_USER_CONFIGURATION >> MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION");
+
+			MQTT_CONNECT_INTERVAL_TIMER_stop();
 			mqtt_task_state = MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION;
 
 			// no break;
-
 
 		case MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION :
 
@@ -332,7 +341,7 @@ static void mqtt_interface_task_run(void) {
 
 		case MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST :
 
-			if (MQTT_OP_TIMER_is_active() && MQTT_OP_TIMER_is_up(MQTT_APPLICATION_CONNECT_INTERVAL_TIMEOUT_MS) == 0) {
+			if (MQTT_CONNECT_INTERVAL_TIMER_is_active() && MQTT_CONNECT_INTERVAL_TIMER_is_up(mqtt_connect_interval_timeout_ms) == 0) {
 				DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST - wait for connect-interval");
 				break;
 			}
@@ -358,6 +367,7 @@ static void mqtt_interface_task_run(void) {
 
 				DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_IDLE >> MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION");
 				MQTT_CONNECTION_LOST_SIGNAL_send(NULL);
+				MQTT_CONNECT_INTERVAL_TIMER_start();
 				mqtt_task_state = MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION;
 				break;
 			}
@@ -488,6 +498,7 @@ static void mqtt_new_cfg_object_CALLBACK(const void* p_argument) {
 	if (mqtt_match_cfg_key(MQTT_TIMEOUT_CFG_STRING, p_cfg_object->key)) {
 		
 		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_TIMEOUT cfg-object");
+		mqtt_connect_interval_timeout_ms = common_tools_string_to_u32(p_cfg_object->value);
 		return;
 	}
 
