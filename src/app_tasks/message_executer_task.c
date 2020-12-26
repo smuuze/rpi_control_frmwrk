@@ -763,8 +763,6 @@ static void msg_executer_parse_command_message(const char* p_command_msg, char* 
 		}
 
 	} while (num_bytes_line != -1);
-
-	CFG_PARSER_CFG_COMPLETE_SIGNAL_send(NULL);
 }
 
 static i8 msg_executer_parse_report_command(char* p_report_name, char* p_command_data) {
