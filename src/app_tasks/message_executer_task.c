@@ -39,8 +39,9 @@
 
 // --------------------------------------------------------------------------------
 
+// must be more than the timeout of com / exe module !
 #ifndef MSG_EXECUTER_RESPONSE_TIMEOUT_MS
-#define MSG_EXECUTER_RESPONSE_TIMEOUT_MS				500
+#define MSG_EXECUTER_RESPONSE_TIMEOUT_MS				600
 #endif
 
 #ifndef MSG_EXECUTER_MAX_MESSAGE_LENGTH
@@ -406,7 +407,7 @@ static void msg_executer_task_run(void) {
 
 			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_MSG_RECEIVED)) {
 
-				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_MSG_RECEIVED | MSG_EXECUTER_STATUS_REPORT_ACTIVE);
+				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_MSG_RECEIVED | MSG_EXECUTER_STATUS_REPORT_ACTIVE | MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
 
 				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_IDLE >> MSG_EXECUTER_TASK_STATE_OPEN_COMMAND_FILE");
 				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_OPEN_COMMAND_FILE;
@@ -414,6 +415,8 @@ static void msg_executer_task_run(void) {
 			}
 
 			if (MSG_EXECUTER_REPORT_INTERVAL_TIMER_is_up(msg_executer_report_interval_timeout_ms)) {
+
+				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
 
 				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_IDLE >> MSG_EXECUTER_PROCESS_REPORT_LIST");
 				msg_executer_task_state = MSG_EXECUTER_PROCESS_REPORT_LIST;
@@ -906,6 +909,11 @@ static void msg_executer_MQTT_MESSAGE_RECEIVED_CALLBACK(const void* p_argument) 
 
 static void msg_executer_RPI_HOST_RESPONSE_RECEIVED_SLOT_CALLBACK(const void* p_argument) {
 
+	if (msg_executer_task_state != MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE) {
+		DEBUG_TRACE_byte(msg_executer_task_state, "msg_executer_RPI_HOST_RESPONSE_RECEIVED_SLOT_CALLBACK() - Not waiting for COM-response !!!");
+		return;
+	}
+
 	DEBUG_PASS("msg_executer_RPI_HOST_RESPONSE_RECEIVED_SLOT_CALLBACK()");
 
 	COMMON_GENERIC_BUFFER_TYPE* p_com_buffer = (COMMON_GENERIC_BUFFER_TYPE*) p_argument;
@@ -923,6 +931,11 @@ static void msg_executer_RPI_HOST_RESPONSE_TIMEOUT_SLOT_CALLBACK(const void* p_a
 }
 
 static void msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK(const void* p_argument) {
+
+	if (msg_executer_task_state != MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE) {
+		DEBUG_TRACE_byte(msg_executer_task_state, "msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK() - Not waiting for EXE-response !!!");
+		return;
+	}
 
 	const char* p_response = (const char*) p_argument;
 
