@@ -1,0 +1,35 @@
+@startuml
+
+skinparam monochrome true
+
+header
+@autor: sebastian lesse
+endheader
+
+mainframe component: message-executer - interface
+
+component msg_executer [
+	<module>
+	Message-Executer
+]
+
+package "SIGNALS" {
+	[msg_executer] -down-> FILE_OPEN_FAILED
+	[msg_executer] -down-> RESPONSE_TIMEOUT
+	[msg_executer] -down-> INVALID_COMMAND
+	[msg_executer] -down-> INVALID_COMMAND_SYNTAX
+	[msg_executer] -down-> RESPONSE_RECEIVED
+	[msg_executer] -down-> EXECUTION_SUCCEED
+	[msg_executer] -down-> EXECUTION_FAILED
+}
+
+package "SLOTS" {
+	[msg_executer] <-up- CFG_OBJECT
+	[msg_executer] <-up- CFG_COMPLETE
+	[msg_executer] <-up- MQTT_MESSAGE_RECEIVED
+	[msg_executer] <-up- RPI_HOST_RESPONSE_RECEIVED
+	[msg_executer] <-up- RPI_HOST_RESPONSE_TIMEOUT
+	[msg_executer] <-up- CLI_EXECUTER_COMMAND_RESPONSE
+}
+
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+
+skinparam monochrome true
+
+header
+@autor: sebastian lesse
+endheader
+
+mainframe component: command-line-executer - interface
+
+component cmd_line_executer [
+	<module>
+	Command-Line-Executer
+]
+
+package "SIGNALS" {
+	[cmd_line_executer] -down-> COMMAND_RESPONSE
+	[cmd_line_executer] -down-> COMMAND_TIMEOUT
+	[cmd_line_executer] -down-> COMMAND_NOT_FOUND
+	[cmd_line_executer] -down-> COMMAND_RECEIVED
+	note left
+	triggered by extern
+	end note
+}
+
+package "SLOTS" {
+	[cmd_line_executer] <-up- COMMAND_RECEVIED
+}
+
+@enduml
