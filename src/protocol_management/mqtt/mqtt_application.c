@@ -220,7 +220,8 @@ void mqtt_interface_init(void) {
 
 	MQTT_HOST_init();
 
-	MQTT_KEEP_ALIVE_TIMER_start();
+	MQTT_KEEP_ALIVE_TIMER_stop();
+	MQTT_CONNECT_INTERVAL_TIMER_stop();
 }
 
 // --------------------------------------------------------------------------------
@@ -366,6 +367,8 @@ static void mqtt_interface_task_run(void) {
 				break;
 			}
 
+			MQTT_CONNECT_INTERVAL_TIMER_start();
+
 			if (MQTT_HOST_connect() != MQTT_NO_ERROR) {
 				DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST - connect to host has FAILED !!! ---");
 				MQTT_OP_TIMER_start();
@@ -375,6 +378,8 @@ static void mqtt_interface_task_run(void) {
 			MQTT_CONNECTION_ESTABLISHED_SIGNAL_send(NULL);
 			MQTT_HOST_enqeue_message(mqtt_task_welcome_message);
 			MQTT_STATUS_set(MQTT_STATUS_IS_CONNECTED);
+
+			MQTT_KEEP_ALIVE_TIMER_start();
 
 			DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST >> MQTT_APPLICATION_TASK_STATE_SEND_MESSAGE");
 			mqtt_task_state = MQTT_APPLICATION_TASK_STATE_SEND_MESSAGE;
@@ -387,7 +392,6 @@ static void mqtt_interface_task_run(void) {
 
 				DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_IDLE >> MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION");
 				MQTT_CONNECTION_LOST_SIGNAL_send(NULL);
-				MQTT_CONNECT_INTERVAL_TIMER_start();
 				mqtt_task_state = MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION;
 				break;
 			}
