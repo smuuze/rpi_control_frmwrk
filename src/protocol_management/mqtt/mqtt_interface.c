@@ -206,8 +206,14 @@ u8 mqtt_enqeue_message(MQTT_INTERFACE* p_mqtt_interface, const char* p_msg_from)
 }
 
 void mqtt_keep_alive(void) {
+	
+	u32 err = MQTTClient_yield();
 
-	MQTTClient_yield();
+	if (err) {
+		DEBUG_TRACE_long("mqtt_keep_alive() - MQTTClient_yield() has FAIELD !!! - error: ");
+	} else {
+		DEBUG_PASS("mqtt_keep_alive()");
+	}
 }
 
 // --------------------------------------------------------------------------------
