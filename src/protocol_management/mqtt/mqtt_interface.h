@@ -120,6 +120,8 @@ typedef struct {
 
 	const MQTT_QEUE_INTERFACE_TYPE rx_qeue;
 	const MQTT_QEUE_INTERFACE_TYPE tx_qeue;
+
+	char connection_lost_cause[MQTT_INTERFACE_MAX_MSG_LENGTH];
 	
 } MQTT_INTERFACE;
 
@@ -269,6 +271,14 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 																\
 	u8 name##_enqeue_message(const char* message) {										\
 		return mqtt_enqeue_message(&__##name##_mqtt_interface, message);						\
+	}															\
+																\
+	const char* name##_get_connection_lost_cause(void) {									\
+		return (const char*)__##name##_mqtt_interface.connection_lost_cause;						\
+	}															\
+																\
+	void name##_keep_alive(void) {												\
+		mqtt_keep_alive();												\
 	}
 
 // --------------------------------------------------------------------------------
@@ -282,8 +292,10 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 	u8 name##_delivery_complete(void);											\
 	u8 name##_connection_lost(void);											\
 	u8 name##_tx_msg_pending(void);												\
-	u8 name##_msg_pending(void) {												\
-	u8 name##_is_initialized(void) 							
+	u8 name##_msg_pending(void);												\
+	u8 name##_is_initialized(void);												\
+	const char* name##_get_connection_lost_cause(void) ;									\
+	void name##_keep_alive(void);		
 
 // --------------------------------------------------------------------------------
 

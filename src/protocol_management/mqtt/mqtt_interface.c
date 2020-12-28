@@ -18,6 +18,8 @@
 
 #include "tracer.h"
 
+#include "common/common_tools_string.h"
+
 #include "protocol_management/mqtt/mqtt_interface.h"
 
 // --------------------------------------------------------------------------------
@@ -26,6 +28,9 @@ void trace_Callback(enum MQTTCLIENT_TRACE_LEVELS level, char* message);
 
 // --------------------------------------------------------------------------------
 
+/*!
+ *
+ */
 static char last_msg_send[MQTT_INTERFACE_MAX_MSG_LENGTH];
 
 // --------------------------------------------------------------------------------
@@ -203,7 +208,6 @@ u8 mqtt_enqeue_message(MQTT_INTERFACE* p_mqtt_interface, const char* p_msg_from)
 void mqtt_keep_alive(void) {
 
 	MQTTClient_yield();
-
 }
 
 // --------------------------------------------------------------------------------
@@ -226,7 +230,9 @@ void connectionLost_Callback(void *context, char* cause) {
 		return;		
 	}
 
-	DEBUG_PASS("connectionLost_Callback() - MQTT-Connection has been lost !!! ---");
+	DEBUG_TRACE_STR(cause, "connectionLost_Callback() - MQTT-Connection has been lost !!! --- ");
+
+	common_tools_string_copy_string(ctx->connection_lost_cause, cause, MQTT_INTERFACE_MAX_MSG_LENGTH);
 	
 	ctx->connection_lost = 1;
 
