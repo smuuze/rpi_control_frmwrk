@@ -40,35 +40,26 @@ void mqtt_configure(MQTT_INTERFACE* p_mqtt_interface, const char* p_host_addr, c
 	if (p_host_addr != NULL) {
 		if (strlen(p_host_addr) < MQTT_HOST_ADDRESS_STRING_LENGTH) {
 			DEBUG_TRACE_STR(p_host_addr, "mqtt_configure() - HOST-ADDRESS");
-			memset(p_mqtt_interface->host_address, '\0', MQTT_HOST_ADDRESS_STRING_LENGTH);
-			memcpy(p_mqtt_interface->host_address, p_host_addr, strlen(p_host_addr));
+			common_tools_string_copy_string(p_mqtt_interface->host_address, p_host_addr, MQTT_HOST_ADDRESS_STRING_LENGTH);
 		}
 	}
 	
 	if (p_topic_name != NULL) {
 		if (strlen(p_topic_name) < MQTT_TOPIC_NAME_STRING_LENGTH) {
 			DEBUG_TRACE_STR(p_topic_name, "mqtt_configure() - TOPIC");
-			memset(p_mqtt_interface->topic_name, '\0', MQTT_TOPIC_NAME_STRING_LENGTH);
-			memcpy(p_mqtt_interface->topic_name, p_topic_name, strlen(p_topic_name));
+			common_tools_string_copy_string(p_mqtt_interface->topic_name, p_topic_name, MQTT_TOPIC_NAME_STRING_LENGTH);
 		}
 	}
 	
 	if (p_client_name != NULL) {
 		if (strlen(p_client_name) < MQTT_CLIENT_ID_STRING_LENGTH) {
 			DEBUG_TRACE_STR(p_client_name, "mqtt_configure() - CLIENT_ID");
-			memset(p_mqtt_interface->client_id, '\0', MQTT_CLIENT_ID_STRING_LENGTH);
-			memcpy(p_mqtt_interface->client_id, p_client_name, strlen(p_client_name));
+			common_tools_string_copy_string(p_mqtt_interface->client_id, p_client_name, MQTT_CLIENT_ID_STRING_LENGTH);
 		}
 	}
 }
 
 u8 mqtt_init(MQTT_INTERFACE* p_mqtt_interface) {
-
-	DEBUG_PASS("mqtt_init() - Initialize MQTT-Client");
-	MQTTClient_create(&p_mqtt_interface->client, p_mqtt_interface->host_address, p_mqtt_interface->client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
-
-	DEBUG_PASS("mqtt_init() - Set MQTT-Callbacks");
-	MQTTClient_setCallbacks(p_mqtt_interface->client, (void*)p_mqtt_interface, connectionLost_Callback, messageArrived_Callback, deliveryComplete_Callback);
 
 	#ifdef DEBUG_ENABLED
 	{
@@ -78,13 +69,23 @@ u8 mqtt_init(MQTT_INTERFACE* p_mqtt_interface) {
 	#endif
 
 	p_mqtt_interface->connection_lost = 1;
-	p_mqtt_interface->initialized = 1;
+	p_mqtt_interface->initialized = 0;
 	p_mqtt_interface->timeout_ms = MQTT_APPLICATION_DEFAULT_CONNECTION_TIMEOUT_MS;
 
 	return MQTT_NO_ERROR;
 }
 
 u8 mqtt_connect(MQTT_INTERFACE* p_mqtt_interface) {
+		
+	DEBUG_PASS("mqtt_connect()");
+
+	if (p_mqtt_interface->initialized == 0) {
+		DEBUG_TRACE_STR(p_mqtt_interface->client_id, "mqtt_connect() - Initialize MQTT-Client");
+		MQTTClient_create(&p_mqtt_interface->client, p_mqtt_interface->host_address, p_mqtt_interface->client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+
+		DEBUG_PASS("mqtt_connect() - Set MQTT-Callbacks");
+		MQTTClient_setCallbacks(p_mqtt_interface->client, (void*)p_mqtt_interface, connectionLost_Callback, messageArrived_Callback, deliveryComplete_Callback);
+	}
 
 	MQTTClient_connectOptions smartHomeConParam = MQTTClient_connectOptions_initializer;
 	smartHomeConParam.keepAliveInterval = 20;
