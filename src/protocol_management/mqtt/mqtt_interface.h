@@ -60,15 +60,21 @@
 #define MQTT_CLIENT_ID_CFG_STRING		"MQTT_CLIENT_ID"
 #define MQTT_TIMEOUT_CFG_STRING			"MQTT_TIMEOUT_MS"
 #define MQTT_WELCOME_MSG_CFG_STRING		"MQTT_WELCOME_MESSAGE"
+#define MQTT_KEEP_ALIVE_INTERVAL_CFG_STRING	"MQTT_KEEP_ALIVE_INTERVAL_MS"
+#define MQTT_RECONNECT_INTERVAL_CFG_STRING	"MQTT_RECONNECT_INTERVAL_MS"
 
 // --------------------------------------------------------------------------------
 
 #ifndef MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS
-#define MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS			1000
+#define MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS			10000
 #endif
 
 #ifndef MQTT_APPLICATION_DEFAULT_CONNECTION_TIMEOUT_MS
 #define MQTT_APPLICATION_DEFAULT_CONNECTION_TIMEOUT_MS			2000
+#endif
+
+#ifndef MQTT_APPLICATION_DEFAULT_RECONNECT_TIMEOUT_MS
+#define MQTT_APPLICATION_DEFAULT_RECONNECT_TIMEOUT_MS			30000
 #endif
 
 // --------------------------------------------------------------------------------
@@ -116,9 +122,12 @@ typedef struct {
 	u8 msg_arrived;
 	u8 msg_delivered;
 	u8 connection_lost;	
-	u16 timeout_ms;
 	u8 quality_of_service;
 	u8 initialized;
+
+	u32 connection_timeout_ms;
+	u32 reconnect_interval_ms;
+	u32 keep_alive_interval_ms;
 	
 	char host_address[MQTT_HOST_ADDRESS_STRING_LENGTH];
 	char topic_name[MQTT_TOPIC_NAME_STRING_LENGTH];
@@ -289,6 +298,30 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 																\
 	void name##_keep_alive(void) {												\
 		mqtt_keep_alive();												\
+	}															\
+																\
+	void name##_set_reconnect_interval(u32 reconnect_interval_ms) {								\
+		__##name##_mqtt_interface.reconnect_interval_ms = reconnect_interval_ms;					\
+	}															\
+																\
+	void name##_set_connection_timeout(u32 connection_timeout_ms) {								\
+		__##name##_mqtt_interface.connection_timeout_ms = connection_timeout_ms;					\
+	}															\
+																\
+	void name##_set_keep_alive_interval(u32 keep_alive_interval_ms) {							\
+		__##name##_mqtt_interface.keep_alive_interval_ms = keep_alive_interval_ms;					\
+	}															\
+																\
+	u32 name##_get_reconnect_interval(void) {										\
+		return __##name##_mqtt_interface.reconnect_interval_ms;								\
+	}															\
+																\
+	u32 name##_get_connection_timeout(void) {										\
+		return __##name##_mqtt_interface.connection_timeout_ms;								\
+	}															\
+																\
+	u32 name##_get_keep_alive_interval(void) {										\
+		return __##name##_mqtt_interface.keep_alive_interval_ms;							\
 	}
 
 // --------------------------------------------------------------------------------
@@ -305,7 +338,11 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 	u8 name##_msg_pending(void);												\
 	u8 name##_is_initialized(void);												\
 	const char* name##_get_connection_lost_cause(void) ;									\
-	void name##_keep_alive(void);		
+	void name##_keep_alive(void);												\
+	void name##_set_reconnect_interval(u32 reconnect_interval_ms) ;								\
+	void name##_set_connection_timeout(u32 connection_timeout_ms);								\
+	void name##_set_keep_alive_interval(u32 keep_alive_interval_ms);												
+
 
 // --------------------------------------------------------------------------------
 

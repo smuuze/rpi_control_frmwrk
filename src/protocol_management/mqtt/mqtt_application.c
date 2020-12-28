@@ -172,11 +172,6 @@ static MQTT_APPLICATION_TASK_STATE_TYPE mqtt_task_state = MQTT_APPLICATION_TASK_
  */
 static char mqtt_task_welcome_message[MQTT_APPLICATION_MAX_MSG_LENGTH];
 
-/*!
- *
- */
-static u32 mqtt_connect_interval_timeout_ms = 0;
-
 // --------------------------------------------------------------------------------
 
 void mqtt_interface_init(void) {
@@ -287,7 +282,7 @@ static MCU_TASK_INTERFACE_TASK_STATE mqtt_interface_task_get_state(void) {
 	if (mqtt_task_state == MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST) {
 
 		// reduce cpu-load while waiting for reconnect timeout
-		if (MQTT_CONNECT_INTERVAL_TIMER_is_active() && MQTT_CONNECT_INTERVAL_TIMER_is_up(mqtt_connect_interval_timeout_ms) == 0) {
+		if (MQTT_CONNECT_INTERVAL_TIMER_is_active() && MQTT_CONNECT_INTERVAL_TIMER_is_up(MQTT_HOST_get_keep_alive_interval()) == 0) {
 			return MCU_TASK_SLEEPING;
 		}
 	}
@@ -362,7 +357,7 @@ static void mqtt_interface_task_run(void) {
 
 		case MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST :
 
-			if (MQTT_CONNECT_INTERVAL_TIMER_is_active() && MQTT_CONNECT_INTERVAL_TIMER_is_up(mqtt_connect_interval_timeout_ms) == 0) {
+			if (MQTT_CONNECT_INTERVAL_TIMER_is_active() && MQTT_CONNECT_INTERVAL_TIMER_is_up(MQTT_HOST_get_keep_alive_interval()) == 0) {
 				//DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_CONNECT_TO_HOST - wait for connect-interval");
 				break;
 			}
@@ -478,19 +473,6 @@ static void mqtt_message_to_send_CALLBACK(const void* p_argument) {
 	DEBUG_TRACE_STR(msg_to_send, "mqtt_message_to_send_CALLBACK() - Message:");
 }
 
-static u8 mqtt_match_cfg_key(const char* reference, const char* cfg_key) {
-
-	if (strlen(reference) != strlen(cfg_key)) {
-		return 0;
-	}
-	
-	if (memcmp(reference, cfg_key, strlen(reference)) != 0) {
-		return 0;
-	}
-
-	return 1;
-}
-
 static void mqtt_new_cfg_object_CALLBACK(const void* p_argument) {
 
 	CFG_FILE_PARSER_CFG_OBJECT_TYPE* p_cfg_object = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*) p_argument;
@@ -505,35 +487,49 @@ static void mqtt_new_cfg_object_CALLBACK(const void* p_argument) {
 		return;
 	}
 
-	if (mqtt_match_cfg_key(MQTT_HOST_CFG_STRING, p_cfg_object->key)) {
+	if (common_tools_string_compare(MQTT_HOST_CFG_STRING, p_cfg_object->key)) {
 
 		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_HOST cfg-object");
 		MQTT_HOST_configure(p_cfg_object->value, NULL, NULL);
 		return;
 	}
 
-	if (mqtt_match_cfg_key(MQTT_TOPIC_CFG_STRING, p_cfg_object->key)) {
+	if (common_tools_string_compare(MQTT_TOPIC_CFG_STRING, p_cfg_object->key)) {
 		
 		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_TOPIC cfg-object");
 		MQTT_HOST_configure(NULL, p_cfg_object->value, NULL);
 		return;
 	}
 
-	if (mqtt_match_cfg_key(MQTT_CLIENT_ID_CFG_STRING, p_cfg_object->key)) {
+	if (common_tools_string_compare(MQTT_CLIENT_ID_CFG_STRING, p_cfg_object->key)) {
 		
 		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_CLIENT_ID cfg-object");
 		MQTT_HOST_configure(NULL, NULL, p_cfg_object->value);
 		return;
 	}
 
-	if (mqtt_match_cfg_key(MQTT_TIMEOUT_CFG_STRING, p_cfg_object->key)) {
+	if (common_tools_string_compare(MQTT_RECONNECT_INTERVAL_CFG_STRING, p_cfg_object->key)) {
 		
-		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_TIMEOUT cfg-object");
-		mqtt_connect_interval_timeout_ms = common_tools_string_to_u32(p_cfg_object->value);
+		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_RECONNECT_INTERVAL cfg-object");
+		MQTT_HOST_set_reconnect_interval(common_tools_string_to_u32(p_cfg_object->value));
 		return;
 	}
 
-	if (mqtt_match_cfg_key(MQTT_WELCOME_MSG_CFG_STRING, p_cfg_object->key)) {
+	if (common_tools_string_compare(MQTT_KEEP_ALIVE_INTERVAL_CFG_STRING, p_cfg_object->key)) {
+		
+		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_KEEP_ALIVE_INTERVAL cfg-object");
+		MQTT_HOST_set_keep_alive_interval(common_tools_string_to_u32(p_cfg_object->value));
+		return;
+	}
+
+	if (common_tools_string_compare(MQTT_TIMEOUT_CFG_STRING, p_cfg_object->key)) {
+		
+		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_TIMEOUT cfg-object");
+		MQTT_HOST_set_connection_timeout(common_tools_string_to_u32(p_cfg_object->value));
+		return;
+	}
+
+	if (common_tools_string_compare(MQTT_WELCOME_MSG_CFG_STRING, p_cfg_object->key)) {
 		
 		DEBUG_PASS("mqtt_new_cfg_object_CALLBACK() - MQTT_WELCOME_MSG cfg-object");
 		u16 length = strlen(p_cfg_object->value) > MQTT_APPLICATION_MAX_MSG_LENGTH ? MQTT_APPLICATION_MAX_MSG_LENGTH : strlen(p_cfg_object->value);

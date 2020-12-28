@@ -71,6 +71,8 @@ u8 mqtt_init(MQTT_INTERFACE* p_mqtt_interface) {
 	p_mqtt_interface->connection_lost = 1;
 	p_mqtt_interface->initialized = 0;
 	p_mqtt_interface->timeout_ms = MQTT_APPLICATION_DEFAULT_CONNECTION_TIMEOUT_MS;
+	p_mqtt_interface->keep_alive_interval_ms = MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS;
+	p_mqtt_interface->reconnect_interval_ms = MQTT_APPLICATION_DEFAULT_RECONNECT_TIMEOUT_MS;
 
 	return MQTT_NO_ERROR;
 }
@@ -88,7 +90,7 @@ u8 mqtt_connect(MQTT_INTERFACE* p_mqtt_interface) {
 	}
 
 	MQTTClient_connectOptions smartHomeConParam = MQTTClient_connectOptions_initializer;
-	smartHomeConParam.keepAliveInterval = 20;
+	smartHomeConParam.keepAliveInterval = p_mqtt_interface->keep_alive_interval_ms / 1000;
 	smartHomeConParam.cleansession = 1;
 
 	u8 err_code = MQTTClient_connect(p_mqtt_interface->client, &smartHomeConParam);
