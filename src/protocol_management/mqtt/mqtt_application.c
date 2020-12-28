@@ -311,6 +311,11 @@ static MCU_TASK_INTERFACE_TASK_STATE mqtt_interface_task_get_state(void) {
 		return MCU_TASK_RUNNING;
 	}
 
+	if (MQTT_KEEP_ALIVE_TIMER_is_up(MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS)) {
+		DEBUG_PASS("mqtt_interface_task_get_state() - RUNNING (keep-alive timeout)");
+		return MCU_TASK_RUNNING;
+	}
+
 	//DEBUG_PASS("mqtt_interface_task_get_state() - SLEEPING");
 	return MCU_TASK_SLEEPING;
 }
