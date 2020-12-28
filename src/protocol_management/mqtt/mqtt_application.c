@@ -179,8 +179,6 @@ void mqtt_interface_init(void) {
 	DEBUG_PASS("mqtt_interface_init() - MQTT_STATUS_init()");
 	MQTT_STATUS_clear_all();
 
-	mqtt_connect_interval_timeout_ms = MQTT_APPLICATION_CONNECT_INTERVAL_TIMEOUT_MS;
-
 	DEBUG_PASS("mqtt_interface_init() - MQTT_CONNECTION_ESTABLISHED_SIGNNAL_init()");
 	MQTT_CONNECTION_ESTABLISHED_SIGNAL_init();
 
