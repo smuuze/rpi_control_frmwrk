@@ -252,13 +252,18 @@ u8 common_tools_string_compare(const char* p_string1, const char* p_string2) {
 
 u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from, u16 max_length) {
 
+	memset(p_string_to, '\0', max_length);
+
+	if (p_string_from == NULL) {
+		return 0;
+	}
+
 	u16 length = strlen(p_string_from);
 
 	if (length > max_length - 1) {
 		length = max_length - 1;
 	}
 
-	memset(p_string_to, '\0', max_length);
 	memcpy(p_string_to, p_string_from, length);
 
 	return length;
