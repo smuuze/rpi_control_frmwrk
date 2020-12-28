@@ -79,7 +79,7 @@ u8 mqtt_init(MQTT_INTERFACE* p_mqtt_interface) {
 
 	p_mqtt_interface->connection_lost = 1;
 	p_mqtt_interface->initialized = 1;
-	p_mqtt_interface->timeout_ms = 1500;
+	p_mqtt_interface->timeout_ms = MQTT_APPLICATION_DEFAULT_CONNECTION_TIMEOUT_MS;
 
 	return MQTT_NO_ERROR;
 }

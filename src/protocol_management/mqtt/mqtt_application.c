@@ -46,7 +46,7 @@
 #endif
 
 #ifndef MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS
-#define MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS			9000
+#define MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS			1000
 #endif
 
 // --------------------------------------------------------------------------------
@@ -386,7 +386,7 @@ static void mqtt_interface_task_run(void) {
 			if (MQTT_HOST_connection_lost()) {
 
 				DEBUG_PASS("mqtt_interface_task_run() - MQTT_APPLICATION_TASK_STATE_IDLE >> MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION");
-				MQTT_CONNECTION_LOST_SIGNAL_send(MQTT_HOST_get_connection_lost_cause());
+				MQTT_CONNECTION_LOST_SIGNAL_send(NULL);
 				MQTT_CONNECT_INTERVAL_TIMER_start();
 				mqtt_task_state = MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION;
 				break;
