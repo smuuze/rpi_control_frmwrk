@@ -70,7 +70,7 @@ u8 mqtt_init(MQTT_INTERFACE* p_mqtt_interface) {
 
 	p_mqtt_interface->connection_lost = 1;
 	p_mqtt_interface->initialized = 0;
-	p_mqtt_interface->timeout_ms = MQTT_APPLICATION_DEFAULT_CONNECTION_TIMEOUT_MS;
+	p_mqtt_interface->connection_timeout_ms = MQTT_APPLICATION_DEFAULT_CONNECTION_TIMEOUT_MS;
 	p_mqtt_interface->keep_alive_interval_ms = MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS;
 	p_mqtt_interface->reconnect_interval_ms = MQTT_APPLICATION_DEFAULT_RECONNECT_TIMEOUT_MS;
 
@@ -152,7 +152,7 @@ u8 mqtt_send_next_message(MQTT_INTERFACE* p_mqtt_interface) {
 
 	DEBUG_PASS("mqtt_send_message() - Waiting for completion of message.");
 
-	u8 err_code = MQTTClient_waitForCompletion(p_mqtt_interface->client, message_token, p_mqtt_interface->timeout_ms);
+	u8 err_code = MQTTClient_waitForCompletion(p_mqtt_interface->client, message_token, p_mqtt_interface->connection_timeout_ms);
 	if (err_code != MQTTCLIENT_SUCCESS) {
 		DEBUG_TRACE_byte(err_code, "mqtt_send_message() - Sending Message to SmartHomeBroker has FAILED !!! (err_code = %d)");
 		return MQTT_ERROR_TIMEOUT;
