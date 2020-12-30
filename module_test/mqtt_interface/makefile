@@ -1,25 +1,15 @@
-#-----------------------------------------------------------------------------
-#       Makefile fuer AVR-GCC Projekte
-#-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
-# PROJECT: Name des Hexfiles usw.
-#-----------------------------------------------------------------------------
-# VERSION_STRING muss (!) zwei Ziffern nach dem '.' enthalten, weil
-# aus dem String noch weitere Varianten von Version erzeugt
-# werden. Beispiel:
-# VERSION_STRING = v1.07
-# VERSION_DIGITS = 107
-# VERSION        = 0x107
 
-# PROJEKT Name des Hexfiles
 PROJECT = UNITTEST_mqtt_interface
 
-BOARD_ID = RASPBERRYPI
+BOARD_ID = UNITTEST
+
+PLATTFORM = MACOS
 
 #-----------------------------------------------------------------------------
 
-VERSION_MAJOR		:= 1
+VERSION_MAJOR		:= 2
 VERSION_MINOR		:= 0
 
 #-----------------------------------------------------------------------------
@@ -31,7 +21,7 @@ MAKE_PATH   = $(FRMWRK_PATH)/make
 
 #-----------------------------------------------------------------------------
 
-MCU = RASPBERRY_PI
+MCU = UNITTEST
 
 #-----------------------------------------------------------------------------
 

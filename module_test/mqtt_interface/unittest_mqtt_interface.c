@@ -75,6 +75,7 @@ u8 counter_MQTT_CONNECTION_LOST_SIGNAL = 0;
 u8 counter_MQTT_CONNECTION_ESTABLISHED_SIGNNAL = 0;
 u8 counter_MQTT_ENQUE_MESSAGE_CALLBACK = 0;
 u8 counter_MQTT_TX_MSG_PENDING_CALLBACK = 0;
+u8 counter_MQTT_KEEP_ALIVE_CALLBACK = 0;
 
 static void unittest_mqtt_counter_reset(void) {
 
@@ -95,6 +96,7 @@ static void unittest_mqtt_counter_reset(void) {
 	counter_MQTT_CONNECTION_ESTABLISHED_SIGNNAL = 0;
 	counter_MQTT_ENQUE_MESSAGE_CALLBACK = 0;
 	counter_MQTT_TX_MSG_PENDING_CALLBACK = 0;
+	counter_MQTT_KEEP_ALIVE_CALLBACK = 0;
 }
 
 // stubs
@@ -148,19 +150,19 @@ u8 mqtt_connect(MQTT_INTERFACE* p_mqtt_interface) {
 
 		case TEST_CASE_ID_CONNECTION_LOST :
 			DEBUG_PASS("UNITTEST - mqtt_connect() - TEST_CASE_ID_CONNECTION_LOST");
-			return 0;
+			return MQTT_ERROR_TIMEOUT;
 
 		case TEST_CASE_ID_RECONNECT_FAILED :
 			DEBUG_PASS("UNITTEST - mqtt_connect() - TEST_CASE_ID_RECONNECT_FAILED");
-			return 0;
+			return MQTT_ERROR_TIMEOUT;
 
 		case TEST_CASE_ID_MESSAGE_TO_SEND_ON_CONNECTION_LSOT :
 			DEBUG_PASS("UNITTEST - mqtt_connect() - TEST_CASE_ID_MESSAGE_TO_SEND_ON_CONNECTION_LSOT");
-			return 0;
+			return MQTT_ERROR_TIMEOUT;
 	}
 	
 	DEBUG_PASS("UNITTEST - mqtt_connect() - OK");
-	return 1;
+	return MQTT_NO_ERROR;
 }
 
 u8 mqtt_send_next_message(MQTT_INTERFACE* p_mqtt_interface) {
@@ -252,6 +254,12 @@ u8 mqtt_connection_lost(MQTT_INTERFACE* p_mqtt_interface) {
 	}
 	
 	return 0;
+}
+
+void mqtt_keep_alive(void) {
+
+	DEBUG_PASS("mqtt_keep_alive()");
+	counter_MQTT_KEEP_ALIVE_CALLBACK += 1;
 }
 
 // --------------------------------------------------------------------------------
@@ -387,8 +395,6 @@ static void UNITTEST_mqtt_interface_configure(void) {
 
 		CFG_PARSER_CFG_COMPLETE_SIGNAL_send(NULL);
 
-		mcu_task_controller_schedule();
-
 		UT_CHECK_IS_EQUAL(counter_MQTT_CONFIGURE_HOST_ADDR_CALLBACK, 1);
 		UT_CHECK_IS_EQUAL(counter_MQTT_CONFIGURE_TOPIC_CALLBACK, 1);
 		UT_CHECK_IS_EQUAL(counter_MQTT_CONFIGURE_CLIENT_ID_CALLBACK, 1);
@@ -421,9 +427,7 @@ static void UNITTEST_mqtt_interface_connect(void) {
 		UNITTEST_TIMER_start();
 		printf(" - TEST-CASE start time (ms) : %d (%x04)\n", UNITTEST_TIMER_start_time(), UNITTEST_TIMER_start_time());
 
-		u8 number_of_task_run = 2;
-
-		while (UNITTEST_TIMER_is_up(MQTT_APPLICATION_IDLE_SCHEDULE_INTERVAL_MS * number_of_task_run) == 0) {
+		while (UNITTEST_TIMER_is_up(500) == 0) {
 			mcu_task_controller_schedule();
 
 			if (counter_MQTT_CONNECTION_ESTABLISHED_SIGNNAL != 0) {
@@ -443,7 +447,7 @@ static void UNITTEST_mqtt_interface_connect(void) {
 		UT_CHECK_IS_EQUAL(counter_MQTT_GET_NEXT_MSG_CALLBACK, 0);
 		UT_CHECK_IS_EQUAL(counter_MQTT_NEW_MSG_SIGNAL, 0);
 		UT_CHECK_IS_EQUAL(counter_MQTT_MSG_OK, 0);
-		UT_CHECK_IS_EQUAL(counter_MQTT_CONNECTION_LOST_CALLBACK, 1);
+		UT_CHECK_IS_EQUAL(counter_MQTT_CONNECTION_LOST_CALLBACK, 0);
 		UT_CHECK_IS_EQUAL(counter_MQTT_CONNECTION_LOST_SIGNAL, 0);
 		UT_CHECK_IS_EQUAL(counter_MQTT_CONNECTION_ESTABLISHED_SIGNNAL, 1);
 		UT_CHECK_IS_EQUAL(counter_MQTT_ENQUE_MESSAGE_CALLBACK, 0);
@@ -745,7 +749,7 @@ static void UNITTEST_mqtt_interface_msg_to_send_while_disconnected(void) {
 
 int main(void) {
 
-	TRACER_DISABLE();
+	//TRACER_DISABLE();
 
 	CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_init();
 	CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_set_timeout(0);
