@@ -25,95 +25,95 @@
 //-----------------------------------------------------------------------------
 
 
-static void empty_driver_initialize(void) {
+__UNUSED__ static void empty_driver_initialize(void) {
 }
 
-static void empty_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
+__UNUSED__ static void empty_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 	(void) p_cfg;
 }
 
-static void empty_driver_power_off(void) {
+__UNUSED__ static void empty_driver_power_off(void) {
 
 }
 
-static u8 empty_driver_bytes_available (void) {
+__UNUSED__ static u8 empty_driver_bytes_available (void) {
 	return 0;
 }
 
-static u8 empty_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
+__UNUSED__ static u8 empty_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 	(void) num_bytes;
 	(void) p_buffer_to;
 	return 0;
 }
 
-static u8 empty_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+__UNUSED__ static u8 empty_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
 	(void) num_bytes;
 	(void) p_buffer_from;
 	return 0;
 }
 
-static u8 empty_driver_is_ready_for_tx (void) {
+__UNUSED__ static u8 empty_driver_is_ready_for_tx (void) {
 	return 0;
 }
 
-static u8 empty_driver_is_ready_for_rx(void) {
+__UNUSED__ static u8 empty_driver_is_ready_for_rx(void) {
 	return 0;
 }
 
-static void empty_driver_start_rx (u16 num_of_rx_bytes) {
+__UNUSED__ static void empty_driver_start_rx (u16 num_of_rx_bytes) {
 	(void) num_of_rx_bytes;
 }
 
-static void empty_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+__UNUSED__ static void empty_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 }
 
-static void empty_driver_stop_rx (void) {
+__UNUSED__ static void empty_driver_stop_rx (void) {
 }
 
-static void empty_driver_start_tx (void) {
+__UNUSED__ static void empty_driver_start_tx (void) {
 }
 
-static void empty_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+__UNUSED__ static void empty_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 }
 
-static void empty_driver_stop_tx (void) {
+__UNUSED__ static void empty_driver_stop_tx (void) {
 }
 
-static void empty_driver_clear_rx_buffer (void) {
+__UNUSED__ static void empty_driver_clear_rx_buffer (void) {
 }
 
-static void empty_driver_clear_tx_buffer (void) {
+__UNUSED__ static void empty_driver_clear_tx_buffer (void) {
 }
 
-static void empty_driver_set_address (u8 addr) {
+__UNUSED__ static void empty_driver_set_address (u8 addr) {
 	(void) addr;
 }
 
-static u8 empty_driver_mutex_request(void) {
+__UNUSED__ static u8 empty_driver_mutex_request(void) {
 	return MUTEX_INVALID_ID;
 }
 
-static void empty_driver_mutex_release(u8 m_id) {
+__UNUSED__ static void empty_driver_mutex_release(u8 m_id) {
 
 }
 
-void empty_driver_set_rx_bytes(u8 num_bytes, u8* p_buffer_from) {
+__UNUSED__ void empty_driver_set_rx_bytes(u8 num_bytes, u8* p_buffer_from) {
 	(void) num_bytes;
 	(void) p_buffer_from;
 
 }
 
-u8 empty_driver_get_tx_bytes(u8 num_bytes, u8* p_buffer_to) {
+__UNUSED__ u8 empty_driver_get_tx_bytes(u8 num_bytes, u8* p_buffer_to) {
 	(void) num_bytes;
 	(void) p_buffer_to;
 	return 0;
 }
 
-u8 empty_driver_get_tx_bytes_num_available(void) {
+__UNUSED__ u8 empty_driver_get_tx_bytes_num_available(void) {
 	return 0;
 }
 
