@@ -271,12 +271,6 @@ void task_initialization(void) {
 	mcu_task_controller_register_task(&io_input_controller_task);
 	#endif
 
-	#ifdef HAS_MANAGEMENT_MODULE_RPI_PROTOCOL
-	DEBUG_PASS("task_initialization() - rpi-protocol task");
-	#pragma __WARNING__YOU_NEED_TO_REGISTER_THE_RPI_PROTOCOL_TASK_WITHIN_YOUR_IMPLEMENTATION
-	//mcu_task_controller_register_task(&rpi_protocol_task);
-	#endif
-
 	#ifdef HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115
 
 	DEBUG_PASS("task_initialization() - SHT31 (Temperature / Humidity) task");
