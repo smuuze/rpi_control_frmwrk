@@ -50,6 +50,7 @@ endif
 ifeq ($(MCU), RASPBERRY_PI)
 	MCU_NAME 	= raspberrypi
 	CPU_FAMILY 	= arm
+	DEFS 		+= -D__raspberrypi__
 	INC_PATH 	+= $(FRMWRK_PATH)/src/common/cpu/rpi_arm
 	INC_PATH	+= /usr/include
 	
