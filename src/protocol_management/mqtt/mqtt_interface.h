@@ -218,12 +218,17 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 
 // --------------------------------------------------------------------------------
 
-#define MQTT_INTERFACE_BUILD_HOST(name)												\
+#define MQTT_INTERFACE_BUILD_CLIENT(name, max_message_length, tx_qeue_size, rx_qeue_size)					\
 																\
-	QEUE_INTERFACE_BUILD_QEUE(__##name##_RX_QEUE, char, MQTT_INTERFACE_MAX_MSG_LENGTH, 10)					\
-	QEUE_INTERFACE_BUILD_QEUE(__##name##_TX_QEUE, char, MQTT_INTERFACE_MAX_MSG_LENGTH, 10)					\
+	QEUE_INTERFACE_BUILD_QEUE(__##name##_RX_QEUE, char, max_message_length, rx_qeue_size)					\
+	QEUE_INTERFACE_BUILD_QEUE(__##name##_TX_QEUE, char, max_message_length, tx_qeue_size)					\
 																\
 	static MQTT_INTERFACE __##name##_mqtt_interface = {									\
+																\
+		.connection_timeout_ms = MQTT_APPLICATION_DEFAULT_CONNECTION_TIMEOUT_MS,					\
+		.reconnect_interval_ms = MQTT_APPLICATION_DEFAULT_RECONNECT_TIMEOUT_MS,						\
+		.keep_alive_interval_ms = MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS,						\
+																\
 		.rx_qeue = {													\
 			.init = &__##name##_RX_QEUE_init,									\
 			.enqeue = &__##name##_RX_QEUE_enqeue,									\
