@@ -59,3 +59,16 @@ jobs:
       run: make unittest
     - name: run unittest
       run: make run
+
+  unittest_mqtt_interface:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/mqtt_interface
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make unittest
+    - name: run unittest
+      run: make run
