@@ -69,6 +69,16 @@
 
 // --------------------------------------------------------------------------------
 
+#define UT_CHECK_IS_GREATER(value, reference)		if (value > reference ) {											\
+								counter_TEST_PASSED += 1;										\
+								__ut_number_of_test_passed += 1;									\
+								UT_EQUATION_OK(value)											\
+							} else {													\
+								counter_TEST_FAILED += 1;										\
+								__ut_number_of_test_failed += 1;									\
+								UT_EQUATION_ERROR(value, reference)									\
+							}
+
 #define UT_CHECK_IS_EQUAL(value, reference)		if (reference != value) {											\
 								counter_TEST_FAILED += 1;										\
 								__ut_number_of_test_failed += 1;									\
