@@ -246,7 +246,7 @@ static void UNITTEST_rpi_protocol_host_receive_command(void) {
 
 		UNITTEST_TIMER_start();
 
-		while (UNITTEST_TIMER_is_up(250) == 0) {
+		while (UNITTEST_TIMER_is_up(1000) == 0) {
 			mcu_task_controller_schedule();
 
 			if (response_send == 0 && UNITTEST_TIMER_is_up(75)) {
