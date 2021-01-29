@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -344,7 +344,7 @@ static void UNITTEST_rpi_protocol_host_response_timeout(void) {
 
 int main(void) {
 
-	//TRACER_DISABLE();
+	TRACER_DISABLE();
 
 	UT_START_TESTBENCH("Welcome the the UNITTEST for log-interface v1.0")
 	{
@@ -358,7 +358,11 @@ int main(void) {
 		UT_RPI_HOST_RESPONSE_OVERFLOW_SLOT_connect();
 
 		UNITTEST_rpi_protocol_host_configure();
+
+		TRACER_ENABLE();
 		UNITTEST_rpi_protocol_host_receive_command();
+		TRACER_DISABLE();
+
 		UNITTEST_rpi_protocol_host_response_overflow();
 		UNITTEST_rpi_protocol_host_response_timeout();
 	}
