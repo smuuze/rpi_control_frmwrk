@@ -82,6 +82,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make unittest_debug
     - name: run unittest
       run: make run
