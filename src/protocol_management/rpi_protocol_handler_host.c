@@ -18,10 +18,10 @@
 #include "system/system_interface.h"
 #include "common/common_types.h"
 
-//#include "common/local_context.h"
 #include "common/local_msg_buffer.h"
 #include "common/local_module_status.h"
 #include "common/local_mutex.h"
+#include "common/common_tools_string.h"
 
 #include "io_management/io_controller.h"
 
@@ -29,10 +29,10 @@
 #include "driver/cfg_driver_interface.h"
 #include "driver/driver_specific_spi.h"
 
-//#include "command_handler/rpi_command_handler.h"
 #include "command_management/protocol_interface.h"
 #include "time_management/time_management.h"
 #include "common/signal_slot_interface.h"
+#include "ui/cfg_file_parser/cfg_file_parser.h"
 
 #include "protocol_management/rpi_protocol_handler.h"
 
@@ -68,6 +68,7 @@
  *
  */
 typedef enum {
+	RPI_HOST_WAIT_FOR_USER_CFG,
 	RPI_HOST_STATE_SLEEP,
 	RPI_HOST_STATE_CLIENT_WAIT_FOR_COMMAND,
 	RPI_HOST_STATE_REQUEST_CLIENT,
@@ -82,6 +83,7 @@ typedef enum {
 // --------------------------------------------------------------------------------
 
 #define RPI_HOST_STATUS_COMMAND_PENDING			(1 << 0)
+#define RPI_HOST_STATUS_USER_CONFIG_COMPLETE		(1 << 1)
 
 BUILD_MODULE_STATUS_U8(RPI_HOST_STATUS)
 
@@ -114,6 +116,16 @@ static void rpi_protocol_task_run(void);
  */
 static void rpi_protocol_handler_host_COMMAND_RECEIVED_SLOT_CALLBACK(const void* p_argument);
 
+/*!
+ *
+ */
+static void rpi_protocol_new_cfg_object_CALLBACK(const void* p_argument);
+
+/*!
+ *
+ */
+static void rpi_protocol_cfg_complete_CALLBACK(const void* p_argument);
+
 //-----------------------------------------------------------------------------
 
 TIME_MGMN_BUILD_STATIC_TIMER_U16(RPI_OP_TIMER)
@@ -123,7 +135,12 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(RPI_OP_TIMER)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_COMMAND_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_RESPONSE_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_RESPONSE_TIMEOUT_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_RESPONSE_OVERFLOW_SIGNAL)
+
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(RPI_HOST_COMMAND_RECEIVED_SIGNAL, RPI_HOST_COMMAND_RECEIVED_SLOT, rpi_protocol_handler_host_COMMAND_RECEIVED_SLOT_CALLBACK)
+
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CFG_PARSER_NEW_CFG_OBJECT_SIGNAL, RPI_HOST_NEW_CFG_OBJECT_SLOT, rpi_protocol_new_cfg_object_CALLBACK)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CFG_PARSER_CFG_COMPLETE_SIGNAL, RPI_HOST_CFG_COMPLETE_SLOT, rpi_protocol_cfg_complete_CALLBACK)
 
 //-----------------------------------------------------------------------------
 
@@ -218,8 +235,13 @@ static u8 rpi_host_receive_response(void) {
 	}
 
 	if (buffer.length > COMMON_TYPES_GENERIC_BUFFER_SIZE) {
-		DEBUG_TRACE_word(buffer.length, "rpi_host_receive_response() - Length exxeds buffer-limit");
+
+		DEBUG_TRACE_word(buffer.length, "rpi_host_receive_response() - Length exeeds buffer-limit");
+
 		buffer.length = COMMON_TYPES_GENERIC_BUFFER_SIZE;
+		RPI_HOST_RESPONSE_OVERFLOW_SIGNAL_send(NULL);
+
+		// we will accept as much as possible bytes
 	}
 
 	p_com_driver->start_rx(buffer.length);
@@ -261,9 +283,6 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	p_com_driver = p_driver;
 
-	driver_cfg.module.spi = _com_driver_cfg_spi;
-	p_com_driver->configure(&driver_cfg);
-
 	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_COMMAND_RECEIVED_SIGNAL_init()");
 	RPI_HOST_COMMAND_RECEIVED_SIGNAL_init();
 
@@ -273,8 +292,17 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_RESPONSE_TIMEOUT_SIGNAL_init()");
 	RPI_HOST_RESPONSE_TIMEOUT_SIGNAL_init();
 
+	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_RESPONSE_OVERFLOW_SIGNAL_init()");
+	RPI_HOST_RESPONSE_OVERFLOW_SIGNAL_init();
+
 	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_COMMAND_RECEIVED_SLOT_connect()");
 	RPI_HOST_COMMAND_RECEIVED_SLOT_connect();
+	
+	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_NEW_CFG_OBJECT_SLOT_connect()");
+	RPI_HOST_NEW_CFG_OBJECT_SLOT_connect();
+
+	DEBUG_PASS("rpi_protocol_init() - RPI_HOST_CFG_COMPLETE_SLOT_connect()");
+	RPI_HOST_CFG_COMPLETE_SLOT_connect();
 
 	mcu_task_controller_register_task(&rpi_protocol_task);
 }
@@ -290,7 +318,7 @@ static void rpi_protocol_task_init(void) {
 	DEBUG_PASS("rpi_protocol_task_init() - HOST - ");
 
 	actual_task_state = MCU_TASK_SLEEPING;
-	rpi_host_state = RPI_HOST_STATE_SLEEP;
+	rpi_host_state = RPI_HOST_WAIT_FOR_USER_CFG;
 
 	RPI_OP_TIMER_start();
 }
@@ -327,7 +355,20 @@ static void rpi_protocol_task_run(void) {
 
 		default:
 			
-			rpi_host_state = RPI_HOST_STATE_SLEEP;
+			rpi_host_state = RPI_HOST_WAIT_FOR_USER_CFG;
+
+		case RPI_HOST_WAIT_FOR_USER_CFG :
+
+			if (RPI_HOST_STATUS_is_set(RPI_HOST_STATUS_USER_CONFIG_COMPLETE)) {
+
+				DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_WAIT_FOR_USER_CFG >> RPI_HOST_STATE_SLEEP");
+
+				driver_cfg.module.spi = _com_driver_cfg_spi;
+				p_com_driver->configure(&driver_cfg);
+				rpi_host_state = RPI_HOST_STATE_SLEEP;
+			}
+
+			break;
 
 		case RPI_HOST_STATE_SLEEP:
 
@@ -415,3 +456,43 @@ static void rpi_protocol_task_run(void) {
 			break;
 	}
 }
+
+static void rpi_protocol_new_cfg_object_CALLBACK(const void* p_argument) {
+
+	if (p_argument == NULL) {
+		DEBUG_PASS("rpi_protocol_new_cfg_object_CALLBACK() - NULL_POINTER_EXCEPTION");
+		return;
+	}
+
+	CFG_FILE_PARSER_CFG_OBJECT_TYPE* p_cfg_object = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*) p_argument;
+
+	if (common_tools_string_compare(RPI_CONTROL_PREFIX_CFG_STRING, p_cfg_object->key)) {
+		DEBUG_TRACE_STR(p_cfg_object->key, "rpi_protocol_new_cfg_object_CALLBACK() - Unknown cfg_object - prefix");
+		return;
+	}
+
+	if (common_tools_string_compare(RPI_PROTOCOL_SPEED_CFG_STRING, p_cfg_object->key)) {
+		
+		DEBUG_TRACE_STR(p_cfg_object->value, "rpi_protocol_new_cfg_object_CALLBACK() - RPI_PROTOCOL_SPEED_CFG_STRING :");
+		_com_driver_cfg_spi.speed = common_tools_string_to_u32(p_cfg_object->value);
+		return;
+	}
+
+	if (common_tools_string_compare(RPI_PROTOCOL_DEVICE_CFG_STRING, p_cfg_object->key)) {
+		
+		DEBUG_TRACE_STR(p_cfg_object->value, "rpi_protocol_new_cfg_object_CALLBACK() - RPI_PROTOCOL_DEVICE_CFG_STRING :");
+		common_tools_string_copy_string(_com_driver_cfg_spi.device, p_cfg_object->value, DRIVER_CFG_DEVICE_NAME_MAX_LENGTH);
+		return;
+	}
+
+	DEBUG_TRACE_STR(p_cfg_object->key, "rpi_protocol_new_cfg_object_CALLBACK() - Unknown cfg_object");
+}
+
+static void rpi_protocol_cfg_complete_CALLBACK(const void* p_argument) {
+
+	(void) p_argument;
+
+	DEBUG_PASS("rpi_protocol_cfg_complete_CALLBACK()");
+	RPI_HOST_STATUS_set(RPI_HOST_STATUS_USER_CONFIG_COMPLETE);
+}
+

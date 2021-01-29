@@ -18,13 +18,19 @@
 
 //-----------------------------------------------------------------------------
 
+#define RPI_CONTROL_PREFIX_CFG_STRING			"COM"
+#define RPI_PROTOCOL_SPEED_CFG_STRING			"COM_SPEED_HZ"
+#define RPI_PROTOCOL_DEVICE_CFG_STRING			"COM_DEVICE"
+
+//-----------------------------------------------------------------------------
+
 #ifndef RPI_PROTOCOL_HANDLER_DRIVER_CFG
-#define RPI_PROTOCOL_HANDLER_DRIVER_CFG			COM_DRIVER_IS_SLAVE, 		/*	u8 op_mode; 		*/ \
-							DRIVER_SPI_MODE_3, 		/*	u8 clk_phase;		*/ \
-							DRIVER_SPI_CLK_DEVIDER_4, 	/*	u8 clk_divider;		*/ \
-							DRIVER_SPI_NO_DOUBLE_SPEED, 	/*	u8 clk_double_speed;	*/ \
-							DRIVER_SPI_DATA_ORDER_MSB, 	/*	u8 data_order;		*/ \
-							COM_DRIVER_IRQ_ENABLE		/*	u8 interrupt_enable;	*/
+#define RPI_PROTOCOL_HANDLER_DRIVER_CFG			.is_master = COM_DRIVER_IS_SLAVE, 			/*	u8 op_mode; 		*/ \
+							.mode = DRIVER_SPI_MODE_3, 				/*	u8 clk_phase;		*/ \
+							.clk_divider = DRIVER_SPI_CLK_DEVIDER_4, 		/*	u8 clk_divider;		*/ \
+							.clk_double_speed = DRIVER_SPI_NO_DOUBLE_SPEED, 	/*	u8 clk_double_speed;	*/ \
+							.data_order = DRIVER_SPI_DATA_ORDER_MSB, 		/*	u8 data_order;		*/ \
+							.interrupt_enable = COM_DRIVER_IRQ_ENABLE		/*	u8 interrupt_enable;	*/
 #endif
 
 //-----------------------------------------------------------------------------
