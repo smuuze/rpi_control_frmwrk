@@ -249,7 +249,7 @@ static void UNITTEST_rpi_protocol_host_receive_command(void) {
 		while (UNITTEST_TIMER_is_up(1000) == 0) {
 			mcu_task_controller_schedule();
 
-			if (response_send == 0 && UNITTEST_TIMER_is_up(75)) {
+			if (response_send == 0 && UNITTEST_TIMER_is_up(250)) {
 				response_send = 1;
 				test_driver_set_rx_bytes(5, bytes_received);
 			}
