@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -358,11 +358,7 @@ int main(void) {
 		UT_RPI_HOST_RESPONSE_OVERFLOW_SLOT_connect();
 
 		UNITTEST_rpi_protocol_host_configure();
-
-		TRACER_ENABLE();
 		UNITTEST_rpi_protocol_host_receive_command();
-		TRACER_DISABLE();
-
 		UNITTEST_rpi_protocol_host_response_overflow();
 		UNITTEST_rpi_protocol_host_response_timeout();
 	}
