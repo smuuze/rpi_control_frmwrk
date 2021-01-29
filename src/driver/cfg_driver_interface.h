@@ -43,6 +43,10 @@
 
 //----------------------------------------------------------------------------- 
 
+#define DRIVER_CFG_DEVICE_NAME_MAX_LENGTH			64
+
+//----------------------------------------------------------------------------- 
+
 #define TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH		0xFFFF
 
 /*!
@@ -105,6 +109,8 @@ typedef struct CFG_DRIVER_SPI {
 	u8 clk_double_speed;
 	u8 data_order;
 	u8 interrupt_enable;
+	u32 speed;
+	char device[DRIVER_CFG_DEVICE_NAME_MAX_LENGTH];
 
 } CFG_DRIVER_SPI;
 

@@ -43,12 +43,21 @@
 
 // --------------------------------------------------------------------------------
 
+#define SPI0_DRIVER_MAX_SPEED				50000
+#define SPI0_DRIVER_MIN_SPEED				5000
+
+// --------------------------------------------------------------------------------
+
 #ifndef SPI0_DEFAULT_CONFIGURTATION_MODE 
 #define SPI0_DEFAULT_CONFIGURTATION_MODE		0x03
 #endif
 
 #ifndef SPI0_DEFAULT_CONFIGURATION_SPEED_HZ		
-#define SPI0_DEFAULT_CONFIGURATION_SPEED_HZ		60000
+#define SPI0_DEFAULT_CONFIGURATION_SPEED_HZ		SPI0_DRIVER_MAX_SPEED
+#endif
+
+#ifndef SPI0_DEFAULT_CONFIGURATION_DEVICE		
+#define SPI0_DEFAULT_CONFIGURATION_DEVICE		"/dev/spidev0.0"
 #endif
 
 #ifndef SPI0_DRIVER_TX_BUFFER_SIZE
@@ -104,55 +113,10 @@ void spi0_driver_initialize(void) {
 	if (SPI0_STATUS_is_set(SPI0_STATUS_INITIALIZED)) {
 		DEBUG_PASS("spi0_driver_initialize() - is already initialzed");
 	}
-	
-	DEBUG_PASS("spi0_driver_initialize() - open spi-device /dev/spidev0.0");
-
-	spi0_cfg.handle = (i32)open("/dev/spidev0.0", O_RDWR);
-	if (spi0_cfg.handle < 0) {
-		DEBUG_PASS("spi0_driver_initialize() - Cant open SPI device /dev/spidev0.0");
-		spi0_cfg.handle = SPI0_DEVICE_HANDLE_INVALID;
-		return;
-	}
 
 	spi0_cfg.mode = SPI0_DEFAULT_CONFIGURTATION_MODE;
 	spi0_cfg.speed = SPI0_DEFAULT_CONFIGURATION_SPEED_HZ;
 	spi0_cfg.bits_per_word = SPI0_DRIVER_DEFAULT_BITS_PER_WORD;
-	
-	int err_code = ioctl(spi0_cfg.handle, SPI_IOC_WR_MODE32, &spi0_cfg.mode);
-	if (err_code) {
-		DEBUG_TRACE_byte(err_code , "spi0_driver_initialize() - Can't set spi mode - SPI_IOC_WR_MODE32 - error:");
-		return;
-	}
-
-	err_code = ioctl(spi0_cfg.handle, SPI_IOC_RD_MODE32, &spi0_cfg.mode);
-	if (err_code) {
-		DEBUG_PASS("spi0_driver_initialize() - Can't get spi mode - SPI_IOC_RD_MODE32");
-		return;
-	}
-	
-	err_code = ioctl(spi0_cfg.handle, SPI_IOC_WR_BITS_PER_WORD, &spi0_cfg.bits_per_word);
-	if (err_code) {
-		DEBUG_PASS("spi0_driver_initialize() - Can't set bits per word\n");
-		return;
-	}
-
-	err_code = ioctl(spi0_cfg.handle, SPI_IOC_RD_BITS_PER_WORD, &spi0_cfg.bits_per_word);
-	if (err_code) {
-		DEBUG_PASS("spi0_driver_initialize() - Can't get bits per word - SPI_IOC_RD_BITS_PER_WORD\n");
-		return;
-	}
-	
-	err_code = ioctl(spi0_cfg.handle, SPI_IOC_WR_MAX_SPEED_HZ, &spi0_cfg.speed);
-	if (err_code) {
-		DEBUG_PASS("spi0_driver_initialize() - Can't set max speed hz - SPI_IOC_WR_MAX_SPEED_HZ");
-		return;
-	}
-
-	err_code = ioctl(spi0_cfg.handle, SPI_IOC_RD_MAX_SPEED_HZ, &spi0_cfg.speed);
-	if (err_code) {
-		DEBUG_PASS("spi0_driver_initialize() - Can't get max speed hz - SPI_IOC_RD_MAX_SPEED_HZ");
-		return;
-	}
 
 	SPI0_STATUS_clear_all();
 	SPI0_STATUS_set(SPI0_STATUS_INITIALIZED);
@@ -171,6 +135,8 @@ void spi0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 		DEBUG_PASS("spi0_driver_configure() - Driver is not initialized");
 		return;
 	}
+
+	// mode ---------------------------
 
 	switch (p_cfg->module.spi.mode) {
 
@@ -191,6 +157,85 @@ void spi0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 			DEBUG_PASS("spi0_driver_configure() - DRIVER_SPI_MODE_3");
 			break;
 	}
+
+	// speed ---------------------------
+
+	if (p_cfg->module.spi.speed > SPI0_DRIVER_MAX_SPEED) {
+
+		DEBUG_TRACE_long(p_cfg->module.spi.speed, "spi0_driver_configure() - Using SPI0_DRIVER_MAX_SPEED - cfg to fast");
+		spi0_cfg.speed = SPI0_DRIVER_MAX_SPEED;
+
+	} else if (p_cfg->module.spi.speed < SPI0_DRIVER_MIN_SPEED) {
+
+		DEBUG_TRACE_long(p_cfg->module.spi.speed, "spi0_driver_configure() - Using SPI0_DRIVER_MAX_SPEED - cfg to slow");
+		spi0_cfg.speed = SPI0_DRIVER_MIN_SPEED;
+
+	} else {
+
+		DEBUG_TRACE_long(p_cfg->module.spi.speed, "spi0_driver_configure() - Using user configuration : ");
+		spi0_cfg.speed = p_cfg->module.spi.speed;
+	}
+
+	// device -------------------------
+	
+	DEBUG_TRACE_STR(p_cfg->module.spi.device, "spi0_driver_configure() - open device :");
+
+	if ((spi0_cfg.handle = (i32)open(p_cfg->module.spi.device, O_RDWR)) >= 0) {
+		DEBUG_PASS("spi0_driver_configure() - Device open successfull");
+	
+	} else {
+
+		DEBUG_TRACE_STR(SPI0_DEFAULT_CONFIGURATION_DEVICE, "spi0_driver_configure() - Open device has FAILED!!! - using default configuration");
+		
+		if ((spi0_cfg.handle = (i32)open(SPI0_DEFAULT_CONFIGURATION_DEVICE, O_RDWR)) >= 0) {
+			DEBUG_PASS("spi0_driver_configure() - Device open successfull");
+
+		} else {
+			DEBUG_PASS("spi0_driver_configure() - Device open successfull");
+			spi0_cfg.handle = SPI0_DEVICE_HANDLE_INVALID
+		}
+	}
+
+	// configuration -----------------
+	
+	int err_code = ioctl(spi0_cfg.handle, SPI_IOC_WR_MODE32, &spi0_cfg.mode);
+	if (err_code) {
+		DEBUG_TRACE_byte(err_code , "spi0_driver_configure() - Can't set spi mode - SPI_IOC_WR_MODE32 - error:");
+		return;
+	}
+
+	err_code = ioctl(spi0_cfg.handle, SPI_IOC_RD_MODE32, &spi0_cfg.mode);
+	if (err_code) {
+		DEBUG_PASS("spi0_driver_configure() - Can't get spi mode - SPI_IOC_RD_MODE32");
+		return;
+	}
+	
+	err_code = ioctl(spi0_cfg.handle, SPI_IOC_WR_BITS_PER_WORD, &spi0_cfg.bits_per_word);
+	if (err_code) {
+		DEBUG_PASS("spi0_driver_configure() - Can't set bits per word\n");
+		return;
+	}
+
+	err_code = ioctl(spi0_cfg.handle, SPI_IOC_RD_BITS_PER_WORD, &spi0_cfg.bits_per_word);
+	if (err_code) {
+		DEBUG_PASS("spi0_driver_configure() - Can't get bits per word - SPI_IOC_RD_BITS_PER_WORD\n");
+		return;
+	}
+	
+	err_code = ioctl(spi0_cfg.handle, SPI_IOC_WR_MAX_SPEED_HZ, &spi0_cfg.speed);
+	if (err_code) {
+		DEBUG_PASS("spi0_driver_configure() - Can't set max speed hz - SPI_IOC_WR_MAX_SPEED_HZ");
+		return;
+	}
+
+	err_code = ioctl(spi0_cfg.handle, SPI_IOC_RD_MAX_SPEED_HZ, &spi0_cfg.speed);
+	if (err_code) {
+		DEBUG_PASS("spi0_driver_configure() - Can't get max speed hz - SPI_IOC_RD_MAX_SPEED_HZ");
+		return;
+	}
+
+	SPI0_STATUS_clear_all();
+	SPI0_STATUS_set(SPI0_STATUS_INITIALIZED);
 }
 
 /*!
