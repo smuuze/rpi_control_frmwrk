@@ -54,14 +54,20 @@ void test_driver_initialize(void) {
 
 	SIGNAL_TEST_DRIVER_START_RX_init();
 	SIGNAL_TEST_DRIVER_START_TX_init();
+
+	test_driver_status_clear_all();
 }
 
 void test_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	(void) p_cfg;
+
+	DEBUG_PASS("test_driver_configure()");
 }
 
 void test_driver_power_off(void) {
+
+	DEBUG_PASS("test_driver_power_off()");
 
 }
 
