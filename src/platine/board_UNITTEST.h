@@ -12,6 +12,9 @@
 INCLUDE_GPIO ( READY_INOUT )
 #define HAS_GPIO_READY_INOUT
 
+INCLUDE_GPIO ( REQUEST_CLIENT )
+#define HAS_GPIO_READY_INOUT
+
 // --------------------------------------------------------------------------------
 
 #endif // _BOARD_UNITTEST_H_
