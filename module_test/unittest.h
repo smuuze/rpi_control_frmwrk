@@ -37,12 +37,13 @@
 
 #define UT_ARRAY_ERROR(value, reference, length)	printf(" - !! FAILED !! : %s  in %s:%d\n", UT_GET_VAR_NAME(value), __FILE__, __LINE__);				\
 							printf(" - - content  :");											\
-							UT_PRINT_HEX_DUMP(value, length)										\
-							printf(" - - expected :");											\
-							UT_PRINT_HEX_DUMP(reference, length)										\
+							UT_PRINT_HEX_DUMP((value), length)										\
+							printf("\n - - expected :");											\
+							UT_PRINT_HEX_DUMP((reference), length)										\
+							printf("\n");													\
 							do{}while(0)							
 #define UT_ARRAY_OK(array, length)			printf(" - OK : %s = { ", UT_GET_VAR_NAME(array));								\
-							UT_PRINT_HEX_DUMP(array, length);										\
+							UT_PRINT_HEX_DUMP((array), length);										\
 							printf(" } \n");
 
 // --------------------------------------------------------------------------------
@@ -103,8 +104,8 @@
 								u8 i = 0;												\
 								u8 is_equal = 1;											\
 								for ( ; i < length; i++) {										\
-									if (array1[i] != array2[i]) {									\
-										UT_ARRAY_ERROR(array1, array1, length);							\
+									if ((array1)[i] != (array2)[i]) {								\
+										UT_ARRAY_ERROR(array1, array2, length);							\
 										__ut_number_of_test_failed += 1;							\
 										counter_TEST_FAILED += 1;								\
 										is_equal = 0;										\
