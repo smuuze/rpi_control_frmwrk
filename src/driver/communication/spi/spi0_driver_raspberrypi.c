@@ -192,7 +192,7 @@ void spi0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 		} else {
 			DEBUG_PASS("spi0_driver_configure() - Device open successfull");
-			spi0_cfg.handle = SPI0_DEVICE_HANDLE_INVALID
+			spi0_cfg.handle = SPI0_DEVICE_HANDLE_INVALID;
 		}
 	}
 
