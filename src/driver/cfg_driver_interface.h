@@ -34,6 +34,13 @@
 #define DRIVER_SPI_DATA_ORDER_MSB				0
 #define DRIVER_SPI_DATA_ORDER_LSB				1
 
+#define DRIVER_SPI_SPEED_HZ_1000				1000
+#define DRIVER_SPI_SPEED_HZ_9600				9600
+#define DRIVER_SPI_SPEED_HZ_19200				19200
+#define DRIVER_SPI_SPEED_HZ_38400				38400
+#define DRIVER_SPI_SPEED_HZ_76800				76800
+#define DRIVER_SPI_SPEED_HZ_153600				153600
+
 //-----------------------------------------------------------------------------
 
 #define DRIVER_I2C_BITRATE_1KHZ					0

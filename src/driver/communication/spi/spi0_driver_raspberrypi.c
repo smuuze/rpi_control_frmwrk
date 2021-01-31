@@ -43,8 +43,8 @@
 
 // --------------------------------------------------------------------------------
 
-#define SPI0_DRIVER_MAX_SPEED				50000
-#define SPI0_DRIVER_MIN_SPEED				5000
+#define SPI0_DRIVER_MAX_SPEED				DRIVER_SPI_SPEED_HZ_153600
+#define SPI0_DRIVER_MIN_SPEED				DRIVER_SPI_SPEED_HZ_1000
 
 // --------------------------------------------------------------------------------
 
