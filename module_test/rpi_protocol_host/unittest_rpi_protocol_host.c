@@ -238,7 +238,6 @@ static void UNITTEST_rpi_protocol_host_receive_command(void) {
 		};
 
 		u8 bytes_received[] = {0x04, 0x01, 0x000, 0x05, 0x00};
-		u8 num_bytes_received = (u8)sizeof(bytes_received);
 
 		RPI_HOST_COMMAND_RECEIVED_SIGNAL_send((const COMMON_GENERIC_BUFFER_TYPE*) &cmd_buffer);
 
