@@ -1,0 +1,353 @@
+/**
+ * @file 	unittest_json_parser.c
+ * @author 	sebastian lesse (sebastian lesse)
+ * @brief 
+ * @version 	1.0
+ * @date 	2021-02-06
+ * 
+ * @copyright 	Copyright (c) 2021
+ * 
+ */
+
+#define TRACER_ON
+
+// --------------------------------------------------------------------------------
+
+#include "config.h"
+
+// --------------------------------------------------------------------------------
+
+#include "tracer.h"
+// --------------------------------------------------------------------------------
+
+#include "../unittest.h"
+
+UT_ACTIVATE()
+
+// --------------------------------------------------------------------------------
+
+#include "protocol_management/json/protocol_json_parser.h"
+
+// --------------------------------------------------------------------------------
+
+#define TEST_CASE_ID_INITIALIZE			1
+#define TEST_CASE_ID_ADD_SINGLE_VALUE		2
+#define TEST_CASE_ID_ADD_NEGATIVE_VALUE		3
+#define TEST_CASE_ID_ADD_GROUP			4
+#define TEST_CASE_ID_ADD_VALUE_INTO_GROUP	5
+#define TEST_CASE_ID_ADD_STRING_INTO_GROUP	6
+#define TEST_CASE_ID_CLOSE_GROUP		7
+
+// --------------------------------------------------------------------------------
+
+#define JSON_TEMP_STRING_LENGTH			1024
+
+// --------------------------------------------------------------------------------
+
+// stubs
+
+// --------------------------------------------------------------------------------
+
+// slots callbacks
+
+// --------------------------------------------------------------------------------
+
+// Signals / Slots
+
+// --------------------------------------------------------------------------------
+
+JSON_PARSER_CREATE_OBJECT(UT_JASON_OBJECT)
+
+// --------------------------------------------------------------------------------
+
+static void TEST_CASE_initialize(void) {
+
+	UT_START_TEST_CASE("initilize Json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_INITIALIZE);
+
+		UT_JASON_OBJECT_initialize();
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 1);
+		UT_COMPARE_STRING(temp_string, "{");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_single_value(void) {
+
+	UT_START_TEST_CASE("Add single value to Json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_ADD_SINGLE_VALUE);
+
+		UT_JASON_OBJECT_add_integer("SINGLE_INTEGER", 1024);
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 22);
+		UT_COMPARE_STRING(temp_string, "{\"SINGLE_INTEGER\":1024");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_negative_value(void) {
+
+	UT_START_TEST_CASE("Add negative value to Json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_ADD_NEGATIVE_VALUE);
+
+		UT_JASON_OBJECT_add_integer("NEGATIVE_INTEGER", -2048);
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 47);
+		UT_COMPARE_STRING(temp_string, "{\"SINGLE_INTEGER\":1024,\"NEGATIVE_INTEGER\":-2048");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_group(void) {
+
+	UT_START_TEST_CASE("Add group to Json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_ADD_GROUP);
+
+		UT_JASON_OBJECT_start_group("GROUP_NAME");
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 62);
+		UT_COMPARE_STRING(temp_string, "{\"SINGLE_INTEGER\":1024,\"NEGATIVE_INTEGER\":-2048,\"GROUP_NAME\":{");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_value_into_group(void) {
+
+	UT_START_TEST_CASE("Add value into group to Json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_ADD_VALUE_INTO_GROUP);
+
+		UT_JASON_OBJECT_add_integer("GROUP_VALUE", 123456789);
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 85);
+		UT_COMPARE_STRING(temp_string, "{\"SINGLE_INTEGER\":1024,\"NEGATIVE_INTEGER\":-2048,\"GROUP_NAME\":{\"GROUP_VALUE\":123456789");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_string(void) {
+
+	UT_START_TEST_CASE("Add string into group to Json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_ADD_STRING_INTO_GROUP);
+
+		UT_JASON_OBJECT_add_string("STRING_VALUE", "this is a string");
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 119);
+		UT_COMPARE_STRING(temp_string, "{\"SINGLE_INTEGER\":1024,\"NEGATIVE_INTEGER\":-2048,\"GROUP_NAME\":{\"GROUP_VALUE\":123456789,\"STRING_VALUE\":\"this is a string\"");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_close_group(void) {
+
+	UT_START_TEST_CASE("closing group to Json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		UT_JASON_OBJECT_end_group();
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 120);
+		UT_COMPARE_STRING(temp_string, "{\"SINGLE_INTEGER\":1024,\"NEGATIVE_INTEGER\":-2048,\"GROUP_NAME\":{\"GROUP_VALUE\":123456789,\"STRING_VALUE\":\"this is a string\"}");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_multiple_groups_without_closing(void) {
+
+	UT_START_TEST_CASE("Add multiple groups without closing to Json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_ADD_GROUP);
+
+		UT_JASON_OBJECT_start_group("GROUP_2");
+		UT_JASON_OBJECT_start_group("GROUP_3");
+		UT_JASON_OBJECT_start_group("GROUP_4");
+		UT_JASON_OBJECT_start_group("GROUP_5");
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 165);
+		UT_COMPARE_STRING(temp_string, "{\"SINGLE_INTEGER\":1024,\"NEGATIVE_INTEGER\":-2048,\"GROUP_NAME\":{\"GROUP_VALUE\":123456789,\"STRING_VALUE\":\"this is a string\"},\"GROUP_2\":{\"GROUP_3\":{\"GROUP_4\":{\"GROUP_5\":{");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_finish(void) {
+
+	UT_START_TEST_CASE("Finish Json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		UT_JASON_OBJECT_finish();
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 170);
+		UT_COMPARE_STRING(temp_string, "{\"SINGLE_INTEGER\":1024,\"NEGATIVE_INTEGER\":-2048,\"GROUP_NAME\":{\"GROUP_VALUE\":123456789,\"STRING_VALUE\":\"this is a string\"},\"GROUP_2\":{\"GROUP_3\":{\"GROUP_4\":{\"GROUP_5\":{}}}}}");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_value_to_finished_object(void) {
+
+	UT_START_TEST_CASE("add value to finished object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		UT_JASON_OBJECT_start_group("GROUP_XX");
+		UT_JASON_OBJECT_add_integer("GROUP_VALUE", 123456789);
+		UT_JASON_OBJECT_end_group();
+		UT_JASON_OBJECT_finish();
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 170);
+		UT_COMPARE_STRING(temp_string, "{\"SINGLE_INTEGER\":1024,\"NEGATIVE_INTEGER\":-2048,\"GROUP_NAME\":{\"GROUP_VALUE\":123456789,\"STRING_VALUE\":\"this is a string\"},\"GROUP_2\":{\"GROUP_3\":{\"GROUP_4\":{\"GROUP_5\":{}}}}}");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_version_response(void) {
+
+	UT_START_TEST_CASE("add version to json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		COMMON_GENERIC_BUFFER_TYPE response_buffer = {
+			.length = 4,
+			.data = {0x01, 0x00, 0x05, 0x00}
+		};
+
+		UT_JASON_OBJECT_add_response(&response_buffer);
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 16);
+		UT_COMPARE_STRING(temp_string, "{\"VERSION\":\"5.0\"");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_temperature_response(void) {
+
+	UT_START_TEST_CASE("add temperature to json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		COMMON_GENERIC_BUFFER_TYPE response_buffer = {
+			.length = 6,
+			.data = {0x07, 0x00, 0x017, 0x17, 0x17, 0x17}
+		};
+
+		UT_JASON_OBJECT_add_response(&response_buffer);
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 69);
+		UT_COMPARE_STRING(temp_string, "{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":23,\"MAX\":23,\"MIN\":23,\"MEAN\":23}");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_humidity_response(void) {
+
+	UT_START_TEST_CASE("add humidity to json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		COMMON_GENERIC_BUFFER_TYPE response_buffer = {
+			.length = 6,
+			.data = {0x08, 0x00, 0x02D, 0x2D, 0x29, 0x2B}
+		};
+
+		UT_JASON_OBJECT_add_response(&response_buffer);
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 119);
+		UT_COMPARE_STRING(temp_string, "{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":23,\"MAX\":23,\"MIN\":23,\"MEAN\":23},\"HUMIDITY\":{\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43}");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_ambilight_response(void) {
+
+	UT_START_TEST_CASE("add ambilight to json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		COMMON_GENERIC_BUFFER_TYPE response_buffer = {
+			.length = 6,
+			.data = {0x0A, 0x00, 0x002, 0x2B, 0x00, 0x08}
+		};
+
+		UT_JASON_OBJECT_add_response(&response_buffer);
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 167);
+		UT_COMPARE_STRING(temp_string, "{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":23,\"MAX\":23,\"MIN\":23,\"MEAN\":23},\"HUMIDITY\":{\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8}");
+	}
+	UT_END_TEST_CASE()
+}
+
+// --------------------------------------------------------------------------------
+
+int main(void) {
+
+	UT_START_TESTBENCH("Welcome the the UNITTEST for json-parser 1.0")
+	{
+		TEST_CASE_initialize();
+		TEST_CASE_add_single_value();
+		TEST_CASE_add_negative_value();
+		TEST_CASE_add_group();
+		TEST_CASE_add_value_into_group();
+		TEST_CASE_add_string();
+		TEST_CASE_close_group();
+		TEST_CASE_add_multiple_groups_without_closing();
+		TEST_CASE_finish();
+		TEST_CASE_add_value_to_finished_object();
+
+		TEST_CASE_initialize();
+		TEST_CASE_add_version_response();
+		TEST_CASE_add_temperature_response();
+		TEST_CASE_add_humidity_response();
+		TEST_CASE_add_ambilight_response();
+	}
+	UT_END_TESTBENCH()
+
+	return UT_TEST_RESULT();
+}
