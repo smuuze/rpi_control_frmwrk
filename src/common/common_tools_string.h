@@ -21,6 +21,14 @@
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Clears the actual content of p_string by setting all characters to '\0'
+ * 
+ * @param p_string string to clear
+ * @param length length of string to clear
+ */
+void common_tools_string_clear(char* p_string, u16 length);
+
 /*
  *
  */
@@ -46,10 +54,24 @@ u16 common_tools_string_get_char_count(char char_to_count, const char* p_string)
  */
 void common_tools_string_split(char splitter, const char* p_string_in, char* p_string_out_1, u16 string_out_1_max_len, char* p_string_out_2, u16 string_out_2_max_len);
 
-/*
- *
+/**
+ * @brief 	Appends the p_string_to_append to the end of p_string_base.
+ * 
+ * @param p_string_base 
+ * @param p_string_to_append 
+ * @param max_length_string_base 
+ * @return 	length of the new string, length of p_string_base + length of p_string_to_append,
+ * 		or the length of p_string_base, if length of p_string_to_append exceeds max_length_string_base
  */
-void common_tools_string_append(char* p_string_base, const char* p_string_to_append, u16 max_length_string_base);
+u16 common_tools_string_append(char* p_string_base, const char* p_string_to_append, u16 max_length_string_base);
+
+/**
+ * @brief Get the length of p_string
+ * 
+ * @param p_string valid string with terminating \0
+ * @return length of p_string
+ */
+u16 common_tools_string_length(const char* p_string);
 
 /*
  *
@@ -115,5 +137,13 @@ void string_get_time(char* time_string);
  *
  */
 void common_tools_string_from_u8(char* string_to, u8 number);
+
+/**
+ * @brief converts a signed 32 bit integer value into a string
+ * 
+ * @param string_to string where to store the number
+ * @param number signed 32 bit integer value
+ */
+void common_tools_string_from_i32(char* string_to, i32 number);
 
 #endif // COMMON_TOOLS_STRING_H_

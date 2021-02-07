@@ -87,6 +87,10 @@ u16 common_tools_string_get_char_count(char char_to_count, const char* p_string)
 	return counter;
 }
 
+void common_tools_string_clear(char* p_string, u16 length) {
+	memset(p_string, '\0', length);
+}
+
 void common_tools_string_trim(char* p_string) {
 
 	u16 length = strlen(p_string);
@@ -195,7 +199,7 @@ void common_tools_string_split(char splitter, const char* p_string_in, char* p_s
 	}
 }
 
-void common_tools_string_append(char* p_string_base, const char* p_string_to_append, u16 max_length_string_base) {
+u16 common_tools_string_append(char* p_string_base, const char* p_string_to_append, u16 max_length_string_base) {
 
 	u16 length_of_string_base = strlen(p_string_base);
 	u16 length_of_string_append = strlen(p_string_to_append);
@@ -203,12 +207,18 @@ void common_tools_string_append(char* p_string_base, const char* p_string_to_app
 
 	if (length_of_new_string > max_length_string_base) {
 		DEBUG_PASS("common_tools_string_append() - Cant append string - OVERFLOW !!! --- ");
+		return length_of_string_base;
 	}
+
+	DEBUG_TRACE_STR(p_string_to_append, "common_tools_string_append() - String to append");
+	DEBUG_TRACE_word(length_of_string_append, "common_tools_string_append() - Length of string to append");
 
 	memcpy((u8*)p_string_base + length_of_string_base, p_string_to_append, length_of_string_append);
 	memset(p_string_base + length_of_new_string, '\0', (max_length_string_base - length_of_new_string));
 
 	DEBUG_TRACE_STR(p_string_base, "common_tools_string_append() - New String: ");
+
+	return length_of_new_string;
 }
 
 u8 common_tools_string_ends_with(const char* p_string, char character) {
@@ -224,6 +234,10 @@ u8 common_tools_string_ends_with(const char* p_string, char character) {
 	} else {
 		return 0;
 	}
+}
+
+u16 common_tools_string_length(const char* p_string) {
+	return strlen(p_string);
 }
 
 void common_tools_string_remove_last_character(char* p_string) {
@@ -270,7 +284,11 @@ u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from
 }
 
 void common_tools_string_from_u8(char* string_to, u8 number) {
-	sprintf(string_to, "%03d", number);
+	sprintf(string_to, "%d", number);
+}
+
+void common_tools_string_from_i32(char* string_to, i32 number) {
+	sprintf(string_to, "%d", number);
 }
 
 /*
