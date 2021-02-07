@@ -85,3 +85,29 @@ jobs:
       run: make unittest_debug
     - name: run unittest
       run: make run
+
+  unittest_json_parser:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/json_parser
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make unittest_debug
+    - name: run unittest
+      run: make run
+
+  unittest_math_module:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/math_module
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make unittest_debug
+    - name: run unittest
+      run: make run
