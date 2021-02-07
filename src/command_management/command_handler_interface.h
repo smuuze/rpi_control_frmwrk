@@ -18,13 +18,33 @@
 
 // --------------------------------------------------------------------------------
 
-#define CMD_NO_ERR			0
-#define CMD_ERR_INVARG			1
-#define CMD_ERR_INVALID_COMMAND		2
-#define CMD_ERR_INVALID_ARGUMENT	3
-#define CMD_ERR_TIMEOUT			4
-#define CMD_ERR_BUSY			5
-#define CMD_ERR_NO_ROUTE_TO_HOST	6
+#define CMD_NO_ERR				0
+#define CMD_ERR_INVARG				1
+#define CMD_ERR_INVALID_COMMAND			2
+#define CMD_ERR_INVALID_ARGUMENT		3
+#define CMD_ERR_TIMEOUT				4
+#define CMD_ERR_BUSY				5
+#define CMD_ERR_NO_ROUTE_TO_HOST		6
+
+// --------------------------------------------------------------------------------
+
+#define RPI_COMMAND_GET_VERSION			0x01
+#define RPI_COMMAND_GET_INPUT_LIST		0x02
+#define RPI_COMMAND_GET_OUTPUT_LIST		0x03
+#define RPI_COMMAND_SET_OUTPUT			0x04
+#define RPI_COMMAND_GET_OUTPUT_STATE		0x05
+#define RPI_COMMAND_GET_INPUT_STATE		0x06
+#define RPI_COMMAND_GET_TEMPERATURE		0x07
+#define RPI_COMMAND_GET_HUMIDTY			0x08
+#define RPI_COMMAND_GET_ADC			0x09
+#define RPI_COMMAND_GET_LIGHT			0x0A
+#define RPI_COMMAND_IR_REMOTE			0x0B
+#define RPI_COMMAND_ROUTING			0x0C
+
+// --------------------------------------------------------------------------------
+
+#define CMD_HANDLER_GET_RESPONSE_COMMAND_CODE(p_buffer)		(p_buffer)->data[0]
+#define CMD_HANDLER_GET_RESPONSE_ERROR_CODE(p_buffer)		(p_buffer)->data[1]
 
 // --------------------------------------------------------------------------------
 
