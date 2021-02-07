@@ -23,13 +23,6 @@
 #include "common/local_data_storage_array.h"
 #include "common/math_module.h"
 
-// --------------------------------------------------------------------------------
-
-#define div_u32(divident, divisor)		math_div_u32((u32)divident, (u32) divisor)
-#define div_u16(divident, divisor)		(u16)math_div_u32((u32)divident, (u32) divisor)
-#define div_u8(divident, divisor)		(u8)math_div_u32((u32)divident, (u32) divisor)
-#define div_i8(divident, divisor)		(i8)math_div_u32((i32)divident, (i32) divisor)
-
 // -------------------------------------------------------------------
 // I8 functions
 // -------------------------------------------------------------------
