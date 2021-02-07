@@ -1,6 +1,8 @@
 
 PROTOCOL_PATH =  $(APP_PATH)/protocol_management
 
+#-----------------------------------------------------------------------------
+
 ifneq '' '$(findstring RPI_PROTOCOL,$(PROTOCOL_CFG))'
 
 	DEFS  += -D HAS_MANAGEMENT_MODULE_RPI_PROTOCOL=1
@@ -18,6 +20,8 @@ ifneq '' '$(findstring RPI_PROTOCOL,$(PROTOCOL_CFG))'
 	endif
 endif
 
+#-----------------------------------------------------------------------------
+
 ifneq '' '$(findstring MQTT_PROTOCOL,$(PROTOCOL_CFG))'
 
 	DEFS  += -D HAS_PROTOCOL_MQTT=1
@@ -26,4 +30,13 @@ ifneq '' '$(findstring MQTT_PROTOCOL,$(PROTOCOL_CFG))'
 	CSRCS += $(PROTOCOL_PATH)/mqtt/mqtt_application.c
 	
 	LIBS += -l paho-mqtt3c
+endif
+
+#-----------------------------------------------------------------------------
+
+ifneq '' '$(findstring JSON_PARSER,$(PROTOCOL_CFG))'
+
+	DEFS  += -D HAS_JSON_PARSER=1
+	CSRCS += $(PROTOCOL_PATH)/json/protocol_json_parser.c
+	CSRCS += $(PROTOCOL_PATH)/json/protocol_json_response_parser.c
 endif
