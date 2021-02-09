@@ -56,7 +56,7 @@ static u8 json_parser_add_seperator(JSON_OPJECT_TYPE* p_json_object) {
 		return 1;
 	}
 
-	DEBUG_PASS("json_parser_add_seperator() - Appending seperator");
+	DEBUG_TRACE_STR(p_json_object->string_buffer, "json_parser_add_seperator() - Appending seperator");
 
 	p_json_object->length = common_tools_string_append(p_json_object->string_buffer, PROTOCOL_JSON_PARSER_STRING_SEPERATOR, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);
 
@@ -124,7 +124,7 @@ void json_parser_start_group(JSON_OPJECT_TYPE* p_json_object, const char* group_
 
 	p_json_object->open_group_count += 1;
 
-	DEBUG_TRACE_byte(p_json_object->open_group_count, "json_parser_start_group() - Open groups:");
+	DEBUG_TRACE_byte(p_json_object->open_group_count, "json_parser_start_group() - Open groups: >>>>>>>>>>>>>>>");
 }
 
 void json_parser_add_integer(JSON_OPJECT_TYPE* p_json_object, const char* name, i32 value) {
@@ -199,7 +199,7 @@ void json_parser_end_group(JSON_OPJECT_TYPE* p_json_object) {
 	p_json_object->length = common_tools_string_append(p_json_object->string_buffer, PROTOCOL_JSON_PARSER_STRING_GROUP_END, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);
 	p_json_object->open_group_count -= 1;
 
-	DEBUG_TRACE_byte(p_json_object->open_group_count, "json_parser_end_group() - Groups remaining:");
+	DEBUG_TRACE_byte(p_json_object->open_group_count, "json_parser_end_group() - Groups remaining: <<<<<<<<<<<<<");
 }
 
 void json_parser_finish(JSON_OPJECT_TYPE* p_json_object) {

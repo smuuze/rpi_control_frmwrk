@@ -55,12 +55,20 @@ typedef struct JSON_OBJECT_STRUCT {
 void json_parser_initialize(JSON_OPJECT_TYPE* p_json_object);
 
 /**
- * @brief 	Parses the response of a RPi-Protocol command into its jason representation.
+ * @brief 	Parses the response of a RPi-Protocol command into its json representation.
  * 
  * @param p_json_object The Json object where the response is added. The object must be initialized
  * @param p_com_buffer byte-array that holds the command-response
  */
 void json_parser_append_rpi_cmd_response(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer);
+
+/**
+ * @brief 	Parses the response of a Command-Line-Executer command into its json representation
+ * 
+ * @param p_json_object  The Json object where the response is added. The object must be initialized
+ * @param p_cli_response Response-String in the form command_name_str=command_response_str
+ */
+void json_parser_append_cli_cmd_response(JSON_OPJECT_TYPE* p_json_object, const char*p_cli_response);
 
 /**
  * @brief 	Starts a new group with the given name.
@@ -145,8 +153,12 @@ u16 json_parser_copy_to(JSON_OPJECT_TYPE* p_json_object, char* p_string, u16 max
 		json_parser_add_integer(&__##name##_json_object, name, value);			\
 	}											\
 												\
-	void name##_add_response(COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {			\
+	void name##_add_rpi_response(COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {		\
 		json_parser_append_rpi_cmd_response(&__##name##_json_object, p_com_buffer);	\
+	}											\
+												\
+	void name##_add_cli_response(const char* p_cli_response) {				\
+		json_parser_append_cli_cmd_response(&__##name##_json_object, p_cli_response);	\
 	}											\
 												\
 	void name##_add_string(const char* name, const char*  p_string) {			\

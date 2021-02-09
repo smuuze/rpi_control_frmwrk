@@ -236,6 +236,23 @@ static void TEST_CASE_add_value_to_finished_object(void) {
 	UT_END_TEST_CASE()
 }
 
+static void TEST_CASE_start_report(void) {
+
+	UT_START_TEST_CASE("Start Report")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		UT_JASON_OBJECT_start_group("REPORT");
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 11);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{");
+	}
+	UT_END_TEST_CASE()
+}
+
 static void TEST_CASE_add_version_response(void) {
 
 	UT_START_TEST_CASE("add version to json object")
@@ -247,13 +264,13 @@ static void TEST_CASE_add_version_response(void) {
 			.data = {0x01, 0x00, 0x05, 0x00}
 		};
 
-		UT_JASON_OBJECT_add_response(&response_buffer);
+		UT_JASON_OBJECT_add_rpi_response(&response_buffer);
 
 		char temp_string[JSON_TEMP_STRING_LENGTH];
 		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
 
-		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 16);
-		UT_COMPARE_STRING(temp_string, "{\"VERSION\":\"5.0\"");
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 26);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\"");
 	}
 	UT_END_TEST_CASE()
 }
@@ -266,16 +283,16 @@ static void TEST_CASE_add_temperature_response(void) {
 
 		COMMON_GENERIC_BUFFER_TYPE response_buffer = {
 			.length = 6,
-			.data = {0x07, 0x00, 0x017, 0x17, 0x17, 0x17}
+			.data = {0x07, 0x00, 0xFC, 0x17, 0xF9, 0x00}
 		};
 
-		UT_JASON_OBJECT_add_response(&response_buffer);
+		UT_JASON_OBJECT_add_rpi_response(&response_buffer);
 
 		char temp_string[JSON_TEMP_STRING_LENGTH];
 		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
 
-		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 69);
-		UT_COMPARE_STRING(temp_string, "{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":23,\"MAX\":23,\"MIN\":23,\"MEAN\":23}");
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 78);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0}");
 	}
 	UT_END_TEST_CASE()
 }
@@ -291,13 +308,13 @@ static void TEST_CASE_add_humidity_response(void) {
 			.data = {0x08, 0x00, 0x02D, 0x2D, 0x29, 0x2B}
 		};
 
-		UT_JASON_OBJECT_add_response(&response_buffer);
+		UT_JASON_OBJECT_add_rpi_response(&response_buffer);
 
 		char temp_string[JSON_TEMP_STRING_LENGTH];
 		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
 
-		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 119);
-		UT_COMPARE_STRING(temp_string, "{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":23,\"MAX\":23,\"MIN\":23,\"MEAN\":23},\"HUMIDITY\":{\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43}");
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 128);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43}");
 	}
 	UT_END_TEST_CASE()
 }
@@ -313,13 +330,89 @@ static void TEST_CASE_add_ambilight_response(void) {
 			.data = {0x0A, 0x00, 0x002, 0x2B, 0x00, 0x08}
 		};
 
-		UT_JASON_OBJECT_add_response(&response_buffer);
+		UT_JASON_OBJECT_add_rpi_response(&response_buffer);
 
 		char temp_string[JSON_TEMP_STRING_LENGTH];
 		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
 
-		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 167);
-		UT_COMPARE_STRING(temp_string, "{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":23,\"MAX\":23,\"MIN\":23,\"MEAN\":23},\"HUMIDITY\":{\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8}");
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 176);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8}");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_output_state_response(void) {
+
+	UT_START_TEST_CASE("add output_state to json object")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		COMMON_GENERIC_BUFFER_TYPE response_buffer_1 = {
+			.length = 16,
+			.data = {0x05, 0x00, 0x01, 0x01, 0xBB, 0x32, 0x2B, 0x00, 0x00, 0x00, 0x00, 0x00 , 0x00, 0x00, 0x00, 0x00}
+		};
+
+		COMMON_GENERIC_BUFFER_TYPE response_buffer_2 = {
+			.length = 16,
+			.data = {0x05, 0x00, 0x02, 0x01, 0xBB, 0x32, 0x2B, 0x00, 0x00, 0x00, 0x00, 0x00 , 0x00, 0x00, 0x00, 0x00}
+		};
+
+		COMMON_GENERIC_BUFFER_TYPE response_buffer_3 = {
+			.length = 16,
+			.data = {0x05, 0x00, 0x03, 0x01, 0xBB, 0x32, 0x2B, 0x00, 0x00, 0x00, 0x00, 0x00 , 0x00, 0x00, 0x00, 0x00}
+		};
+
+		COMMON_GENERIC_BUFFER_TYPE response_buffer_4 = {
+			.length = 16,
+			.data = {0x05, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 , 0x00, 0x00, 0x00, 0x00}
+		};
+
+		UT_JASON_OBJECT_add_rpi_response(&response_buffer_1);
+		UT_JASON_OBJECT_add_rpi_response(&response_buffer_2);
+		UT_JASON_OBJECT_add_rpi_response(&response_buffer_3);
+		UT_JASON_OBJECT_add_rpi_response(&response_buffer_4);
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 575);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8},\"OUTPUT_STATE_1\":{\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_2\":{\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_3\":{\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_4\":{\"PIN_STATE\":\"OFF\",\"ON_TIME_MS\":0,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0}");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_add_hostname_response(void) {
+
+	UT_START_TEST_CASE("add_hostname_response")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		char cmd_response[] = "SYS_HOSTNAME=unittest_hostname";
+
+		UT_JASON_OBJECT_add_cli_response(cmd_response);
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 610);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8},\"OUTPUT_STATE_1\":{\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_2\":{\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_3\":{\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_4\":{\"PIN_STATE\":\"OFF\",\"ON_TIME_MS\":0,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"SYS_HOSTNAME\":\"unittest_hostname\"");
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_finish_response(void) {
+
+	UT_START_TEST_CASE("finish response")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		UT_JASON_OBJECT_finish();
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 612);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8},\"OUTPUT_STATE_1\":{\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_2\":{\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_3\":{\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_4\":{\"PIN_STATE\":\"OFF\",\"ON_TIME_MS\":0,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"SYS_HOSTNAME\":\"unittest_hostname\"}}");
 	}
 	UT_END_TEST_CASE()
 }
@@ -342,10 +435,14 @@ int main(void) {
 		TEST_CASE_add_value_to_finished_object();
 
 		TEST_CASE_initialize();
+		TEST_CASE_start_report();
 		TEST_CASE_add_version_response();
 		TEST_CASE_add_temperature_response();
 		TEST_CASE_add_humidity_response();
 		TEST_CASE_add_ambilight_response();
+		TEST_CASE_add_output_state_response();
+		TEST_CASE_add_hostname_response();
+		TEST_CASE_finish_response();
 	}
 	UT_END_TESTBENCH()
 
