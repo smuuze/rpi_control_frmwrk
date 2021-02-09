@@ -154,6 +154,19 @@ void tracer_trace_string(const char* str, const char* file_name, u16 line_id, co
 	printf("%s:%d - %s \n - String: \"%s\"\n", file_name, line_id, str, p_string);
 }
 
+void tracer_trace_char(const char* str, const char* file_name, u16 line_id, const char p_char) {
+
+	if (is_initialized == 0) {
+		tracer_init();
+	}
+
+	if (is_enabled == 0) {
+		return;
+	}
+
+	printf("%s:%d - %s \n - Character: \"%c\"\n", file_name, line_id, str, p_char);
+}
+
 void tracer_enable(u8 enable) {
 
 	if (is_initialized == 0) {

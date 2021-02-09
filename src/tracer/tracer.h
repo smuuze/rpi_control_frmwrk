@@ -58,6 +58,16 @@ void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 leng
  */
 void tracer_trace_string(const char* str, const char* file_name, u16 line_id, const char* p_string);
 
+/**
+ * @brief 
+ * 
+ * @param str 
+ * @param file_name 
+ * @param line_id 
+ * @param p_char 
+ */
+void tracer_trace_char(const char* str, const char* file_name, u16 line_id, const char p_char);
+
 /*!
  *
  * @param enable
@@ -142,6 +152,7 @@ void tracer_enable(u8 enable);
 #define DEBUG_TRACE_long(integer, str)	tracer_trace_long(str, __FILE__, __LINE__, integer)
 #define DEBUG_TRACE_N(len, p_buf, str)	tracer_trace_n(str, __FILE__, __LINE__, len, p_buf)
 #define DEBUG_TRACE_STR(p_string, str)	tracer_trace_string(str, __FILE__, __LINE__, p_string);
+#define DEBUG_TRACE_CHAR(p_char, str)	tracer_trace_char(str, __FILE__, __LINE__, p_char);
 
 #define TRACER_ENABLE()			tracer_enable(1)
 #define TRACER_DISABLE()		tracer_enable(0)
@@ -164,6 +175,7 @@ void tracer_enable(u8 enable);
 #define DEBUG_TRACE_long(integer, str)	do {} while(0)
 #define DEBUG_TRACE_N(len, bu, strf)	do {} while(0)
 #define DEBUG_TRACE_STR(p_string, str)	do {} while(0)
+#define DEBUG_TRACE_CHAR(p_char, str)	do {} while(0)
 
 #define TRACER_ENABLE()			do {} while(0)
 #define TRACER_DISABLE()		do {} while(0)
