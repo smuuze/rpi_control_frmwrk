@@ -32,7 +32,7 @@
 #define UT_EQUATION_ERROR(value, reference)		printf(" - !! FAILED !! : %s = %d (expected: %d) in %s:%d\n", UT_GET_VAR_NAME(value), value, reference, __FILE__, __LINE__);
 #define UT_EQUATION_OK(value)				printf(" - OK : %s = %d\n", UT_GET_VAR_NAME(value), value);
 
-#define UT_STRING_ERROR(value, reference)		printf(" - !! FAILED !! : %s = %s (expected: %s) in %s:%d\n", UT_GET_VAR_NAME(value), value, reference, __FILE__, __LINE__);
+#define UT_STRING_ERROR(value, reference)		printf(" - !! FAILED !! : \n%s = %s \nexpected: \n%s = %s\n in %s:%d\n", UT_GET_VAR_NAME(value), value, UT_GET_VAR_NAME(value), reference, __FILE__, __LINE__);
 #define UT_STRING_OK(value)				printf(" - OK : %s = %s\n", UT_GET_VAR_NAME(value), value);
 
 #define UT_ARRAY_ERROR(value, reference, length)	printf(" - !! FAILED !! : %s  in %s:%d\n", UT_GET_VAR_NAME(value), __FILE__, __LINE__);				\
