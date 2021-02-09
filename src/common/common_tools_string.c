@@ -135,7 +135,7 @@ void common_tools_string_trim(char* p_string) {
 
 	DEBUG_TRACE_word((length - index_of_end), "common_tools_string_trim() - White-Spaces at end of string:");
 	
-	u8 new_length = index_of_end - index_of_start;
+	u16 new_length = index_of_end - index_of_start;
 	memmove(p_string, p_string + index_of_start, new_length);
 	memset(p_string + new_length, '\0', length - new_length);
 }
@@ -223,11 +223,14 @@ u16 common_tools_string_append(char* p_string_base, const char* p_string_to_appe
 
 u8 common_tools_string_ends_with(const char* p_string, char character) {
 
-	u8 length = strlen(p_string);
+	u16 length = strlen(p_string);
 
 	if (length == 0) {
 		return 0;
 	}
+
+	DEBUG_TRACE_CHAR(p_string[length - 1], "common_tools_string_ends_with()");
+	DEBUG_TRACE_word(length, "common_tools_string_ends_with()");
 
 	if (p_string[length - 1] == character) {
 		return 1;
@@ -242,7 +245,7 @@ u16 common_tools_string_length(const char* p_string) {
 
 void common_tools_string_remove_last_character(char* p_string) {
 
-	u8 length = strlen(p_string);
+	u16 length = strlen(p_string);
 
 	if (length == 0) {
 		return ;
@@ -352,7 +355,7 @@ u16 string_append(char* p_string_to, char* p_string_from, u16 max_length) {
 }
 */
 
-u8 common_tools_hex_string_to_byte_array(const char* hex_string, u16 hex_string_len, u8* byte_array, u16 byte_array_max_len) {
+u16 common_tools_hex_string_to_byte_array(const char* hex_string, u16 hex_string_len, u8* byte_array, u16 byte_array_max_len) {
 	
 	if (hex_string_len < 2) {
 		DEBUG_TRACE_byte(hex_string_len, "hex_string_to_byte_array() - hex_string_len < 2");
@@ -363,7 +366,7 @@ u8 common_tools_hex_string_to_byte_array(const char* hex_string, u16 hex_string_
 	DEBUG_TRACE_byte(byte_array_max_len, "hex_string_to_byte_array() - byte_array_max_len: ");
 	
 	u16 i = 0;
-	u8 j = 0;
+	u16 j = 0;
 	u8 is_upper_nibble = 1;
 	
 	memset(byte_array, 0x00, byte_array_max_len);
@@ -408,14 +411,14 @@ u8 common_tools_hex_string_to_byte_array(const char* hex_string, u16 hex_string_
 	return j;
 }
 
-u8 common_tools_byte_array_string_to_hex_string(u8* byte_array, u8 byte_array_len, char* hex_string, u16 hex_string_max_len) {
+u16 common_tools_byte_array_string_to_hex_string(u8* byte_array, u8 byte_array_len, char* hex_string, u16 hex_string_max_len) {
 	
 	if (hex_string_max_len < 2 || byte_array_len == 0) {
 		return 0;
 	}
 	
 	u16 i = 0;
-	u8 j = 0;
+	u16 j = 0;
 	
 	memset(hex_string, '\0', hex_string_max_len);
 	
