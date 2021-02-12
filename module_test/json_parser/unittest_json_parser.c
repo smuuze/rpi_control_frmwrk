@@ -375,8 +375,8 @@ static void TEST_CASE_add_output_state_response(void) {
 		char temp_string[JSON_TEMP_STRING_LENGTH];
 		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
 
-		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 652);
-		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ERR\":\"OK\",\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ERR\":\"OK\",\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ERR\":\"OK\",\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8},\"OUTPUT_STATE_1\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_2\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_3\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_4\":{\"ERR\":\"OK\",\"PIN_STATE\":\"OFF\",\"ON_TIME_MS\":0,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0}");
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 596);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ERR\":\"OK\",\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ERR\":\"OK\",\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ERR\":\"OK\",\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8},\"OUTPUT_STATE_1\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"OUTPUT_STATE_2\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"OUTPUT_STATE_3\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"OUTPUT_STATE_4\":{\"ERR\":\"OK\",\"PIN_STATE\":\"OFF\",\"ON_TIME_MS\":0,\"DURATION_MS\":0,\"PERIOD_MS\":0}");
 	}
 	UT_END_TEST_CASE()
 }
@@ -394,8 +394,8 @@ static void TEST_CASE_add_hostname_response(void) {
 		char temp_string[JSON_TEMP_STRING_LENGTH];
 		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
 
-		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 687);
-		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ERR\":\"OK\",\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ERR\":\"OK\",\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ERR\":\"OK\",\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8},\"OUTPUT_STATE_1\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_2\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_3\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_4\":{\"ERR\":\"OK\",\"PIN_STATE\":\"OFF\",\"ON_TIME_MS\":0,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"SYS_HOSTNAME\":\"unittest_hostname\"");
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 631);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ERR\":\"OK\",\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ERR\":\"OK\",\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ERR\":\"OK\",\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8},\"OUTPUT_STATE_1\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"OUTPUT_STATE_2\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"OUTPUT_STATE_3\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"OUTPUT_STATE_4\":{\"ERR\":\"OK\",\"PIN_STATE\":\"OFF\",\"ON_TIME_MS\":0,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"SYS_HOSTNAME\":\"unittest_hostname\"");
 	}
 	UT_END_TEST_CASE()
 }
@@ -411,8 +411,8 @@ static void TEST_CASE_finish_response(void) {
 		char temp_string[JSON_TEMP_STRING_LENGTH];
 		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
 
-		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 689);
-		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ERR\":\"OK\",\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ERR\":\"OK\",\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ERR\":\"OK\",\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8},\"OUTPUT_STATE_1\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_2\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_3\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"OUTPUT_STATE_4\":{\"ERR\":\"OK\",\"PIN_STATE\":\"OFF\",\"ON_TIME_MS\":0,\"TOGGLE_DURATION_MS\":0,\"TOGGLE_PERIOD_MS\":0},\"SYS_HOSTNAME\":\"unittest_hostname\"}}");
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 633);
+		UT_COMPARE_STRING(temp_string, "{\"REPORT\":{\"VERSION\":\"5.0\",\"TEMPERATURE\":{\"ERR\":\"OK\",\"ACT\":-4,\"MAX\":23,\"MIN\":-7,\"MEAN\":0},\"HUMIDITY\":{\"ERR\":\"OK\",\"ACT\":45,\"MAX\":45,\"MIN\":41,\"MEAN\":43},\"AMBILIGHT\":{\"ERR\":\"OK\",\"ACT\":2,\"MAX\":43,\"MIN\":0,\"MEAN\":8},\"OUTPUT_STATE_1\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"OUTPUT_STATE_2\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"OUTPUT_STATE_3\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":2831035,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"OUTPUT_STATE_4\":{\"ERR\":\"OK\",\"PIN_STATE\":\"OFF\",\"ON_TIME_MS\":0,\"DURATION_MS\":0,\"PERIOD_MS\":0},\"SYS_HOSTNAME\":\"unittest_hostname\"}}");
 	}
 	UT_END_TEST_CASE()
 }
