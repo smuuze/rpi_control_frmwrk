@@ -38,7 +38,7 @@
 #endif
 
 #ifndef MQTT_APPLICATION_MAX_MSG_LENGTH
-#define MQTT_APPLICATION_MAX_MSG_LENGTH					511
+#define MQTT_APPLICATION_MAX_MSG_LENGTH					MQTT_INTERFACE_MAX_MSG_LENGTH
 #endif
 
 #ifndef MQTT_APPLICATION_IDLE_SCHEDULE_INTERVAL_MS			
@@ -50,11 +50,11 @@
 #endif
 
 #ifndef MQTT_APPLICATION_TX_QEUE_SIZE
-#define MQTT_APPLICATION_TX_QEUE_SIZE					10
+#define MQTT_APPLICATION_TX_QEUE_SIZE					15
 #endif
 
 #ifndef MQTT_APPLICATION_RX_QEUE_SIZE
-#define MQTT_APPLICATION_RX_QEUE_SIZE					10
+#define MQTT_APPLICATION_RX_QEUE_SIZE					5
 #endif
 
 // --------------------------------------------------------------------------------
@@ -130,6 +130,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_MESSAGE_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_MESSAGE_TO_SEND_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_MESSAGE_SEND_FAILED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_MESSAGE_SEND_SUCCEED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_ENQEUE_TX_MESSAGE_FAILED_SIGNAL)
 
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CFG_PARSER_NEW_CFG_OBJECT_SIGNAL, MQTT_NEW_CFG_OBJECT_SLOT, mqtt_new_cfg_object_CALLBACK)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CFG_PARSER_CFG_COMPLETE_SIGNAL, MQTT_CFG_COMPLETE_SLOT, mqtt_cfg_complete_CALLBACK)
@@ -137,7 +138,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(MQTT_MESSAGE_TO_SEND_SIGNAL, MQTT_MESSAGE_TO_S
 
 // --------------------------------------------------------------------------------
 
-MQTT_INTERFACE_BUILD_CLIENT(MQTT_CLIENT, MQTT_INTERFACE_MAX_MSG_LENGTH, MQTT_APPLICATION_TX_QEUE_SIZE, MQTT_APPLICATION_RX_QEUE_SIZE)
+MQTT_INTERFACE_BUILD_CLIENT(MQTT_CLIENT, MQTT_APPLICATION_MAX_MSG_LENGTH, MQTT_APPLICATION_TX_QEUE_SIZE, MQTT_APPLICATION_RX_QEUE_SIZE)
 
 // --------------------------------------------------------------------------------
 
@@ -146,8 +147,9 @@ TIME_MGMN_BUILD_STATIC_TIMER_U32(MQTT_KEEP_ALIVE_TIMER)
 
 // --------------------------------------------------------------------------------
 
-#define MQTT_STATUS_IS_CONNECTED	(1 << 0)
-#define MQTT_STATUS_USER_CFG_SET	(1 << 1)
+#define MQTT_STATUS_IS_CONNECTED					(1 << 0)
+#define MQTT_STATUS_USER_CFG_SET					(1 << 1)
+#define MQTT_STATUS_ENQEUE_TX_MESSAGE_FAILED				(1 << 2)
 
 BUILD_MODULE_STATUS_U8(MQTT_STATUS)
 
@@ -207,6 +209,9 @@ void mqtt_interface_init(void) {
 
 	DEBUG_PASS("mqtt_interface_init() - MQTT_MESSAGE_SEND_SUCCEED_SIGNAL_init()");
 	MQTT_MESSAGE_SEND_SUCCEED_SIGNAL_init();
+
+	DEBUG_PASS("mqtt_interface_init() - MQTT_ENQEUE_TX_MESSAGE_FAILED_SIGNAL_init()");
+	MQTT_ENQEUE_TX_MESSAGE_FAILED_SIGNAL_init();
 	
 	DEBUG_PASS("cfg_file_parser_init() - MQTT_NEW_CFG_OBJECT_SLOT_connect()");
 	MQTT_NEW_CFG_OBJECT_SLOT_connect();
@@ -315,6 +320,11 @@ static MCU_TASK_INTERFACE_TASK_STATE mqtt_interface_task_get_state(void) {
 		DEBUG_PASS("mqtt_interface_task_get_state() - RUNNING (tx-msg pending)");
 		return MCU_TASK_RUNNING;
 	}
+	
+	if (MQTT_STATUS_is_set(MQTT_STATUS_ENQEUE_TX_MESSAGE_FAILED)) {
+		DEBUG_PASS("mqtt_interface_task_get_state() - RUNNING (enqeue failed)");
+		return MCU_TASK_RUNNING;
+	}
 
 	if (MQTT_KEEP_ALIVE_TIMER_is_up(MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS)) {
 		DEBUG_PASS("mqtt_interface_task_get_state() - RUNNING (keep-alive timeout)");
@@ -388,6 +398,13 @@ static void mqtt_interface_task_run(void) {
 			break;
 
 		case MQTT_APPLICATION_TASK_STATE_IDLE :
+
+			if (MQTT_STATUS_is_set(MQTT_STATUS_ENQEUE_TX_MESSAGE_FAILED)) {
+				DEBUG_PASS("mqtt_interface_task_run() - MQTT_ENQEUE_TX_MESSAGE_FAILED_SIGNAL_send()");
+				MQTT_STATUS_unset(MQTT_STATUS_ENQEUE_TX_MESSAGE_FAILED);
+				MQTT_ENQEUE_TX_MESSAGE_FAILED_SIGNAL_send(NULL);
+				break;
+			}
 
 			if (MQTT_CLIENT_connection_lost()) {
 
@@ -474,9 +491,13 @@ static void mqtt_message_to_send_CALLBACK(const void* p_argument) {
 
 	const char* msg_to_send = (const char*) p_argument;
 
-	MQTT_CLIENT_enqeue_message(msg_to_send);
-
-	DEBUG_TRACE_STR(msg_to_send, "mqtt_message_to_send_CALLBACK() - Message:");
+	if (MQTT_CLIENT_enqeue_message(msg_to_send) == 0) {
+		DEBUG_TRACE_STR(msg_to_send, "mqtt_message_to_send_CALLBACK() - ENQEUE MESSAGE HAS FAILED !!! ---");
+		MQTT_STATUS_set(MQTT_STATUS_ENQEUE_TX_MESSAGE_FAILED);
+		return;
+	}
+	
+	DEBUG_TRACE_STR(msg_to_send, "mqtt_message_to_send_CALLBACK() - New Mmessage to send");
 }
 
 static void mqtt_new_cfg_object_CALLBACK(const void* p_argument) {

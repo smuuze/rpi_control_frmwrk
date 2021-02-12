@@ -42,8 +42,6 @@
 #define MQTT_CLIENT_ID_STRING_LENGTH		26
 #define MQTT_WELCOME_MSG_STRING_LENGTH		26
 
-#define MQTT_INTERFACE_MAX_MSG_LENGTH		255
-
 // --------------------------------------------------------------------------------
 
 #define MQTT_NO_ERROR				0
@@ -77,6 +75,10 @@
 #define MQTT_APPLICATION_DEFAULT_RECONNECT_TIMEOUT_MS			30000
 #endif
 
+#ifndef MQTT_INTERFACE_MAX_MSG_LENGTH
+#define MQTT_INTERFACE_MAX_MSG_LENGTH					255
+#endif
+
 // --------------------------------------------------------------------------------
 
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(MQTT_MESSAGE_TO_SEND_SIGNAL)
@@ -105,6 +107,8 @@ typedef void (*MQTT_INTERFACE_QEUE_MUTEX_RELEASE_CALLBACK)		(void);
  *
  */
 typedef struct {
+	u16 max_message_length;
+	u8  max_message_count;
 	MQTT_INTERFACE_QEUE_INIT_CALLBACK init;
 	MQTT_INTERFACE_QEUE_ENQEUE_CALLBACK enqeue;
 	MQTT_INTERFACE_QEUE_DEQEUE_CALLBACK deqeue;
@@ -218,10 +222,10 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 
 // --------------------------------------------------------------------------------
 
-#define MQTT_INTERFACE_BUILD_CLIENT(name, max_message_length, tx_qeue_size, rx_qeue_size)					\
+#define MQTT_INTERFACE_BUILD_CLIENT(name, max_msg_length, tx_qeue_size, rx_qeue_size)						\
 																\
-	QEUE_INTERFACE_BUILD_QEUE(__##name##_RX_QEUE, char, max_message_length, rx_qeue_size)					\
-	QEUE_INTERFACE_BUILD_QEUE(__##name##_TX_QEUE, char, max_message_length, tx_qeue_size)					\
+	QEUE_INTERFACE_BUILD_QEUE(__##name##_RX_QEUE, char, max_msg_length, rx_qeue_size)					\
+	QEUE_INTERFACE_BUILD_QEUE(__##name##_TX_QEUE, char, max_msg_length, tx_qeue_size)					\
 																\
 	static MQTT_INTERFACE __##name##_mqtt_interface = {									\
 																\
@@ -230,6 +234,8 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 		.keep_alive_interval_ms = MQTT_APPLICATION_DEFAULT_KEEP_ALIVE_TIME_MS,						\
 																\
 		.rx_qeue = {													\
+			.max_message_length = max_msg_length,									\
+			.max_message_count = rx_qeue_size,									\
 			.init = &__##name##_RX_QEUE_init,									\
 			.enqeue = &__##name##_RX_QEUE_enqeue,									\
 			.deqeue = &__##name##_RX_QEUE_deqeue,									\
@@ -239,6 +245,8 @@ void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token);
 			.mutex_release = &__##name##_RX_QEUE_mutex_release							\
 		},														\
 		.tx_qeue = {													\
+			.max_message_length = max_msg_length,									\
+			.max_message_count = tx_qeue_size,									\
 			.init = &__##name##_TX_QEUE_init,									\
 			.enqeue = &__##name##_TX_QEUE_enqeue,									\
 			.deqeue = &__##name##_TX_QEUE_deqeue,									\

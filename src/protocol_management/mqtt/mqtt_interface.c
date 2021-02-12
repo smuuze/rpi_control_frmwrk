@@ -204,6 +204,12 @@ u16 mqtt_get_next_msg(MQTT_INTERFACE* p_mqtt_interface, char* p_msg_to, u16 max_
 }
 
 u8 mqtt_enqeue_message(MQTT_INTERFACE* p_mqtt_interface, const char* p_msg_from) {
+
+	if (p_mqtt_interface->tx_qeue.max_message_length < common_tools_string_length(p_msg_from)) {
+		DEBZG_PASS("mqtt_enqeue_message() - Message to long! OVERFLOW !!! ---");
+		return 0;
+	}
+
 	DEBUG_TRACE_STR(p_msg_from, "mqtt_enqeue_message() - Message: ");
 	return p_mqtt_interface->tx_qeue.enqeue(p_msg_from);
 }
