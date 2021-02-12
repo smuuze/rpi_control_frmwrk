@@ -28,6 +28,7 @@
 #include "time_management/time_management.h"
 #include "ui/cfg_file_parser/cfg_file_parser.h"
 #include "ui/file_interface/file_interface.h"
+#include "protocol_management/json/protocol_json_parser.h"
 
 // --------------------------------------------------------------------------------
 
@@ -72,6 +73,14 @@
 #define MSG_EXECUTER_COMMAND_TYPE_COM_STR				"com"
 #endif
 
+#ifndef MSG_EXECUTER_REPORT_JSON_GROUP_STRING
+#define MSG_EXECUTER_REPORT_JSON_GROUP_STRING				"REPORT"
+#endif
+
+#ifndef MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING
+#define MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING				"RESPONSE"
+#endif
+
 #ifndef MSG_EXECUTER_DEFAULT_REPORT_INTERVAL_MS
 #define MSG_EXECUTER_DEFAULT_REPORT_INTERVAL_MS				300000
 #endif
@@ -100,7 +109,9 @@ typedef enum {
 	MSG_EXECUTER_TASK_STATE_SEND_RESPONSE,
 	MSG_EXECUTER_TASK_STATE_START_REPORT,
 	MSG_EXECUTER_PROCESS_REPORT_LIST,
-	MSG_EXECUTER_TASK_TERMINATED
+	MSG_EXECUTER_TASK_TERMINATED,
+	MSG_EXECUTER_TASK_STATE_SEND_REPORT,
+	MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT
 } MSG_EXECUTER_TASK_STATE_TYPE;
 
 // --------------------------------------------------------------------------------
@@ -218,6 +229,11 @@ FILE_INTERFACE_CREATE_FILE(REPORT_FILE)
 
 // --------------------------------------------------------------------------------
 
+JSON_PARSER_CREATE_OBJECT(RESPONSE_JSON_OBJECT)
+JSON_PARSER_CREATE_OBJECT(REPORT_JSON_OBJECT)
+
+// --------------------------------------------------------------------------------
+
 /*!
  *
  */
@@ -243,10 +259,11 @@ static MCU_TASK_INTERFACE msg_executer_task = {
  */
 static MSG_EXECUTER_TASK_STATE_TYPE msg_executer_task_state = MSG_EXECUTER_TASK_STATE_WAIT_FOR_USER_CFG;
 
-/*!
- *
+/**
+ * @brief Name of command received via MQTT. Module will look for this name in Command-/Report-File
+ * 
  */
-static char msg_executer_pending_msg[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
+static char msg_executer_received_command_name[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
 
 /*!
  *
@@ -256,7 +273,7 @@ static char msg_executer_pending_command[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
 /*!
  *
  */
-static char msg_executer_pending_response[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
+static char pending_response_cli_command[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
 
 /*!
  *
@@ -267,6 +284,12 @@ static char msg_executer_pending_report_name[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
  *
  */
 static u32 msg_executer_report_interval_timeout_ms = 0;
+
+/**
+ * @brief holds the lasst response of a rpi-command
+ * 
+ */
+static COMMON_GENERIC_BUFFER_TYPE pending_response_rpi_command;
 
 // --------------------------------------------------------------------------------
 
@@ -418,6 +441,12 @@ static void msg_executer_task_run(void) {
 
 				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
 
+				if (REPORT_JSON_OBJECT_is_active() == 0) {
+					DEBUG_PASS("msg_executer_task_run() - Activating Json-Report-Object");
+					REPORT_JSON_OBJECT_initialize();
+					REPORT_JSON_OBJECT_start_group(MSG_EXECUTER_REPORT_JSON_GROUP_STRING);
+				}
+
 				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_IDLE >> MSG_EXECUTER_PROCESS_REPORT_LIST");
 				msg_executer_task_state = MSG_EXECUTER_PROCESS_REPORT_LIST;
 				break;
@@ -444,7 +473,7 @@ static void msg_executer_task_run(void) {
 
 		case MSG_EXECUTER_TASK_STATE_PARSE_COMMAND_MSG :
 			
-			msg_executer_parse_command_message(msg_executer_pending_msg, msg_executer_pending_command);
+			msg_executer_parse_command_message(msg_executer_received_command_name, msg_executer_pending_command);
 
 			COMMAND_FILE_close();
 
@@ -467,7 +496,7 @@ static void msg_executer_task_run(void) {
 			DEBUG_PASS("msg_executer_task_run() - command not found!");
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_PARSE_COMMAND_MSG >> MSG_EXECUTER_TASK_STATE_IDLE");
 
-			MSG_EXECUTER_INVALID_COMMAND_SIGNAL_send(msg_executer_pending_msg);
+			MSG_EXECUTER_INVALID_COMMAND_SIGNAL_send(msg_executer_received_command_name);
 			msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
 			break;
 
@@ -495,28 +524,46 @@ static void msg_executer_task_run(void) {
 			if (MSG_EXECUTER_OP_TIMER_is_up(MSG_EXECUTER_RESPONSE_TIMEOUT_MS)) {
 
 				DEBUG_PASS("msg_executer_task_run() - Timeout on waiting for communication response");
-				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE >> MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT");
 
 				MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL_send(msg_executer_pending_command);
-				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT;
 				break;
 			}
 
 			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_RESPONSE_TIMEOUT)) {
 
 				DEBUG_PASS("msg_executer_task_run() - Response-Timeout received");
-				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE >> MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT");
 
 				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_RESPONSE_TIMEOUT);
 				MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL_send(msg_executer_pending_command);
 				
-				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT;
 				break;
 			}
 
 			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED) == 0) {
 				break;
 			}
+
+			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE)) {
+
+				REPORT_JSON_OBJECT_add_rpi_response(&pending_response_rpi_command);
+
+				//DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
+				//msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
+
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE >> MSG_EXECUTER_TASK_STATE_SEND_REPORT");
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_SEND_REPORT;
+
+				break;
+			}
+			
+			RESPONSE_JSON_OBJECT_initialize();
+			RESPONSE_JSON_OBJECT_start_group(MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING);
+			RESPONSE_JSON_OBJECT_add_rpi_response(&pending_response_rpi_command);
+			RESPONSE_JSON_OBJECT_finish();
 
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_COM_RESPONSE >> MSG_EXECUTER_TASK_STATE_SEND_RESPONSE");
 			msg_executer_task_state = MSG_EXECUTER_TASK_STATE_SEND_RESPONSE;
@@ -547,10 +594,10 @@ static void msg_executer_task_run(void) {
 			if (MSG_EXECUTER_OP_TIMER_is_up(MSG_EXECUTER_RESPONSE_TIMEOUT_MS)) {
 
 				DEBUG_PASS("msg_executer_task_run() - Timeout on waiting for execution response");
-				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE >> MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT");
 
 				MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL_send(msg_executer_pending_command);
-				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT;
 				break;
 			}
 
@@ -558,21 +605,64 @@ static void msg_executer_task_run(void) {
 				break;
 			}
 
+			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE)) {
+		
+				msg_executer_prepare_report(pending_response_cli_command, pending_response_cli_command, msg_executer_pending_report_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+
+				DEBUG_PASS("msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK() - Adding response to json-object --- --- --- ---");
+				REPORT_JSON_OBJECT_add_cli_response(pending_response_cli_command);
+
+				//DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
+				//msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
+
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE >> MSG_EXECUTER_TASK_STATE_SEND_REPORT");
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_SEND_REPORT;
+
+				break;
+			}
+
+			msg_executer_prepare_report(pending_response_cli_command, pending_response_cli_command, msg_executer_received_command_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+			
+			RESPONSE_JSON_OBJECT_initialize();
+			RESPONSE_JSON_OBJECT_start_group(MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING);
+			RESPONSE_JSON_OBJECT_add_cli_response(pending_response_cli_command);
+			RESPONSE_JSON_OBJECT_finish();
+
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE >> MSG_EXECUTER_TASK_STATE_SEND_RESPONSE");
 			msg_executer_task_state = MSG_EXECUTER_TASK_STATE_SEND_RESPONSE;
+			break;
+
+		case MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT :
+
+			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE)) {
+
+				REPORT_JSON_OBJECT_start_group(msg_executer_received_command_name);
+				REPORT_JSON_OBJECT_add_string("ERR", "TIMEOUT");
+
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT >> MSG_EXECUTER_TASK_STATE_SEND_REPORT");
+				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_SEND_REPORT;
+				
+				break;
+			}
+
+			RESPONSE_JSON_OBJECT_initialize();
+			RESPONSE_JSON_OBJECT_start_group(MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING);
+			RESPONSE_JSON_OBJECT_start_group(msg_executer_received_command_name);
+			RESPONSE_JSON_OBJECT_add_string("ERR", "TIMEOUT");
+			RESPONSE_JSON_OBJECT_finish();
+
+			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_PREPARE_RESPONSE_TIMEOUT >> MSG_EXECUTER_TASK_STATE_SEND_RESPONSE");
+			msg_executer_task_state = MSG_EXECUTER_TASK_STATE_SEND_RESPONSE;
+
 			break;
 
 		case MSG_EXECUTER_TASK_STATE_SEND_RESPONSE :
 
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_SEND_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
-			
-			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE)) {
-				msg_executer_prepare_report(msg_executer_pending_response, msg_executer_pending_response, msg_executer_pending_report_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
-			}
 
 			MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
-			MSG_EXECUTER_RESPONSE_RECEIVED_SIGNAL_send(msg_executer_pending_response);
-			MQTT_MESSAGE_TO_SEND_SIGNAL_send(msg_executer_pending_response);
+			MSG_EXECUTER_RESPONSE_RECEIVED_SIGNAL_send(RESPONSE_JSON_OBJECT_to_string());
+			MQTT_MESSAGE_TO_SEND_SIGNAL_send(RESPONSE_JSON_OBJECT_to_string());
 
 			msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
 			break;
@@ -580,10 +670,18 @@ static void msg_executer_task_run(void) {
 		case MSG_EXECUTER_PROCESS_REPORT_LIST :
 
 			if (msg_executer_parse_report_command(msg_executer_pending_report_name, msg_executer_pending_command) < 0) {
+
 				DEBUG_PASS("msg_executer_task_run() - Report-List complete");
+
 				MSG_EXECUTER_STATUS_unset(MSG_EXECUTER_STATUS_REPORT_ACTIVE);
 				MSG_EXECUTER_REPORT_INTERVAL_TIMER_start();
+
+				//DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_PROCESS_REPORT_LIST >> MSG_EXECUTER_TASK_STATE_SEND_REPORT");
+				//msg_executer_task_state = MSG_EXECUTER_TASK_STATE_SEND_REPORT;
+
+				DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_PROCESS_REPORT_LIST >> MSG_EXECUTER_TASK_STATE_IDLE");
 				msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
+
 				break;
 			}
 
@@ -606,7 +704,16 @@ static void msg_executer_task_run(void) {
 				break;
 			}
 
-			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_PROCESS_REPORT_LIST >> MSG_EXECUTER_TASK_STATE_IDLE");
+			break;
+
+		case MSG_EXECUTER_TASK_STATE_SEND_REPORT :
+
+			REPORT_JSON_OBJECT_finish();
+
+			MSG_EXECUTER_RESPONSE_RECEIVED_SIGNAL_send(REPORT_JSON_OBJECT_to_string());
+			MQTT_MESSAGE_TO_SEND_SIGNAL_send(REPORT_JSON_OBJECT_to_string());
+
+			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_SEND_REPORT >> MSG_EXECUTER_TASK_STATE_IDLE");
 			msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
 
 			break;
@@ -897,11 +1004,11 @@ static void msg_executer_MQTT_MESSAGE_RECEIVED_CALLBACK(const void* p_argument) 
 		return;
 	}
 
-	//memset(msg_executer_pending_msg, '\0', MSG_EXECUTER_MAX_MESSAGE_LENGTH);
-	//memcpy(msg_executer_pending_msg, (const char*) p_argument, msg_length);
-	common_tools_string_copy_string(msg_executer_pending_msg, (const char*) p_argument, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+	//memset(msg_executer_received_command_name, '\0', MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+	//memcpy(msg_executer_received_command_name, (const char*) p_argument, msg_length);
+	common_tools_string_copy_string(msg_executer_received_command_name, (const char*) p_argument, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 
-	DEBUG_TRACE_STR(msg_executer_pending_msg, "msg_executer_MQTT_MESSAGE_RECEIVED_CALLBACK()");
+	DEBUG_TRACE_STR(msg_executer_received_command_name, "msg_executer_MQTT_MESSAGE_RECEIVED_CALLBACK()");
 
 	MSG_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_MSG_RECEIVED);
 }
@@ -918,7 +1025,8 @@ static void msg_executer_RPI_HOST_RESPONSE_RECEIVED_SLOT_CALLBACK(const void* p_
 
 	COMMON_GENERIC_BUFFER_TYPE* p_com_buffer = (COMMON_GENERIC_BUFFER_TYPE*) p_argument;
 
-	common_tools_byte_array_string_to_hex_string(p_com_buffer->data, p_com_buffer->length, msg_executer_pending_response, MSG_EXECUTER_MAX_MESSAGE_LENGTH); 
+	pending_response_rpi_command.length = p_com_buffer->length;
+	memcpy(pending_response_rpi_command.data, p_com_buffer->data, p_com_buffer->length);
 
 	MSG_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
 }
@@ -926,7 +1034,6 @@ static void msg_executer_RPI_HOST_RESPONSE_RECEIVED_SLOT_CALLBACK(const void* p_
 static void msg_executer_RPI_HOST_RESPONSE_TIMEOUT_SLOT_CALLBACK(const void* p_argument) {
 
 	DEBUG_PASS("msg_executer_RPI_HOST_RESPONSE_TIMEOUT_SLOT_CALLBACK()");
-
 	MSG_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_RESPONSE_TIMEOUT);
 }
 
@@ -938,12 +1045,9 @@ static void msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK(const void*
 	}
 
 	const char* p_response = (const char*) p_argument;
+	common_tools_string_copy_string(pending_response_cli_command, p_response, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 
 	DEBUG_TRACE_STR(p_response, "msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK()");
-
-	//memset(msg_executer_pending_response, '\0', MSG_EXECUTER_MAX_MESSAGE_LENGTH);
-	//memcpy(msg_executer_pending_response, p_response, strlen(p_response));
-	common_tools_string_copy_string(msg_executer_pending_response, p_response, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 
 	MSG_EXECUTER_STATUS_set(MSG_EXECUTER_STATUS_RESPONSE_RECEIVED);
 }
