@@ -78,7 +78,7 @@ static u8 json_parser_add_name(JSON_OPJECT_TYPE* p_json_object, const char* name
 		return 0;
 	}
 
-	DEBUG_PASS("json_parser_add_name()");
+	DEBUG_TRACE_STR(name, "json_parser_add_name()");
 
 	p_json_object->length = common_tools_string_append(p_json_object->string_buffer, PROTOCOL_JSON_PARSER_STRING_NAME_SEPERATOR, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);
 	p_json_object->length = common_tools_string_append(p_json_object->string_buffer, name, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);
@@ -98,13 +98,13 @@ void json_parser_initialize(JSON_OPJECT_TYPE* p_json_object) {
 	common_tools_string_clear(p_json_object->string_buffer, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);
 	p_json_object->length = common_tools_string_append(p_json_object->string_buffer, PROTOCOL_JSON_PARSER_STRING_GROUP_START, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);
 
-	p_json_object->is_complete = 0;
+	p_json_object->status = JSON_OBJECT_STATUS_ACTIVE;
 	p_json_object->open_group_count = 0;
 }
 
 void json_parser_start_group(JSON_OPJECT_TYPE* p_json_object, const char* group_name) {
 
-	if (p_json_object->is_complete == 1) {
+	if (p_json_object->status == JSON_OBJECT_STATUS_COMPLETE) {
 		DEBUG_PASS("json_parser_start_group() - JSON object is already complete !!!");
 		return;
 	}
@@ -129,7 +129,7 @@ void json_parser_start_group(JSON_OPJECT_TYPE* p_json_object, const char* group_
 
 void json_parser_add_integer(JSON_OPJECT_TYPE* p_json_object, const char* name, i32 value) {
 
-	if (p_json_object->is_complete == 1) {
+	if (p_json_object->status == JSON_OBJECT_STATUS_COMPLETE) {
 		DEBUG_PASS("json_parser_add_integer() - JSON object is already complete !!!");
 		return;
 	}
@@ -159,7 +159,7 @@ void json_parser_add_integer(JSON_OPJECT_TYPE* p_json_object, const char* name, 
 
 void json_parser_add_string(JSON_OPJECT_TYPE* p_json_object, const char* name, const char* p_string) {
 
-	if (p_json_object->is_complete == 1) {
+	if (p_json_object->status == JSON_OBJECT_STATUS_COMPLETE) {
 		DEBUG_PASS("json_parser_add_integer() - JSON object is already complete !!!");
 		return;
 	}
@@ -186,7 +186,7 @@ void json_parser_add_string(JSON_OPJECT_TYPE* p_json_object, const char* name, c
 
 void json_parser_end_group(JSON_OPJECT_TYPE* p_json_object) {
 
-	if (p_json_object->is_complete == 1) {
+	if (p_json_object->status == JSON_OBJECT_STATUS_COMPLETE) {
 		DEBUG_PASS("json_parser_end_group() - JSON object is already complete !!!");
 		return;
 	}
@@ -204,7 +204,7 @@ void json_parser_end_group(JSON_OPJECT_TYPE* p_json_object) {
 
 void json_parser_finish(JSON_OPJECT_TYPE* p_json_object) {
 
-	if (p_json_object->is_complete == 1) {
+	if (p_json_object->status == JSON_OBJECT_STATUS_COMPLETE) {
 		DEBUG_PASS("json_parser_finish() - JSON object is already complete !!!");
 		return;
 	}
@@ -215,7 +215,7 @@ void json_parser_finish(JSON_OPJECT_TYPE* p_json_object) {
 
 	DEBUG_PASS("json_parser_finish()");
 	p_json_object->length = common_tools_string_append(p_json_object->string_buffer, PROTOCOL_JSON_PARSER_STRING_GROUP_END, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);
-	p_json_object->is_complete = 1;
+	p_json_object->status = JSON_OBJECT_STATUS_COMPLETE;
 }
 
 u16 json_parser_copy_to(JSON_OPJECT_TYPE* p_json_object, char* p_string, u16 max_length) {
@@ -228,4 +228,10 @@ u16 json_parser_get_length(JSON_OPJECT_TYPE* p_json_object) {
 
 	DEBUG_PASS("json_parser_copy_to()");
 	return p_json_object->length;
+}
+
+u8 json_parser_is_active(JSON_OPJECT_TYPE* p_json_object) {
+
+	DEBUG_TRACE_byte(p_json_object->status, "json_parser_copy_to()");
+	return p_json_object->status == JSON_OBJECT_STATUS_ACTIVE ? 1 : 0;
 }

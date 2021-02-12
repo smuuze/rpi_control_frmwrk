@@ -38,11 +38,16 @@
 
 // --------------------------------------------------------------------------------
 
+#define JSON_OBJECT_STATUS_COMPLETE					(1 << 0)
+#define JSON_OBJECT_STATUS_ACTIVE					(1 << 1)
+
+// --------------------------------------------------------------------------------
+
 typedef struct JSON_OBJECT_STRUCT {
 	char  string_buffer[PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH];
 	u16 length;
 	u8 open_group_count;
-	u8 is_complete;
+	u8 status;
 } JSON_OPJECT_TYPE;
 
 // --------------------------------------------------------------------------------
@@ -131,6 +136,14 @@ u16 json_parser_get_length(JSON_OPJECT_TYPE* p_json_object);
  */
 u16 json_parser_copy_to(JSON_OPJECT_TYPE* p_json_object, char* p_string, u16 max_length);
 
+/**
+ * @brief Returns the active status of the json-object
+ * 
+ * @param p_json_object 
+ * @return 1 if json-object is active, otherwise 0
+ */
+u8 json_parser_is_active(JSON_OPJECT_TYPE* p_json_object);
+
 // --------------------------------------------------------------------------------
 
 #define JSON_PARSER_CREATE_OBJECT(name)								\
@@ -179,6 +192,14 @@ u16 json_parser_copy_to(JSON_OPJECT_TYPE* p_json_object, char* p_string, u16 max
 												\
 	u16 name##_get_length(void) {								\
 		return json_parser_get_length(&__##name##_json_object);				\
+	}											\
+												\
+	const char* name##_to_string(void) {							\
+		return (const char*) __##name##_json_object.string_buffer;			\
+	}											\
+												\
+	u8 name##_is_active(void) {								\
+		return json_parser_is_active(&__##name##_json_object);				\
 	}
 
 // --------------------------------------------------------------------------------

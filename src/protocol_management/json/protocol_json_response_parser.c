@@ -39,10 +39,13 @@
 #define JSON_RESPONSE_PARSER_STRING_HUMIDITY				"HUMIDITY"
 #define JSON_RESPONSE_PARSER_STRING_AMBILIGHT				"AMBILIGHT"
 #define JSON_RESPONSE_PARSER_STRING_OUTPUT_STATE			"OUTPUT_STATE_"
+#define JSON_RESPONSE_PARSER_STRING_SET_OUTPUT_STATE			"SET_OUTPUT_STATE"
 #define JSON_RESPONSE_PARSER_STRING_PIN_STATE				"PIN_STATE"
 #define JSON_RESPONSE_PARSER_STRING_ON_TIME				"ON_TIME_MS"
 #define JSON_RESPONSE_PARSER_STRING_TOGGLE_DURATION			"TOGGLE_DURATION_MS"
 #define JSON_RESPONSE_PARSER_STRING_TOGGLE_PERIOD			"TOGGLE_PERIOD_MS"
+
+#define JSON_RESPONSE_PARSER_STRING_ERROR				"ERR"
 
 #define JSON_RESPONSE_PARSER_STRING_ACT					"ACT"
 #define JSON_RESPONSE_PARSER_STRING_MAX					"MAX"
@@ -54,6 +57,43 @@
 #define JSON_PARSER_CLI_RESPONSE_SPLITTER_CHAR				'='
 
 // --------------------------------------------------------------------------------
+
+static void json_parser_resposne_error_code(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
+
+	DEBUG_TRACE_byte(CMD_HANDLER_GET_RESPONSE_ERROR_CODE(p_com_buffer), "json_parser_resposne_error_code()");
+
+	switch (CMD_HANDLER_GET_RESPONSE_ERROR_CODE(p_com_buffer)) {
+		default:
+			json_parser_add_string(p_json_object, JSON_RESPONSE_PARSER_STRING_ERROR, "UNKNOWN");
+			break;
+
+		case CMD_NO_ERR :
+			json_parser_add_string(p_json_object, JSON_RESPONSE_PARSER_STRING_ERROR, "OK");
+			break;
+
+		case CMD_ERR_INVALID_ARGUMENT:
+		case CMD_ERR_INVARG:
+			json_parser_add_string(p_json_object, JSON_RESPONSE_PARSER_STRING_ERROR, "INVALID ARGUMENT");
+			break;
+			
+		case CMD_ERR_INVALID_COMMAND:
+			json_parser_add_string(p_json_object, JSON_RESPONSE_PARSER_STRING_ERROR, "INVALID COMMAND");
+			break;
+			
+		case CMD_ERR_TIMEOUT:
+			json_parser_add_string(p_json_object, JSON_RESPONSE_PARSER_STRING_ERROR, "TIMEOUT");
+			break;
+			
+		case CMD_ERR_BUSY:
+			json_parser_add_string(p_json_object, JSON_RESPONSE_PARSER_STRING_ERROR, "BUSY");
+			break;
+			
+		case CMD_ERR_NO_ROUTE_TO_HOST:
+			json_parser_add_string(p_json_object, JSON_RESPONSE_PARSER_STRING_ERROR, "NO_ROUTE_TO_HOST");
+			break;
+			
+	}
+}
 
 /**
  * @brief	Adds the response of the version command to the actual json object
@@ -119,6 +159,7 @@ static void json_parser_response_add_act_max_min_mean(JSON_OPJECT_TYPE* p_json_o
 static void json_parser_response_temperature(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
 
 	json_parser_start_group(p_json_object, JSON_RESPONSE_PARSER_STRING_TEMPERATURE);
+	json_parser_resposne_error_code(p_json_object, p_com_buffer);
 	json_parser_response_add_act_max_min_mean(p_json_object, p_com_buffer, 1 /* signed */);
 	json_parser_end_group(p_json_object);
 }
@@ -136,6 +177,7 @@ static void json_parser_response_humidity(JSON_OPJECT_TYPE* p_json_object, COMMO
 	}
 
 	json_parser_start_group(p_json_object, JSON_RESPONSE_PARSER_STRING_HUMIDITY);
+	json_parser_resposne_error_code(p_json_object, p_com_buffer);
 	json_parser_response_add_act_max_min_mean(p_json_object, p_com_buffer, 0 /* unsigned */);
 	json_parser_end_group(p_json_object);
 }
@@ -153,6 +195,7 @@ static void json_parser_response_ambilight(JSON_OPJECT_TYPE* p_json_object, COMM
 	}
 
 	json_parser_start_group(p_json_object, JSON_RESPONSE_PARSER_STRING_AMBILIGHT);
+	json_parser_resposne_error_code(p_json_object, p_com_buffer);
 	json_parser_response_add_act_max_min_mean(p_json_object, p_com_buffer, 0 /* unsigned */);
 	json_parser_end_group(p_json_object);
 }
@@ -188,6 +231,8 @@ static void json_parser_response_output_state(JSON_OPJECT_TYPE* p_json_object, C
 
 	json_parser_start_group(p_json_object, group_name);
 
+	json_parser_resposne_error_code(p_json_object, p_com_buffer);
+
 	if (p_com_buffer->data[3] != 0) {
 		json_parser_add_string(p_json_object, JSON_RESPONSE_PARSER_STRING_PIN_STATE, JSON_RESPONSE_PARSER_STRING_ON);
 	} else {
@@ -198,6 +243,19 @@ static void json_parser_response_output_state(JSON_OPJECT_TYPE* p_json_object, C
 	json_parser_add_integer(p_json_object, JSON_RESPONSE_PARSER_STRING_TOGGLE_DURATION, common_tools_number_u32_from_array(p_com_buffer->data + 8));
 	json_parser_add_integer(p_json_object, JSON_RESPONSE_PARSER_STRING_TOGGLE_PERIOD, common_tools_number_u32_from_array(p_com_buffer->data + 12));
 
+	json_parser_end_group(p_json_object);
+}
+
+/**
+ * @brief 
+ * 
+ * @param p_json_object 
+ * @param p_com_buffer 
+ */
+void json_parser_response_set_output_state(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
+
+	json_parser_start_group(p_json_object, JSON_RESPONSE_PARSER_STRING_SET_OUTPUT_STATE);
+	json_parser_resposne_error_code(p_json_object, p_com_buffer);
 	json_parser_end_group(p_json_object);
 }
 
@@ -219,11 +277,13 @@ void json_parser_append_rpi_cmd_response(JSON_OPJECT_TYPE* p_json_object, COMMON
 		return;
 	}
 
-	DEBUG_PASS("json_parser_append_rpi_cmd_response()");
+	DEBUG_TRACE_byte(CMD_HANDLER_GET_RESPONSE_COMMAND_CODE(p_com_buffer), "json_parser_append_rpi_cmd_response()");
 
 	switch (CMD_HANDLER_GET_RESPONSE_COMMAND_CODE(p_com_buffer)) {
 
-		default : break;
+		default : 
+			json_parser_add_string(p_json_object, "ERROR", "BAD_COMMAND");
+			break;
 
 		case RPI_COMMAND_GET_VERSION:
 			json_parser_response_version(p_json_object, p_com_buffer);
@@ -245,11 +305,15 @@ void json_parser_append_rpi_cmd_response(JSON_OPJECT_TYPE* p_json_object, COMMON
 			json_parser_response_output_state(p_json_object, p_com_buffer);
 			break;
 
+		case RPI_COMMAND_SET_OUTPUT:
+			json_parser_response_set_output_state(p_json_object, p_com_buffer);
+			break;
+
+
 		/*
 		case RPI_COMMAND_GET_LIGHT:
 		case RPI_COMMAND_GET_INPUT_LIST:
 		case RPI_COMMAND_GET_OUTPUT_LIST:
-		case RPI_COMMAND_SET_OUTPUT:
 		case RPI_COMMAND_GET_OUTPUT_STATE:
 		case RPI_COMMAND_GET_INPUT_STATE:
 		case RPI_COMMAND_GET_ADC:
