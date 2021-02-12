@@ -21,6 +21,7 @@
 // --------------------------------------------------------------------------------
 
 #include "common/signal_slot_interface.h"
+#include "common/common_tools_string.h"
 #include "mcu_task_management/mcu_task_interface.h"
 
 #include "ui/file_interface/file_interface.h"
@@ -53,6 +54,8 @@ UT_ACTIVATE()
 // --------------------------------------------------------------------------------
 
 #define MAX_MSG_LENGTH						255
+#define UT_MQTT_MESSAGE_LIST_LENGTH				10
+
 #define TEST_CASE_MSG_RECEIVED_MSG_STRING			"light_01_off"
 #define TEST_CASE_MSG_RECEIVED_EXECUTION_STR			"date"
 #define TEST_CASE_MSG_RECEIVED_COMMAND_03_STR			"light_03_off"
@@ -77,6 +80,8 @@ static u8 ut_cli_command_received = 0;
 char unittest_MSG_RECEIVED[MAX_MSG_LENGTH];
 char unittest_RESPONSE_RECEIVED[MAX_MSG_LENGTH];
 
+char unittest_mqtt_message_to_send_list[UT_MQTT_MESSAGE_LIST_LENGTH][MAX_MSG_LENGTH];
+
 u8 counter_FILE_SET_PATH = 0;
 u8 counter_FILE_HAS_CHANGED = 0;
 u8 counter_FILE_IS_READABLE = 0;
@@ -93,6 +98,7 @@ u8 counter_INVALID_COMMAND = 0;
 u8 counter_INVALID_COMMAND_SYNTAX = 0;
 u8 counter_CLI_COMMAND_RECEIVED = 0;
 u8 counter_FILE_OPEN_FAILED = 0;
+u8 counter_MQTT_MESSAGE_TO_SEND = 0;
 
 // --------------------------------------------------------------------------------
 
@@ -100,6 +106,11 @@ u8 counter_FILE_OPEN_FAILED = 0;
 static void unittest_reset_counter(void) {
 
 	memset(unittest_RESPONSE_RECEIVED, '\0', MAX_MSG_LENGTH);
+
+	u8 i = 0;
+	for ( ; i < UT_MQTT_MESSAGE_LIST_LENGTH; i++) {
+		memset(unittest_mqtt_message_to_send_list[i], '\0', MAX_MSG_LENGTH);
+	}
 
 	counter_FILE_SET_PATH = 0;
 	counter_FILE_HAS_CHANGED = 0;
@@ -117,6 +128,7 @@ static void unittest_reset_counter(void) {
 	counter_INVALID_COMMAND_SYNTAX = 0;
 	counter_CLI_COMMAND_RECEIVED = 0;
 	counter_FILE_OPEN_FAILED = 0;
+	counter_MQTT_MESSAGE_TO_SEND = 0;
 }
 
 static int preapre_line(char* line_to, char* line_from, int line_length, int max_line_length) {
@@ -278,7 +290,7 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 	static char line_starts_with_tab[] = "\ttab_line=ok";
 	static char line_has_no_value[] = "ihavenovalue=";
 	static char line_starts_with_whitespace[] = " whitespace_line=ok";
-	static char line_light_off_command[] = " light_01_off=com:0101";
+	static char line_light_off_command[] = " light_01_off=com:0B0401000000000000000000";
 	static char line_invalid_command[] = " light_03_off=com:";
 	static char line_get_date_command[] = " date=exe:date";
 	static char line_rpt_date_command[] = " rpt_date=exe:date";
@@ -422,7 +434,24 @@ void unittest_CLI_EXECUTER_COMMAND_RECEIVED_SLOT_CALLBACK(const void* p_argument
 	ut_cli_command_received = 1;
 }
 
+void unittest_MQTT_MESSAGE_TO_SEND_SLOT_CALLBACK(const void* p_argument) {
 
+	DEBUG_TRACE_STR((const char*)p_argument, "unittest_MQTT_MESSAGE_TO_SEND_SLOT_CALLBACK()");
+
+	if (counter_MQTT_MESSAGE_TO_SEND < UT_MQTT_MESSAGE_LIST_LENGTH) {
+
+		const char* new_message = (const char*)p_argument;
+		u16 string_length = common_tools_string_length(new_message);
+
+		if (string_length > MAX_MSG_LENGTH) {
+			memcpy(unittest_mqtt_message_to_send_list[counter_MQTT_MESSAGE_TO_SEND], new_message, MAX_MSG_LENGTH);
+		} else {
+			memcpy(unittest_mqtt_message_to_send_list[counter_MQTT_MESSAGE_TO_SEND], new_message, string_length);
+		}
+	}
+
+	counter_MQTT_MESSAGE_TO_SEND += 1;
+}
 
 // --------------------------------------------------------------------------------
 
@@ -438,6 +467,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_EXECUTER_COMMAND_RECEIVED_SIGNAL, UT_CLI_E
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_MESSAGE_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_MESSAGE_TO_SEND_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(MQTT_MESSAGE_TO_SEND_SIGNAL, UT_MQTT_MESSAGE_TO_SEND_SLOT, unittest_MQTT_MESSAGE_TO_SEND_SLOT_CALLBACK)
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_RESPONSE_TIMEOUT_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(RPI_HOST_COMMAND_RECEIVED_SIGNAL, UT_RPI_HOST_COMMAND_RECEIVED_SLOT, unittest_RPI_HOST_COMMAND_RECEIVED_SLOT_CALLBACK)
@@ -483,6 +513,7 @@ static void UNITTEST_msg_executer_init(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -534,6 +565,7 @@ static void UNITTEST_msg_executer_configure(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -559,8 +591,8 @@ static void UNITTEST_msg_executer_message_received(void) {
 				signal_send = 1;
 
 				COMMON_GENERIC_BUFFER_TYPE response_buffer = {
-					.length = 3,
-					.data = {0x02, 0x01, 0x00}
+					.length = 2,
+					.data = {0x04, 0x00}
 				};
 
 				RPI_HOST_RESPONSE_RECEIVED_SIGNAL_send(&response_buffer);
@@ -578,12 +610,13 @@ static void UNITTEST_msg_executer_message_received(void) {
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
-		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, RESPONSE_RECEIVED_01);
+		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, "{\"RESPONSE\":{\"SET_OUTPUT_STATE\":{\"ERR\":\"OK\"}}}");
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 12);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 1);
 	}
 	UT_END_TEST_CASE()
 }
@@ -612,7 +645,7 @@ static void UNITTEST_msg_executer_response_timeout(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 12);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 1);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
@@ -620,6 +653,8 @@ static void UNITTEST_msg_executer_response_timeout(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 12);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 1);
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"RESPONSE\":{\"light_01_off\":{\"ERR\":\"TIMEOUT\"}}}");
 	}
 	UT_END_TEST_CASE()
 }
@@ -657,12 +692,13 @@ static void UNITTEST_msg_executer_execution_command(void) {
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
-		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, RESPONSE_RECEIVED_02);
+		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, "{\"RESPONSE\":{\"date\":\"06.08.1984 - 08:03:00\"}}" );
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 13);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 1);
 	}
 	UT_END_TEST_CASE()
 }
@@ -700,6 +736,7 @@ static void UNITTEST_msg_executer_invalid_command(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 14);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -737,6 +774,7 @@ static void UNITTEST_msg_executer_invalid_command_syntax(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 1);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -774,6 +812,7 @@ static void UNITTEST_msg_executer_command_file_not_existing(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -812,15 +851,19 @@ static void UNITTEST_msg_executer_process_report_list(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 15);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 3);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 4);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 1);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
-		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, RESPONSE_REPORT_EXECUTION_DATE);
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"REPORT\":{\"date\":\"06.08.1984 - 08:03:00\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[1], "{\"REPORT\":{\"rpt_date\":\"06.08.1984 - 08:03:00\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[2], "{\"REPORT\":{\"rpt_date\":\"06.08.1984 - 08:03:00\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[3], "{\"REPORT\":{\"light_03_off\":{\"ERR\":\"TIMEOUT\"}}}");
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 3);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 15);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 4);
 	}
 	UT_END_TEST_CASE()
 }
@@ -840,6 +883,7 @@ static void UNITTEST_msg_executer_new_message_while_processing_report(void) {
 		while (UNITTEST_TIMER_is_up(4500) == 0) {
 			mcu_task_controller_schedule();
 
+
 			if (ut_cli_command_received) {
 				ut_cli_command_received = 0;
 				CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL_send(RESPONSE_RECEIVED_02);
@@ -853,8 +897,8 @@ static void UNITTEST_msg_executer_new_message_while_processing_report(void) {
 				signal_send = 1;
 
 				COMMON_GENERIC_BUFFER_TYPE response_buffer = {
-					.length = 3,
-					.data = {0x02, 0x01, 0x00}
+					.length = 2,
+					.data = {0x04, 0x00}
 				};
 
 				RPI_HOST_RESPONSE_RECEIVED_SIGNAL_send(&response_buffer);
@@ -869,15 +913,20 @@ static void UNITTEST_msg_executer_new_message_while_processing_report(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 2);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 27);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 2);
-		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 4);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 5);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 1);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
-		UT_COMPARE_STRING(unittest_RESPONSE_RECEIVED, RESPONSE_REPORT_EXECUTION_DATE);
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"REPORT\":{\"date\":\"06.08.1984 - 08:03:00\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[1], "{\"RESPONSE\":{\"SET_OUTPUT_STATE\":{\"ERR\":\"OK\"}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[2], "{\"REPORT\":{\"rpt_date\":\"06.08.1984 - 08:03:00\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[3], "{\"REPORT\":{\"rpt_date\":\"06.08.1984 - 08:03:00\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[4], "{\"REPORT\":{\"light_01_off\":{\"ERR\":\"TIMEOUT\"}}}");
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 3);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 15);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 12);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 5);
 	}
 	UT_END_TEST_CASE()
 }
@@ -887,7 +936,6 @@ static void UNITTEST_msg_executer_new_message_while_processing_report(void) {
 int main(void) {
 
 	TRACER_DISABLE();
-	//TRACER_ENABLE();
 
 	CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_init();
 	CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_set_timeout(0);
@@ -915,6 +963,7 @@ int main(void) {
 		UT_MSG_EXECUTER_INVALID_COMMAND_SLOT_connect();
 		UT_MSG_EXECUTER_FILE_OPEN_FAILED_SLOT_connect();
 		UT_MSG_EXECUTER_INVALID_COMMAND_SYNTAX_SLOT_connect();
+		UT_MQTT_MESSAGE_TO_SEND_SLOT_connect();
 
 		UNITTEST_msg_executer_configure();
 		UNITTEST_msg_executer_message_received();

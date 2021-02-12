@@ -32,6 +32,7 @@
 
 #define MQTT_APPLICATION_IDLE_SCHEDULE_INTERVAL_MS			32
 #define MQTT_APPLICATION_CONNECT_INTERVAL_TIMEOUT_MS			5000
+#define MQTT_INTERFACE_MAX_MSG_LENGTH					1024
 
 //-------------------------------------------------------------------------
 

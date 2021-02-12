@@ -32,6 +32,9 @@
 #define UT_EQUATION_ERROR(value, reference)		printf(" - !! FAILED !! : %s = %d (expected: %d) in %s:%d\n", UT_GET_VAR_NAME(value), value, reference, __FILE__, __LINE__);
 #define UT_EQUATION_OK(value)				printf(" - OK : %s = %d\n", UT_GET_VAR_NAME(value), value);
 
+#define UT_GREATER_OK(value, reference)			printf(" - OK : %s = %d > %d\n", UT_GET_VAR_NAME(value), value, reference);
+#define UT_GREATER_ERROR(value, reference)		printf(" - !! FAILED !! : %s <= %d (expected: %d) in %s:%d\n", UT_GET_VAR_NAME(value), value, reference, __FILE__, __LINE__);
+
 #define UT_STRING_ERROR(value, reference)		printf(" - !! FAILED !! : \n%s = %s \nexpected: \n%s = %s\n in %s:%d\n", UT_GET_VAR_NAME(value), value, UT_GET_VAR_NAME(value), reference, __FILE__, __LINE__);
 #define UT_STRING_OK(value)				printf(" - OK : %s = %s\n", UT_GET_VAR_NAME(value), value);
 
@@ -73,11 +76,11 @@
 #define UT_CHECK_IS_GREATER(value, reference)		if (value > reference ) {											\
 								counter_TEST_PASSED += 1;										\
 								__ut_number_of_test_passed += 1;									\
-								UT_EQUATION_OK(value)											\
+								UT_GREATER_OK(value, reference)										\
 							} else {													\
 								counter_TEST_FAILED += 1;										\
 								__ut_number_of_test_failed += 1;									\
-								UT_EQUATION_ERROR(value, reference)									\
+								UT_GREATER_ERROR(value, reference)									\
 							}
 
 #define UT_CHECK_IS_EQUAL(value, reference)		if (reference != value) {											\

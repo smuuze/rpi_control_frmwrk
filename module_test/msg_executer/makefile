@@ -63,6 +63,13 @@ DRIVER_MODULE_CFG += CLK
 
 #-----------------------------------------------------------------------------
 
+PROTOCOL_CFG =
+#PROTOCOL_CFG += RPI_PROTOCOL_CLIENT
+#PROTOCOL_CFG += RPI_PROTOCOL_HOST
+PROTOCOL_CFG += JSON_PARSER
+
+#-----------------------------------------------------------------------------
+
 SENSOR_MODULE_CFG =
 #SENSOR_MODULE_CFG += LIGHT_SENSOR_GM5528
 
