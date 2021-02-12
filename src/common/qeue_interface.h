@@ -31,7 +31,7 @@ typedef struct {
 	volatile u8 element_counter;
 	volatile u8 mutex_id;
 	volatile MUTEX_TYPE mutex;
-	const u8 object_size;
+	const u16 object_size;
 	const u8 max_size;
 } QEUE_CONTEXT_TYPE;
 
