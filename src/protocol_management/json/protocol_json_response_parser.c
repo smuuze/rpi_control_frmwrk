@@ -252,10 +252,29 @@ static void json_parser_response_output_state(JSON_OPJECT_TYPE* p_json_object, C
  * @param p_json_object 
  * @param p_com_buffer 
  */
-void json_parser_response_set_output_state(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
+static void json_parser_response_set_output_state(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
 
 	json_parser_start_group(p_json_object, JSON_RESPONSE_PARSER_STRING_SET_OUTPUT_STATE);
 	json_parser_resposne_error_code(p_json_object, p_com_buffer);
+	json_parser_end_group(p_json_object);
+}
+
+/**
+ * @brief 
+ * 
+ * @param p_json_object 
+ * @param p_com_buffer 
+ */
+static void json_parser_response_bad_command(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
+
+	DEBUG_PASS("json_parser_append_rpi_cmd_response() - BAD_COMMAND");
+
+	char t_string[4];
+	common_tools_string_clear(t_string, 4);
+	common_tools_string_from_u8(t_string, CMD_HANDLER_GET_RESPONSE_COMMAND_CODE(p_com_buffer));
+
+	json_parser_start_group(p_json_object, t_string);
+	json_parser_add_string(p_json_object, "ERR", "BAD_COMMAND");
 	json_parser_end_group(p_json_object);
 }
 
@@ -282,7 +301,7 @@ void json_parser_append_rpi_cmd_response(JSON_OPJECT_TYPE* p_json_object, COMMON
 	switch (CMD_HANDLER_GET_RESPONSE_COMMAND_CODE(p_com_buffer)) {
 
 		default : 
-			json_parser_add_string(p_json_object, "ERROR", "BAD_COMMAND");
+			json_parser_response_bad_command(p_json_object, p_com_buffer);
 			break;
 
 		case RPI_COMMAND_GET_VERSION:

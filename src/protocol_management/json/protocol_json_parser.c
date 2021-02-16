@@ -93,6 +93,11 @@ static u8 json_parser_add_name(JSON_OPJECT_TYPE* p_json_object, const char* name
 
 void json_parser_initialize(JSON_OPJECT_TYPE* p_json_object) {
 
+	if (p_json_object->status == JSON_OBJECT_STATUS_ACTIVE) {
+		DEBUG_PASS("json_parser_initialize() - is already active");
+		return;
+	}
+
 	DEBUG_PASS("json_parser_initialize()");
 
 	common_tools_string_clear(p_json_object->string_buffer, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);
@@ -232,6 +237,12 @@ u16 json_parser_get_length(JSON_OPJECT_TYPE* p_json_object) {
 
 u8 json_parser_is_active(JSON_OPJECT_TYPE* p_json_object) {
 
-	DEBUG_TRACE_byte(p_json_object->status, "json_parser_copy_to()");
+	DEBUG_TRACE_byte(p_json_object->status, "json_parser_is_active()");
 	return p_json_object->status == JSON_OBJECT_STATUS_ACTIVE ? 1 : 0;
+}
+
+u8 json_parser_is_complete(JSON_OPJECT_TYPE* p_json_object) {
+
+	DEBUG_TRACE_byte(p_json_object->status, "json_parser_is_complete()");
+	return p_json_object->status == JSON_OBJECT_STATUS_COMPLETE ? 1 : 0;
 }

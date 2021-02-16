@@ -144,6 +144,14 @@ u16 json_parser_copy_to(JSON_OPJECT_TYPE* p_json_object, char* p_string, u16 max
  */
 u8 json_parser_is_active(JSON_OPJECT_TYPE* p_json_object);
 
+/**
+ * @brief Returns the complete status of the json-object
+ * 
+ * @param p_json_object 
+ * @return 1 if json-object is complete, otherwise 0
+ */
+u8 json_parser_is_complete(JSON_OPJECT_TYPE* p_json_object);
+
 // --------------------------------------------------------------------------------
 
 #define JSON_PARSER_CREATE_OBJECT(name)								\
@@ -200,6 +208,10 @@ u8 json_parser_is_active(JSON_OPJECT_TYPE* p_json_object);
 												\
 	u8 name##_is_active(void) {								\
 		return json_parser_is_active(&__##name##_json_object);				\
+	}											\
+												\
+	u8 name##_is_complete(void) {								\
+		return json_parser_is_complete(&__##name##_json_object);			\
 	}
 
 // --------------------------------------------------------------------------------
