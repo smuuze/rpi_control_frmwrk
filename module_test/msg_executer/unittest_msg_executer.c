@@ -50,15 +50,16 @@ UT_ACTIVATE()
 #define TEST_CASE_ID_PROCESS_REPORT_LIST			5
 #define TEST_CASE_ID_NEW_COMMAND_WHILE_REPORT			6
 #define TEST_CASE_ID_INVALID_COMMAND_SYNTAX			7
+#define TEST_CASE_ID_BAD_COMMAND_WHILE_REPORT			8
 
 // --------------------------------------------------------------------------------
 
 #define MAX_MSG_LENGTH						255
 #define UT_MQTT_MESSAGE_LIST_LENGTH				10
 
-#define TEST_CASE_MSG_RECEIVED_MSG_STRING			"light_01_off"
+#define TEST_CASE_MSG_RECEIVED_MSG_STRING			"cmd_light_01_off"
 #define TEST_CASE_MSG_RECEIVED_EXECUTION_STR			"date"
-#define TEST_CASE_MSG_RECEIVED_COMMAND_03_STR			"light_03_off"
+#define TEST_CASE_MSG_RECEIVED_COMMAND_03_STR			"cmd_light_05_off"
 
 #define UT_COMMAND_FILEPATH					"command_file.txt"
 #define UT_REPORT_FILE_PATH					"report_file.txt"
@@ -77,8 +78,11 @@ UT_ACTIVATE()
 
 static u8 ut_cli_command_received = 0;
 
+static COMMON_GENERIC_BUFFER_TYPE pending_pi_response;
+
 char unittest_MSG_RECEIVED[MAX_MSG_LENGTH];
 char unittest_RESPONSE_RECEIVED[MAX_MSG_LENGTH];
+char unittest_CLI_COMMAND_RECEIVED[MAX_MSG_LENGTH];
 
 char unittest_mqtt_message_to_send_list[UT_MQTT_MESSAGE_LIST_LENGTH][MAX_MSG_LENGTH];
 
@@ -106,6 +110,7 @@ u8 counter_MQTT_MESSAGE_TO_SEND = 0;
 static void unittest_reset_counter(void) {
 
 	memset(unittest_RESPONSE_RECEIVED, '\0', MAX_MSG_LENGTH);
+	memset(unittest_CLI_COMMAND_RECEIVED, '\0', MAX_MSG_LENGTH);
 
 	u8 i = 0;
 	for ( ; i < UT_MQTT_MESSAGE_LIST_LENGTH; i++) {
@@ -129,17 +134,9 @@ static void unittest_reset_counter(void) {
 	counter_CLI_COMMAND_RECEIVED = 0;
 	counter_FILE_OPEN_FAILED = 0;
 	counter_MQTT_MESSAGE_TO_SEND = 0;
-}
 
-static int preapre_line(char* line_to, char* line_from, int line_length, int max_line_length) {
-
-	if (line_length > max_line_length) {
-		line_length = max_line_length;
-	}
-
-	memset(line_to, '\0', max_line_length);
-	memcpy(line_to, line_from, line_length);
-	return line_length;
+	pending_pi_response.length = 0;
+	memcpy(pending_pi_response.data, 0, pending_pi_response.length);
 }
 
 // --------------------------------------------------------------------------------
@@ -283,20 +280,6 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 	DEBUG_TRACE_STR(p_file->path, "file_read_next_line() - Reading from file: ");
 	DEBUG_TRACE_byte(counter_FILE_READ_NEXT_LINE, "file_read_next_line - Reading from Line:");
 
-	static char line_is_comment[] = "#This is a comment line";
-	static char line_no_key_value_pair[] = "This line has no key value pair";
-	static char line_has_multiple_equals[] = "i=have=multiple=equals";
-	static char line_has_no_key[] = "=ihavenokey";
-	static char line_starts_with_tab[] = "\ttab_line=ok";
-	static char line_has_no_value[] = "ihavenovalue=";
-	static char line_starts_with_whitespace[] = " whitespace_line=ok";
-	static char line_light_off_command[] = " light_01_off=com:0B0401000000000000000000";
-	static char line_invalid_command[] = " light_03_off=com:";
-	static char line_get_date_command[] = " date=exe:date";
-	static char line_rpt_date_command[] = " rpt_date=exe:date";
-	static char line_rpt_version_command[] = " rpt_version=com:0101";
-	static char line_invalid_command_syntax[] = UT_CASE_INVALID_COMMAND_SYNTAX_COMMAND_FILE_LINE;
-
 	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_INVALID_COMMAND_SYNTAX) {
 
 		switch (counter_FILE_READ_NEXT_LINE) {
@@ -305,8 +288,7 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 				DEBUG_PASS("file_read_next_line() - END OF FILE");
 				return -1;
 
-			case 1:
-				return preapre_line(line_to, line_invalid_command_syntax, sizeof(line_invalid_command_syntax), max_line_length);
+			case 1: return common_tools_string_copy_string(line_to, "version=COM:0101", max_line_length);
 		}
 	}
 
@@ -314,23 +296,32 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 		counter_FILE_LINE_COMMAND_FILE += 1;
 
 		switch (counter_FILE_LINE_COMMAND_FILE) {
-			case 1:
-			case 2:
-			case 3: return 0;
-			case 4:
-			case 5:  return preapre_line(line_to, line_is_comment, sizeof(line_is_comment), max_line_length);
-			case 6:  return preapre_line(line_to, line_no_key_value_pair, sizeof(line_no_key_value_pair), max_line_length);
-			case 7:  return preapre_line(line_to, line_has_multiple_equals, sizeof(line_has_multiple_equals), max_line_length);
-			case 8:  return preapre_line(line_to, line_starts_with_tab, sizeof(line_starts_with_tab), max_line_length);
-			case 9:  return preapre_line(line_to, line_has_no_value, sizeof(line_has_no_value), max_line_length);
-			case 10: return preapre_line(line_to, line_has_no_key, sizeof(line_has_no_key), max_line_length);
-			case 11: return preapre_line(line_to, line_starts_with_whitespace, sizeof(line_starts_with_whitespace), max_line_length);
-			case 12: return preapre_line(line_to, line_light_off_command, sizeof(line_light_off_command), max_line_length);
-			case 13: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
-			case 14: return preapre_line(line_to, line_invalid_command, sizeof(line_invalid_command), max_line_length);
+
+			case 1:  return common_tools_string_copy_string(line_to, "", max_line_length);
+			case 2:  return common_tools_string_copy_string(line_to, "", max_line_length);
+			case 3:  return common_tools_string_copy_string(line_to, "", max_line_length);
+			case 4:  return common_tools_string_copy_string(line_to, "#This is a comment line", max_line_length);
+			case 5:  return common_tools_string_copy_string(line_to, "#This is a comment line", max_line_length);
+			case 6:  return common_tools_string_copy_string(line_to, "This line has no key value pair", max_line_length);
+			case 7:  return common_tools_string_copy_string(line_to, "This=line=has=multiple=equals", max_line_length);
+			case 8:  return common_tools_string_copy_string(line_to, "\t\tThis lien starts with tabs", max_line_length);
+			case 9:  return common_tools_string_copy_string(line_to, "This_line_has_no_value=", max_line_length);
+			case 10: return common_tools_string_copy_string(line_to, "=This_line_has_no_key", max_line_length);
+			case 11: return common_tools_string_copy_string(line_to, " starts_with_white_space=OK", max_line_length);
+
+			case 12: return common_tools_string_copy_string(line_to, "version=com:0101", max_line_length);
+			case 13: return common_tools_string_copy_string(line_to, "cmd_light_01_on=com:0B0401010000000000000000", max_line_length);
+			case 14: return common_tools_string_copy_string(line_to, "cmd_light_01_off=com:0B0401000000000000000000", max_line_length);
+			case 15: return common_tools_string_copy_string(line_to, "cmd_light_02_on=com:0B0402010000000000000000", max_line_length);
+			case 16: return common_tools_string_copy_string(line_to, "cmd_light_02_off=com:0B0402000000000000000000", max_line_length);
+			case 17: return common_tools_string_copy_string(line_to, "cmd_light_03_on=com:0B0403010000000000000000", max_line_length);
+			case 18: return common_tools_string_copy_string(line_to, "cmd_light_03_off=com:0B0403000000000000000000", max_line_length);
+			case 19: return common_tools_string_copy_string(line_to, "cmd_light_04_on=com:0B0404010000000000000000", max_line_length);
+			case 20: return common_tools_string_copy_string(line_to, "cmd_light_04_off=com:0B0404000000000000000000", max_line_length);
+			case 21: return common_tools_string_copy_string(line_to, "date=exe:date", max_line_length);
 
 			default:
-			case 15:
+			case 22:
 
 				DEBUG_PASS("file_read_next_line() - END OF FILE");
 
@@ -342,23 +333,32 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* line_to, u16 max_line_leng
 		counter_FILE_LINE_REPORT_FILE += 1;
 		
 		switch (counter_FILE_LINE_REPORT_FILE) {
-			case 1:
-			case 2:
-			case 3: return 0;
-			case 4:
-			case 5:  return preapre_line(line_to, line_is_comment, sizeof(line_is_comment), max_line_length);
-			case 6:  return preapre_line(line_to, line_no_key_value_pair, sizeof(line_no_key_value_pair), max_line_length);
-			case 7:  return preapre_line(line_to, line_has_multiple_equals, sizeof(line_has_multiple_equals), max_line_length);
-			case 8:  return preapre_line(line_to, line_starts_with_tab, sizeof(line_starts_with_tab), max_line_length);
-			case 9:  return preapre_line(line_to, line_has_no_value, sizeof(line_has_no_value), max_line_length);
-			case 10: return preapre_line(line_to, line_has_no_key, sizeof(line_has_no_key), max_line_length);
-			case 11: return preapre_line(line_to, line_get_date_command, sizeof(line_get_date_command), max_line_length);
-			case 12: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
-			case 13: return preapre_line(line_to, line_rpt_date_command, sizeof(line_rpt_date_command), max_line_length);
-			case 14: return preapre_line(line_to, line_rpt_version_command, sizeof(line_rpt_version_command), max_line_length);
+
+			case 1:  return common_tools_string_copy_string(line_to, "", max_line_length);
+			case 2:  return common_tools_string_copy_string(line_to, "", max_line_length);
+			case 3:  return common_tools_string_copy_string(line_to, "", max_line_length);
+			case 4:  return common_tools_string_copy_string(line_to, "#This is a comment line", max_line_length);
+			case 5:  return common_tools_string_copy_string(line_to, "#This is a comment line", max_line_length);
+			case 6:  return common_tools_string_copy_string(line_to, "This line has no key value pair", max_line_length);
+			case 7:  return common_tools_string_copy_string(line_to, "This=line=has=multiple=equals", max_line_length);
+			case 8:  return common_tools_string_copy_string(line_to, "\t\tThis lien starts with tabs", max_line_length);
+			case 9:  return common_tools_string_copy_string(line_to, "This_line_has_no_value=", max_line_length);
+			case 10: return common_tools_string_copy_string(line_to, "=This_line_has_no_key", max_line_length);
+			case 11: return common_tools_string_copy_string(line_to, " starts_with_white_space=OK", max_line_length);
+
+			case 12: return common_tools_string_copy_string(line_to, "TEMPERATURE=com:0107", max_line_length);
+			case 13: return common_tools_string_copy_string(line_to, "HUMIDITY=com:0108", max_line_length);
+			case 14: return common_tools_string_copy_string(line_to, "OUTPUT_STATE_1=com:020501", max_line_length);
+			case 15: return common_tools_string_copy_string(line_to, "OUTPUT_STATE_2=com:020502", max_line_length);
+			case 16: return common_tools_string_copy_string(line_to, "OUTPUT_STATE_3=com:020503", max_line_length);
+			case 17: return common_tools_string_copy_string(line_to, "OUTPUT_STATE_4=com:020504", max_line_length);
+			case 18: return common_tools_string_copy_string(line_to, "AMBILIGHT=com:010A", max_line_length);
+			case 19: return common_tools_string_copy_string(line_to, "SYSTEM_HOSTNAME=exe:hostname", max_line_length);
+			case 20: return common_tools_string_copy_string(line_to, "SYSTEM_DATE=exe:date", max_line_length);
+			case 21: return common_tools_string_copy_string(line_to, "SYSTEM_UPTIME=exe:uptime", max_line_length);
 
 			default:
-			case 15:
+			case 22:
 
 				DEBUG_PASS("file_read_next_line() - END OF FILE");
 
@@ -388,6 +388,9 @@ void unittest_RPI_HOST_COMMAND_RECEIVED_SLOT_CALLBACK(const void* p_argument) {
 	__UNUSED__ COMMON_GENERIC_BUFFER_TYPE* p_com_buffer = (COMMON_GENERIC_BUFFER_TYPE*)p_argument;
 
 	DEBUG_TRACE_N(p_com_buffer->length, p_com_buffer->data, "unittest_RPI_HOST_COMMAND_RECEIVED_SLOT_CALLBACK() - Command:");
+
+	pending_pi_response.length = p_com_buffer->length;
+	memcpy(pending_pi_response.data, p_com_buffer->data, p_com_buffer->length);
 }
 
 void unittest_MSG_EXECUTER_RESPONSE_RECEIVED_SLOT_CALLBACK(const void* p_argument) {
@@ -428,8 +431,8 @@ void unittest_CLI_EXECUTER_COMMAND_RECEIVED_SLOT_CALLBACK(const void* p_argument
 	counter_CLI_COMMAND_RECEIVED += 1;
 	DEBUG_TRACE_STR(response_msg, "unittest_CLI_EXECUTER_COMMAND_RECEIVED_SLOT_CALLBACK()");
 
-	memset(unittest_RESPONSE_RECEIVED, '\0', MAX_MSG_LENGTH);
-	memcpy(unittest_RESPONSE_RECEIVED, response_msg, strlen(response_msg));
+	memset(unittest_CLI_COMMAND_RECEIVED, '\0', MAX_MSG_LENGTH);
+	memcpy(unittest_CLI_COMMAND_RECEIVED, response_msg, strlen(response_msg));
 
 	ut_cli_command_received = 1;
 }
@@ -460,17 +463,17 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CFG_PARSER_CFG_COMPLETE_SIGNAL)
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_COMMAND_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_RESPONSE_RECEIVED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_RESPONSE_TIMEOUT_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(RPI_HOST_COMMAND_RECEIVED_SIGNAL, UT_RPI_HOST_COMMAND_RECEIVED_SLOT, unittest_RPI_HOST_COMMAND_RECEIVED_SLOT_CALLBACK)
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_EXECUTER_COMMAND_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_EXECUTER_COMMAND_NOT_FOUND_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_EXECUTER_COMMAND_RECEIVED_SIGNAL, UT_CLI_EXECUTER_COMMAND_RECEIVED_SLOT, unittest_CLI_EXECUTER_COMMAND_RECEIVED_SLOT_CALLBACK)
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_MESSAGE_RECEIVED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_MESSAGE_TO_SEND_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(MQTT_MESSAGE_TO_SEND_SIGNAL, UT_MQTT_MESSAGE_TO_SEND_SLOT, unittest_MQTT_MESSAGE_TO_SEND_SLOT_CALLBACK)
-
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_HOST_RESPONSE_TIMEOUT_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(RPI_HOST_COMMAND_RECEIVED_SIGNAL, UT_RPI_HOST_COMMAND_RECEIVED_SLOT, unittest_RPI_HOST_COMMAND_RECEIVED_SLOT_CALLBACK)
 
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(MSG_EXECUTER_FILE_OPEN_FAILED_SIGNAL, UT_MSG_EXECUTER_FILE_OPEN_FAILED_SLOT, unittest_MSG_EXECUTER_FILE_OPEN_FAILED_SLOT_CALLBACK)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(MSG_EXECUTER_RESPONSE_TIMEOUT_SIGNAL, UT_MSG_EXECUTER_RESPONSE_TIMEOUT_SLOT, unittest_MSG_EXECUTER_RESPONSE_TIMEOUT_SLOT_CALLBACK)
@@ -484,6 +487,108 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL()
 // --------------------------------------------------------------------------------
 
 TIME_MGMN_BUILD_STATIC_TIMER_U16(UNITTEST_TIMER)
+
+// --------------------------------------------------------------------------------
+
+static void ut_helper_generate_response(void) {
+
+	if (pending_pi_response.length != 0) {
+
+		DEBUG_TRACE_byte(pending_pi_response.data[0], "ut_helper_generate_response() - RPi response - Command:");
+
+		switch (pending_pi_response.data[1]) {
+			case 0x07 :
+
+				pending_pi_response.length = 6;
+				pending_pi_response.data[0] = 0x07;
+				pending_pi_response.data[1] = 0x00;
+				pending_pi_response.data[2] = 0x10;
+				pending_pi_response.data[3] = 0x10;
+				pending_pi_response.data[4] = 0x10;
+				pending_pi_response.data[5] = 0x10;
+				break;
+
+			case 0x08 :
+
+				pending_pi_response.length = 6;
+				pending_pi_response.data[0] = 0x08;
+				pending_pi_response.data[1] = 0x00;
+				pending_pi_response.data[2] = 0x30;
+				pending_pi_response.data[3] = 0x30;
+				pending_pi_response.data[4] = 0x30;
+				pending_pi_response.data[5] = 0x30;
+				break;
+
+			case 0x0A :
+
+				pending_pi_response.length = 6;
+				pending_pi_response.data[0] = 0x0A;
+				pending_pi_response.data[1] = 0x00;
+				pending_pi_response.data[2] = 0x40;
+				pending_pi_response.data[3] = 0x40;
+				pending_pi_response.data[4] = 0x40;
+				pending_pi_response.data[5] = 0x40;
+				break;
+
+			case 0x05 :
+
+				pending_pi_response.length = 0x0F;
+				pending_pi_response.data[0] = 0x05;
+				pending_pi_response.data[1] = 0x00;
+
+				//pending_pi_response.data[2] = 0x01;
+				pending_pi_response.data[3] = 0x01;
+
+				pending_pi_response.data[4] = 0x50;
+				pending_pi_response.data[5] = 0x50;
+				pending_pi_response.data[6] = 0x50;
+				pending_pi_response.data[7] = 0x50;
+
+				pending_pi_response.data[8] = 0;
+				pending_pi_response.data[9] = 0;
+				pending_pi_response.data[10] = 0;
+				pending_pi_response.data[11] = 0;
+
+				pending_pi_response.data[12] = 0;
+				pending_pi_response.data[13] = 0;
+				pending_pi_response.data[14] = 0;
+				pending_pi_response.data[15] = 0;
+				break;
+
+			default:
+				pending_pi_response.length = 2;
+				pending_pi_response.data[0] = pending_pi_response.data[1];
+				pending_pi_response.data[1] = 0;
+				break;
+		}
+
+		RPI_HOST_RESPONSE_RECEIVED_SIGNAL_send((const void*) &pending_pi_response);
+
+		pending_pi_response.length = 0;
+		memcpy(pending_pi_response.data, 0, pending_pi_response.length);
+
+		return;
+	}
+
+	if (common_tools_string_compare(unittest_CLI_COMMAND_RECEIVED, "uptime")) {
+		CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL_send("5 days, 10 hurs, 5 minutes, 6 seconds");
+	}
+
+	if (common_tools_string_compare(unittest_CLI_COMMAND_RECEIVED, "hostname")) {
+		if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_BAD_COMMAND_WHILE_REPORT) {
+			DEBUG_PASS("ut_helper_generate_response() - Send BAD_COMMAND signal - - - - - - - - - - - - - - - -");
+			CLI_EXECUTER_COMMAND_NOT_FOUND_SIGNAL_send(NULL);
+		} else {
+			CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL_send("UNITTEST");
+		}
+	}
+
+	if (common_tools_string_compare(unittest_CLI_COMMAND_RECEIVED, "date")) {
+		CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL_send("06.08.1984 - 08:03");
+	}	
+
+	common_tools_string_clear(unittest_CLI_COMMAND_RECEIVED, MAX_MSG_LENGTH);	
+}
 
 // --------------------------------------------------------------------------------
 
@@ -605,7 +710,7 @@ static void UNITTEST_msg_executer_message_received(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
-		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 12);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 14);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
@@ -614,7 +719,7 @@ static void UNITTEST_msg_executer_message_received(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 12);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 14);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
 		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 1);
 	}
@@ -643,7 +748,7 @@ static void UNITTEST_msg_executer_response_timeout(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
-		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 12);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 14);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 1);
@@ -651,10 +756,10 @@ static void UNITTEST_msg_executer_response_timeout(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 12);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 14);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
 		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 1);
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"RESPONSE\":{\"light_01_off\":{\"ERR\":\"TIMEOUT\"}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"RESPONSE\":{\"cmd_light_01_off\":{\"ERR\":\"TIMEOUT\"}}}");
 	}
 	UT_END_TEST_CASE()
 }
@@ -687,7 +792,7 @@ static void UNITTEST_msg_executer_execution_command(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
-		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 13);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 21);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
@@ -696,7 +801,7 @@ static void UNITTEST_msg_executer_execution_command(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 13);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 21);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
 		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 1);
 	}
@@ -725,7 +830,7 @@ static void UNITTEST_msg_executer_invalid_command(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
-		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 14);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 22);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
@@ -734,7 +839,7 @@ static void UNITTEST_msg_executer_invalid_command(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 14);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 22);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
 		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 0);
 	}
@@ -836,11 +941,7 @@ static void UNITTEST_msg_executer_process_report_list(void) {
 
 		while (UNITTEST_TIMER_is_up(6000) == 0) {
 			mcu_task_controller_schedule();
-
-			if (ut_cli_command_received) {
-				ut_cli_command_received = 0;
-				CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL_send(RESPONSE_RECEIVED_02);
-			}
+			ut_helper_generate_response();
 		}
 
 		UT_CHECK_IS_EQUAL(counter_FILE_SET_PATH, 0);
@@ -849,21 +950,27 @@ static void UNITTEST_msg_executer_process_report_list(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
-		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 15);
-		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 4);
-		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 22);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 7);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 10);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"REPORT\":{\"date\":\"06.08.1984 - 08:03:00\"}}");
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[1], "{\"REPORT\":{\"rpt_date\":\"06.08.1984 - 08:03:00\"}}");
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[2], "{\"REPORT\":{\"rpt_date\":\"06.08.1984 - 08:03:00\"}}");
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[3], "{\"REPORT\":{\"light_03_off\":{\"ERR\":\"TIMEOUT\"}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"REPORT\":{\"TEMPERATURE\":{\"ERR\":\"OK\",\"ACT\":16,\"MAX\":16,\"MIN\":16,\"MEAN\":16}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[1], "{\"REPORT\":{\"HUMIDITY\":{\"ERR\":\"OK\",\"ACT\":48,\"MAX\":48,\"MIN\":48,\"MEAN\":48}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[2], "{\"REPORT\":{\"OUTPUT_STATE_1\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[3], "{\"REPORT\":{\"OUTPUT_STATE_2\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[4], "{\"REPORT\":{\"OUTPUT_STATE_3\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[5], "{\"REPORT\":{\"OUTPUT_STATE_4\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[6], "{\"REPORT\":{\"AMBILIGHT\":{\"ERR\":\"OK\",\"ACT\":64,\"MAX\":64,\"MIN\":64,\"MEAN\":64}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[7], "{\"REPORT\":{\"SYSTEM_HOSTNAME\":\"UNITTEST\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[8], "{\"REPORT\":{\"SYSTEM_DATE\":\"06.08.1984 - 08:03\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[9], "{\"REPORT\":{\"SYSTEM_UPTIME\":\"5 days, 10 hurs, 5 minutes, 6 seconds\"}}");
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 3);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 15);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 22);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
-		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 4);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 10);
 	}
 	UT_END_TEST_CASE()
 }
@@ -878,30 +985,19 @@ static void UNITTEST_msg_executer_new_message_while_processing_report(void) {
 
 		UNITTEST_TIMER_start();
 
-		u8 signal_send = 0;
+		u8 command_send = 0;
 
 		while (UNITTEST_TIMER_is_up(4500) == 0) {
+
 			mcu_task_controller_schedule();
+			ut_helper_generate_response();
 
+			if (counter_COMMUNICATION_COMMAND_RECEIVED == 1 && command_send == 0) {
 
-			if (ut_cli_command_received) {
-				ut_cli_command_received = 0;
-				CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL_send(RESPONSE_RECEIVED_02);
+				DEBUG_PASS("UNITTEST_msg_executer_new_message_while_processing_report() - Sending Command - - - - - - - - - - - - ");
 
-				if (signal_send == 0) {
-					MQTT_MESSAGE_RECEIVED_SIGNAL_send(TEST_CASE_MSG_RECEIVED_MSG_STRING);
-				}
-			}
-
-			if (counter_COMMUNICATION_COMMAND_RECEIVED == 1 && signal_send == 0) {
-				signal_send = 1;
-
-				COMMON_GENERIC_BUFFER_TYPE response_buffer = {
-					.length = 2,
-					.data = {0x04, 0x00}
-				};
-
-				RPI_HOST_RESPONSE_RECEIVED_SIGNAL_send(&response_buffer);
+				command_send = 1;
+				MQTT_MESSAGE_RECEIVED_SIGNAL_send(TEST_CASE_MSG_RECEIVED_EXECUTION_STR);
 			}
 		}
 
@@ -911,22 +1007,74 @@ static void UNITTEST_msg_executer_new_message_while_processing_report(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 2);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 2);
 		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 2);
-		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 27);
-		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 2);
-		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 5);
-		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 43);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 7);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 11);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 0);
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"REPORT\":{\"date\":\"06.08.1984 - 08:03:00\"}}");
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[1], "{\"RESPONSE\":{\"SET_OUTPUT_STATE\":{\"ERR\":\"OK\"}}}");
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[2], "{\"REPORT\":{\"rpt_date\":\"06.08.1984 - 08:03:00\"}}");
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[3], "{\"REPORT\":{\"rpt_date\":\"06.08.1984 - 08:03:00\"}}");
-		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[4], "{\"REPORT\":{\"light_01_off\":{\"ERR\":\"TIMEOUT\"}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"REPORT\":{\"TEMPERATURE\":{\"ERR\":\"OK\",\"ACT\":16,\"MAX\":16,\"MIN\":16,\"MEAN\":16}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[1], "{\"RESPONSE\":{\"date\":\"06.08.1984 - 08:03\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[2], "{\"REPORT\":{\"HUMIDITY\":{\"ERR\":\"OK\",\"ACT\":48,\"MAX\":48,\"MIN\":48,\"MEAN\":48}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[3], "{\"REPORT\":{\"OUTPUT_STATE_1\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[4], "{\"REPORT\":{\"OUTPUT_STATE_2\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[5], "{\"REPORT\":{\"OUTPUT_STATE_3\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[6], "{\"REPORT\":{\"OUTPUT_STATE_4\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[7], "{\"REPORT\":{\"AMBILIGHT\":{\"ERR\":\"OK\",\"ACT\":64,\"MAX\":64,\"MIN\":64,\"MEAN\":64}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[8], "{\"REPORT\":{\"SYSTEM_HOSTNAME\":\"UNITTEST\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[9], "{\"REPORT\":{\"SYSTEM_DATE\":\"06.08.1984 - 08:03\"}}");
+		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 4);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 22);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 21);
+		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 11);
+	}
+	UT_END_TEST_CASE()
+}
+
+static void UNITTEST_msg_executer_bad_command_while_processing_report(void) {
+	
+	UT_START_TEST_CASE("MSG_EXECUTER_BAD_COMMAND_WHILE_PROCESSING_REPORT")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_BAD_COMMAND_WHILE_REPORT);
+
+		unittest_reset_counter();
+
+		UNITTEST_TIMER_start();
+
+		while (UNITTEST_TIMER_is_up(6500) == 0) {
+
+			mcu_task_controller_schedule();
+			ut_helper_generate_response();
+		}
+
+		UT_CHECK_IS_EQUAL(counter_FILE_SET_PATH, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 22);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 7);
+		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 10);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
+		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND, 1);
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[0], "{\"REPORT\":{\"TEMPERATURE\":{\"ERR\":\"OK\",\"ACT\":16,\"MAX\":16,\"MIN\":16,\"MEAN\":16}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[1], "{\"REPORT\":{\"HUMIDITY\":{\"ERR\":\"OK\",\"ACT\":48,\"MAX\":48,\"MIN\":48,\"MEAN\":48}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[2], "{\"REPORT\":{\"OUTPUT_STATE_1\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[3], "{\"REPORT\":{\"OUTPUT_STATE_2\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[4], "{\"REPORT\":{\"OUTPUT_STATE_3\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[5], "{\"REPORT\":{\"OUTPUT_STATE_4\":{\"ERR\":\"OK\",\"PIN_STATE\":\"ON\",\"ON_TIME_MS\":1347440720,\"DURATION_MS\":0,\"PERIOD_MS\":0}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[6], "{\"REPORT\":{\"AMBILIGHT\":{\"ERR\":\"OK\",\"ACT\":64,\"MAX\":64,\"MIN\":64,\"MEAN\":64}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[7], "{\"REPORT\":{\"SYSTEM_HOSTNAME\":{\"ERR\":\"BAD_COMMAND\"}}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[8], "{\"REPORT\":{\"SYSTEM_DATE\":\"06.08.1984 - 08:03\"}}");
+		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[9], "{\"REPORT\":{\"SYSTEM_UPTIME\":\"5 days, 10 hurs, 5 minutes, 6 seconds\"}}");
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 3);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 15);
-		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 12);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 22);
+		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 0);
-		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 5);
+		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 10);
 	}
 	UT_END_TEST_CASE()
 }
@@ -975,6 +1123,7 @@ int main(void) {
 		UNITTEST_msg_executer_command_file_not_existing();
 		UNITTEST_msg_executer_process_report_list();
 		UNITTEST_msg_executer_new_message_while_processing_report();
+		UNITTEST_msg_executer_bad_command_while_processing_report();
 	}
 	UT_END_TESTBENCH()
 

@@ -417,6 +417,44 @@ static void TEST_CASE_finish_response(void) {
 	UT_END_TEST_CASE()
 }
 
+static void TEST_CASE_active_and_complete(void) {
+
+	UT_START_TEST_CASE("Active and Complete")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_active(), 0);
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_complete(), 1);
+
+		UT_JASON_OBJECT_initialize();
+
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_active(), 1);
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_complete(), 0);
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 1);
+		UT_COMPARE_STRING(temp_string, "{");
+
+		UT_JASON_OBJECT_initialize();
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_active(), 1);
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_complete(), 0);
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 1);
+		UT_COMPARE_STRING(temp_string, "{");
+
+		UT_JASON_OBJECT_finish();
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_active(), 0);
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_complete(), 1);
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 2);
+		UT_COMPARE_STRING(temp_string, "{}");
+	}
+	UT_END_TEST_CASE()
+}
+
 // --------------------------------------------------------------------------------
 
 int main(void) {
@@ -443,6 +481,8 @@ int main(void) {
 		TEST_CASE_add_output_state_response();
 		TEST_CASE_add_hostname_response();
 		TEST_CASE_finish_response();
+
+		TEST_CASE_active_and_complete();
 	}
 	UT_END_TESTBENCH()
 
