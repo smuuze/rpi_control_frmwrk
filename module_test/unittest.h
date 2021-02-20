@@ -29,8 +29,8 @@
 
 // --------------------------------------------------------------------------------
 
-#define UT_EQUATION_ERROR(value, reference)		printf(" - !! FAILED !! : %s = %d (expected: %d) in %s:%d\n", UT_GET_VAR_NAME(value), value, reference, __FILE__, __LINE__);
-#define UT_EQUATION_OK(value)				printf(" - OK : %s = %d\n", UT_GET_VAR_NAME(value), value);
+#define UT_EQUATION_ERROR(value, reference)		printf(" - !! FAILED !! : %s = %ld (expected: %ld) in %s:%d\n", UT_GET_VAR_NAME(value), (long)value, (long)reference, __FILE__, __LINE__);
+#define UT_EQUATION_OK(value)				printf(" - OK : %s = %ld\n", UT_GET_VAR_NAME(value), (long)value);
 
 #define UT_GREATER_OK(value, reference)			printf(" - OK : %s = %d > %d\n", UT_GET_VAR_NAME(value), value, reference);
 #define UT_GREATER_ERROR(value, reference)		printf(" - !! FAILED !! : %s <= %d (expected: %d) in %s:%d\n", UT_GET_VAR_NAME(value), value, reference, __FILE__, __LINE__);

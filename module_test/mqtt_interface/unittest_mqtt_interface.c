@@ -422,6 +422,18 @@ static void UNITTEST_mqtt_interface_configure(void) {
 		CFG_FILE_PARSER_CFG_OBJECT_TYPE mqtt_unknown_cfg_obj 		= { .key = "MQTT_UNKNOWN"			, .value = "I am unknown"		};
 		CFG_FILE_PARSER_CFG_OBJECT_TYPE invalid_cfg_obj 		= { .key = "INVALID"				, .value = "I am invalid"		};
 
+		/*
+		 * THe MQTT-Interface module must not connect to the host
+		 * if it has not been configured!
+		 */
+
+		UNITTEST_TIMER_start();
+
+		while (UNITTEST_TIMER_is_up(250) == 0) {
+
+			mcu_task_controller_schedule();
+		}
+
 		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send((const void*)&mqtt_host_cfg_obj);
 		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send((const void*)&mqtt_topic_cfg_obj);
 		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send((const void*)&mqtt_client_id_cfg_obj);
@@ -432,10 +444,6 @@ static void UNITTEST_mqtt_interface_configure(void) {
 		CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send((const void*)&invalid_cfg_obj);
 
 		CFG_PARSER_CFG_COMPLETE_SIGNAL_send(NULL);
-
-		while (UNITTEST_TIMER_is_up(250) == 0) {
-			mcu_task_controller_schedule();
-		}
 
 		UT_CHECK_IS_EQUAL(counter_MQTT_CONFIGURE_HOST_ADDR_CALLBACK, 1);
 		UT_CHECK_IS_EQUAL(counter_MQTT_CONFIGURE_TOPIC_CALLBACK, 1);
