@@ -43,13 +43,15 @@ u32 local_rtc_timer_gettime_u32(void) {
 
 	if (clock_gettime(CLOCK_MONOTONIC, &time_spec) == 0) {
 
-		u32 milliseconds = (u32)(time_spec.tv_sec * 1e3);
+		u32 milliseconds_from_seconds = (u32)(time_spec.tv_sec * 1e3);
+		u32 milliseconds_from_nseconds = (u32)(time_spec.tv_nsec / 1e6);
 
 		DEBUG_TRACE_long(time_spec.tv_sec,  "local_rtc_timer_gettime_u32() - Seconds: ");
 		DEBUG_TRACE_long(time_spec.tv_nsec, "local_rtc_timer_gettime_u32() - Nano-Seconds: ");
-		DEBUG_TRACE_long(milliseconds,      "local_rtc_timer_gettime_u32() - Milli-Seconds: ");
+		DEBUG_TRACE_long(milliseconds_from_seconds,  "local_rtc_timer_gettime_u32() - Milli-Seconds (from seconds): ");
+		DEBUG_TRACE_long(milliseconds_from_nseconds, "local_rtc_timer_gettime_u32() - Milli-Seconds (from Nano-Seconds): ");
 
-		return (milliseconds + (u32)(time_spec.tv_nsec / 1e6)); //time_spec.tv_nsec / 1000 / 1000;
+		return (milliseconds_from_seconds + (u32)(time_spec.tv_nsec / 1e6)); //time_spec.tv_nsec / 1000 / 1000;
 
 	} else {
 		return 0;
