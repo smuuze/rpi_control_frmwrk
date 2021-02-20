@@ -52,6 +52,8 @@ typedef int16_t i16;
 
 typedef int32_t i32;
 
+typedef uint64_t u64;
+
 
 typedef uint8_t ux8;
 
@@ -59,6 +61,7 @@ typedef uint16_t ux16;
 
 typedef uint32_t ux32;
 
+typedef int64_t i64;
 //-----------------------------------------------------------------------------
 
 #ifndef __UNUSED__
