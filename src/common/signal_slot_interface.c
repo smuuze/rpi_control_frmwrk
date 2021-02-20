@@ -54,7 +54,7 @@ void signal_slot_init(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_contex
  */
 void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_context, const void* p_arg) {
 
-	if (p_signal_context->timeout_ms != 0 && time_mgmnt_istimeup_u16(p_signal_context->send_timeout_ms, p_signal_context->timeout_ms) == 0) {
+	if (p_signal_context->timeout_ms != 0 && time_mgmnt_istimeup_raw_u16(p_signal_context->send_timeout_ms, p_signal_context->timeout_ms) == 0) {
 		DEBUG_PASS("signal_slot_send() - Timeout stil active - A'int sending signal !!! ---");
 		return;
 	}
