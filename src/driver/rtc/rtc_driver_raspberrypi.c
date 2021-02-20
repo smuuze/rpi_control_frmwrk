@@ -42,7 +42,15 @@ u32 local_rtc_timer_gettime_u32(void) {
 	struct timespec time_spec;
 
 	if (clock_gettime(CLOCK_MONOTONIC, &time_spec) == 0) {
-		return ((u32)(time_spec.tv_sec * 1e3) + (u32)(time_spec.tv_nsec / 1e6)); //time_spec.tv_nsec / 1000 / 1000;
+
+		u32 milliseconds = (u32)(time_spec.tv_sec * 1e3);
+
+		DEBUG_TRACE_long(time_spec.tv_sec,  "local_rtc_timer_gettime_u32() - Seconds: ");
+		DEBUG_TRACE_long(time_spec.tv_nsec, "local_rtc_timer_gettime_u32() - Nano-Seconds: ");
+		DEBUG_TRACE_long(milliseconds,      "local_rtc_timer_gettime_u32() - Milli-Seconds: ");
+
+		return (milliseconds + (u32)(time_spec.tv_nsec / 1e6)); //time_spec.tv_nsec / 1000 / 1000;
+
 	} else {
 		return 0;
 	}
