@@ -111,3 +111,16 @@ jobs:
       run: make unittest_debug
     - name: run unittest
       run: make run
+
+  unittest_signal_slot_interface:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/signal_slot_interface
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make unittest_debug
+    - name: run unittest
+      run: make run
