@@ -172,6 +172,7 @@ u8 module_test_case_simple_signal_sending(void) {
 u8 module_test_case_chained_signal_sending(void) {
 	
 	signal_rx_counter = 0;
+	
 
 	MAIN_TEST_SIGNAL_CHAIN_1_send();
 
