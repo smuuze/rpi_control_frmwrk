@@ -1,27 +1,37 @@
-/*This file has been prepared for Doxygen automatic documentation generation.*/
-/*! \file *********************************************************************
+/*! 
+ * --------------------------------------------------------------------------------
  *
+ * \file	unittest_log_interface.c
  * \brief
+ * \author	sebastian lesse
  *
- * \author               sebastian lesse
- *
- *****************************************************************************/
+ * --------------------------------------------------------------------------------
+ */
 
-#include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
+#define TRACER_OFF
 
-#include <sys/time.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+// --------------------------------------------------------------------------------
+
+#include "config.h"
+
+// --------------------------------------------------------------------------------
+
+#include "tracer.h"
+
+// --------------------------------------------------------------------------------
 
 #include "common/signal_slot_interface.h"
+#include "common/common_types.h"
+
+#include "ui/console/ui_console.h"
+
 #include "time_management/time_management.h"
 
-//---------- Implementation of Traces -----------------------------------------
+// --------------------------------------------------------------------------------
 
-#define TRACER_ON
-#include "tracer.h"
+#include "../unittest.h"
+
+UT_ACTIVATE()
 
 //---------- Type Definitions -------------------------------------------------
 
