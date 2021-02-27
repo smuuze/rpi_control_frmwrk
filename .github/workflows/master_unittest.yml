@@ -1,4 +1,4 @@
-name: UNITTEST MASTER BRANCH
+name: MASTER Unittest
 
 on:
   push:
