@@ -30,8 +30,8 @@ typedef struct SIGNAL_SLOT_INTERFACE_SLOT_CONTEXT {
  *
  */
 typedef struct SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT {
-	u16 send_timeout_ms;
-	u16 timeout_ms;
+	u16 time_reference_ms;
+	u16 time_interval_ms;
 	SIGNAL_SLOT_INTERFACE_SLOT_CONTEXT_TYPE* p_first_element;
 } SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE;
 
@@ -40,8 +40,8 @@ typedef struct SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT {
 #define SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(signal_name)						\
 													\
 	static SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE _##signal_name##_context = {			\
-		.send_timeout_ms = 0,									\
-		.timeout_ms = SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS,				\
+		.time_reference_ms = 0,									\
+		.time_interval_ms = 0,									\
 		.p_first_element = 0									\
 	};												\
 													\
@@ -54,7 +54,7 @@ typedef struct SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT {
 	}												\
 													\
 	void signal_name##_set_timeout(u16 timeout_ms) {						\
-		_##signal_name##_context.timeout_ms = timeout_ms;					\
+		_##signal_name##_context.time_interval_ms = timeout_ms;					\
 	}												\
 													\
 	void signal_name##_connect(SIGNAL_SLOT_INTERFACE_SLOT_CONTEXT_TYPE* p_slot_context) {		\
