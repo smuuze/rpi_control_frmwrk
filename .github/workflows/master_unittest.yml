@@ -1,4 +1,8 @@
+<<<<<<< HEAD:.github/workflows/automatic_unittest.yml
 name: UNITTEST MASTER Branch
+=======
+name: MASTER Unittest
+>>>>>>> master:.github/workflows/master_unittest.yml
 
 on:
   push:
