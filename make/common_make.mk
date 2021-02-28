@@ -63,6 +63,10 @@ DEFS  += -D HAS_QEUE_INTERFACE=1
 CSRCS += $(COMMON_INC_PATH)/qeue_interface.c
 endif
 
+ifneq '' '$(findstring EXCEPTION,$(COMMON_MODULES))'
+DEFS  += -D EXCEPTION_HANDLING_AVAILABLE=1
+endif
+
 # Projekt-Spezifische Quelldateien --------------------------------------
 
 CSRCS += $(APP_PATH)/specific.c
@@ -195,6 +199,7 @@ include $(MAKE_PATH)/make_protocol.mk
 # ---- MANAGEMENT MODULES -----------------------------------------------------------------
 	
 ifneq '' '$(findstring POWER,$(MANAGEMENT_MODULE_CFG))'
+	DEFS  += -D HAS_POWER_MANAGEMENT_MODULE=1
 	POWER_MANAGEMENT_PATH = $(APP_PATH)/power_management
 	CSRCS += $(POWER_MANAGEMENT_PATH)/power_management.c
 endif

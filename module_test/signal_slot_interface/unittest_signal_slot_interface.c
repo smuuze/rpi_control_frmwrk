@@ -1,234 +1,234 @@
 /*! 
  * --------------------------------------------------------------------------------
  *
- * \file	unittest_log_interface.c
+ * \file	unittest_signal_slot_interface.c
  * \brief
  * \author	sebastian lesse
  *
- * --------------------------------------------------------------------------------
+ * ----------------------------------------------------------------------------
  */
 
 #define TRACER_OFF
 
-// --------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 #include "config.h"
 
-// --------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 #include "tracer.h"
 
-// --------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 #include "common/signal_slot_interface.h"
 #include "common/common_types.h"
-
-#include "ui/console/ui_console.h"
+#include "common/exception_interface.h"
 
 #include "time_management/time_management.h"
 
-// --------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 #include "../unittest.h"
 
 UT_ACTIVATE()
 
-//---------- Type Definitions -------------------------------------------------
+//-----------------------------------------------------------------------------
 
-#define TEST_POWER_UP_TIME_MS		15
-
-#define TEST_TIMEOUT_POWER_UP_MS	50
-
-//---------- Test-Case Prototype ----------------------------------------------
-
-u8 module_test_case_simple_signal_sending(void);
-u8 module_test_case_chained_signal_sending(void);
-u8 module_test_case_signal_send_timeout(void);
-u8 module_test_case_signal_send_timeout_over(void);
+#define TEST_CASE_ID_INITIALIZE					0
+#define TEST_CASE_ID_SEND_SIGNAL_OK				1
+#define TEST_CASE_ID_DONT_SEND_SIGNAL_IN_SIGNAL_CONTEXT		2
+#define TEST_CASE_ID_DONT_SEND_SIGNAL_BEFORE_SIGNAL_TIMEOUT	3
 
 //-----------------------------------------------------------------------------
 
-void module_test_signal_slot_test_callback_1(void);
-void module_test_signal_slot_test_callback_2(void);
-void module_test_signal_slot_test_callback_3(void);
-void module_test_signal_slot_test_callback_4(void);
-void module_test_signal_slot_test_callback_5(void);
-void module_test_signal_slot_test_callback_6(void);
+static u8 counter_CASE_SEND_OK_SIGNAL = 0;
+static u8 counter_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL = 0;
+static u8 counter_CASE_SEND_OK_WITH_NULL_ARGUMENT_SIGNAL = 0;
+static u8 counter_CASE_SEND_OK_WITH_VALID_ARGUMENT_SIGNAL = 0;
+static u8 counter_SIGNAL_CONTEXT_EXCEPTION = 0;
+static u8 counter_SIGNAL_PAUSE_EXCEPTION = 0;
 
-void module_test_signal_slot_chain_1(void);
-void module_test_signal_slot_chain_2(void);
-void module_test_signal_slot_chain_3(void);
-void module_test_signal_slot_chain_4(void);
-void module_test_signal_slot_chain_5(void);
-void module_test_signal_slot_chain_6(void);
+//-----------------------------------------------------------------------------
 
-//---------- Static Data ------------------------------------------------------
+static void unittest_reset_counter(void) {
+	counter_CASE_SEND_OK_SIGNAL = 0;
+	counter_CASE_SEND_OK_WITH_NULL_ARGUMENT_SIGNAL = 0;
+	counter_CASE_SEND_OK_WITH_VALID_ARGUMENT_SIGNAL = 0;
+	counter_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL = 0;
+	counter_SIGNAL_CONTEXT_EXCEPTION = 0;
+	counter_SIGNAL_PAUSE_EXCEPTION = 0;
+}
+
+//-----------------------------------------------------------------------------
+
+static void ut_signal_send_ok_slot_callback(const void* p_argument);
+
+static void ut_signal_send_in_signal_context_slot_callback(const void* p_argument);
+
+//-----------------------------------------------------------------------------
 
 TIME_MGMN_BUILD_STATIC_TIMER_U16(TIMEOUT_TIMER)
 
-SIGNAL_CREATE(MAIN_TEST_SIGNAL)
-
-SLOT_CREATE(MAIN_TEST_SIGNAL, MAIN_TEST_SLOT_1, module_test_signal_slot_test_callback_1)
-SLOT_CREATE(MAIN_TEST_SIGNAL, MAIN_TEST_SLOT_2, module_test_signal_slot_test_callback_2)
-SLOT_CREATE(MAIN_TEST_SIGNAL, MAIN_TEST_SLOT_3, module_test_signal_slot_test_callback_3)
-SLOT_CREATE(MAIN_TEST_SIGNAL, MAIN_TEST_SLOT_4, module_test_signal_slot_test_callback_4)
-SLOT_CREATE(MAIN_TEST_SIGNAL, MAIN_TEST_SLOT_5, module_test_signal_slot_test_callback_5)
-SLOT_CREATE(MAIN_TEST_SIGNAL, MAIN_TEST_SLOT_6, module_test_signal_slot_test_callback_6)
-
-SIGNAL_CREATE(MAIN_TEST_SIGNAL_CHAIN_1);
-SIGNAL_CREATE(MAIN_TEST_SIGNAL_CHAIN_2);
-SIGNAL_CREATE(MAIN_TEST_SIGNAL_CHAIN_3);
-SIGNAL_CREATE(MAIN_TEST_SIGNAL_CHAIN_4);
-SIGNAL_CREATE(MAIN_TEST_SIGNAL_CHAIN_5);
-SIGNAL_CREATE(MAIN_TEST_SIGNAL_CHAIN_6);
-
-SLOT_CREATE(MAIN_TEST_SIGNAL_CHAIN_1, MAIN_TEST_SLOT_CHAIN_1, module_test_signal_slot_chain_1)
-SLOT_CREATE(MAIN_TEST_SIGNAL_CHAIN_2, MAIN_TEST_SLOT_CHAIN_2, module_test_signal_slot_chain_2)
-SLOT_CREATE(MAIN_TEST_SIGNAL_CHAIN_3, MAIN_TEST_SLOT_CHAIN_3, module_test_signal_slot_chain_3)
-SLOT_CREATE(MAIN_TEST_SIGNAL_CHAIN_4, MAIN_TEST_SLOT_CHAIN_4, module_test_signal_slot_chain_4)
-SLOT_CREATE(MAIN_TEST_SIGNAL_CHAIN_5, MAIN_TEST_SLOT_CHAIN_5, module_test_signal_slot_chain_5)
-SLOT_CREATE(MAIN_TEST_SIGNAL_CHAIN_6, MAIN_TEST_SLOT_CHAIN_6, module_test_signal_slot_chain_6)
-
-//---------- Function ---------------------------------------------------------
-
-static u8 signal_rx_counter = 0;
-
-int main( void ) {
-
-	DEBUG_PASS("--------------------------------------------------");
-	DEBUG_PASS("main() - Hello Module Test - Signal-Slot-Interface");
-	DEBUG_PASS("--------------------------------------------------\n");
-
-	MAIN_TEST_SIGNAL_init();
-	
-	MAIN_TEST_SLOT_6_connect();
-	MAIN_TEST_SLOT_5_connect();
-	MAIN_TEST_SLOT_3_connect();
-	MAIN_TEST_SLOT_4_connect();
-	MAIN_TEST_SLOT_1_connect();
-	MAIN_TEST_SLOT_2_connect();
-
-	MAIN_TEST_SIGNAL_CHAIN_1_init();
-	MAIN_TEST_SIGNAL_CHAIN_2_init();
-	MAIN_TEST_SIGNAL_CHAIN_3_init();
-	MAIN_TEST_SIGNAL_CHAIN_4_init();
-	MAIN_TEST_SIGNAL_CHAIN_5_init();
-	MAIN_TEST_SIGNAL_CHAIN_6_init();
-
-	MAIN_TEST_SLOT_CHAIN_1_connect();
-	MAIN_TEST_SLOT_CHAIN_2_connect();
-	MAIN_TEST_SLOT_CHAIN_3_connect();
-	MAIN_TEST_SLOT_CHAIN_4_connect();
-	MAIN_TEST_SLOT_CHAIN_5_connect();
-	MAIN_TEST_SLOT_CHAIN_6_connect();
+static unittest_wait_ms(u16 waittime_ms) {
 
 	TIMEOUT_TIMER_start();
-	while (TIMEOUT_TIMER_is_up(3000) == 0) { }
+	while (TIMEOUT_TIMER_is_up(waittime_ms) == 0) {
 
-	if (module_test_case_simple_signal_sending() != 0) {
-		return 1;
 	}
-
-	TIMEOUT_TIMER_start();
-	while (TIMEOUT_TIMER_is_up(1000) == 0) { }
-
-	if (module_test_case_chained_signal_sending() != 0) {
-		return 2;
-	}
-
-	TIMEOUT_TIMER_start();
-	while (TIMEOUT_TIMER_is_up(1000) == 0) { }
-
-	if (module_test_case_signal_send_timeout() != 0) {
-		return 3;
-	}
-
-	TIMEOUT_TIMER_start();
-	while (TIMEOUT_TIMER_is_up(1000) == 0) { }
-
-	if (module_test_case_signal_send_timeout_over() != 0) {
-		return 4;
-	}
-	
-	return 0;
-	
 }
 
-//---------- Test-Case Implementation ---------------------------------------------
+//-----------------------------------------------------------------------------
 
-u8 module_test_case_simple_signal_sending(void) {
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(UT_CASE_SEND_OK_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(UT_CASE_SEND_OK_SIGNAL, UT_CASE_SEND_OK_SLOT, ut_signal_send_ok_slot_callback)
+
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(UT_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(UT_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL, UT_CASE_SEND_IN_SIGNAL_CONTEXT_SLOT, ut_signal_send_in_signal_context_slot_callback)
+
+//-----------------------------------------------------------------------------
+
+EXCEPTION_HANDLE(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_EXCEPTION, DEBUG_PASS("SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_EXCEPTION"); counter_SIGNAL_CONTEXT_EXCEPTION += 1; )
+EXCEPTION_HANDLE(SIGNAL_SLOT_INTERFACE_SIGNAL_PAUSE_EXCEPTION, DEBUG_PASS("SIGNAL_SLOT_INTERFACE_SIGNAL_PAUSE_EXCEPTION"); counter_SIGNAL_PAUSE_EXCEPTION += 1; )
+
+//-----------------------------------------------------------------------------
+
+static void UNITTEST_signal_init(void) {
 	
-	signal_rx_counter = 0;
+	UT_START_TEST_CASE("Signal Init")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_INITIALIZE);
+		unittest_reset_counter();
 
-	MAIN_TEST_SIGNAL_send();
+		UT_CASE_SEND_OK_SIGNAL_init();
+		UT_CASE_SEND_OK_SLOT_connect();
 
-	if (signal_rx_counter != 6) {
-		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_simple_signal_sending() Incorrect value of Signal-RX-Counter (Simple Signal sending)");
+		UT_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL_init();
+		UT_CASE_SEND_IN_SIGNAL_CONTEXT_SLOT_connect();
+
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_WITH_NULL_ARGUMENT_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_WITH_VALID_ARGUMENT_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_SIGNAL_CONTEXT_EXCEPTION, 0);
+		UT_CHECK_IS_EQUAL(counter_SIGNAL_PAUSE_EXCEPTION, 0);
 	}
-
-	return 0;
+	UT_END_TEST_CASE()
 }
 
-u8 module_test_case_chained_signal_sending(void) {
+static void UNITTEST_signal_send_ok(void) {
 	
-	signal_rx_counter = 0;
-	
+	UT_START_TEST_CASE("Signal Send OK")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_SEND_SIGNAL_OK);
+		unittest_reset_counter();
 
-	MAIN_TEST_SIGNAL_CHAIN_1_send();
+		u8 test_byte = 8;
 
-	if (signal_rx_counter != 6) {
-		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_chained_signal_sending() Incorrect value of Signal-RX-Counter (Chained signal sending)");
-		return 1;
+		unittest_wait_ms(6);
+		UT_CASE_SEND_OK_SIGNAL_send(NULL);
+
+		unittest_wait_ms(6);
+		UT_CASE_SEND_OK_SIGNAL_send((const void*) test_byte);
+
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_SIGNAL, 2);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_WITH_NULL_ARGUMENT_SIGNAL, 1);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_WITH_VALID_ARGUMENT_SIGNAL, 1);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_SIGNAL_CONTEXT_EXCEPTION, 0);
+		UT_CHECK_IS_EQUAL(counter_SIGNAL_PAUSE_EXCEPTION, 0);
 	}
-
-	return 0;
+	UT_END_TEST_CASE()
 }
 
-u8 module_test_case_signal_send_timeout(void) {
+static void UNITTEST_signal_send_in_signal_context(void) {
 	
-	signal_rx_counter = 0;
+	UT_START_TEST_CASE("Avoid Sending Signals in Signal-Context")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_SEND_SIGNAL_OK);
+		unittest_reset_counter();
 
-	MAIN_TEST_SIGNAL_send();
-	MAIN_TEST_SIGNAL_send();
-	MAIN_TEST_SIGNAL_send();
-	MAIN_TEST_SIGNAL_send();
-	MAIN_TEST_SIGNAL_send();
-	MAIN_TEST_SIGNAL_send();
+		u32 test_variable = 8;
 
-	if (signal_rx_counter != 6) {
-		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_signal_send_timeout() Incorrect value of Signal-RX-Counter (Signal Send Timeout)");
-		return 1;
+		UT_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL_send(NULL);
+		unittest_wait_ms(6);
+		UT_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL_send((const void*) test_variable);
+
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_WITH_NULL_ARGUMENT_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_WITH_VALID_ARGUMENT_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL, 2);
+		UT_CHECK_IS_EQUAL(counter_SIGNAL_CONTEXT_EXCEPTION, 4);
+		UT_CHECK_IS_EQUAL(counter_SIGNAL_PAUSE_EXCEPTION, 0);
 	}
-
-	return 0;
+	UT_END_TEST_CASE()
 }
 
-u8 module_test_case_signal_send_timeout_over(void) {
+static void UNITTEST_signal_respect_send_timeout(void) {
+	
+	UT_START_TEST_CASE("Respect Signal-Send-Timeout")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_SEND_SIGNAL_OK);
+		unittest_reset_counter();
 
-	MAIN_TEST_SIGNAL_send();
+		u32 test_variable = 8;
 
-	if (signal_rx_counter != 12) {
-		DEBUG_TRACE_byte(signal_rx_counter, "module_test_case_signal_send_timeout_over() Incorrect value of Signal-RX-Counter (Signal Send Timeout over)");
-		return 1;
+		unittest_wait_ms(6);
+		UT_CASE_SEND_OK_SIGNAL_send(NULL);
+		UT_CASE_SEND_OK_SIGNAL_send((const void*) test_variable);
+
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_SIGNAL, 1);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_WITH_NULL_ARGUMENT_SIGNAL, 1);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_WITH_VALID_ARGUMENT_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL, 0);
+		UT_CHECK_IS_EQUAL(counter_SIGNAL_CONTEXT_EXCEPTION, 0);
+		UT_CHECK_IS_EQUAL(counter_SIGNAL_PAUSE_EXCEPTION, 1);
 	}
-
-	return 0;
+	UT_END_TEST_CASE()
 }
 
+// --------------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------------
+int main(void) {
 
-void module_test_signal_slot_test_callback_1(void) { DEBUG_PASS("module_test_signal_slot_test_callback_1() - Signal Received"); signal_rx_counter += 1; }
-void module_test_signal_slot_test_callback_2(void) { DEBUG_PASS("module_test_signal_slot_test_callback_2() - Signal Received"); signal_rx_counter += 1; }
-void module_test_signal_slot_test_callback_3(void) { DEBUG_PASS("module_test_signal_slot_test_callback_3() - Signal Received"); signal_rx_counter += 1; }
-void module_test_signal_slot_test_callback_4(void) { DEBUG_PASS("module_test_signal_slot_test_callback_4() - Signal Received"); signal_rx_counter += 1; }
-void module_test_signal_slot_test_callback_5(void) { DEBUG_PASS("module_test_signal_slot_test_callback_5() - Signal Received"); signal_rx_counter += 1; }
-void module_test_signal_slot_test_callback_6(void) { DEBUG_PASS("module_test_signal_slot_test_callback_6() - Signal Received"); signal_rx_counter += 1; }
+	//TRACER_DISABLE();
 
-void module_test_signal_slot_chain_1(void) { DEBUG_PASS("module_test_signal_slot_chain_1() - Signal Received"); signal_rx_counter += 1; MAIN_TEST_SIGNAL_CHAIN_2_send(); }
-void module_test_signal_slot_chain_2(void) { DEBUG_PASS("module_test_signal_slot_chain_2() - Signal Received"); signal_rx_counter += 1; MAIN_TEST_SIGNAL_CHAIN_3_send(); }
-void module_test_signal_slot_chain_3(void) { DEBUG_PASS("module_test_signal_slot_chain_3() - Signal Received"); signal_rx_counter += 1; MAIN_TEST_SIGNAL_CHAIN_4_send(); }
-void module_test_signal_slot_chain_4(void) { DEBUG_PASS("module_test_signal_slot_chain_4() - Signal Received"); signal_rx_counter += 1; MAIN_TEST_SIGNAL_CHAIN_5_send(); }
-void module_test_signal_slot_chain_5(void) { DEBUG_PASS("module_test_signal_slot_chain_5() - Signal Received"); signal_rx_counter += 1; MAIN_TEST_SIGNAL_CHAIN_6_send(); }
-void module_test_signal_slot_chain_6(void) { DEBUG_PASS("module_test_signal_slot_chain_6() - Signal Received"); signal_rx_counter += 1; }
+	UT_START_TESTBENCH("Welcome the the UNITTEST for Signal-Slot-Interface v1.0")
+	{
+		UNITTEST_signal_init();
+		UNITTEST_signal_send_ok();
+		UNITTEST_signal_send_in_signal_context();
+		UNITTEST_signal_send_ok();
+		UNITTEST_signal_respect_send_timeout();
+		UNITTEST_signal_send_ok();
+	}
+	UT_END_TESTBENCH()
 
+	return UT_TEST_RESULT();
+}
+
+// --------------------------------------------------------------------------------
+
+static void ut_signal_send_ok_slot_callback(const void* p_argument) {
+	DEBUG_PASS("ut_signal_send_ok_slot_callback()");
+	counter_CASE_SEND_OK_SIGNAL += 1;
+
+	if (p_argument == NULL) {
+		counter_CASE_SEND_OK_WITH_NULL_ARGUMENT_SIGNAL += 1;
+	} else {
+		counter_CASE_SEND_OK_WITH_VALID_ARGUMENT_SIGNAL += 1;
+	}
+}
+
+static void ut_signal_send_in_signal_context_slot_callback(const void* p_argument) {
+
+	DEBUG_PASS("ut_signal_send_in_signal_context_slot_callback()");
+
+	counter_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL += 1;
+
+	unittest_wait_ms(6);
+
+	u32 test_variable = 8;
+
+	UT_CASE_SEND_OK_SIGNAL_send(NULL);
+	UT_CASE_SEND_OK_SIGNAL_send((const void*) test_variable);
+}
