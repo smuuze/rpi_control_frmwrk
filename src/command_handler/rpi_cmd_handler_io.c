@@ -1,28 +1,36 @@
-
- /*
-  * \@file	command_handler/rpi_cmd_handler_io.c
-  * \author	sebastian lesse
-  */
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	rpi_cmd_handler_io.c
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
 #define TRACER_OFF
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
-#include "config.h"  // immer als erstes einbinden!
+#include "config.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "tracer.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "command_management/command_handler_interface.h"
 #include "command_management/command_buffer_interface.h"
 #include "command_management/answer_buffer_interface.h"
 #include "command_management/protocol_interface.h"
 
+// --------------------------------------------------------------------------------
+
 #include "common/local_context.h"
 #include "common/signal_slot_interface.h"
+
+// --------------------------------------------------------------------------------
 
 #include "io_management/io_input_controller.h"
 #include "io_management/io_output_controller.h"

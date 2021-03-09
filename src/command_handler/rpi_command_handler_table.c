@@ -1,25 +1,31 @@
-
- /*
-  * \@file	command_handler/rpi_command_handler_table.c
-  * \author	sebastian lesse
-  */
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	rpi_command_handler_table.c
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
 #define TRACER_OFF
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
-#include "config.h"  // immer als erstes einbinden!
+#include "config.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "tracer.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "command_management/command_handler_interface.h"
 #include "command_management/command_buffer_interface.h"
 #include "command_management/answer_buffer_interface.h"
 #include "command_management/protocol_interface.h"
+
+// --------------------------------------------------------------------------------
 
 #ifdef RPI_CMD_HANDLER_IO_AVAILABLE
 #include "io_management/io_input_controller.h"
@@ -40,7 +46,7 @@
 
 #include "command_handler/rpi_command_handler.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 COMMAND_TABLE_INTERFACE rpi_cmd_handler_table[] = {
 	{RPI_COMMAND_GET_VERSION , &rpi_cmd_get_version},
@@ -69,7 +75,7 @@ COMMAND_TABLE_INTERFACE rpi_cmd_handler_table[] = {
 	#endif
 };
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 u8 rpi_cmd_handler_table_get_size(void) {
 	return (sizeof(rpi_cmd_handler_table) / sizeof(COMMAND_TABLE_INTERFACE));

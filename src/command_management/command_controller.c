@@ -1,20 +1,24 @@
-
- /*
-  * @file	command_management/command_controller.c
-  * @author	sebastian lesse
-  */
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	command_controller.c
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
 #define TRACER_OFF
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
-#include "config.h"  // immer als erstes einbinden!
+#include "config.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "tracer.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "command_controller.h"
 #include "command_handler_interface.h"
@@ -23,11 +27,11 @@
 #include "mcu_task_management/mcu_task_controller.h"
 #include "mcu_task_management/mcu_task_interface.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #define COMMAND_CONTROLLER_SCHEDULE_INTERVAL_MS		5
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 /*!
  *
@@ -54,7 +58,7 @@ static void command_controller_task_run(void);
  */
 static void command_controller_task_background_run(void);
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 static MCU_TASK_INTERFACE cmd_mcu_task = {
 
@@ -73,20 +77,20 @@ static MCU_TASK_INTERFACE cmd_mcu_task = {
 	0						// next-task
 };
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 static COMMAND_HANDLER_INTERFACE* _first_cmd_handler = 0;
 static COMMAND_HANDLER_INTERFACE* _act_cmd_handler = 0;
 static COMMAND_HANDLER_INTERFACE* _last_cmd_handler = 0;
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 void command_controller_init(void) {
 	DEBUG_PASS("command_controller_init()");
 	mcu_task_controller_register_task(&cmd_mcu_task);
 }
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 static void command_controller_task_init(void) {
 	DEBUG_PASS("command_controller_task_init()");

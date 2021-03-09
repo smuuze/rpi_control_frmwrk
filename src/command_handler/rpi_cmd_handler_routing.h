@@ -1,15 +1,19 @@
-
- /*
-  * \@file	command_handler/rpi_cmd_handler_routing.h
-  * \author	sebastian lesse
-  */
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	rpi_cmd_handler_routing.h
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
 #ifndef _RPI_CMD_HANDLER_ROUTING_H_
 #define _RPI_CMD_HANDLER_ROUTING_H_
 
 //-----------------------------------------------------------------------------
 
-#include "config.h"  // immer als erstes einbinden!
+#include "config.h"
 
 //-----------------------------------------------------------------------------
 
