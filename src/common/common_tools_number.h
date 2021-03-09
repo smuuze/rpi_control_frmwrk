@@ -1,16 +1,15 @@
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	commn_tools_number.h
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
+
 #ifndef COMMON_TOOLS_NUMBER_H_
 #define COMMON_TOOLS_NUMBER_H_
-
-/**
- * @file 	common_tools_number.h
- * @author 	sebastian lesse (sebastian lesse)
- * @brief 	Converts a number to a byte-array and vice versa
- * @version 	1.0
- * @date 	2021-02-08
- * 
- * @copyright 	Copyright (c) 2021
- * 
- */
 
 // --------------------------------------------------------------------------------
 

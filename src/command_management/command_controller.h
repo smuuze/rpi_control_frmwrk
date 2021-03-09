@@ -1,8 +1,12 @@
-
- /*
-  * @file	command_management/command_controller.h
-  * @author	sebastian lesse
-  */
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	command_controller.h
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
 #ifndef _COMMAND_CONTROLLER_H_
 #define _COMMAND_CONTROLLER_H_

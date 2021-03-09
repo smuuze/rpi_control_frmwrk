@@ -1,20 +1,24 @@
-
- /*
-  * \@file	command_handler/rpi_command_handler.c
-  * \author	sebastian lesse
-  */
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	rpi_command_handler.c
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
 #define TRACER_OFF
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
-#include "config.h"  // immer als erstes einbinden!
+#include "config.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "tracer.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "command_management/command_handler_interface.h"
 #include "command_management/command_buffer_interface.h"
@@ -32,12 +36,12 @@
 
 #include "command_handler/rpi_command_handler.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 extern COMMAND_TABLE_INTERFACE rpi_cmd_handler_table[];
 extern u8 rpi_cmd_handler_table_get_size(void);
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 static COMMAND_HANDLER_INTERFACE rpi_command_handler = {
 	&rpi_cmd_handler_init, 			
@@ -52,21 +56,21 @@ static COMMAND_HANDLER_INTERFACE rpi_command_handler = {
 	0 					
 };
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 static void rpi_command_handler_slot_cmd_received_CALLBACK(const void* p_arg) {
 	rpi_cmd_handler_set_request((PROTOCOL_INTERFACE*)p_arg);
 }
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(RPI_PROTOCOL_COMMAND_RECEIVED_SIGNAL, RPI_CMD_HANDLER_SLOT_CMD_RECEIVED, rpi_command_handler_slot_cmd_received_CALLBACK)
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 static PROTOCOL_INTERFACE* p_act_protocol;
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 void rpi_cmd_handler_init(void) {
 

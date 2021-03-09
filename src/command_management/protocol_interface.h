@@ -1,10 +1,25 @@
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	protocol_interface.h
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
+
 #ifndef _PROTOCOL_INTERFACE_H_
 #define _PROTOCOL_INTERFACE_H_
+
+// --------------------------------------------------------------------------------
 
 #include "command_buffer_interface.h"
 #include "answer_buffer_interface.h"
 
+// --------------------------------------------------------------------------------
+
 typedef void (*PROTOCOL_INTERFACE_SET_FINISHED_CALLBACK)	(u8 err_code);
+
+// --------------------------------------------------------------------------------
 
 typedef struct PROTOCOL_INTERFACE {
 
@@ -19,5 +34,6 @@ typedef struct PROTOCOL_INTERFACE {
 
 } PROTOCOL_INTERFACE;
 
+// --------------------------------------------------------------------------------
 
 #endif // _PROTOCOL_INTERFACE_H_

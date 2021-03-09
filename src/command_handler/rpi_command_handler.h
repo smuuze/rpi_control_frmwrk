@@ -1,16 +1,15 @@
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	rpi_command_handler.h
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
+
 #ifndef RPI_COMMAND_HANDLER_H_
 #define RPI_COMMAND_HANDLER_H_
-
-/**
- * @file 	rpi_command_handler.h
- * @author 	sebastian lesse (sebastian lesse)
- * @brief 
- * @version 	1.0
- * @date 	2021-02-05
- * 
- * @copyright 	Copyright (c) 2021
- * 
- */
 
 // --------------------------------------------------------------------------------
 

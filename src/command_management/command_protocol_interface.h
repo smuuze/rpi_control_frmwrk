@@ -1,14 +1,28 @@
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	command_protocol_interface.h
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
+
 #ifndef _COMMAND_PROTOCOL_INTERFACE_H_
 #define _COMMAND_PROTOCOL_INTERFACE_H_
+
+// --------------------------------------------------------------------------------
 
 #include "command_buffer_interface.h"
 #include "answer_buffer_interface.h"
 
+// --------------------------------------------------------------------------------
 
 typedef void (*CMD_PROTOCOL_INTERFACE_INITIALIZATION_CALLBACK)	(void);
 typedef u8 (*CMD_PROTOCOL_INTERFACE_REQUESTED_CALLBACK)		(void);
 typedef u8 (*CMD_PROTOCOL_INTERFACE_GET_COMMAND_CODE_CALLBACK)	(void);
 typedef void (*CMD_PROTOCOL_INTERFACE_SET_ERROR_CODE_CALLBACK)	(u8);
+
+// --------------------------------------------------------------------------------
 
 /*!
  *
@@ -30,7 +44,6 @@ typedef enum CMD_PROTOCOL_HW_INTERFACE {
 	HW_INTERFACE_I2C_1  //!< HW_INTERFACE_I2C_1
 } CMD_PROTOCOL_HW_INTERFACE;
 
-
 /*!
  *
  */
@@ -50,5 +63,7 @@ typedef struct COMMAND_PROTOCOL_INTERFACE {
 	struct COMMAND_PROTOCOL_INTERFACE*			next;
 
 } COMMAND_PROTOCOL_INTERFACE;
+
+// --------------------------------------------------------------------------------
 
 #endif // _COMMAND_PROTOCOL_INTERFACE_H_

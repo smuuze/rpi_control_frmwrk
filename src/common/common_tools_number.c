@@ -1,12 +1,11 @@
-/**
- * @file 	common_tools_number.c
- * @author 	sebastian lesse (sebastian lesse)
- * @brief 	Converts a number to a byte-array and vice versa
- * @version 	1.0
- * @date 	2021-02-08
- * 
- * @copyright 	Copyright (c) 2021
- * 
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	commn_tools_number.c
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
  */
 
 #define TRACER_OFF
