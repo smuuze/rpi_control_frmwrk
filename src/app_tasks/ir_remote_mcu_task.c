@@ -8,10 +8,10 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 #ifdef TRACER_ON
-#pragma __WARNING__TRACES_ENABLED__WARNING__
+#warning __WARNING__TRACER_ENABLED__WARNING__
 #endif
 
 // --------------------------------------------------------------------------------

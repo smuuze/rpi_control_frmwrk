@@ -1,5 +1,20 @@
+/**
+ * --------------------------------------------------------------------------------------
+ * @file 	signal_slot_interface.c
+ * @author 	sebastian lesse (sebastian lesse)
+ * @brief 
+ * @version 	1.0
+ * @date 	2021-03-21
+ * 
+ * @copyright 	Copyright (c) 2021
+ * --------------------------------------------------------------------------------------
+ */
 
 #define TRACER_OFF
+
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
 
 // --------------------------------------------------------------------------------------
 

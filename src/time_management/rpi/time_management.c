@@ -11,6 +11,11 @@
 //---------- Implementation of Traces -----------------------------------------
 
 #define TRACER_ON
+
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
+
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
