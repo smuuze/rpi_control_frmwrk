@@ -65,6 +65,16 @@
 
 #define IR_COMMAND_PROGRAM_GUIDE	0x1F
 #define IR_COMMAND_HOME			0x20
+#define IR_COMMAND_CHANNEL_LIST		0x21
+#define IR_COMMAND_SOURCE		0x22
+
+#define IR_COMMAND_AUDIO_LANGUAGE	0x23
+#define IR_COMMAND_SUBTITLE_LANGUAGE	0x24
+#define IR_COMMAND_EJECT		0x25
+#define IR_COMMAND_TOP_MENU		0x26
+#define IR_COMMAND_POP_UP_MENU		0x27
+#define IR_COMMAND_NEXT			0x28
+#define IR_COMMAND_PREVIOUS		0x29
 
 // --------------------------------------------------------------------------------
 

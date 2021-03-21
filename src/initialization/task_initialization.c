@@ -17,6 +17,10 @@
 
 //-----------------------------------------------------------------------------
 
+#include "app_tasks/ir_remote_mcu_task.h"
+
+//-----------------------------------------------------------------------------
+
 #ifndef config_HAS_LED_MATRIX
 #define config_HAS_LED_MATRIX 0
 #endif
@@ -216,28 +220,6 @@ __UNUSED__ static MCU_TASK_INTERFACE pca9670_task = {
 
 //-----------------------------------------------------------------------------
 
-#if defined (HAS_APP_TASK_IR_REMOTE) && (HAS_APP_TASK_IR_REMOTE) == 1
-#include "app_tasks/ir_remote_mcu_task.h"
-static MCU_TASK_INTERFACE ir_remote_task = {
-
-	0, 						// u8 identifier,
-	0, 						// u16 new_run_timeout,
-	0, 						// u16 last_run_time,
-	&ir_remote_task_init, 				// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
-	&ir_remote_task_get_schedule_interval,		// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
-	&ir_remote_task_get_state, 			// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
-	&ir_remote_task_run, 				// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
-	&ir_remote_task_background_run,			// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
-	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
-	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
-	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
-	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
-	0						// next-task
-};
-#endif
-
-//-----------------------------------------------------------------------------
-
 #if defined (HAS_APP_TASK_COPRO_ROUTING) && (HAS_APP_TASK_COPRO_ROUTING) == 1
 #include "app_tasks/copro_routing_mcu_task.h"
 static MCU_TASK_INTERFACE copro_routing_task = {
@@ -285,7 +267,7 @@ void task_initialization(void) {
 	#endif
 
 	#if defined (HAS_APP_TASK_IR_REMOTE) && (HAS_APP_TASK_IR_REMOTE) == 1
-	mcu_task_controller_register_task(&ir_remote_task);
+	ir_remote_app_task_init();
 	#endif
 
 	#if config_HAS_LED_MATRIX == 1

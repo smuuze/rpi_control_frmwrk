@@ -1,8 +1,13 @@
-/*! 
+/**
  * --------------------------------------------------------------------------------
  *
- * \file	command_handler/rpi_command_handler_ir_remote.c
- * \author	sebastian lesse
+ * @file 	rpi_command_handler_ir_remote.c
+ * @author 	sebastian lesse (sebastian lesse)
+ * @brief 
+ * @version 	1.0
+ * @date 	2021-03-20
+ * 
+ * @copyright 	Copyright (c) 2021
  *
  * --------------------------------------------------------------------------------
  */
@@ -31,6 +36,7 @@
 #include "command_handler/rpi_command_handler_ir_remote.h"
 #include "command_handler/rpi_cmd_handler_ir_remote_samsung.h"
 #include "command_handler/rpi_cmd_handler_ir_remote_jvc.h"
+#include "command_handler/rpi_cmd_handler_ir_remote_sony.h"
 
 // --------------------------------------------------------------------------------
 
@@ -69,6 +75,10 @@ u8 rpi_cmd_handler_ir_remote(PROTOCOL_INTERFACE* p_protocol) {
 
 		#ifdef RPI_CMD_HANDLER_IR_REMOTE_JVC_AVAILABLE
 		case IR_MANUFACTOR_JVC :	err_code = rpi_cmd_handler_ir_remote_jvc(device, command);
+		#endif
+
+		#ifdef RPI_CMD_HANDLER_IR_REMOTE_SONY_AVAILABLE
+		case IR_MANUFACTOR_SONY :	err_code = rpi_cmd_handler_ir_remote_sony(device, command);
 		#endif
 
 	}

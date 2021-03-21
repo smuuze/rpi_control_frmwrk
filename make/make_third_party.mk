@@ -10,3 +10,9 @@ ifneq '' '$(findstring IR_PROTOCOL_JVC,$(THIRD_PARTY_MODULES))'
 	CSRCS += $(APP_PATH)/3rdparty/ir_protocol/ir_protocol_jvc.c
 	CSRCS += $(APP_PATH)/3rdparty/ir_protocol/ir_protocol_jvc_commands.c
 endif
+
+ifneq '' '$(findstring IR_PROTOCOL_SONY,$(THIRD_PARTY_MODULES))'
+	DEFS += -D HAS_IR_PROTOCOL_SONY=1
+	CSRCS += $(APP_PATH)/3rdparty/ir_protocol/ir_protocol_sony.c
+	CSRCS += $(APP_PATH)/3rdparty/ir_protocol/ir_protocol_sony_commands.c
+endif
