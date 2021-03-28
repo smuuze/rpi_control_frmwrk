@@ -118,7 +118,12 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(RPI_TRX_TIMER)
 
 BUILD_MODULE_STATUS_FAST_VOLATILE(RPI_STATUS, 2)
 
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SIGNAL_CMD_RECEIVED)
+//-----------------------------------------------------------------------------
+
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_PROTOCOL_LEAVE_SLEEP_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_PROTOCOL_ENTER_SLEEP_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_PROTOCOL_INVALID_COMMAND_RECEIVED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_PROTOCOL_COMMAND_RECEIVED_SIGNAL)
 
 //-----------------------------------------------------------------------------
 
@@ -316,7 +321,8 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 	RPI_STATUS_set(RPI_STATUS_COMMAND_PENDING);
 
 	//rpi_cmd_handler_set_request(&rpi_protocol_i2c_interface);
-	SIGNAL_CMD_RECEIVED_send(&rpi_protocol_i2c_interface);
+	RPI_PROTOCOL_COMMAND_RECEIVED_SIGNAL_send(&rpi_protocol_i2c_interface);
+	//SIGNAL_CMD_RECEIVED_send(&rpi_protocol_i2c_interface);
 
 	EXIT_rpi_protocol_receive_command_ON_SUCCESS :
 	{
@@ -411,7 +417,11 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 	RPI_COMMAND_BUFFER_init();
 	RPI_ANSWER_BUFFER_init();
 
-	SIGNAL_CMD_RECEIVED_init();
+	RPI_PROTOCOL_COMMAND_RECEIVED_SIGNAL_init();
+	RPI_PROTOCOL_LEAVE_SLEEP_SIGNAL_init();
+	RPI_PROTOCOL_ENTER_SLEEP_SIGNAL_init();
+	RPI_PROTOCOL_INVALID_COMMAND_RECEIVED_SIGNAL_init();
+	//SIGNAL_CMD_RECEIVED_init();
 
 	p_com_driver = p_driver;
 	
@@ -494,6 +504,8 @@ void rpi_protocol_task_run(void) {
 
 			actual_state = RPI_STATE_WAIT_FOR_REQUEST_RX;
 			actual_task_state = MCU_TASK_RUNNING;
+
+			RPI_PROTOCOL_LEAVE_SLEEP_SIGNAL_send(NULL);
 			RPI_OP_TIMER_start(); // operation_timeout_ms = i_system.time.now_u16();
 
 			// no break;
@@ -628,6 +640,8 @@ void rpi_protocol_task_run(void) {
 		case RPI_STATE_WAIT_FOR_RELEASE :
 
 			DEBUG_PASS("rpi_protocol_task_run() - change state - RPI_STATE_WAIT_FOR_RELEASE -> RPI_STATE_SLEEP");
+
+			RPI_PROTOCOL_ENTER_SLEEP_SIGNAL_send(NULL);
 
 			actual_state = RPI_STATE_SLEEP;
 			actual_task_state = MCU_TASK_SLEEPING;
