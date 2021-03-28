@@ -110,6 +110,28 @@ typedef enum {
 
 //-----------------------------------------------------------------------------
 
+/*!
+ *
+ */
+static void rpi_protocol_task_init(void);
+
+/*!
+ *
+ */
+static u16 rpi_protocol_task_get_schedule_interval(void);
+
+/*!
+ *
+ */
+static MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void);
+
+/*!
+ *
+ */
+static void rpi_protocol_task_run(void);
+
+//-----------------------------------------------------------------------------
+
 BUILD_LOCAL_MSG_BUFFER( , RPI_COMMAND_BUFFER, 32)
 BUILD_LOCAL_MSG_BUFFER( , RPI_ANSWER_BUFFER,  32)
 
@@ -202,6 +224,25 @@ static PROTOCOL_INTERFACE rpi_protocol_i2c_interface = {
 	&_set_finished_i2c,
 	&rpi_cmd_handler_command_buffer,
 	&rpi_cmd_handler_answer_buffer
+};
+
+//-----------------------------------------------------------------------------
+
+static MCU_TASK_INTERFACE rpi_protocol_task = {
+
+	0, 						// u8 identifier,
+	0, 						// u16 new_run_timeout,
+	0, 						// u16 last_run_time,
+	&rpi_protocol_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
+	&rpi_protocol_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
+	&rpi_protocol_task_get_state, 			// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
+	&rpi_protocol_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
+	0,						// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
+	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
+	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
+	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
+	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
+	0						// next-task
 };
 
 //-----------------------------------------------------------------------------
@@ -437,19 +478,21 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
 
 	actual_task_state = MCU_TASK_SLEEPING;
 	actual_state = RPI_STATE_SLEEP;
-	
 
+	DEBUG_PASS("rpi_protocol_init() - I2C - REGISTER TASK");
+	mcu_task_controller_register_task(&rpi_protocol_task);
+	
 	DEBUG_PASS("rpi_protocol_init() - I2C - FINISH");
 }
 
-void rpi_protocol_task_init(void) {
+static void rpi_protocol_task_init(void) {
 
 	DEBUG_PASS("rpi_protocol_task_init()");
 
 	// only for debugging --- PROG_MISO_drive_low();
 }
 
-u16 rpi_protocol_task_get_schedule_interval(void) {
+static u16 rpi_protocol_task_get_schedule_interval(void) {
 	if (actual_task_state != MCU_TASK_SLEEPING) {
 		return 0;
 	} else {
@@ -457,7 +500,7 @@ u16 rpi_protocol_task_get_schedule_interval(void) {
 	}
 }
 
-MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
+static MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 
 	if (p_com_driver == 0) {
 		return MCU_TASK_SLEEPING;
@@ -473,7 +516,7 @@ MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 	return actual_task_state;
 }
 
-void rpi_protocol_task_run(void) {
+static void rpi_protocol_task_run(void) {
 
 	#ifdef TRACES_ENABLED
 	if (actual_task_state != RPI_STATE_SLEEP) {
