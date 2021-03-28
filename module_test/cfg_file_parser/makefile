@@ -33,6 +33,13 @@ CSRCS += unittest_cfg_file_parser.c
 
 #-----------------------------------------------------------------------------
 
+COMMON_MODULES =
+#COMMON_MODULES += QEUE
+#COMMON_MODULES += DATETIME
+COMMON_MODULES += STRING
+
+#-----------------------------------------------------------------------------
+
 APP_TASK_CFG = 
 #APP_TASK_CFG += EVENT
 #APP_TASK_CFG += EVENT

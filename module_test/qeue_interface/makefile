@@ -26,11 +26,17 @@ MCU = UNITTEST
 #-----------------------------------------------------------------------------
 
 CSRCS += unittest_qeue_interface.c
-CSRCS += $(APP_PATH)/common/qeue_interface.c
 
 #-----------------------------------------------------------------------------
 
 #HOST_INTERFACE_TYPE = SPI
+
+#-----------------------------------------------------------------------------
+
+COMMON_MODULES =
+COMMON_MODULES += QEUE
+#COMMON_MODULES += DATETIME
+COMMON_MODULES += STRING
 
 #-----------------------------------------------------------------------------
 
