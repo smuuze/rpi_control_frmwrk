@@ -2,7 +2,7 @@
 
  *****************************************************************************/
 
-#define TRACER_ON
+#define TRACER_OFF
 
 #ifdef TRACER_ON
 #warning __WARNING__TRACER_ENABLED__WARNING__
@@ -125,7 +125,9 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 
 		switch (p_configuration->time_interval) {
 
-			default: /* no break */
+			default: 
+				DEBUG_TRACE_byte(p_configuration->time_interval, "timer1_driver_configure() - INTERVAL UNSUPPORTED !!!");
+				/* no break */
 
 			case TIMER_TIME_INTERVAL_250ms :
 				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_250ms");
@@ -142,7 +144,7 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 				break;
 
 			case TIMER_TIME_INTERVAL_600us :
-				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_560us");
+				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_600us");
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
 				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_NO_PRESCALER;
 				OCRA_backup = 4200;
@@ -204,7 +206,9 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 
 		switch (p_configuration->frequency) {
 
-			default: break;
+			default: 
+				DEBUG_TRACE_byte(p_configuration->frequency, "timer1_driver_configure() - FREQUENCY UNSUPPORTED !!!");
+				break;
 
 			case TIMER_FREQUENCY_36kHz:
 				DEBUG_PASS("timer1_driver_configure() - TIMER_FREQUENCY_36kHz");
@@ -218,6 +222,11 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 				OCRA_backup = 97;
 				break;
 
+			case TIMER_FREQUENCY_40kHz :
+				DEBUG_PASS("timer1_driver_configure() - TIMER_FREQUENCY_40kHz");
+				OCR0A_backup = 91;
+				break;
+
 			case TIMER_FREQUENCY_42kHz :
 				DEBUG_PASS("timer1_driver_configure() - TIMER_FREQUENCY_42kHz");
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
@@ -228,6 +237,7 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 	}
 
 	if (p_configuration->irq_callback != 0) {
+		DEBUG_PASS("timer0_driver_configure() - IRQ callback set");
 		p_irq_callback = p_configuration->irq_callback;
 	} else {
 		p_irq_callback = 0;

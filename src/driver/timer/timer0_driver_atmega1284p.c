@@ -2,7 +2,7 @@
 
  *****************************************************************************/
 
-#define TRACER_ON
+#define TRACER_OFF
 
 #ifdef TRACER_ON
 #warning __WARNING__TRACER_ENABLED__WARNING__
@@ -106,7 +106,9 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 
 	switch (p_configuration->frequency) {
 
-		default: /* no break */
+		default: 
+			DEBUG_TRACE_byte(p_configuration->frequency, "timer0_driver_configure() - FREQUENCY UNSUPPORTED !!!");
+			/* no break */
 
 		case TIMER_FREQUENCY_36kHz:
 			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_36kHz");
@@ -124,7 +126,7 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 			break;
 
 		case TIMER_FREQUENCY_40kHz :
-			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_42kHz");
+			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_40kHz");
 			OCR0A_backup = 91;
 			break;
 
@@ -137,18 +139,25 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 	TIMSK0_backup |= TIMER0_TIMSK0_IE_COMPARE_MATCH_A;
 
 	switch (p_configuration->mode) {
+
+		default:
+			DEBUG_TRACE_byte(p_configuration->mode, "timer0_driver_configure() - MODE UNSUPPORTED !!!");
+
 		case TIMER_MODE_TIMER :
+			DEBUG_PASS("timer0_driver_configure() - TIMER_MODE_TIMER");
 			TCCR0A_backup  = TIMER0_TCCR0A_COM0A0 | TIMER0_TCCR0A_WGM1 | TIMER0_TCCR0A_WGM0;
 			TCCR0B_backup |= TIMER0_TCCR0B_WGM2;
 			break;
 
 		case TIMER_MODE_FREQUENCY:
+			DEBUG_PASS("timer0_driver_configure() - TIMER_MODE_FREQUENCY");
 			TCCR0A_backup = TIMER0_TCCR0A_COM0A0 | TIMER0_TCCR0A_WGM1;// | TIMER0_TCCR0A_WGM0;
 			TCCR0B_backup = TIMER0_CLOCK_SOURCE_CLK_IO;// | TIMER0_TCCR0B_WGM2;
 			break;
 	}
 
 	if (p_configuration->irq_callback != 0) {
+		DEBUG_PASS("timer0_driver_configure() - IRQ callback set");
 		p_irq_callback = p_configuration->irq_callback;
 	} else {
 		p_irq_callback = 0;
