@@ -2,7 +2,11 @@
 
  *****************************************************************************/
 
-#define TRACER_OFF
+#define TRACER_ON
+
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -117,6 +121,11 @@ void timer0_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 		case TIMER_FREQUENCY_38kHz :
 			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_38kHz");
 			OCR0A_backup = 94;
+			break;
+
+		case TIMER_FREQUENCY_40kHz :
+			DEBUG_PASS("timer0_driver_configure() - TIMER_FREQUENCY_42kHz");
+			OCR0A_backup = 91;
 			break;
 
 		case TIMER_FREQUENCY_42kHz :

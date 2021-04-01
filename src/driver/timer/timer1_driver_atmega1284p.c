@@ -2,7 +2,11 @@
 
  *****************************************************************************/
 
-#define TRACER_OFF
+#define TRACER_ON
+
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -135,6 +139,14 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO_BY_64;
 				OCRA_backup = 115;
 				interval_time_us = 1000;
+				break;
+
+			case TIMER_TIME_INTERVAL_600us :
+				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_560us");
+				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
+				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_NO_PRESCALER;
+				OCRA_backup = 4200;
+				interval_time_us = 600;
 				break;
 
 			case TIMER_TIME_INTERVAL_560us :
