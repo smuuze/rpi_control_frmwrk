@@ -147,7 +147,7 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_600us");
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
 				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_NO_PRESCALER;
-				OCRA_backup = 4200;
+				OCRA_backup = 4315;
 				interval_time_us = 600;
 				break;
 
@@ -242,6 +242,16 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 	} else {
 		p_irq_callback = 0;
 	}
+}
+
+void timer1_driver_start(u32 time_us) {
+
+	DEBUG_TRACE_long(time_us, "timer1_driver_start()");
+
+	run_time_us = time_us;
+
+	TCNT1L = 0;
+	TCNT1H = 0;
 
 	TIMSK1 = TIMSK_backup;
 	
@@ -254,18 +264,6 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 	TCCR1A = TCCRA_backup;
 	TCCR1B = TCCRB_backup;
 	TCCR1C = TCCRC_backup;
-}
-
-void timer1_driver_start(u32 time_us) {
-
-	DEBUG_TRACE_long(time_us, "timer1_driver_start()");
-
-	run_time_us = time_us;
-
-	TCNT1L = 0;
-	TCNT1H = 0;
-	
-	TCCR1B = TCCRB_backup;
 }
 
 void timer1_driver_stop(void) {
