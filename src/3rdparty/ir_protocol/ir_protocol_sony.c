@@ -47,6 +47,9 @@
 #define SONY_IR_PROTOCOL_DEVICE_BIT_COUNT					5
 #define SONY_IR_PROTOCOL_EXTENDED_BIT_COUNT					8
 
+#define SONY_IR_PROTOCOL_FRAME_MIN_COUNT					3
+#define SON_IR_PROTOCOL_FRAME_INTERVAL_MS					46
+
 #define SONY_IR_PROTOCOL_START_BIT_MASK_COMMAND					0x80
 #define SONY_IR_PROTOCOL_START_BIT_MASK_DEVICE					0x10
 #define SONY_IR_PROTOCOL_START_BIT_MASK_EXTENDED				0x80
@@ -70,6 +73,10 @@
 #define SONY_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE				(88)
 
 #define SONY_IR_PROTOCOL_MOD_TIME_OFF						0xFFFF
+
+// --------------------------------------------------------------------------------
+
+TIME_MGMN_BUILD_STATIC_TIMER_U8(IR_SONY_FRAME_SPACE_TIMER)
 
 // --------------------------------------------------------------------------------
 
@@ -109,6 +116,11 @@ static u8 transmit_guard = 0;
  */
 static u8 irq_counter = 0;
 
+/*
+ *
+ */
+static u8 frame_counter = 0;
+
 // --------------------------------------------------------------------------------
 
 void ir_protocol_sony_irq_callback(void) {
@@ -123,10 +135,31 @@ void ir_protocol_sony_irq_callback(void) {
 
 		// Data Bits
 
-		if (transmit_buffer[data_bit_counter++]) {
+		if (transmit_buffer[data_bit_counter]) {
 			IR_MOD_OUT_drive_high(); 
 		} else {
-			IR_MOD_OUT_drive_low(); 
+			IR_MOD_OUT_drive_low();
+		}
+
+		data_bit_counter += 1;
+
+	} else if (frame_counter < SONY_IR_PROTOCOL_FRAME_MIN_COUNT - 1) {
+			
+		// SONY_IR_PROTOCOL_FRAME_MIN_COUNT - 1, because the first frame has already been transmitted
+
+		IR_MOD_OUT_drive_low();
+		p_carrier->stop();
+
+		if (IR_SONY_FRAME_SPACE_TIMER_is_up(SON_IR_PROTOCOL_FRAME_INTERVAL_MS)) {
+
+			IR_SONY_FRAME_SPACE_TIMER_start();
+
+			p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
+			IR_MOD_OUT_drive_high(); 
+
+			frame_counter += 1;
+			irq_counter = 1;
+			data_bit_counter = 0;
 		}
 
 	} else {
@@ -136,8 +169,11 @@ void ir_protocol_sony_irq_callback(void) {
 		p_carrier->stop();
 		p_modulator->stop();
 
+		frame_counter = 0;
 		irq_counter = 0;
 		transmit_guard = 0;
+
+		DEBUG_PASS("ir_protocol_sony_irq_callback() - FINISHED");
 	}
 }
 
@@ -256,6 +292,7 @@ void ir_protocol_sony_transmit(SONY_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 	ir_protocol_sony_prepare_transmit_buffer(p_command);
 
 	irq_counter = 0;
+	frame_counter = 0;
 
 	IR_MOD_OUT_drive_low();
 
@@ -276,4 +313,6 @@ void ir_protocol_sony_transmit(SONY_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 	
 	p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
 	p_modulator->start(TIME_CONFIGURATION_RUN_FOREVER);
+
+	IR_SONY_FRAME_SPACE_TIMER_start();
 }
