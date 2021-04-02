@@ -41,9 +41,6 @@
 
 //-----------------------------------------------------------------------------
 
-#define RPI_STATUS_COMMAND_PENDING				0
-#define RPI_STATUS_ANSWER_PENDING				1
-
 #define RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE			16
 
 /*!
@@ -138,7 +135,12 @@ BUILD_LOCAL_MSG_BUFFER( , RPI_ANSWER_BUFFER,  32)
 TIME_MGMN_BUILD_STATIC_TIMER_U16(RPI_OP_TIMER)
 TIME_MGMN_BUILD_STATIC_TIMER_U16(RPI_TRX_TIMER)
 
-BUILD_MODULE_STATUS_FAST_VOLATILE(RPI_STATUS, 2)
+//-----------------------------------------------------------------------------
+
+#define RPI_STATUS_COMMAND_PENDING				(1 << 0)
+#define RPI_STATUS_ANSWER_PENDING				(1 << 1)
+
+BUILD_MODULE_STATUS_U16(RPI_STATUS)
 
 //-----------------------------------------------------------------------------
 
