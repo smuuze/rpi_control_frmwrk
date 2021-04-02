@@ -650,7 +650,7 @@ static void UNITTEST_msg_executer_configure(void) {
 
 		UNITTEST_TIMER_start();
 
-		while (UNITTEST_TIMER_is_up(MSG_EXECUTER_TASK_SCHEDULE_INTERVAL_MS * number_of_task_run) == 0) {
+		while (UNITTEST_TIMER_is_up(1000) == 0) {
 			mcu_task_controller_schedule();
 		}
 
@@ -858,7 +858,7 @@ static void UNITTEST_msg_executer_invalid_command_syntax(void) {
 
 		UNITTEST_TIMER_start();
 
-		while (UNITTEST_TIMER_is_up(250) == 0) {
+		while (UNITTEST_TIMER_is_up(1000) == 0) {
 			mcu_task_controller_schedule();
 		}
 
@@ -1042,7 +1042,7 @@ static void UNITTEST_msg_executer_bad_command_while_processing_report(void) {
 
 		UNITTEST_TIMER_start();
 
-		while (UNITTEST_TIMER_is_up(6500) == 0) {
+		while (UNITTEST_TIMER_is_up(7000) == 0) {
 
 			mcu_task_controller_schedule();
 			ut_helper_generate_response();
