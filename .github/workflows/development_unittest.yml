@@ -82,7 +82,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest_debug
+      run: make unittest
     - name: run unittest
       run: make run
 
@@ -95,7 +95,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest_debug
+      run: make unittest
     - name: run unittest
       run: make run
 
@@ -108,7 +108,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest_debug
+      run: make unittest
     - name: run unittest
       run: make run
 
@@ -121,7 +121,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest_debug
+      run: make unittest
     - name: run unittest
       run: make run
       
