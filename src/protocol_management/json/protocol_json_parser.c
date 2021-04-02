@@ -158,7 +158,7 @@ void json_parser_add_integer(JSON_OPJECT_TYPE* p_json_object, const char* name, 
 	char temp_string[JSON_PARSER_TEMP_STRING_LENGTH];
 
 	common_tools_string_clear(temp_string, JSON_PARSER_TEMP_STRING_LENGTH);
-	common_tools_string_from_i32(temp_string, value);
+	common_tools_string_from_i32(temp_string, JSON_PARSER_TEMP_STRING_LENGTH, value);
 
 	p_json_object->length = common_tools_string_append(p_json_object->string_buffer, PROTOCOL_JSON_PARSER_STRING_KEY_VALUE_SEPERATOR, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);
 	p_json_object->length = common_tools_string_append(p_json_object->string_buffer, temp_string, PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH);

@@ -290,22 +290,12 @@ u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from
 	return length;
 }
 
-void common_tools_string_from_u8(char* string_to, u8 number) {
-	
-	if (sizeof(string_to) < sizeof(number)) {
-		return;
-	}
-	
-	sprintf(string_to, "%d", (int)number);
+void common_tools_string_from_u8(char* string_to, u16 max_string_length, u8 number) {
+	snprintf(string_to, max_string_length, "%d", number);
 }
 
-void common_tools_string_from_i32(char* string_to, i32 number) {
-
-	if (sizeof(string_to) < sizeof(number)) {
-		return;
-	}
-
-	sprintf(string_to, "%d", (int)number);
+void common_tools_string_from_i32(char* string_to, u16 max_string_length, i32 number) {
+	snprintf(string_to, max_string_length, "%d", number);
 }
 
 /*
