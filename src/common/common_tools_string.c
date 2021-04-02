@@ -291,11 +291,11 @@ u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from
 }
 
 void common_tools_string_from_u8(char* string_to, u8 number) {
-	sprintf(string_to, "%d", number);
+	sprintf(string_to, "%d", (int)number);
 }
 
 void common_tools_string_from_i32(char* string_to, i32 number) {
-	sprintf(string_to, "%d", number);
+	sprintf(string_to, "%d", (int)number);
 }
 
 /*
