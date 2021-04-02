@@ -1042,7 +1042,7 @@ static void UNITTEST_msg_executer_bad_command_while_processing_report(void) {
 
 		UNITTEST_TIMER_start();
 
-		while (UNITTEST_TIMER_is_up(7000) == 0) {
+		while (UNITTEST_TIMER_is_up(10000) == 0) {
 
 			mcu_task_controller_schedule();
 			ut_helper_generate_response();
