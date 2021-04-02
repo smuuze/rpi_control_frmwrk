@@ -54,9 +54,15 @@ CSRCS += $(COMMON_INC_PATH)/local_data_storage_array.c
 CSRCS += $(COMMON_INC_PATH)/local_msg_buffer.c
 CSRCS += $(COMMON_INC_PATH)/signal_slot_interface.c
 CSRCS += $(COMMON_INC_PATH)/math_module.c
-CSRCS += $(COMMON_INC_PATH)/common_tools_string.c
-CSRCS += $(COMMON_INC_PATH)/common_tools_datetime.c
 CSRCS += $(COMMON_INC_PATH)/common_tools_number.c
+
+ifneq '' '$(findstring STRING,$(COMMON_MODULES))'
+CSRCS += $(COMMON_INC_PATH)/common_tools_string.c
+endif
+
+ifneq '' '$(findstring DATETIME,$(COMMON_MODULES))'
+CSRCS += $(COMMON_INC_PATH)/common_tools_datetime.c
+endif
 
 ifneq '' '$(findstring QEUE,$(COMMON_MODULES))'
 DEFS  += -D HAS_QEUE_INTERFACE=1

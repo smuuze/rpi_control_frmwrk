@@ -162,10 +162,20 @@ inline void ir_protocol_samsung_cmd_tv_stop(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_
 
 inline void ir_protocol_samsung_cmd_tv_program_guide(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 	DEBUG_PASS("ir_protocol_samsung_cmd_tv_program_guide()");
-	p_command->control = 0b01100010;
+	p_command->control = 0b11110010;
 }
 
 inline void ir_protocol_samsung_cmd_tv_home(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 	DEBUG_PASS("ir_protocol_samsung_cmd_tv_home()");
-	p_command->control = 0b01100010;
+	p_command->control = 0b10011110;
+}
+
+inline void ir_protocol_samsung_cmd_tv_channel_list(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
+	DEBUG_PASS("ir_protocol_samsung_cmd_tv_home()");
+	p_command->control = 0b11010110;
+}
+
+inline void ir_protocol_samsung_cmd_tv_source(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
+	DEBUG_PASS("ir_protocol_samsung_cmd_tv_home()");
+	p_command->control = 0b10000000;
 }

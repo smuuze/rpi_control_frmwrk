@@ -10,6 +10,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
+
 // --------------------------------------------------------------------------------
 
 #include "config.h"
@@ -286,12 +290,12 @@ u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from
 	return length;
 }
 
-void common_tools_string_from_u8(char* string_to, u8 number) {
-	sprintf(string_to, "%d", number);
+void common_tools_string_from_u8(char* string_to, u16 max_string_length, u8 number) {
+	snprintf(string_to, max_string_length, "%d", number);
 }
 
-void common_tools_string_from_i32(char* string_to, i32 number) {
-	sprintf(string_to, "%d", number);
+void common_tools_string_from_i32(char* string_to, u16 max_string_length, i32 number) {
+	snprintf(string_to, max_string_length, "%d", number);
 }
 
 /*

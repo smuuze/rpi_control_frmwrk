@@ -9,6 +9,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
+
 //-----------------------------------------------------------------------------
 
 #include "config.h"  // immer als erstes einbinden!

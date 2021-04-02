@@ -53,6 +53,11 @@ ifneq '' '$(findstring RPI_CMD_IR_REMOTE,$(COMMAND_INTERFACE_CFG))'
 		DEFS += -D RPI_CMD_HANDLER_IR_REMOTE_JVC_AVAILABLE=1
 		CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_handler_ir_remote_jvc.c
 	endif
+
+	ifneq '' '$(findstring RPI_CMD_IR_REMOTE_SONY,$(COMMAND_INTERFACE_CFG))'
+		DEFS += -D RPI_CMD_HANDLER_IR_REMOTE_SONY_AVAILABLE=1
+		CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_handler_ir_remote_sony.c
+	endif
 endif
 
 ifneq '' '$(findstring RPI_CMD_ROUTING,$(COMMAND_INTERFACE_CFG))'

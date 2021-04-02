@@ -1,6 +1,37 @@
+/**
+ * 
+ * --------------------------------------------------------------------------------
+ *
+ * @file 	local_module_status.c
+ * @author 	sebastian lesse (sebastian lesse)
+ * @brief 
+ * @version 	1.0
+ * @date 	2021-03-21
+ * 
+ * @copyright 	Copyright (c) 2021
+ *
+ * --------------------------------------------------------------------------------
+ */
+
+#define TRACER_OFF
+
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
+
+//-----------------------------------------------------------------------------
 
 #include "config.h"
+
+//-----------------------------------------------------------------------------
+
+#include "tracer.h"
+
+//-----------------------------------------------------------------------------
+
 #include "local_module_status.h"
+
+//-----------------------------------------------------------------------------
 
 void module_status_set_u8(MODULE_STATUS_U8_TYPE* p_status, u8 bit_flag) {
 	p_status->data |= bit_flag; 	

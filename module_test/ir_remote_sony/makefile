@@ -1,7 +1,7 @@
 
 #-----------------------------------------------------------------------------
 
-PROJECT = UNITTEST_qeue_interface
+PROJECT = UNITTEST_ir_remote_sony
 
 BOARD_ID = UNITTEST
 
@@ -25,18 +25,11 @@ MCU = UNITTEST
 
 #-----------------------------------------------------------------------------
 
-CSRCS += unittest_qeue_interface.c
+CSRCS += unittest_ir_remote_sony.c
 
 #-----------------------------------------------------------------------------
 
 #HOST_INTERFACE_TYPE = SPI
-
-#-----------------------------------------------------------------------------
-
-COMMON_MODULES =
-COMMON_MODULES += QEUE
-#COMMON_MODULES += DATETIME
-COMMON_MODULES += STRING
 
 #-----------------------------------------------------------------------------
 
@@ -46,6 +39,7 @@ APP_TASK_CFG =
 #APP_TASK_CFG += COPRO_ROUTING
 #APP_TASK_CFG += LED_MATRIX
 #APP_TASK_CFG += TEST_TRACER
+APP_TASK_CFG += IR_REMOTE
 
 #-----------------------------------------------------------------------------
 
@@ -65,6 +59,13 @@ DRIVER_MODULE_CFG += CLK
 
 #-----------------------------------------------------------------------------
 
+PROTOCOL_CFG =
+#PROTOCOL_CFG += RPI_PROTOCOL_CLIENT
+#PROTOCOL_CFG += RPI_PROTOCOL_HOST
+#PROTOCOL_CFG += JSON_PARSER
+
+#-----------------------------------------------------------------------------
+
 SENSOR_MODULE_CFG =
 #SENSOR_MODULE_CFG += LIGHT_SENSOR_GM5528
 
@@ -81,6 +82,7 @@ COMMAND_INTERFACE_CFG =
 #COMMAND_INTERFACE_CFG += RPI_CMD_IO
 #COMMAND_INTERFACE_CFG += RPI_CMD_SENSOR
 #COMMAND_INTERFACE_CFG += RPI_CMD_ROUTING
+COMMAND_INTERFACE_CFG += RPI_CMD_IR_REMOTE_SONY
 
 #-----------------------------------------------------------------------------
 
@@ -93,9 +95,14 @@ USER_INTERFACE_CFG =
 #USER_INTERFACE_CFG += CFG_FILE_PARSER
 #USER_INTERFACE_CFG += CLI_ARG_DEVICE
 #USER_INTERFACE_CFG += CLI_ARG_COMMAND
-USER_INTERFACE_CFG += CONSOLE
+#USER_INTERFACE_CFG += CONSOLE
 #USER_INTERFACE_CFG += LCD_16X2
 #USER_INTERFACE_CFG += FILE_INTERFACE
+
+#-----------------------------------------------------------------------------
+
+THIRD_PARTY_MODULES =
+THIRD_PARTY_MODULES += IR_PROTOCOL_SONY
 
 #-----------------------------------------------------------------------------
 

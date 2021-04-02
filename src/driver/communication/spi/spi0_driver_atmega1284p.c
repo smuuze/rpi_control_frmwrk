@@ -542,7 +542,7 @@ void spi0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
 
 	while (bytes_transmitted < num_bytes) {
 
-		if (time_mgmnt_istimeup_u16(time_reference_ms, timeout_ms)) {
+		if (time_mgmnt_istimeup_raw_u16(time_reference_ms, timeout_ms)) {
 			return;
 		}
 

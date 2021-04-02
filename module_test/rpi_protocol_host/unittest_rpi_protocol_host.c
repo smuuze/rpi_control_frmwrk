@@ -256,7 +256,7 @@ static void UNITTEST_rpi_protocol_host_receive_command(void) {
 		}
 
 		UT_CHECK_IS_EQUAL(response_buffer.length, bytes_received[0]);
-		UT_COMPARE_ARRAY(response_buffer.data, bytes_received + 1, response_buffer.length);
+		UT_COMPARE_ARRAY(response_buffer.data, &bytes_received[1], response_buffer.length);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_RECEIVED, 1);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_OVERFLOW, 0);

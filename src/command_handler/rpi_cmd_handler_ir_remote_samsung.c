@@ -7,7 +7,11 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_ON
+#define TRACER_OFF
+
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
 
 // --------------------------------------------------------------------------------
 
@@ -30,6 +34,12 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SAMSUNG_IR_CMD_RECEIVED_SIGNAL)
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief 
+ * 
+ * @param command 
+ * @return u8 
+ */
 static inline u8 rpi_cmd_ir_samsung_tv(u8 command);
 
 // --------------------------------------------------------------------------------
@@ -90,6 +100,9 @@ static inline u8 rpi_cmd_ir_samsung_tv(u8 cmd) {
 
 		case IR_COMMAND_PROGRAM_GUIDE :	ir_protocol_samsung_cmd_tv_program_guide(&ir_command); break;
 		case IR_COMMAND_HOME :		ir_protocol_samsung_cmd_tv_home(&ir_command); break;
+
+		case IR_COMMAND_CHANNEL_LIST :	ir_protocol_samsung_cmd_tv_channel_list(&ir_command); break;
+		case IR_COMMAND_SOURCE :	ir_protocol_samsung_cmd_tv_source(&ir_command); break;
 	}
 
 	ir_protocol_samsung_address_tv(&ir_command);

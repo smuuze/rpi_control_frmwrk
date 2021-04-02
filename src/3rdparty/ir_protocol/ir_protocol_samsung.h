@@ -64,6 +64,11 @@ void ir_protocol_samsung_cmd_tv_volume_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_co
 /*
  *
  */
+void ir_protocol_samsung_cmd_tv_volume_mute(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
 void ir_protocol_samsung_cmd_tv_volume_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
 /*
@@ -185,6 +190,16 @@ void ir_protocol_samsung_cmd_tv_program_guide(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* 
  *
  */
 void ir_protocol_samsung_cmd_tv_home(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_channel_list(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_source(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
 
 // --------------------------------------------------------------------------------
 

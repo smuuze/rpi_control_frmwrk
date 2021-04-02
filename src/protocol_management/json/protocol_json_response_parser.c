@@ -12,6 +12,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
+
 // --------------------------------------------------------------------------------
 
 #include "config.h"
@@ -31,6 +35,8 @@
 
 #define JSON_PARSER_TEMP_STRING_LENGTH						16
 #define JSON_PARSER_TEMP_STRING_LONG_LENGTH					128
+#define JSON_PARSER_VERSION_MAJOR_STRING_LENGTH					4
+#define JSON_PARSER_VERSION_MINOR_STRING_LENGTH					4
 
 // --------------------------------------------------------------------------------
 
@@ -107,16 +113,16 @@ static void json_parser_response_version(JSON_OPJECT_TYPE* p_json_object, COMMON
 		return;
 	}
 
-	char version_major_string[4];
-	char version_minor_string[4];
+	char version_major_string[JSON_PARSER_VERSION_MAJOR_STRING_LENGTH];
+	char version_minor_string[JSON_PARSER_VERSION_MINOR_STRING_LENGTH];
 	char version_string[JSON_PARSER_TEMP_STRING_LENGTH];
 
-	common_tools_string_clear(version_major_string, 4);
-	common_tools_string_clear(version_minor_string, 4);
+	common_tools_string_clear(version_major_string, JSON_PARSER_VERSION_MAJOR_STRING_LENGTH);
+	common_tools_string_clear(version_minor_string, JSON_PARSER_VERSION_MINOR_STRING_LENGTH);
 	common_tools_string_clear(version_string, JSON_PARSER_TEMP_STRING_LENGTH);
 
-	common_tools_string_from_u8(version_major_string, p_com_buffer->data[2]);
-	common_tools_string_from_u8(version_minor_string, p_com_buffer->data[3]);
+	common_tools_string_from_u8(version_major_string, JSON_PARSER_VERSION_MAJOR_STRING_LENGTH, p_com_buffer->data[2]);
+	common_tools_string_from_u8(version_minor_string, JSON_PARSER_VERSION_MINOR_STRING_LENGTH, p_com_buffer->data[3]);
 
 	common_tools_string_append(version_string, version_major_string, JSON_PARSER_TEMP_STRING_LENGTH);
 	common_tools_string_append(version_string, ".", JSON_PARSER_TEMP_STRING_LENGTH);
@@ -224,7 +230,7 @@ static void json_parser_response_output_state(JSON_OPJECT_TYPE* p_json_object, C
 	common_tools_string_clear(group_name, JSON_PARSER_TEMP_STRING_LENGTH);
 	common_tools_string_clear(index_str, JSON_PARSER_TEMP_STRING_LENGTH);
 
-	common_tools_string_from_u8(index_str, p_com_buffer->data[2]);
+	common_tools_string_from_u8(index_str, JSON_PARSER_TEMP_STRING_LENGTH, p_com_buffer->data[2]);
 
 	common_tools_string_append(group_name, JSON_RESPONSE_PARSER_STRING_OUTPUT_STATE, JSON_PARSER_TEMP_STRING_LENGTH);
 	common_tools_string_append(group_name, index_str, JSON_PARSER_TEMP_STRING_LENGTH);
@@ -269,9 +275,9 @@ static void json_parser_response_bad_command(JSON_OPJECT_TYPE* p_json_object, CO
 
 	DEBUG_PASS("json_parser_append_rpi_cmd_response() - BAD_COMMAND");
 
-	char t_string[4];
-	common_tools_string_clear(t_string, 4);
-	common_tools_string_from_u8(t_string, CMD_HANDLER_GET_RESPONSE_COMMAND_CODE(p_com_buffer));
+	char t_string[JSON_PARSER_TEMP_STRING_LENGTH];
+	common_tools_string_clear(t_string, JSON_PARSER_TEMP_STRING_LENGTH);
+	common_tools_string_from_u8(t_string, JSON_PARSER_TEMP_STRING_LENGTH, CMD_HANDLER_GET_RESPONSE_COMMAND_CODE(p_com_buffer));
 
 	json_parser_start_group(p_json_object, t_string);
 	json_parser_add_string(p_json_object, "ERR", "BAD_COMMAND");

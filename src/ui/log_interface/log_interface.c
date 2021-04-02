@@ -10,6 +10,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
+
 // --------------------------------------------------------------------------------
 
 #include "config.h"
@@ -70,6 +74,10 @@
 #ifndef LOG_INTERFACE_QEUE_OVERFLOW_MESSAGE
 #define LOG_INTERFACE_QEUE_OVERFLOW_MESSAGE				"LOG-QEUE OVERFLOW_DETECTED"
 #endif
+
+// --------------------------------------------------------------------------------
+
+#define LOG_INTERFACE_TEMP_STRING_LENGTH				5
 
 // --------------------------------------------------------------------------------
 
@@ -202,10 +210,10 @@ static void log_interface_update_file_name(void) {
 	DEBUG_TRACE_STR(date_string, "log_interface_update_file_name() - Datetime:");
 
 	u8 counter = 1;
-	char counter_str[5];
+	char counter_str[LOG_INTERFACE_TEMP_STRING_LENGTH];
 	char log_file[LOG_INTERFACE_MAX_MESSAGE_LENGTH];
 	
-	common_tools_string_from_u8(counter_str, counter);
+	common_tools_string_from_u8(counter_str, LOG_INTERFACE_TEMP_STRING_LENGTH, counter);
 
 	common_tools_string_copy_string(log_file, log_file_path, LOG_INTERFACE_MAX_MESSAGE_LENGTH); 	// base directory
 	common_tools_string_append(log_file, date_string, LOG_INTERFACE_MAX_MESSAGE_LENGTH);		// date-string
@@ -225,7 +233,7 @@ static void log_interface_update_file_name(void) {
 		}
 
 		counter += 1;
-		common_tools_string_from_u8(counter_str, counter);
+		common_tools_string_from_u8(counter_str, LOG_INTERFACE_TEMP_STRING_LENGTH, counter);
 
 		common_tools_string_copy_string(log_file, log_file_path, LOG_INTERFACE_MAX_MESSAGE_LENGTH); 	// base directory
 		common_tools_string_append(log_file, date_string, LOG_INTERFACE_MAX_MESSAGE_LENGTH);		// date-string

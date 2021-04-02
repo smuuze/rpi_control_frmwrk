@@ -12,6 +12,11 @@
 //---------- Implementation of Traces -----------------------------------------
 
 #define TRACER_OFF
+
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
+
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -103,7 +108,7 @@ u8 power_mgmnt_is_on(POWER_MANAGEMENT_UNIT_TYPE* p_unit) {
 
 	if (p_unit->status.is_ramp_up == 1) {
 	
-		if (time_mgmnt_istimeup_u16(p_unit->switch_on_timestamp, p_unit->power_up_time_ms) == 0) {
+		if (time_mgmnt_istimeup_raw_u16(p_unit->switch_on_timestamp, p_unit->power_up_time_ms) == 0) {
 			return 0;
 		}
 			

@@ -136,7 +136,7 @@ void string_get_time(char* time_string);
 /*
  *
  */
-void common_tools_string_from_u8(char* string_to, u8 number);
+void common_tools_string_from_u8(char* string_to, u16 max_string_length, u8 number);
 
 /**
  * @brief converts a signed 32 bit integer value into a string
@@ -144,6 +144,6 @@ void common_tools_string_from_u8(char* string_to, u8 number);
  * @param string_to string where to store the number
  * @param number signed 32 bit integer value
  */
-void common_tools_string_from_i32(char* string_to, i32 number);
+void common_tools_string_from_i32(char* string_to, u16 max_string_length, i32 number);
 
 #endif // COMMON_TOOLS_STRING_H_

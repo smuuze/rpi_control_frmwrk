@@ -4,6 +4,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
+
 //-----------------------------------------------------------------------------
 
 #include "config.h"  // immer als erstes einbinden!
@@ -121,7 +125,9 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 
 		switch (p_configuration->time_interval) {
 
-			default: /* no break */
+			default: 
+				DEBUG_TRACE_byte(p_configuration->time_interval, "timer1_driver_configure() - INTERVAL UNSUPPORTED !!!");
+				/* no break */
 
 			case TIMER_TIME_INTERVAL_250ms :
 				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_250ms");
@@ -135,6 +141,14 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO_BY_64;
 				OCRA_backup = 115;
 				interval_time_us = 1000;
+				break;
+
+			case TIMER_TIME_INTERVAL_600us :
+				DEBUG_PASS("timer1_driver_configure() - TIMER_TIME_INTERVAL_600us");
+				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
+				//TCCRB_backup |= TIMER1_CLOCK_SOURCE_NO_PRESCALER;
+				OCRA_backup = 4315;
+				interval_time_us = 600;
 				break;
 
 			case TIMER_TIME_INTERVAL_560us :
@@ -192,7 +206,9 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 
 		switch (p_configuration->frequency) {
 
-			default: break;
+			default: 
+				DEBUG_TRACE_byte(p_configuration->frequency, "timer1_driver_configure() - FREQUENCY UNSUPPORTED !!!");
+				break;
 
 			case TIMER_FREQUENCY_36kHz:
 				DEBUG_PASS("timer1_driver_configure() - TIMER_FREQUENCY_36kHz");
@@ -206,6 +222,11 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 				OCRA_backup = 97;
 				break;
 
+			case TIMER_FREQUENCY_40kHz :
+				DEBUG_PASS("timer1_driver_configure() - TIMER_FREQUENCY_40kHz");
+				OCRA_backup = 91;
+				break;
+
 			case TIMER_FREQUENCY_42kHz :
 				DEBUG_PASS("timer1_driver_configure() - TIMER_FREQUENCY_42kHz");
 				TCCRB_backup |= TIMER1_CLOCK_SOURCE_CLK_IO;
@@ -216,10 +237,21 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 	}
 
 	if (p_configuration->irq_callback != 0) {
+		DEBUG_PASS("timer0_driver_configure() - IRQ callback set");
 		p_irq_callback = p_configuration->irq_callback;
 	} else {
 		p_irq_callback = 0;
 	}
+}
+
+void timer1_driver_start(u32 time_us) {
+
+	DEBUG_TRACE_long(time_us, "timer1_driver_start()");
+
+	run_time_us = time_us;
+
+	TCNT1L = 0;
+	TCNT1H = 0;
 
 	TIMSK1 = TIMSK_backup;
 	
@@ -232,18 +264,6 @@ void timer1_driver_configure(TIMER_CONFIGURATION_TYPE* p_configuration) {
 	TCCR1A = TCCRA_backup;
 	TCCR1B = TCCRB_backup;
 	TCCR1C = TCCRC_backup;
-}
-
-void timer1_driver_start(u32 time_us) {
-
-	DEBUG_TRACE_long(time_us, "timer1_driver_start()");
-
-	run_time_us = time_us;
-
-	TCNT1L = 0;
-	TCNT1H = 0;
-	
-	TCCR1B = TCCRB_backup;
 }
 
 void timer1_driver_stop(void) {

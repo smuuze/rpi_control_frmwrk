@@ -33,7 +33,10 @@ CSRCS += unittest_msg_executer.c
 
 #-----------------------------------------------------------------------------
 
+COMMON_MODULES =
 COMMON_MODULES += QEUE
+#COMMON_MODULES += DATETIME
+COMMON_MODULES += STRING
 
 #-----------------------------------------------------------------------------
 

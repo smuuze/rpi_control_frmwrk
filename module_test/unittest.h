@@ -21,10 +21,50 @@
 // --------------------------------------------------------------------------------
 
 #define UT_PRINT_HEX_DUMP(array, length)		{														\
-								u8 i = 0;												\
-								for ( ; i < length; i++) {										\
-									printf("0x%02X ", array[i]);									\
-								}													\
+								u16 i = 0;												\
+								u16 buffer_index = 0;											\
+								u16 character_index = 0;										\
+								u16 address = 0;											\
+								u8 line_size = 16;											\
+								u8 end_of_line = 0;											\
+								u16 array_length = length;										\
+																					\
+								printf("\n\t%04X  |  ", address);									\
+																					\
+								do {													\
+																					\
+									if (array_length != 0) {									\
+										printf("%02x ", array[buffer_index++]);							\
+										array_length--;										\
+									} else {											\
+										printf("__ ");										\
+									}												\
+																					\
+									if ( (i != 0) && ((i + 1) % 8) == 0) {								\
+										printf(" ");										\
+									}												\
+																					\
+									if ( !(++i % line_size) ) {									\
+																					\
+										printf(" |  ");										\
+																					\
+										while (character_index < buffer_index) {						\
+																					\
+											unsigned char c = (unsigned char) array[character_index++];			\
+											printf("%c", (c < 33 || c == 255) ? 0x2E : c);					\
+										}											\
+																					\
+										printf("\n");										\
+																					\
+										if (array_length != 0) {								\
+											address += line_size;								\
+											printf("\t%04X  |  ", address);							\
+										} else {										\
+											end_of_line = 1;								\
+										}											\
+									}												\
+																					\
+								} while (end_of_line == 0);										\
 							}
 
 // --------------------------------------------------------------------------------
@@ -38,6 +78,7 @@
 #define UT_STRING_ERROR(value, reference)		printf(" - !! FAILED !! : \n%s = %s \nexpected: \n%s = %s\n in %s:%d\n", UT_GET_VAR_NAME(value), value, UT_GET_VAR_NAME(value), reference, __FILE__, __LINE__);
 #define UT_STRING_OK(value)				printf(" - OK : %s = %s\n", UT_GET_VAR_NAME(value), value);
 
+#define UT_ARRAY_LENGTH_ERROR(value, len, ref)		printf(" - !! ARRAY-LENGTH ERROR !! : sizeof(%s) = %d < %d  in %s:%d\n", UT_GET_VAR_NAME(value), (int)len, (int)ref, __FILE__, __LINE__);
 #define UT_ARRAY_ERROR(value, reference, length)	printf(" - !! FAILED !! : %s  in %s:%d\n", UT_GET_VAR_NAME(value), __FILE__, __LINE__);				\
 							printf(" - - content  :");											\
 							UT_PRINT_HEX_DUMP((value), length)										\
@@ -104,22 +145,36 @@
 							}
 
 #define UT_COMPARE_ARRAY(array1, array2, length)	{														\
-								u8 i = 0;												\
-								u8 is_equal = 1;											\
-								for ( ; i < length; i++) {										\
-									if ((array1)[i] != (array2)[i]) {								\
-										UT_ARRAY_ERROR(array1, array2, length);							\
-										__ut_number_of_test_failed += 1;							\
-										counter_TEST_FAILED += 1;								\
-										is_equal = 0;										\
-										break;											\
-									}												\
-								}													\
+								if (sizeof(array1) < length) {										\
+									UT_ARRAY_LENGTH_ERROR(array1, sizeof(array1), length)						\
+									UT_ARRAY_ERROR(array1, array2, length);								\
+									__ut_number_of_test_failed += 1;								\
+									counter_TEST_FAILED += 1;									\
 																					\
-								if (is_equal) {												\
-									UT_ARRAY_OK(array1, length)									\
-									__ut_number_of_test_passed += 1;								\
-									counter_TEST_PASSED += 1;									\
+								} else if (sizeof(array2) < length) {									\
+									UT_ARRAY_LENGTH_ERROR(array2, sizeof(array2), length)						\
+									UT_ARRAY_ERROR(array1, array2, length);								\
+									__ut_number_of_test_failed += 1;								\
+									counter_TEST_FAILED += 1;									\
+																					\
+								} else {												\
+									u8 i = 0;											\
+									u8 is_equal = 1;										\
+									for ( ; i < length; i++) {									\
+										if ((array1)[i] != (array2)[i]) {							\
+											UT_ARRAY_ERROR(array1, array2, length);						\
+											__ut_number_of_test_failed += 1;						\
+											counter_TEST_FAILED += 1;							\
+											is_equal = 0;									\
+											break;										\
+										}											\
+									}												\
+																					\
+									if (is_equal) {											\
+										UT_ARRAY_OK(array1, length)								\
+										__ut_number_of_test_passed += 1;							\
+										counter_TEST_PASSED += 1;								\
+									}												\
 								}													\
 							}
 
