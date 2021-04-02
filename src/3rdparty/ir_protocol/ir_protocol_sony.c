@@ -121,6 +121,13 @@ static u8 irq_counter = 0;
  */
 static u8 frame_counter = 0;
 
+/**
+ * @brief 	Is called within the isr-callback.
+ * 		Signal generation shall be turned off between to frames
+ * 
+ */
+static u8 turn_off_signal = 0;
+
 // --------------------------------------------------------------------------------
 
 void ir_protocol_sony_irq_callback(void) {
@@ -128,12 +135,21 @@ void ir_protocol_sony_irq_callback(void) {
 	if (irq_counter < SONY_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PULSE) {
 
 		// Preamle Pulse
+
+		if (irq_counter == 0) {
+			DEBUG_PASS("ir_protocol_sony_irq_callback() - PREAMBLE");
+		}
+
 		irq_counter += 1;
 		IR_MOD_OUT_drive_high(); 
 
 	} else if (data_bit_counter < data_bit_length) {
 
 		// Data Bits
+
+		if (data_bit_counter == 0) {
+			DEBUG_PASS("ir_protocol_sony_irq_callback() - DATA");
+		}
 
 		if (transmit_buffer[data_bit_counter]) {
 			IR_MOD_OUT_drive_high(); 
@@ -147,8 +163,14 @@ void ir_protocol_sony_irq_callback(void) {
 			
 		// SONY_IR_PROTOCOL_FRAME_MIN_COUNT - 1, because the first frame has already been transmitted
 
-		IR_MOD_OUT_drive_low();
-		p_carrier->stop();
+		if (turn_off_signal == 0) {
+
+			DEBUG_PASS("ir_protocol_sony_irq_callback() - TURNOFF");
+			turn_off_signal = 1;
+
+			IR_MOD_OUT_drive_low();
+			p_carrier->stop();
+		}
 
 		if (IR_SONY_FRAME_SPACE_TIMER_is_up(SON_IR_PROTOCOL_FRAME_INTERVAL_MS)) {
 
@@ -160,6 +182,11 @@ void ir_protocol_sony_irq_callback(void) {
 			frame_counter += 1;
 			irq_counter = 1;
 			data_bit_counter = 0;
+			turn_off_signal = 0;
+
+			if (data_bit_counter == 0) {
+				DEBUG_TRACE_byte(frame_counter, "ir_protocol_sony_irq_callback() - NEXT FRAME");
+			}
 		}
 
 	} else {
@@ -169,8 +196,6 @@ void ir_protocol_sony_irq_callback(void) {
 		p_carrier->stop();
 		p_modulator->stop();
 
-		frame_counter = 0;
-		irq_counter = 0;
 		transmit_guard = 0;
 
 		DEBUG_PASS("ir_protocol_sony_irq_callback() - FINISHED");
@@ -182,7 +207,6 @@ void ir_protocol_sony_irq_callback(void) {
 static void ir_protocol_sony_prepare_transmit_buffer(SONY_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 
 	u8 bit_mask = SONY_IR_PROTOCOL_START_BIT_MASK_COMMAND;
-	u8 byte_index = 0;
 	u8 i = 0;
 
 	data_bit_length = 0;
@@ -293,6 +317,7 @@ void ir_protocol_sony_transmit(SONY_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 
 	irq_counter = 0;
 	frame_counter = 0;
+	turn_off_signal = 0;
 
 	IR_MOD_OUT_drive_low();
 
