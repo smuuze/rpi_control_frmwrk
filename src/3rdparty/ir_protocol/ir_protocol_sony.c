@@ -204,85 +204,55 @@ void ir_protocol_sony_irq_callback(void) {
 
 // --------------------------------------------------------------------------------
 
-static void ir_protocol_sony_prepare_transmit_buffer(SONY_IR_PROTOCOL_COMMAND_TYPE* p_command) {
+static u8 ir_protocol_sony_prepare_transmit_buffer_fill_buffer(u8 length, u8 start_bit_mask, u8 bit_vector, u8 bit_counter) {
 
-	u8 bit_mask = SONY_IR_PROTOCOL_START_BIT_MASK_COMMAND;
+	if (bit_counter >= SONY_IR_PROTOCOL_TRANSMIT_BUFFER_SIZE) {
+		DEBUG_PASS("ir_protocol_sony_prepare_transmit_buffer_fill_buffer() - BUFFER OVERFLOW !!! ---");
+		return bit_counter;
+	}
+
+	u8 bit_mask = start_bit_mask;
 	u8 i = 0;
+
+	for ( ; i < length; i++) {
+
+		if (bit_vector & bit_mask) {
+
+			// Data-Bit 1:
+			transmit_buffer[bit_counter++] = 0;
+			transmit_buffer[bit_counter++] = 1;
+			transmit_buffer[bit_counter++] = 1;
+
+		} else {
+
+			// Data-Bit : 0
+			transmit_buffer[bit_counter++] = 0;
+			transmit_buffer[bit_counter++] = 1;
+
+		}
+
+		bit_mask = bit_mask >> 1;
+	}
+
+	return bit_counter;
+}
+
+static void ir_protocol_sony_prepare_transmit_buffer(SONY_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 
 	data_bit_length = 0;
 	data_bit_counter = 0;
 
 	// command bits
-
-	for ( ; i < SONY_IR_PROTOCOL_COMMAND_BIT_COUNT; i++) {
-
-		if (p_command->command & bit_mask) {
-
-			// Data-Bit 1:
-			transmit_buffer[data_bit_length++] = 0;
-			transmit_buffer[data_bit_length++] = 1;
-			transmit_buffer[data_bit_length++] = 1;
-
-		} else {
-
-			// Data-Bit : 0
-			transmit_buffer[data_bit_length++] = 0;
-			transmit_buffer[data_bit_length++] = 1;
-
-		}
-
-		bit_mask = bit_mask >> 1;
-	}
+	data_bit_length = ir_protocol_sony_prepare_transmit_buffer_fill_buffer(SONY_IR_PROTOCOL_COMMAND_BIT_COUNT, SONY_IR_PROTOCOL_START_BIT_MASK_COMMAND, p_command->command, data_bit_length);
+	DEBUG_TRACE_N(data_bit_length, transmit_buffer, "ir_protocol_sony_prepare_transmit_buffer() - Transmit-Buffer (COMMAND)");
 
 	// device bits
-
-	bit_mask = SONY_IR_PROTOCOL_START_BIT_MASK_DEVICE;
-
-	for ( i = 0 ; i < SONY_IR_PROTOCOL_DEVICE_BIT_COUNT; i++) {
-
-		if (p_command->device & bit_mask) {
-
-			// Data-Bit 1:
-			transmit_buffer[data_bit_length++] = 0;
-			transmit_buffer[data_bit_length++] = 1;
-			transmit_buffer[data_bit_length++] = 1;
-
-		} else {
-
-			// Data-Bit : 0
-			transmit_buffer[data_bit_length++] = 0;
-			transmit_buffer[data_bit_length++] = 1;
-
-		}
-
-		bit_mask = bit_mask >> 1;
-	}
+	data_bit_length = ir_protocol_sony_prepare_transmit_buffer_fill_buffer(SONY_IR_PROTOCOL_DEVICE_BIT_COUNT, SONY_IR_PROTOCOL_START_BIT_MASK_DEVICE, p_command->device, data_bit_length);
+	DEBUG_TRACE_N(data_bit_length, transmit_buffer, "ir_protocol_sony_prepare_transmit_buffer() - Transmit-Buffer (COMMMAND + DEVICE)");
 
 	// extended bits
-
-	bit_mask = SONY_IR_PROTOCOL_START_BIT_MASK_EXTENDED;
-
-	for ( i = 0 ; i < SONY_IR_PROTOCOL_DEVICE_BIT_COUNT; i++) {
-
-		if (p_command->device & bit_mask) {
-
-			// Data-Bit 1:
-			transmit_buffer[data_bit_length++] = 0;
-			transmit_buffer[data_bit_length++] = 1;
-			transmit_buffer[data_bit_length++] = 1;
-
-		} else {
-
-			// Data-Bit : 0
-			transmit_buffer[data_bit_length++] = 0;
-			transmit_buffer[data_bit_length++] = 1;
-
-		}
-
-		bit_mask = bit_mask >> 1;
-	}
-
-	DEBUG_TRACE_N(data_bit_length, transmit_buffer, "ir_protocol_sony_prepare_transmit_buffer() - Transmit-Buffer :");
+	data_bit_length = ir_protocol_sony_prepare_transmit_buffer_fill_buffer(SONY_IR_PROTOCOL_EXTENDED_BIT_COUNT, SONY_IR_PROTOCOL_START_BIT_MASK_EXTENDED, p_command->extended, data_bit_length);
+	DEBUG_TRACE_N(data_bit_length, transmit_buffer, "ir_protocol_sony_prepare_transmit_buffer() - Transmit-Buffer (COMMAND + DEVICE + EXTENDED)");
 }
 
 // --------------------------------------------------------------------------------
