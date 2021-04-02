@@ -21,10 +21,50 @@
 // --------------------------------------------------------------------------------
 
 #define UT_PRINT_HEX_DUMP(array, length)		{														\
-								u8 i = 0;												\
-								for ( ; i < length; i++) {										\
-									printf("0x%02X ", array[i]);									\
-								}													\
+								u16 i = 0;												\
+								u16 buffer_index = 0;											\
+								u16 character_index = 0;										\
+								u16 address = 0;											\
+								u8 line_size = 16;											\
+								u8 end_of_line = 0;											\
+								u16 array_length = length;										\
+																					\
+								printf("\n\t%04X  |  ", address);									\
+																					\
+								do {													\
+																					\
+									if (array_length != 0) {									\
+										printf("%02x ", array[buffer_index++]);							\
+										array_length--;										\
+									} else {											\
+										printf("__ ");										\
+									}												\
+																					\
+									if ( (i != 0) && ((i + 1) % 8) == 0) {								\
+										printf(" ");										\
+									}												\
+																					\
+									if ( !(++i % line_size) ) {									\
+																					\
+										printf(" |  ");										\
+																					\
+										while (character_index < buffer_index) {						\
+																					\
+											unsigned char c = (unsigned char) array[character_index++];			\
+											printf("%c", (c < 33 || c == 255) ? 0x2E : c);					\
+										}											\
+																					\
+										printf("\n");										\
+																					\
+										if (array_length != 0) {								\
+											address += line_size;								\
+											printf("\t%04X  |  ", address);							\
+										} else {										\
+											end_of_line = 1;								\
+										}											\
+									}												\
+																					\
+								} while (end_of_line == 0);										\
 							}
 
 // --------------------------------------------------------------------------------
