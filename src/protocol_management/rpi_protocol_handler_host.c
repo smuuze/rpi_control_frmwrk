@@ -46,6 +46,10 @@
 #define RPI_PROTOCOL_HANDLER_SCHEDULE_INTERVAL_MS		5
 #endif
 
+#ifndef RPI_PROTOCOL_HANDLER_WAIT_FOR_CFG_SCHEDULE_INTERVAL_MS
+#define RPI_PROTOCOL_HANDLER_WAIT_FOR_CFG_SCHEDULE_INTERVAL_MS	30
+#endif
+
 #ifndef RPI_HOST_COMMAND_BUFFER_SIZE
 #define RPI_HOST_COMMAND_BUFFER_SIZE				128
 #endif
@@ -338,6 +342,19 @@ static u16 rpi_protocol_task_get_schedule_interval(void) {
 
 static MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 
+	if (rpi_host_state == RPI_HOST_WAIT_FOR_USER_CFG) {
+		
+		if (RPI_OP_TIMER_is_up(RPI_PROTOCOL_HANDLER_WAIT_FOR_CFG_SCHEDULE_INTERVAL_MS)) {
+
+			DEBUG_TRACE_word(RPI_OP_TIMER_elapsed() ,"rpi_protocol_task_get_state() - Running unconfigured");
+
+			RPI_OP_TIMER_start();
+			return MCU_TASK_RUNNING;
+		} else {
+			return MCU_TASK_SLEEPING;
+		}
+	}
+
 	if (rpi_host_state != RPI_HOST_STATE_SLEEP) {
 		return MCU_TASK_RUNNING;
 	}
@@ -370,6 +387,9 @@ static void rpi_protocol_task_run(void) {
 				driver_cfg.module.spi = _com_driver_cfg_spi;
 				p_com_driver->configure(&driver_cfg);
 				rpi_host_state = RPI_HOST_STATE_SLEEP;
+
+			} else {
+				DEBUG_PASS("rpi_protocol_task_run() - No configuration available");
 			}
 
 			break;
