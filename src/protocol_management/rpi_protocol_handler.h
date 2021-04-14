@@ -78,6 +78,13 @@ void rpi_protocol_com_driver_rx_complete_callback(void);
  */
 void rpi_protocol_com_driver_tx_complete_callback(void);
 
+/**
+ * @brief 
+ * 
+ * @return u8 
+ */
+u8 rpi_protocol_handler_get_actual_state(void);
+
 //-----------------------------------------------------------------------------
 
 #endif //RPI_PROTOCOL_HANDLER_H_

@@ -53,6 +53,7 @@ UT_ACTIVATE()
 #define TEST_CASE_ID_RECEIVE_COMMAND				2
 #define TEST_CASE_ID_RESPONSE_TIMEOUT				3
 #define TEST_CASE_ID_RESPONSE_OVERFLOW				4
+#define TEST_CASE_ID_SLEEP_WHILE_UNCONFIGURED			5
 
 // --------------------------------------------------------------------------------
 
@@ -175,6 +176,36 @@ static void UNITTEST_rpi_protocol_host_init(void) {
 			mcu_task_controller_schedule();
 		}
 
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_OVERFLOW, 0);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_RECEIVED_NULL_POINTER_EXCEPTION, 0);
+		UT_CHECK_IS_EQUAL(counter_RESPONSE_OVERFLOW_EXCEPTION, 0);
+	}
+	UT_END_TEST_CASE()
+}
+
+static void UNITTEST_rpi_protocol_host_sleep_while_unconfigured(void) {
+	
+	UT_START_TEST_CASE("Rpi-Protocol-Host - Sleep while unconfigured")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_SLEEP_WHILE_UNCONFIGURED);
+
+		unittest_reset_counter();
+
+		UNITTEST_TIMER_start();
+
+		u8 counter_times_awake = 0;
+
+		while (UNITTEST_TIMER_is_up(250) == 0) {
+			mcu_task_controller_schedule();
+
+			if (rpi_protocol_handler_get_actual_state() != MCU_TASK_SLEEPING) {
+				counter_times_awake = counter_times_awake < 255 ? counter_times_awake + 1: counter_times_awake;
+			}
+		}
+
+		UT_CHECK_IS_EQUAL(counter_times_awake, 0);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_RECEIVED, 0);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_OVERFLOW, 0);
@@ -351,6 +382,9 @@ int main(void) {
 		CFG_PARSER_CFG_COMPLETE_SIGNAL_init();
 	
 		UNITTEST_rpi_protocol_host_init();
+	TRACER_ENABLE();
+		UNITTEST_rpi_protocol_host_sleep_while_unconfigured();
+	TRACER_DISABLE();
 
 		UT_RPI_HOST_RESPONSE_RECEIVED_SLOT_connect();
 		UT_RPI_HOST_RESPONSE_TIMEOUT_SLOT_connect();
