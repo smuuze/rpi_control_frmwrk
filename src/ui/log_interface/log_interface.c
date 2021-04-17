@@ -31,6 +31,7 @@
 #include "common/common_tools_datetime.h"
 #include "common/qeue_interface.h"
 #include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "time_management/time_management.h"
 
 // --------------------------------------------------------------------------------
 
@@ -75,6 +76,10 @@
 #define LOG_INTERFACE_QEUE_OVERFLOW_MESSAGE				"LOG-QEUE OVERFLOW_DETECTED"
 #endif
 
+#ifndef LOG_INTERFACE_SLEEPTIME
+#define LOG_INTERFACE_SLEEPTIME						1000
+#endif
+
 // --------------------------------------------------------------------------------
 
 #define LOG_INTERFACE_TEMP_STRING_LENGTH				5
@@ -94,7 +99,8 @@ typedef enum {
 	LOG_INTERFACE_TASK_STATE_CHECK_FILE,
 	LOG_INTERFACE_TASK_STATE_OPEN_FILE,
 	LOG_INTERFACE_TASK_STATE_CLOSE_FILE,
-	LOG_INTERFACE_TASK_STATE_WRITE_LOG
+	LOG_INTERFACE_TASK_STATE_WRITE_LOG,
+	LOG_INTERFACE_TASK_STATE_SLEEP
 } LOG_INTERFACE_TASK_STATE_TYPE;
 
 // --------------------------------------------------------------------------------
@@ -117,6 +123,10 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CFG_PARSER_NEW_CFG_OBJECT_SIGNAL, LOG_INTERFAC
 // --------------------------------------------------------------------------------
 
 FILE_INTERFACE_CREATE_FILE(LOG_FILE)
+
+// --------------------------------------------------------------------------------
+
+TIME_MGMN_BUILD_STATIC_TIMER_U16(LOG_OP_TIMER)
 
 // --------------------------------------------------------------------------------
 
@@ -318,6 +328,12 @@ static u16 log_interface_task_get_schedule_interval(void) {
 
 static MCU_TASK_INTERFACE_TASK_STATE log_interface_task_get_state(void) {
 
+	if (app_task_state == LOG_INTERFACE_TASK_STATE_SLEEP) {
+		if (LOG_OP_TIMER_is_up(LOG_INTERFACE_SLEEPTIME) == 0) {
+			return MCU_TASK_SLEEPING;
+		}
+	}
+
 	if (app_task_state != LOG_INTERFACE_TASK_STATE_IDLE) {
 		return MCU_TASK_RUNNING;
 	}
@@ -369,8 +385,10 @@ static void log_interface_task_run(void) {
 		case LOG_INTERFACE_TASK_STATE_OPEN_FILE :
 
 			if (LOG_FILE_open() == 0) {
-				DEBUG_PASS("log_interface_task_run() - Open new cfg-file has FAILED !!! ---");
-				app_task_state = LOG_INTERFACE_TASK_STATE_OPEN_FILE;
+				DEBUG_PASS("log_interface_task_run() - Open log-file has FAILED !!! ---");
+				DEBUG_PASS("log_interface_task_run() - LOG_INTERFACE_TASK_STATE_OPEN_FILE > LOG_INTERFACE_TASK_STATE_SLEEP");
+				app_task_state = LOG_INTERFACE_TASK_STATE_SLEEP;
+				LOG_OP_TIMER_start();
 				break;
 			}
 
@@ -400,6 +418,15 @@ static void log_interface_task_run(void) {
 			app_task_state = LOG_INTERFACE_TASK_STATE_IDLE;
 
 			break;
+
+		case LOG_INTERFACE_TASK_STATE_SLEEP :
+
+			if (LOG_OP_TIMER_is_up(LOG_INTERFACE_SLEEPTIME) == 0) {
+				break;
+			}
+
+			DEBUG_PASS("log_interface_task_run() - LOG_INTERFACE_TASK_STATE_SLEEP > LOG_INTERFACE_TASK_STATE_IDLE");
+			app_task_state = LOG_INTERFACE_TASK_STATE_IDLE;
 	}
 
 }
