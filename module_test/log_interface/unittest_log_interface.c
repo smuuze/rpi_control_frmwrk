@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -47,6 +47,7 @@ UT_ACTIVATE()
 #define TEST_CASE_ID_WRITE_LOG_FILE				3
 #define TEST_CASE_ID_LOG_FILE_SIZE_EXCEEDED			4
 #define TEST_CASE_ID_LOG_QEUE_OVERFLOW				5
+#define TEST_CASE_ID_ENTER_SLEEP_IF_ACCES_NOT_PERMITTED		6
 
 // --------------------------------------------------------------------------------
 
@@ -177,6 +178,10 @@ u8 file_open(FILE_INTERFACE* p_file) {
 
 	counter_FILE_OPEN += 1;
 	DEBUG_TRACE_STR(p_file->path, "file_open()");
+
+	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_ENTER_SLEEP_IF_ACCES_NOT_PERMITTED) {
+		return 0;
+	}
 
 	return 1;
 }
@@ -444,6 +449,43 @@ static void UNITTEST_log_interface_que_overflow(void) {
 	UT_END_TEST_CASE()
 }
 
+static void UNITTEST_log_interface_enter_sleep_if_access_not_permitted(void) {
+	
+	UT_START_TEST_CASE("Log_interface - Enter sleep if access is not permitted")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_ENTER_SLEEP_IF_ACCES_NOT_PERMITTED);
+
+		unittest_reset_counter();
+
+		log_message("First log message of the unittest");
+		log_message("Second log message of the unittest");
+		log_message("Third log message of the unittest");
+		log_message("Fourth log message of the unittest");
+		log_message("Fivth log message of the unittest");
+		log_message("Sixth log message of the unittest");
+		log_message("Seventh log message of the unittest");
+
+		UNITTEST_TIMER_start();
+		while (UNITTEST_TIMER_is_up(2100) == 0) {
+			mcu_task_controller_schedule();
+		}
+
+		UT_CHECK_IS_EQUAL(counter_FILE_SET_PATH, 3);
+		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 3);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 3);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_RENAME, 0);
+		UT_CHECK_IS_EQUAL(counter_FILE_CREATE, 3);
+		UT_CHECK_IS_EQUAL(counter_FILE_APPEND_LINE, 0);
+	}
+	UT_END_TEST_CASE()
+}
+
 // --------------------------------------------------------------------------------
 
 int main(void) {
@@ -461,6 +503,7 @@ int main(void) {
 		UNITTEST_log_interface_write_log_file();
 		UNITTEST_log_interface_log_file_size_too_big();
 		UNITTEST_log_interface_que_overflow();
+		UNITTEST_log_interface_enter_sleep_if_access_not_permitted();
 	}
 	UT_END_TESTBENCH()
 
