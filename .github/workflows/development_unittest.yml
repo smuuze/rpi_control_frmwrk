@@ -138,3 +138,17 @@ jobs:
       run: make unittest_debug
     - name: run unittest
       run: make run
+      
+
+  unittest_cli_executer:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/cli_executer
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make unittest_debug
+    - name: run unittest
+      run: make run
