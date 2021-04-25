@@ -15,7 +15,9 @@
 # PROJEKT Name des Hexfiles
 PROJECT = UNITTEST_cli_executer
 
-BOARD_ID = RASPBERRYPI
+BOARD_ID = UNITTEST
+
+PLATTFORM = MACOS
 
 #-----------------------------------------------------------------------------
 
@@ -31,7 +33,7 @@ MAKE_PATH   = $(FRMWRK_PATH)/make
 
 #-----------------------------------------------------------------------------
 
-MCU = RASPBERRY_PI
+MCU = UNITTEST
 
 #-----------------------------------------------------------------------------
 
