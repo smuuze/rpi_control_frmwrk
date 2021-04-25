@@ -31,7 +31,7 @@
 #include "common/common_types.h"
 #include "time_management/time_management.h"
 #include "ui/cfg_file_parser/cfg_file_parser.h"
-#include "protocol_management/mqtt/mqtt_interface.h"
+//#include "protocol_management/mqtt/mqtt_interface.h"
 #include "ui/file_interface/file_interface.h"
 
 // --------------------------------------------------------------------------------
@@ -53,7 +53,7 @@
 #endif
 
 #ifndef CLI_EXECUTER_TEST_COMMAND
-#define CLI_EXECUTER_TEST_COMMAND					"which "
+#define CLI_EXECUTER_TEST_COMMAND					"command -v "
 #endif
 
 // --------------------------------------------------------------------------------
@@ -339,51 +339,57 @@ static u8 cli_executer_test_process(const char* p_command) {
 	char command_without_arguments[CLI_EXECUTER_MAX_MESSAGE_LENGTH];
 	char command_test[CLI_EXECUTER_MAX_MESSAGE_LENGTH];
 
-	memset(command_test, '\0', CLI_EXECUTER_MAX_MESSAGE_LENGTH);
-
+	common_tools_string_clear(command_test, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
 	common_tools_string_split(' ', p_command, command_without_arguments, CLI_EXECUTER_MAX_MESSAGE_LENGTH, NULL, 0);
-	
+
 	common_tools_string_append(command_test, CLI_EXECUTER_TEST_COMMAND, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
 	common_tools_string_append(command_test, command_without_arguments, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
 
+	if (common_tools_string_ends_with(command_test, '&')) {
+		DEBUG_PASS("cli_executer_test_process() - No hang-Up command needs special handling");
+		common_tools_string_remove_last_character(command_test);
+	}
+
 	DEBUG_TRACE_STR(command_test, "cli_executer_test_process() - Testing command: ");
 
-	FILE* p_process_pipe = popen(command_test, "r");
+	FILE* test_pipe = popen(command_test, "r");
 
-	if ( p_process_pipe == NULL ) {
+	if ( test_pipe == NULL ) {
 		DEBUG_PASS("cli_executer_test_process() - popen() has FAILED !!!");
 		return 0;
 	}
 
-	if ( feof(p_process_pipe) ) {
-		DEBUG_PASS("cli_executer_test_process() - Command seems to be unknown - process not open");
-		fclose(p_process_pipe);
-		return 0;
-	}
-
 	char t_buffer[CLI_EXECUTER_MAX_MESSAGE_LENGTH];
-	memset(t_buffer, '\0', CLI_EXECUTER_MAX_MESSAGE_LENGTH);
+	common_tools_string_clear(t_buffer, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
+	u8 counter = 0;
 
-	if(fgets(t_buffer, CLI_EXECUTER_MAX_MESSAGE_LENGTH, p_process_pipe) == NULL) {
-		DEBUG_PASS("cli_executer_test_process() - Command seems to be unknown - cant read from process");
-		fclose(p_process_pipe);
-		return 0;
+	while (counter < CLI_EXECUTER_MAX_MESSAGE_LENGTH) {
+
+		char character = fgetc(test_pipe);
+		if (character == EOF) {
+			DEBUG_PASS("-- EOF --");
+			break;
+		}
+
+		t_buffer[counter++] = character;
 	}
+	
+	cli_executer_close_process(test_pipe);
+
+	DEBUG_TRACE_STR(t_buffer, "cli_executer_test_process() - Output: ");
 
 	if (strlen(t_buffer) == 0) {
 		DEBUG_PASS("cli_executer_test_process() - Command seems to be unknown - length of output is zero");
-		fclose(p_process_pipe);
 		return 0;
 	}
 
-	fclose(p_process_pipe);
 	DEBUG_PASS("cli_executer_test_process() - Command seems to be available");
 	return 1;
 }
 
 static void cli_executer_prepare_response(char* p_response, u8 max_response_length) {
 	DEBUG_PASS("cli_executer_prepare_response()");
-	memset(p_response, '\0', max_response_length);
+	common_tools_string_clear(p_response, max_response_length);
 }
 
 static u8 cli_executer_open_process(FILE* p_process_pipe, const char* p_command, char* p_response, u8 max_response_length, u16 timeout) {
@@ -427,7 +433,7 @@ static u8 cli_executer_open_process(FILE* p_process_pipe, const char* p_command,
 		DEBUG_PASS("cli_executer_open_process() - Get Output of process");
 
 		char t_buffer[CLI_EXECUTER_MAX_MESSAGE_LENGTH];
-		memset(t_buffer, '\0', CLI_EXECUTER_MAX_MESSAGE_LENGTH);
+		common_tools_string_clear(t_buffer, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
 
 		if(fgets(t_buffer, CLI_EXECUTER_MAX_MESSAGE_LENGTH, p_process_pipe) == NULL) {
 			break;
@@ -477,10 +483,7 @@ static void cli_executer_CLI_EXECUTER_COMMAND_RECEIVED_SLOT_CALLBACK(const void*
 
 	const char* p_command = (const char*) p_argument;
 
-	//memset(cli_executer_pending_command, '\0', CLI_EXECUTER_MAX_MESSAGE_LENGTH);
-	//memcpy(cli_executer_pending_command, p_command, strlen(p_command));
 	common_tools_string_copy_string(cli_executer_pending_command, p_command, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
-
 	common_tools_string_trim(cli_executer_pending_command);
 
 	CLI_EXECUTER_STATUS_set(CLI_EXECUTER_STATUS_COMMAND_RECEIVED);
