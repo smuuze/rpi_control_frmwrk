@@ -53,7 +53,15 @@
 #endif
 
 #ifndef CLI_EXECUTER_TEST_COMMAND
-#define CLI_EXECUTER_TEST_COMMAND					"command -v "
+#define CLI_EXECUTER_TEST_COMMAND					"which "
+#endif
+
+#ifndef CLI_EXECUTER_NEW_LINE_CHAR
+#define CLI_EXECUTER_NEW_LINE_CHAR					'\n'
+#endif
+
+#ifndef CLI_EXECUTER_NOT_HANG_UP_CHAR
+#define CLI_EXECUTER_NOT_HANG_UP_CHAR					'&'
 #endif
 
 // --------------------------------------------------------------------------------
@@ -64,7 +72,8 @@ typedef enum {
 	CLI_EXECUTER_TASK_TERMINATED,
 	CLI_EXECUTER_TASK_STATE_EXECUTE_COMMAND,
 	CLI_EXECUTER_TASK_STATE_WAIT_FOR_COMPLETION,
-	CLI_EXECUTER_TASK_STATE_CLOSE_PROCESS
+	CLI_EXECUTER_TASK_STATE_CLOSE_PROCESS,
+	CLI_EXECUTER_TASK_STATE_CLOSE_ON_FAIL
 } CLI_EXECUTER_TASK_STATE_TYPE;
 
 // --------------------------------------------------------------------------------
@@ -166,11 +175,6 @@ static char cli_executer_pending_command[CLI_EXECUTER_MAX_MESSAGE_LENGTH];
  */
 static char cli_executer_pending_response[CLI_EXECUTER_MAX_MESSAGE_LENGTH];
 
-/*!
- *
- */
-static FILE* process_pipe = NULL;
-
 // --------------------------------------------------------------------------------
 
 /*!
@@ -186,12 +190,9 @@ static void cli_executer_prepare_response(char* p_response, u8 max_response_leng
 /*!
  *
  */
-static u8 cli_executer_open_process(FILE* p_process_pipe, const char* p_command, char* p_response, u8 max_response_length, u16 timeout);
+static u8 cli_executer_open_process(const char* p_command, char* p_response, u8 max_response_length, u16 timeout);
 
-/*!
- *
- */
-static void cli_executer_close_process(FILE* p_process_pipe);
+static u32 counter_poepn_for_test = 0;
 
 // --------------------------------------------------------------------------------
 
@@ -287,12 +288,9 @@ static void cli_executer_task_run(void) {
 
 			cli_executer_prepare_response(cli_executer_pending_response, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
 				
-			if ( ! cli_executer_open_process(process_pipe, cli_executer_pending_command, cli_executer_pending_response, CLI_EXECUTER_MAX_MESSAGE_LENGTH, CLI_EXECUTER_EXECUTION_TIMEOUT_MS)) {
-				
-				CLI_EXECUTER_COMMAND_NOT_FOUND_SIGNAL_send(cli_executer_pending_command);
-
+			if ( ! cli_executer_open_process(cli_executer_pending_command, cli_executer_pending_response, CLI_EXECUTER_MAX_MESSAGE_LENGTH, CLI_EXECUTER_EXECUTION_TIMEOUT_MS)) {
 				DEBUG_PASS("cli_executer_task_run() - CLI_EXECUTER_TASK_STATE_EXECUTE_COMMAND >> CLI_EXECUTER_TASK_STATE_IDLE");
-				cli_executer_task_state = CLI_EXECUTER_TASK_STATE_IDLE;
+				cli_executer_task_state = CLI_EXECUTER_TASK_STATE_CLOSE_ON_FAIL;
 				break;
 			}
 
@@ -305,14 +303,18 @@ static void cli_executer_task_run(void) {
 
 		case CLI_EXECUTER_TASK_STATE_CLOSE_PROCESS:
 
-			cli_executer_close_process(process_pipe);
 			CLI_EXECUTER_COMMAND_RESPONSE_SIGNAL_send(cli_executer_pending_response);
 
 			DEBUG_PASS("cli_executer_task_run() - CLI_EXECUTER_TASK_STATE_CLOSE_PROCESS >> CLI_EXECUTER_TASK_STATE_IDLE");
 			cli_executer_task_state = CLI_EXECUTER_TASK_STATE_IDLE;
 			break;
+		
+		case CLI_EXECUTER_TASK_STATE_CLOSE_ON_FAIL :
 
-		case CLI_EXECUTER_TASK_TERMINATED :
+			CLI_EXECUTER_COMMAND_NOT_FOUND_SIGNAL_send(cli_executer_pending_command);
+
+			DEBUG_PASS("cli_executer_task_run() - CLI_EXECUTER_TASK_STATE_CLOSE_ON_FAIL >> CLI_EXECUTER_TASK_STATE_IDLE");
+			cli_executer_task_state = CLI_EXECUTER_TASK_STATE_IDLE;
 
 			break;
 	}
@@ -335,35 +337,43 @@ static void cli_executer_task_terminate(void) {
 // --------------------------------------------------------------------------------
 
 static u8 cli_executer_test_process(const char* p_command) {
+		
+	TRACER_ENABLE();
 
 	char command_without_arguments[CLI_EXECUTER_MAX_MESSAGE_LENGTH];
 	char command_test[CLI_EXECUTER_MAX_MESSAGE_LENGTH];
 
 	common_tools_string_clear(command_test, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
+	common_tools_string_clear(command_without_arguments, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
+
 	common_tools_string_split(' ', p_command, command_without_arguments, CLI_EXECUTER_MAX_MESSAGE_LENGTH, NULL, 0);
+
+	if (common_tools_string_ends_with(command_without_arguments, CLI_EXECUTER_NOT_HANG_UP_CHAR)) {
+		DEBUG_PASS("cli_executer_test_process() - No hang-Up command needs special handling");
+		common_tools_string_remove_last_character(command_without_arguments);
+	}
 
 	common_tools_string_append(command_test, CLI_EXECUTER_TEST_COMMAND, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
 	common_tools_string_append(command_test, command_without_arguments, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
 
-	if (common_tools_string_ends_with(command_test, '&')) {
-		DEBUG_PASS("cli_executer_test_process() - No hang-Up command needs special handling");
-		common_tools_string_remove_last_character(command_test);
-	}
-
 	DEBUG_TRACE_STR(command_test, "cli_executer_test_process() - Testing command: ");
+
+	DEBUG_TRACE_long(counter_poepn_for_test, "cli_executer_test_process() - Openings:");
 
 	FILE* test_pipe = popen(command_test, "r");
 
 	if ( test_pipe == NULL ) {
 		DEBUG_PASS("cli_executer_test_process() - popen() has FAILED !!!");
-		return 0;
+		goto cli_executer_test_process_NOT_AVAILABLE_EXIT;
 	}
+
+	counter_poepn_for_test += 1;
 
 	char t_buffer[CLI_EXECUTER_MAX_MESSAGE_LENGTH];
 	common_tools_string_clear(t_buffer, CLI_EXECUTER_MAX_MESSAGE_LENGTH);
 	u8 counter = 0;
 
-	while (counter < CLI_EXECUTER_MAX_MESSAGE_LENGTH) {
+	while (counter < CLI_EXECUTER_MAX_MESSAGE_LENGTH - 1) {
 
 		char character = fgetc(test_pipe);
 		if (character == EOF) {
@@ -371,20 +381,42 @@ static u8 cli_executer_test_process(const char* p_command) {
 			break;
 		}
 
+		if (character == CLI_EXECUTER_NEW_LINE_CHAR) {
+			DEBUG_PASS("-- NEW_LINE --");
+			break;
+		}
+
 		t_buffer[counter++] = character;
 	}
 	
-	cli_executer_close_process(test_pipe);
+	pclose(test_pipe);
 
 	DEBUG_TRACE_STR(t_buffer, "cli_executer_test_process() - Output: ");
 
 	if (strlen(t_buffer) == 0) {
 		DEBUG_PASS("cli_executer_test_process() - Command seems to be unknown - length of output is zero");
-		return 0;
+		goto cli_executer_test_process_NOT_AVAILABLE_EXIT;
+	}
+	
+	// sh: 1: /home/shc/scripts/sys_temp.sh: not found
+	if (common_tools_string_contains(t_buffer, "not found")) {
+		DEBUG_PASS("cli_executer_test_process() - SHELL says: command not found!");
+		goto cli_executer_test_process_NOT_AVAILABLE_EXIT;
 	}
 
+	if (common_tools_string_contains(t_buffer, command_without_arguments) == 0) {
+		DEBUG_TRACE_STR(command_without_arguments, "cli_executer_test_process() - Command path not in output");
+		goto cli_executer_test_process_NOT_AVAILABLE_EXIT;
+	}	
+
 	DEBUG_PASS("cli_executer_test_process() - Command seems to be available");
+	TRACER_DISABLE();
 	return 1;
+
+	cli_executer_test_process_NOT_AVAILABLE_EXIT:
+		DEBUG_PASS("cli_executer_test_process() - Command not available");
+		TRACER_DISABLE();
+		return 0;
 }
 
 static void cli_executer_prepare_response(char* p_response, u8 max_response_length) {
@@ -392,34 +424,30 @@ static void cli_executer_prepare_response(char* p_response, u8 max_response_leng
 	common_tools_string_clear(p_response, max_response_length);
 }
 
-static u8 cli_executer_open_process(FILE* p_process_pipe, const char* p_command, char* p_response, u8 max_response_length, u16 timeout) {
-	DEBUG_PASS("cli_executer_open_process()");
+static u8 cli_executer_open_process(const char* p_command, char* p_response, u8 max_response_length, u16 timeout) {
 	
-	if (p_process_pipe == NULL) {
+	DEBUG_PASS("cli_executer_open_process() - Openings:");	
 
-		if ( ! cli_executer_test_process(p_command) ) {
-			DEBUG_PASS("cli_executer_open_process() - Command not found !!!");
+	if ( ! cli_executer_test_process(p_command) ) {
+		DEBUG_PASS("cli_executer_open_process() - Command not found !!!");
+		return 0;
+	}
+
+	DEBUG_PASS("cli_executer_open_process() - Open Process");
+
+	if (common_tools_string_ends_with(p_command, CLI_EXECUTER_NOT_HANG_UP_CHAR)) {
+
+		DEBUG_PASS("cli_executer_open_process() - This is a NO_HANG_UP command - Ignoring output");
+
+		if (system(p_command) < 0) {
+			DEBUG_PASS("cli_executer_open_process() - system() has FAIELD !!! --");
 			return 0;
 		}
 
-		DEBUG_PASS("cli_executer_open_process() - Open Process");
-
-		u8 cmd_length = strlen(p_command);
-
-		if (p_command[cmd_length-1] == '&') {
-
-			DEBUG_PASS("cli_executer_open_process() - This is a NO_HANG_UP command - Ignoring output");
-
-			if (system(p_command) < 0) {
-				DEBUG_PASS("cli_executer_open_process() - system() has FAIELD !!! --");
-				return 0;
-			}
-
-			return 1;
-		}
-			
-		p_process_pipe = popen(p_command, "r"); // Send the command, popen exits immediately
-	}	
+		return 1;
+	}
+	
+	FILE* p_process_pipe = popen(p_command, "r"); // Send the command, popen exits immediately	
 
 	if ( p_process_pipe == NULL ) {
 		DEBUG_PASS("cli_executer_open_process() - popen() has FAILED !!!");
@@ -455,21 +483,12 @@ static u8 cli_executer_open_process(FILE* p_process_pipe, const char* p_command,
 		}
 	}
 
+	pclose(p_process_pipe);
+
 	common_tools_string_trim(p_response);
-
 	DEBUG_TRACE_STR(p_response, "cli_executer_wait_for_process() - Process Output:");
-	
+
 	return 1;
-}
-
-static void cli_executer_close_process(FILE* p_process_pipe) {
-
-	DEBUG_PASS("cli_executer_close_process()");
-
-	if (p_process_pipe != NULL) {
-		pclose(p_process_pipe);
-		p_process_pipe = NULL;
-	}
 }
 
 // --------------------------------------------------------------------------------

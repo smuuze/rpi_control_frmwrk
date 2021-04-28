@@ -73,6 +73,16 @@ u16 common_tools_string_append(char* p_string_base, const char* p_string_to_appe
  */
 u16 common_tools_string_length(const char* p_string);
 
+/**
+ * @brief 	Checks if a string is inside of another string
+ * 
+ * @param p_base_str null-terminated string where to look at
+ * @param p_search_str null-terminated string to look for
+ * @return 	1 : p_search_string was found inside of p_base_string
+ * 		0 : p_search_string is not inside of p_base_string
+ */
+u8 common_tools_string_contains(const char* p_base_str, const char* p_search_str);
+
 /*
  *
  */
