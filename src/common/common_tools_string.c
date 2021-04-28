@@ -290,6 +290,40 @@ u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from
 	return length;
 }
 
+u8 common_tools_string_contains(const char* p_base_str, const char* p_search_str) {
+
+	u16 base_length = strlen(p_base_str);
+	u16 search_length = strlen(p_search_str);
+
+	if (base_length == 0 || search_length == 0) {
+		DEBUG_PASS("common_tools_string_contains() - String-Length must not be 0");
+		DEBUG_TRACE_word(base_length, "- base_length:");
+		DEBUG_TRACE_word(search_length, "- search_length:");
+		return 0;
+	}
+
+	if (base_length < search_length) {
+		DEBUG_PASS("common_tools_string_contains() - String does not fit");
+		DEBUG_TRACE_word(base_length, "- base_length:");
+		DEBUG_TRACE_word(search_length, "- search_length:");
+		return 0;
+	}
+
+	u16 i = 0;
+	u16 limit = base_length - search_length + 1;
+
+	for ( ; i < limit ; i++ ) {
+
+		DEBUG_TRACE_STR(p_base_str + i, "STRING");
+
+		if (memcmp(p_base_str + i, p_search_str, search_length) == 0) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 void common_tools_string_from_u8(char* string_to, u16 max_string_length, u8 number) {
 	snprintf(string_to, max_string_length, "%d", number);
 }
