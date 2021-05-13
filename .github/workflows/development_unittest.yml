@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make all
     - name: run unittest
       run: make run
 
@@ -30,7 +30,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make all
     - name: run unittest
       run: make run
 
@@ -43,7 +43,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make all
     - name: run unittest
       run: make run
 
@@ -56,7 +56,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make all
     - name: run unittest
       run: make run
 
@@ -69,7 +69,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make all
     - name: run unittest
       run: make run
 
@@ -82,7 +82,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make all
     - name: run unittest
       run: make run
 
@@ -95,7 +95,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make all
     - name: run unittest
       run: make run
 
@@ -108,7 +108,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make all
     - name: run unittest
       run: make run
 
@@ -121,7 +121,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest
+      run: make all
     - name: run unittest
       run: make run
       
@@ -135,7 +135,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest_debug
+      run: make all
     - name: run unittest
       run: make run
       
@@ -149,6 +149,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
-      run: make unittest_debug
+      run: make all
     - name: run unittest
       run: make run
