@@ -243,6 +243,24 @@ u8 common_tools_string_ends_with(const char* p_string, char character) {
 	}
 }
 
+u8 common_tools_string_starts_with(const char* p_string, char character) {
+
+	u16 length = strlen(p_string);
+
+	if (length == 0) {
+		return 0;
+	}
+
+	DEBUG_TRACE_CHAR(p_string[length - 1], "common_tools_string_starts_with()");
+	DEBUG_TRACE_word(length, "common_tools_string_starts_with()");
+
+	if (p_string[0] == character) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
 u16 common_tools_string_length(const char* p_string) {
 	return strlen(p_string);
 }
