@@ -335,3 +335,6 @@ git_update:
 	$(VERBOSE) $(MAKE_FILE_RIGHTS)
 
 # --------- 
+
+show_version:
+	$(VERBOSE) $(ECHO) $(VERSION_MAJOR).$(VERSION_MINOR)
