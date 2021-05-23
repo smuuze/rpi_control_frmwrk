@@ -54,7 +54,11 @@ all: release_obj hex_file lss_file prog_size
 
 debug: debug_obj hex_file lss_file prog_size
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).$(PLATTFORM_EXTENSION) $(TARGET).$(PLATTFORM_EXTENSION)
+
+ifdef CC_COPY
 	$(VERBOSE) $(CP) $(OBJECT_DIRECTORY)/$(TARGET).map $(TARGET).map
+endif
+
 	$(VERBOSE) $(ECHO) $(MSG_PROG_LOCATION) $(TARGET).$(PLATTFORM_EXTENSION)
 	$(VERBOSE) $(ECHO) $(MSG_FINISH)
 
