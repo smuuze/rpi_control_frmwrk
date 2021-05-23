@@ -367,7 +367,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 	RPI_PROTOCOL_COMMAND_RECEIVED_SIGNAL_send(&rpi_protocol_i2c_interface);
 	//SIGNAL_CMD_RECEIVED_send(&rpi_protocol_i2c_interface);
 
-	EXIT_rpi_protocol_receive_command_ON_SUCCESS :
+	//EXIT_rpi_protocol_receive_command_ON_SUCCESS :
 	{
 		return error_code;
 	}
