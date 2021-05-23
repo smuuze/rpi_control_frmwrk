@@ -13,6 +13,10 @@
 
 // --------------------------------------------------------------------------------
 
+#define COMMAND_LINE_ARGUMENT_PREFIX_CHAR	'-'
+
+#define COMMAND_LINE_ARGUMENT_UNKNWON		"end"
+
 #define COMMAND_LINE_ARGUMENT_CFG_FILE		"-cfg"
 #define COMMAND_LINE_ARGUMENT_LCD		"-lcd"
 #define COMMAND_LINE_ARGUMENT_CONTROLLER	"-control"
@@ -23,6 +27,7 @@
 #define COMMAND_LINE_ARGUMENT_HELP		"-help"
 #define COMMAND_LINE_ARGUMENT_DEVICE		"-dev"
 #define COMMAND_LINE_ARGUMENT_COMMAND		"-cmd"
+#define COMMAND_LINE_ARGUMENT_REMOTE		"-remote"
 
 #define COMMAND_LINE_ARGUMENT_TOPIC		"-topic"
 #define COMMAND_LINE_ARGUMENT_HOST		"-host"
@@ -31,6 +36,16 @@
 
 #define COMMAND_LINE_ARGUMENT_HELP		"-help"
 #define COMMAND_LINE_ARGUMENT_HELP_SHORT	"-h"
+
+// --------------------------------------------------------------------------------
+
+/*
+ *
+ */
+typedef struct {
+	const char* argument;
+	const char* option;
+} COMMAND_LINE_ARGUMENT_TYPE;
 
 // --------------------------------------------------------------------------------
 
