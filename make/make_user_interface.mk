@@ -65,6 +65,13 @@ ifneq '' '$(findstring CLI_ARG_COMMAND,$(USER_INTERFACE_CFG))'
 	USER_INTERFACE_CFG += CLI_HANDLER
 endif
 
+ifneq '' '$(findstring CLI_ARG_REMOTE_CONTROL,$(USER_INTERFACE_CFG))'
+	DEFS += -D CLI_REMOTE_CONTROL_ARGUMENT_AVAILABLE=1
+	USER_INTERFACE_CFG += CLI_TABLE
+	USER_INTERFACE_CFG += CLI_HANDLER
+	CSRCS += $(COMMAND_LINE_INTERFACE_PATH)/command_line_handler_remote_control.c
+endif
+
 # --------------------------------------------------------------------------------
 
 ifneq '' '$(findstring CLI_TABLE,$(USER_INTERFACE_CFG))'

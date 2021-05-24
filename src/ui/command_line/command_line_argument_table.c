@@ -30,6 +30,11 @@
 
 #include "common/signal_slot_interface.h"
 #include "ui/command_line/command_line_interface.h"
+#include "common/common_tools_string.h"
+
+// --------------------------------------------------------------------------------
+
+#include "ui/command_line/command_line_handler_remote_control.h"
 
 // --------------------------------------------------------------------------------
 
@@ -79,6 +84,33 @@ void command_line_handler_console(const char* parameter);
 
 // --------------------------------------------------------------------------------
 
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_INVALID_ARGUMENT_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_INVALID_PARAMETER_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_HELP_REQUESTED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_LCD_ACTIVATED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONSOLE_ACTIVATED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONFIGURATION_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_MESSAGE_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_UNKNOWN_ARGUMENT_SIGNAL)
+
+// --------------------------------------------------------------------------------
+
+void command_line_handler_unknown_argument(const char* argument) {
+
+	DEBUG_TRACE_STR(argument, "command_line_handler_unknown_argument() - UNKNOWN CLI-ARGUMENT");
+		
+	char no_option[] = "\0";
+	
+	COMMAND_LINE_ARGUMENT_TYPE unknown_argument = {
+		.argument = argument,
+		.option = no_option
+	};
+
+	CLI_UNKNOWN_ARGUMENT_SIGNAL_send(&unknown_argument);
+}
+
+// --------------------------------------------------------------------------------
+
 static COMMAND_LINE_ARGUMENT_TABLE_TYPE command_line_argument_table[] = {
 	{ COMMAND_LINE_ARGUMENT_CFG_FILE, &command_line_handler_cfg_file },
 	{ COMMAND_LINE_ARGUMENT_LCD, &command_line_handler_lcd },
@@ -91,21 +123,16 @@ static COMMAND_LINE_ARGUMENT_TABLE_TYPE command_line_argument_table[] = {
 	{ COMMAND_LINE_ARGUMENT_CLIENT, &command_line_handler_client },
 	{ COMMAND_LINE_ARGUMENT_HELP, &command_line_handler_help },
 	{ COMMAND_LINE_ARGUMENT_HELP_SHORT, &command_line_handler_help },
-	{ COMMAND_LINE_ARGUMENT_CONSOLE, &command_line_handler_console }
+	{ COMMAND_LINE_ARGUMENT_CONSOLE, &command_line_handler_console },
+
+	#ifdef CLI_REMOTE_CONTROL_ARGUMENT_AVAILABLE
+	{ COMMAND_LINE_ARGUMENT_REMOTE, &command_line_handler_remote_control },
+	#endif
 	
+	{ COMMAND_LINE_ARGUMENT_UNKNWON, &command_line_handler_unknown_argument }
 };
 
-#define COMMAND_LINE_INTERFACE_HANDLER_TABLE_SIZE			12
-
-// --------------------------------------------------------------------------------
-
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_INVALID_ARGUMENT_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_INVALID_PARAMETER_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_HELP_REQUESTED_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_LCD_ACTIVATED_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONSOLE_ACTIVATED_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONFIGURATION_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_MESSAGE_SIGNAL)
+#define COMMAND_LINE_INTERFACE_HANDLER_TABLE_SIZE			0xFF
 
 // --------------------------------------------------------------------------------
 
@@ -128,28 +155,34 @@ void command_line_interface_init(void) {
 
 	DEBUG_PASS("command_line_interface_init() - CLI_MESSAGE_SIGNALinit()");
 	CLI_MESSAGE_SIGNAL_init();
+
+	DEBUG_PASS("command_line_interface_init() - CLI_UNKNOWN_ARGUMENT_SIGNAL_init()");
+	CLI_UNKNOWN_ARGUMENT_SIGNAL_init();
 }
 
 void command_line_interface(int argc, char* argv[]) {
 
-	DEBUG_TRACE_byte((u8)argc, "command_line_interface() - number of argumetns: ");
+	DEBUG_TRACE_byte((u8)argc, "command_line_interface() - number of arguments: ");
 
+	// loop through all given arguments
 	for (u8 j = 0; j < argc; j++) {
+
+		if (common_tools_string_starts_with(argv[j], COMMAND_LINE_ARGUMENT_PREFIX_CHAR) == 0) {
+			DEBUG_TRACE_STR(argv[j], "command_line_interface() - Not a cli-argument: ");
+			continue;
+		}
 
 		DEBUG_TRACE_STR(argv[j], "command_line_interface() - Parsing Argument: ");
 
+		// loop through all known options for every given arguments
 		for ( u8 i = 0 ; i < COMMAND_LINE_INTERFACE_HANDLER_TABLE_SIZE; i++) {
 
-			//DEBUG_TRACE_STR(command_line_argument_table[i].argument, "command_line_interface() - Table-Argument to match: ");
-
-			u8 length_cli_argument = strlen(argv[j]);
-			u8 length_table_argument = strlen(command_line_argument_table[i].argument);
-
-			if (length_cli_argument != length_table_argument) {
-				continue;
+			if ( common_tools_string_compare(command_line_argument_table[i].argument, COMMAND_LINE_ARGUMENT_UNKNWON) ) {
+				command_line_handler_unknown_argument(argv[j]);
+				break;
 			}
 
-			if (memcmp(argv[j], command_line_argument_table[i].argument, length_table_argument) == 0) {
+			if ( common_tools_string_compare(argv[j], command_line_argument_table[i].argument) ) {
 
 				//DEBUG_PASS("command_line_interface() - Argument is key");
 
@@ -158,6 +191,8 @@ void command_line_interface(int argc, char* argv[]) {
 				} else {
 					command_line_argument_table[i].callback(argv[j+1]);
 				}
+
+				break;
 			}
 		}
 	}
