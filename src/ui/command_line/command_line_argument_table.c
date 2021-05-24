@@ -92,6 +92,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONSOLE_ACTIVATED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONFIGURATION_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_MESSAGE_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_UNKNOWN_ARGUMENT_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_NO_ARGUMENT_GIVEN_SIGNAL)
 
 // --------------------------------------------------------------------------------
 
@@ -158,11 +159,19 @@ void command_line_interface_init(void) {
 
 	DEBUG_PASS("command_line_interface_init() - CLI_UNKNOWN_ARGUMENT_SIGNAL_init()");
 	CLI_UNKNOWN_ARGUMENT_SIGNAL_init();
+
+	DEBUG_PASS("command_line_interface_init() - CLI_NO_ARGUMENT_GIVEN_SIGNAL_init()");
+	CLI_NO_ARGUMENT_GIVEN_SIGNAL_init();
 }
 
 void command_line_interface(int argc, char* argv[]) {
 
 	DEBUG_TRACE_byte((u8)argc, "command_line_interface() - number of arguments: ");
+
+	if (argc == 0) {
+		CLI_NO_ARGUMENT_GIVEN_SIGNAL_send(NULL);
+		return;
+	}
 
 	// loop through all given arguments
 	for (u8 j = 0; j < argc; j++) {
