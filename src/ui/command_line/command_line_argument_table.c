@@ -168,13 +168,13 @@ void command_line_interface(int argc, char* argv[]) {
 
 	DEBUG_TRACE_byte((u8)argc, "command_line_interface() - number of arguments: ");
 
-	if (argc == 0) {
+	if (argc <= 1) {
 		CLI_NO_ARGUMENT_GIVEN_SIGNAL_send(NULL);
 		return;
 	}
 
 	// loop through all given arguments
-	for (u8 j = 0; j < argc; j++) {
+	for (u8 j = 1; j < argc; j++) {
 
 		if (common_tools_string_starts_with(argv[j], COMMAND_LINE_ARGUMENT_PREFIX_CHAR) == 0) {
 			DEBUG_TRACE_STR(argv[j], "command_line_interface() - Not a cli-argument: ");

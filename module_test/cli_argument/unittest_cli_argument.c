@@ -201,8 +201,8 @@ static void TEST_CASE_unknown_argument(void) {
 		UT_SET_TEST_CASE_ID(TEST_CASE_ID_UNKNOWN_COMMAND);
 		unittest_reset_counter();
 
-		int argc = 2;
-		char* argv[] = {"-eins", "zwei"};
+		int argc = 3;
+		char* argv[] = {"prog_call", "-eins", "zwei"};
 
 		command_line_interface(argc, argv);
 
@@ -228,7 +228,7 @@ static void TEST_CASE_no_argument_given(void) {
 		unittest_reset_counter();
 
 		int argc = 0;
-		char* argv[] = {"-eins"};
+		char* argv[] = {"prog_call"};
 
 		command_line_interface(argc, argv);
 
@@ -252,17 +252,17 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 	{	
 		UT_SET_TEST_CASE_ID(TEST_CASE_ID_JVC_RADIO_REMOTE_CONTROL);
 
-		int argc = 2;
-		char* arg_cmd_power_on[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_POWER_ON};
-		char* arg_cmd_volume_down[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_DOWN};
-		char* arg_cmd_volume_up[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_UP};
-		char* arg_cmd_volume_mute[]	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_MUTE};
-		char* arg_cmd_play[] 		= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PLAY};
-		char* arg_cmd_pause[] 		= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PAUSE};
-		char* arg_cmd_stop[] 		= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_STOP};
-		char* arg_cmd_bass_up[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_UP};
-		char* arg_cmd_bass_down[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_DOWN};
-		char* arg_cmd_sound_mode[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_SOUND_MODE};
+		int argc = 3;
+		char* arg_cmd_power_on[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_POWER_ON};
+		char* arg_cmd_volume_down[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_DOWN};
+		char* arg_cmd_volume_up[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_UP};
+		char* arg_cmd_volume_mute[]	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_MUTE};
+		char* arg_cmd_play[] 		= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PLAY};
+		char* arg_cmd_pause[] 		= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PAUSE};
+		char* arg_cmd_stop[] 		= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_STOP};
+		char* arg_cmd_bass_up[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_UP};
+		char* arg_cmd_bass_down[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_DOWN};
+		char* arg_cmd_sound_mode[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_SOUND_MODE};
 
 		u8 cmd_power_on[]		= { 0x07, 0x0C, 0x11, 0x04, 0x0B, 0x02, 0x02, 0x01 };
 		u8 cmd_volume_down[]		= { 0x07, 0x0C, 0x11, 0x04, 0x0B, 0x02, 0x02, 0x04 };
