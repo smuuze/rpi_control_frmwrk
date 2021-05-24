@@ -24,6 +24,23 @@ INCLUDE_GPIO ( IR_CARRIER_OUT )
 INCLUDE_GPIO ( IR_MOD_OUT )
 #define HAS_GPIO_IR_MOD_OUT
 
+INCLUDE_GPIO ( 	LCD_RS )
+#define HAS_GPIO_LCD_RS_OUT
+
+INCLUDE_GPIO ( 	LCD_EN )
+#define HAS_GPIO_LCD_EN_OUT
+
+INCLUDE_GPIO ( 	LCD_D4 )
+#define HAS_GPIO_LCD_D4_OUT
+
+INCLUDE_GPIO ( 	LCD_D5 )
+#define HAS_GPIO_LCD_D5_OUT
+
+INCLUDE_GPIO ( 	LCD_D6 )
+#define HAS_GPIO_LCD_D6_OUT
+
+INCLUDE_GPIO ( 	LCD_D7 )
+#define HAS_GPIO_LCD_D7_OUT
 
 // --------------------------------------------------------------------------------
 
