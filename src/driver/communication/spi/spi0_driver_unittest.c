@@ -1,7 +1,7 @@
 /*! 
  * --------------------------------------------------------------------------------
  *
- * \file	spi0_driver_raspberrypi.c
+ * \file	spi0_driver_unittest.c
  * \brief
  * \author	sebastian lesse
  *
