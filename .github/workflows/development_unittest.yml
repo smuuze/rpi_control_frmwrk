@@ -166,3 +166,17 @@ jobs:
       run: make all
     - name: run unittest
       run: make run
+      
+
+  unittest_print_trace_object:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/print_trace_object
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
