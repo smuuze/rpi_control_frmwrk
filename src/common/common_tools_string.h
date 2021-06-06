@@ -66,6 +66,49 @@ void common_tools_string_split(char splitter, const char* p_string_in, char* p_s
 u16 common_tools_string_append(char* p_string_base, const char* p_string_to_append, u16 max_length_string_base);
 
 /**
+ * @brief 	Appends a number to at the end of the given string
+ * 
+ * @param p_string_base String where the number is appended
+ * @param number the number to append to the string 
+ * @param max_length_string_base maximum length of p_string_base
+ * @return 	length of the new string, length of p_string_base + length of string of the number to append,
+ * 		or the length of p_string_base, if length of string of the number to append exceeds max_length_string_base
+ */
+u16 common_tools_string_append_number(char* p_string_base, u32 number, u16 max_length_string_base);
+
+/**
+ * @brief 
+ * 
+ * @param p_string_base 
+ * @param character 
+ * @param max_length_string_base 
+ * @return u16 
+ */
+u16 common_tools_string_append_character(char* p_string_base, char character, u16 max_length_string_base);
+
+/**
+ * @brief 
+ * 
+ * @param p_string_base 
+ * @param number 
+ * @param bit_length 
+ * @param max_length_string_base 
+ * @return u16 
+ */
+u16 common_tools_string_number_to_hex_string(char* p_string_base, u32 number, u8 bit_length, u16 max_length_string_base);
+
+/**
+ * @brief 
+ * 
+ * @param p_string_base 
+ * @param number 
+ * @param bit_length 
+ * @param max_length_string_base 
+ * @return u16 
+ */
+u16 common_tools_string_append_hex_number(char* p_string_base, u32 number, u8 bit_length, u16 max_length_string_base);
+
+/**
  * @brief Get the length of p_string
  * 
  * @param p_string valid string with terminating \0

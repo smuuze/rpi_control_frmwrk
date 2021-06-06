@@ -31,6 +31,10 @@
 
 // --------------------------------------------------------------------------------
 
+#include "common/common_tools_string.h"
+
+// --------------------------------------------------------------------------------
+
 void common_tools_hex_dump(const u8* p_buffer, u16 length) {
 
 	u16 i = 0;
@@ -223,6 +227,51 @@ u16 common_tools_string_append(char* p_string_base, const char* p_string_to_appe
 	DEBUG_TRACE_STR(p_string_base, "common_tools_string_append() - New String: ");
 
 	return length_of_new_string;
+}
+
+u16 common_tools_string_append_number(char* p_string_base, u32 number, u16 max_length_string_base) {
+
+	char number_string[32];
+	common_tools_string_clear(number_string, sizeof(number_string));
+	common_tools_string_from_i32(number_string, sizeof(number_string), (i32) number);
+	common_tools_string_append(p_string_base, number_string, max_length_string_base);
+	
+	return common_tools_string_length(p_string_base);
+}
+
+u16 common_tools_string_append_character(char* p_string_base, char character, u16 max_length_string_base) {
+
+	char character_string[] = {character, '\0'};
+	common_tools_string_append(p_string_base, character_string, max_length_string_base);
+	
+	return common_tools_string_length(p_string_base);
+}
+
+u16 common_tools_string_append_hex_number(char* p_string_base, u32 number, u8 bit_length, u16 max_length_string_base) {
+
+	char hex_number_string[10];
+	common_tools_string_clear(hex_number_string, sizeof(hex_number_string));
+	common_tools_string_number_to_hex_string(hex_number_string, number, bit_length, max_length_string_base);
+	common_tools_string_append(p_string_base, hex_number_string, max_length_string_base);
+	
+	return common_tools_string_length(p_string_base);
+}
+
+u16 common_tools_string_number_to_hex_string(char* p_string_base, u32 number, u8 bit_length, u16 max_length_string_base) {
+
+	if (bit_length > 32) {
+		// nothing to do here ...
+
+	} else if (bit_length > 16) {
+		snprintf(p_string_base, max_length_string_base, "%08X", number);
+
+	} else if (bit_length > 8) {
+		snprintf(p_string_base, max_length_string_base, "%04X", number);
+	} else {
+		snprintf(p_string_base, max_length_string_base, "%02X", number);
+	}
+
+	return common_tools_string_length(p_string_base);
 }
 
 u8 common_tools_string_ends_with(const char* p_string, char character) {
