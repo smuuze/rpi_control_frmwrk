@@ -44,6 +44,8 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_HELP_REQUESTED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_LCD_ACTIVATED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_CONSOLE_ACTIVATED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_CONFIGURATION_SIGNAL)
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_FILE_SIGNAL)
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_PATH_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_MESSAGE_SIGNAL)
 
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(RPI_HOST_COMMAND_RECEIVED_SIGNAL)
@@ -67,6 +69,16 @@ void command_line_handler_lcd(const char* parameter) {
 void command_line_handler_console(const char* parameter) {
 	DEBUG_PASS("command_line_handler_console()");
 	CLI_CONSOLE_ACTIVATED_SIGNAL_send(NULL);
+}
+
+void command_line_handler_file(const char* parameter) {
+	DEBUG_PASS("command_line_handler_file()");
+	CLI_ARGUMENT_FILE_SIGNAL_send((const void*) parameter);
+}
+
+void command_line_handler_path(const char* parameter) {
+	DEBUG_PASS("command_line_handler_path()");
+	CLI_ARGUMENT_PATH_SIGNAL_send((const void*) parameter);
 }
 
 void command_line_handler_command(const char* parameter) {
