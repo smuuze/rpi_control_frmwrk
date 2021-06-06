@@ -83,4 +83,12 @@ i32 common_tools_number_from_u8(u8 number, u8 is_signed) {
 	}
 }
 
+u16 common_tools_number_readU16_LSB(u8* p_buffer) {
+	return ((u16)p_buffer[1] << 8) + (u16)(p_buffer[0]);
+}
+
+u16 common_tools_number_readU16_MSB(u8* p_buffer) {
+	return ((u16)p_buffer[0] << 8) + (u16)(p_buffer[1]);
+}
+
 // --------------------------------------------------------------------------------

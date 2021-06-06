@@ -74,6 +74,22 @@ void common_tools_number_u16_to_array(u8* p_array, u16 number);
  */
 i32 common_tools_number_from_u8(u8 number, u8 is_signed);
 
+/**
+ * @brief Reads a unsigned 16 bit value from the given buffer as LSB-first value
+ * 
+ * @param p_buffer buffer to read from
+ * @return unsigend 16 Bite value LSB-first
+ */
+u16 common_tools_number_readU16_LSB(u8* p_buffer);
+
+/**
+ * @brief Reads a unsigned 16 bit value from the given buffer as MSB-first value
+ * 
+ * @param p_buffer buffer to read from
+ * @return unsigend 16 Bite value MSB-first
+ */
+u16 common_tools_number_readU16_MSB(u8* p_buffer);
+
 // --------------------------------------------------------------------------------
 
 #endif //COMMON_TOOLS_NUMBER_H_
