@@ -11,7 +11,15 @@
 #ifndef _USART0_DRIVER_H_
 #define _USART0_DRIVER_H_
 
+// --------------------------------------------------------------------------------
+
+#include "config.h"
+
+// --------------------------------------------------------------------------------
+
 #include "trx_driver_interface.h"
+
+// --------------------------------------------------------------------------------
 
 #ifndef USART0_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER
 #define USART0_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER	128
@@ -31,6 +39,8 @@
 
 #define USART0_DRIVER_RESPONSE_TO_BROADCAST_ENABLED	(1 << 0)
 #define USART0_DRIVER_RESPONSE_TO_BROADCAST_DISABLED	(0)
+
+// --------------------------------------------------------------------------------
 
 
 /*! --- Function prototypes --- */
@@ -144,5 +154,7 @@ u8 usart0_driver_mutex_request(void);
  * @param m_id
  */
 void usart0_driver_mutex_release(u8 m_id);
+
+// --------------------------------------------------------------------------------
 
 #endif // _USART0_DRIVER_H_

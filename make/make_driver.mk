@@ -40,7 +40,16 @@ endif
 
 ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_USART0=1
-	CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_atmega1284p.c
+
+	ifneq '' '$(findstring RASPBERRY_PI,$(MCU))'
+		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_raspberry_pi.c
+	else
+	ifneq '' '$(findstring UNITTEST,$(MCU))'
+		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_unittest.c
+	else
+		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_atmega1284p.c
+	endif
+	endif
 endif
 
 ifneq '' '$(findstring USART1,$(DRIVER_MODULE_CFG))'
