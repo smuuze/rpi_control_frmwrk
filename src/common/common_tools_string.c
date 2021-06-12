@@ -391,6 +391,22 @@ u8 common_tools_string_contains(const char* p_base_str, const char* p_search_str
 	return 0;
 }
 
+u16 common_tools_string_substring(char* p_string_to, const char* p_string_from, u16 start_idx, u16 length, u16 max_length) {
+
+	memset(p_string_to, '\0', max_length);
+
+	if (p_string_from == NULL) {
+		return 0;
+	}
+
+	if (length > max_length - 1) {
+		length = max_length - 1;
+	}
+
+	memcpy(p_string_to, p_string_from + start_idx, length);
+	return length;
+}
+
 void common_tools_string_from_u8(char* string_to, u16 max_string_length, u8 number) {
 	snprintf(string_to, max_string_length, "%d", number);
 }

@@ -126,6 +126,18 @@ u16 common_tools_string_length(const char* p_string);
  */
 u8 common_tools_string_contains(const char* p_base_str, const char* p_search_str);
 
+/**
+ * @brief Copies a sub-string. Befor the string is copied, p_string_to is completly cleared (all values are set to '\0').
+ * 
+ * @param p_string_to destination where the substring is stored into
+ * @param p_string_from Source from wher to read the substring
+ * @param start_idx start-index of the substring inside of p_string_from
+ * @param length number of characters to copy
+ * @param max_length maximum length of p_string_to
+ * @return u16 number of characters that has been copied to p_string_to
+ */
+u16 common_tools_string_substring(char* p_string_to, const char* p_string_from, u16 start_idx, u16 length, u16 max_length);
+
 /*
  *
  */
