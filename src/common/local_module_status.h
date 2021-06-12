@@ -116,38 +116,38 @@ void module_status_clear_all_u32(MODULE_STATUS_U32_TYPE* p_status);
 																	\
 	static MODULE_STATUS_U8_TYPE __##name##_module_status;										\
 																	\
-	inline static void name##_set(u8 bit_flag) 	{ module_status_set_u8(&(__##name##_module_status), bit_flag); }		\
-	inline static u8 name##_is_set(u8 bit_flag) 	{ return module_status_isset_u8(&(__##name##_module_status), bit_flag); }	\
-	inline static void name##_unset(u8 bit_flag) 	{ module_status_unset_u8(&(__##name##_module_status), bit_flag); }		\
-	inline static void name##_clear_all(void) 	{ module_status_clear_all_u8(&(__##name##_module_status)); }
+	__UNUSED__ inline static void name##_set(u8 bit_flag) 	{ module_status_set_u8(&(__##name##_module_status), bit_flag); }		\
+	__UNUSED__ inline static u8 name##_is_set(u8 bit_flag) 	{ return module_status_isset_u8(&(__##name##_module_status), bit_flag); }	\
+	__UNUSED__ inline static void name##_unset(u8 bit_flag) { module_status_unset_u8(&(__##name##_module_status), bit_flag); }		\
+	__UNUSED__ inline static void name##_clear_all(void) 	{ module_status_clear_all_u8(&(__##name##_module_status)); }
 
 #define BUILD_MODULE_STATUS_U16(name)													\
 																	\
 	static MODULE_STATUS_U16_TYPE __##name##_module_status;										\
 																	\
-	inline static void name##_set(u16 bit_flag) 	{ module_status_set_u16(&(__##name##_module_status), bit_flag); }		\
-	inline static u16 name##_is_set(u16 bit_flag) 	{ return module_status_isset_u16(&(__##name##_module_status), bit_flag); }	\
-	inline static void name##_unset(u16 bit_flag) 	{ module_status_unset_u16(&(__##name##_module_status), bit_flag); }		\
-	inline static void name##_clear_all(void) 	{ module_status_clear_all_u16(&(__##name##_module_status)); }
+	__UNUSED__ inline static void name##_set(u16 bit_flag) 	{ module_status_set_u16(&(__##name##_module_status), bit_flag); }		\
+	__UNUSED__ inline static u16 name##_is_set(u16 bit_flag){ return module_status_isset_u16(&(__##name##_module_status), bit_flag); }	\
+	__UNUSED__ inline static void name##_unset(u16 bit_flag){ module_status_unset_u16(&(__##name##_module_status), bit_flag); }		\
+	__UNUSED__ inline static void name##_clear_all(void) 	{ module_status_clear_all_u16(&(__##name##_module_status)); }
 
 #define BUILD_MODULE_STATUS_U32(name)													\
 																	\
 	static MODULE_STATUS_U32_TYPE __##name##_module_status;										\
 																	\
-	inline static void name##_set(u32 bit_flag) 	{ module_status_set_u32(&(__##name##_module_status), bit_flag); }		\
-	inline static u32 name##_is_set(u32 bit_flag) 	{ return module_status_isset_u32(&(__##name##_module_status), bit_flag); }	\
-	inline static void name##_unset(u32 bit_flag) 	{ module_status_unset_u32(&(__##name##_module_status), bit_flag); }		\
-	inline static void name##_clear_all(void) 	{ module_status_clear_all_u32(&(__##name##_module_status)); }
+	__UNUSED__ inline static void name##_set(u32 bit_flag) 	{ module_status_set_u32(&(__##name##_module_status), bit_flag); }		\
+	__UNUSED__ inline static u32 name##_is_set(u32 bit_flag){ return module_status_isset_u32(&(__##name##_module_status), bit_flag); }	\
+	__UNUSED__ inline static void name##_unset(u32 bit_flag){ module_status_unset_u32(&(__##name##_module_status), bit_flag); }		\
+	__UNUSED__ inline static void name##_clear_all(void) 	{ module_status_clear_all_u32(&(__##name##_module_status)); }
 
 
 #define BUILD_MODULE_STATUS_FAST(name, size)												\
 																	\
 	static u8 __##name##_module_status[size];											\
 																	\
-	inline static void name##_set(u8 index)		{ __##name##_module_status[index] = 1; }					\
-	inline static u8 name##_is_set(u8 index)	{ return __##name##_module_status[index] != 0 ? 1 : 0; }			\
-	inline static void name##_unset(u8 index)	{ __##name##_module_status[index] = 0; }					\
-	inline static void name##_clear_all(void)	{ memset(__##name##_module_status, 0x00, size); }				\
+	__UNUSED__ inline static void name##_set(u8 index)	{ __##name##_module_status[index] = 1; }					\
+	__UNUSED__ inline static u8 name##_is_set(u8 index)	{ return __##name##_module_status[index] != 0 ? 1 : 0; }			\
+	__UNUSED__ inline static void name##_unset(u8 index)	{ __##name##_module_status[index] = 0; }					\
+	__UNUSED__ inline static void name##_clear_all(void)	{ memset(__##name##_module_status, 0x00, size); }				\
 
 
 #define BUILD_MODULE_STATUS_FAST_VOLATILE(name, size)											\
