@@ -21,6 +21,7 @@
 // --------------------------------------------------------------------------------
 
 #include "common/common_tools_number.h"
+#include "common/common_tools_string.h"
 #include "tracer/trace_object.h"
 
 // --------------------------------------------------------------------------------
@@ -30,7 +31,9 @@ static u8 tracer_get_trace_type(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* p_
 	u8 raw_type = p_raw_object->data[TRACE_PARSER_INDEX_TRACE_TYPE];
 
 	switch (raw_type) {
-		default: return 0;
+		default: 
+			DEBUG_TRACE_byte(raw_type, "tracer_get_trace_type() - UNKNOWN: ");
+			return 0;
 		case TRACER_TRACE_TYPE_RAW_PASS  : 
 
 			p_trace_obj->type = TRACE_OBJECT_TYPE_PASS;
@@ -104,8 +107,9 @@ static void tracer_get_line_number(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT*
 			break;
 	}
 
-	DEBUG_TRACE_word(index, "tracer_get_line_number() - Index: %d");
+	DEBUG_TRACE_word(index, "tracer_get_line_number() - Index:");
 	p_trace_obj->line_number = common_tools_number_readU16_MSB(p_raw_object->data + index);
+	DEBUG_TRACE_word(p_trace_obj->line_number, "tracer_get_line_number() - Line-Number: ");
 }
 
 static void tracer_get_file_name(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* p_trace_obj) {
@@ -116,32 +120,46 @@ static void tracer_get_file_name(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* p
 
 	switch (p_trace_obj->type) {
 		default:
+			DEBUG_PASS("tracer_get_file_name() - UNKNOWN");
 			break;
 
 		case TRACE_OBJECT_TYPE_PASS  :
+
+			DEBUG_PASS("tracer_get_file_name() - TRACE_OBJECT_TYPE_PASS");
 			break;
 
 		case TRACE_OBJECT_TYPE_BYTE  : 
+
+			DEBUG_PASS("tracer_get_file_name() - TRACE_OBJECT_TYPE_BYTE");
 			index += 1;
 			length -= 1;
+
 			break;
 
 		case TRACE_OBJECT_TYPE_WORD  : 
+
+			DEBUG_PASS("tracer_get_file_name() - TRACE_OBJECT_TYPE_WORD");
 			index += 2;
 			length -= 2;
+
 			break;
 
 		case TRACE_OBJECT_TYPE_LONG  : 
+
+			DEBUG_PASS("tracer_get_file_name() - TRACE_OBJECT_TYPE_LONG");
 			index += 4;
 			length -= 4;
+
 			break;
 
 		case TRACE_OBJECT_TYPE_ARRAY : 
+
+			DEBUG_PASS("tracer_get_file_name() - TRACE_OBJECT_TYPE_ARRAY");
 			index = TRACE_PARSER_INDEX_TRACE_TYPE + TRACE_PARSER_NUM_BYTES_TRACE_TYPE + 2 + 1 + p_trace_obj->data_length;
 			length -= (1 + p_trace_obj->data_length);
+
 			break;
 	}
-
 
 	if (length > TRACE_OBJECT_FILE_NAME_LENGTH - 1) {
 		DEBUG_TRACE_word(length, "tracer_get_file_name() - OVERFLOW !! length > TRACE_OBJECT_FILE_NAME_LENGTH !!!");
@@ -160,9 +178,8 @@ static void tracer_get_file_name(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* p
 	DEBUG_TRACE_word(index, "tracer_get_file_name() - Index:");
 	DEBUG_TRACE_word(length, "tracer_get_file_name() - Length:");
 
-
-	memcpy(p_trace_obj->file_name, p_raw_object->data + index + offset, length);
-	p_trace_obj->file_name[length] = '\0';
+	common_tools_string_substring(p_trace_obj->file_name, (const char*)(p_raw_object->data), index + offset, length, TRACE_OBJECT_RAW_DATA_LENGTH);
+	DEBUG_TRACE_STR(p_trace_obj->file_name, "tracer_get_file_name() - File-Name:");
 }
 
 static void tracer_get_trace_data(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* p_trace_obj) {
@@ -173,9 +190,12 @@ static void tracer_get_trace_data(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* 
 
 	switch (p_trace_obj->type) {
 		default:
+			DEBUG_PASS("tracer_get_trace_data() - UNKNOWN !!! ---");
 			break;
 
 		case TRACE_OBJECT_TYPE_PASS  :
+
+			DEBUG_PASS("tracer_get_trace_data() - TRACE_OBJECT_TYPE_PASS");
 			p_trace_obj->data_length = 0;
 			break;
 
@@ -183,6 +203,7 @@ static void tracer_get_trace_data(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* 
 
 			p_trace_obj->data.byte = p_raw_object->data[index];
 			p_trace_obj->data_length = 1;
+			DEBUG_TRACE_byte(p_trace_obj->data.byte, "tracer_get_trace_data() - TRACE_OBJECT_TYPE_BYTE");
 
 			//index += 1;
 			//length -= 1;
@@ -193,6 +214,7 @@ static void tracer_get_trace_data(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* 
 			p_trace_obj->data.word = ((u16)p_raw_object->data[index + 1] << 8);
 			p_trace_obj->data.word += (u16)p_raw_object->data[index + 0];
 			p_trace_obj->data_length = 2;
+			DEBUG_TRACE_word(p_trace_obj->data.word, "tracer_get_trace_data() - TRACE_OBJECT_TYPE_WORD");
 
 			//index += 2;
 			//length -= 2;
@@ -205,6 +227,7 @@ static void tracer_get_trace_data(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* 
 			p_trace_obj->data.integer += ((u16)p_raw_object->data[index + 1] << 8);
 			p_trace_obj->data.integer += ((u16)p_raw_object->data[index + 0]);
 			p_trace_obj->data_length = 4;
+			DEBUG_TRACE_long(p_trace_obj->data.integer, "tracer_get_trace_data() - TRACE_OBJECT_TYPE_LONG");
 
 			//index += 4;
 			//length -= 4;
@@ -214,6 +237,7 @@ static void tracer_get_trace_data(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* 
 
 			p_trace_obj->data_length = p_raw_object->data[index] > TRACE_OBJECT_ARRAY_LENGTH ? TRACE_OBJECT_ARRAY_LENGTH : p_raw_object->data[index];
 			memcpy(p_trace_obj->data.array, p_raw_object->data + index + 1, p_trace_obj->data_length);
+			DEBUG_TRACE_N(p_trace_obj->data_length, p_trace_obj->data.array, "tracer_get_trace_data() - TRACE_OBJECT_TYPE_ARRAY");
 
 			//index = TRACE_PARSER_INDEX_TRACE_TYPE + TRACE_PARSER_NUM_BYTES_TRACE_TYPE + 2 + 1 + p_trace_obj->data_length;
 			//length -= (1 + p_trace_obj->data_length);
@@ -233,6 +257,8 @@ u8 tracer_parse_object(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* p_object) {
 		DEBUG_PASS("tracer_parse_object() - Incorrect header");
 		return 0;
 	}
+
+	DEBUG_TRACE_N(p_raw_object->length, p_raw_object->data, "tracer_parse_object() - RAW trace-object");
 
 	p_object->length = common_tools_number_readU16_MSB(p_raw_object->data + TRACE_PARSER_INDEX_BYTE_COUNT);
 	if (p_object->length == 0) {
