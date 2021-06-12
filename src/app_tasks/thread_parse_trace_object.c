@@ -27,6 +27,7 @@
 // --------------------------------------------------------------------------------
 
 #include "common/common_types.h"
+#include "common/local_module_status.h"
 #include "common/qeue_interface.h"
 
 #include "mcu_task_management/mcu_task_controller.h"
@@ -34,6 +35,12 @@
 
 #include "tracer/trace_object.h"
 #include "tracer/trace_parser.h"
+
+// --------------------------------------------------------------------------------
+
+#define PARSE_TRACE_OBJECT_STATUS_TERMINATED		(1 << 0)
+
+BUILD_MODULE_STATUS_U8(PARSE_TRACE_OBJECT_STATUS)
 
 // --------------------------------------------------------------------------------
 
@@ -53,6 +60,11 @@ void* thread_parse_trace_object_run(void* p_arg) {
 
 		usleep(50000); // reduce cpu-load
 
+		if (PARSE_TRACE_OBJECT_STATUS_is_set(PARSE_TRACE_OBJECT_STATUS_TERMINATED)) {
+			DEBUG_PASS("thread_parse_trace_object_run() - TERMINATE SIGNAL RECEIVED");
+			break;
+		}
+
 		if (RAW_TRACE_OBJECT_QEUE_is_empty()) {
 			continue;
 		}
@@ -69,7 +81,7 @@ void* thread_parse_trace_object_run(void* p_arg) {
 		}
 
 		if (tracer_parse_object(&raw_obj, &trace_obj) == 0) {
-			DEBUG_PASS("main() - Parsing Trace-Object has FAILED !!!");
+			DEBUG_PASS("thread_parse_trace_object_run() - Parsing Trace-Object has FAILED !!!");
 			continue;
 		}
 			
@@ -83,7 +95,7 @@ void* thread_parse_trace_object_run(void* p_arg) {
 			DEBUG_PASS("thread_parse_trace_object_run() - TRACE_OBJECT_QEUE is full");
 
 		} else if (TRACE_OBJECT_QEUE_enqeue(&trace_obj)) {
-			//DEBUG_PASS("thread_parse_trace_object_run() - TRACE_OBJECT enqeued <<<");
+			DEBUG_PASS("thread_parse_trace_object_run() - TRACE_OBJECT enqeued <<<");
 
 		} else {
 			DEBUG_PASS("thread_parse_trace_object_run() - TRACE_OBJECT enqeued has FAILED !!!");
@@ -92,11 +104,14 @@ void* thread_parse_trace_object_run(void* p_arg) {
 		TRACE_OBJECT_QEUE_mutex_release();
 	}
 
+	DEBUG_PASS("thread_parse_trace_object_run() - THREAD FINISHED");
+
 	return NULL;
 }
 
 void thread_parse_trace_object_terminate(void) {
-
+	DEBUG_PASS("thread_parse_trace_object_terminate()");
+	PARSE_TRACE_OBJECT_STATUS_set(PARSE_TRACE_OBJECT_STATUS_TERMINATED);
 }
 
 // ------------------------------------------------------------------------------
