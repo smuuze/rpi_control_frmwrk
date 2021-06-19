@@ -222,10 +222,10 @@ static void tracer_get_trace_data(TRACE_OBJECT_RAW* p_raw_object, TRACE_OBJECT* 
 
 		case TRACE_OBJECT_TYPE_LONG  : 
 		
-			p_trace_obj->data.integer  = ((u16)p_raw_object->data[index + 3] << 24);
-			p_trace_obj->data.integer += ((u16)p_raw_object->data[index + 2] << 16);		
-			p_trace_obj->data.integer += ((u16)p_raw_object->data[index + 1] << 8);
-			p_trace_obj->data.integer += ((u16)p_raw_object->data[index + 0]);
+			p_trace_obj->data.integer  = ((u32)p_raw_object->data[index + 3] << 24);
+			p_trace_obj->data.integer += ((u32)p_raw_object->data[index + 2] << 16);		
+			p_trace_obj->data.integer += ((u32)p_raw_object->data[index + 1] << 8);
+			p_trace_obj->data.integer += ((u32)p_raw_object->data[index + 0]);
 			p_trace_obj->data_length = 4;
 			DEBUG_TRACE_long(p_trace_obj->data.integer, "tracer_get_trace_data() - TRACE_OBJECT_TYPE_LONG");
 
