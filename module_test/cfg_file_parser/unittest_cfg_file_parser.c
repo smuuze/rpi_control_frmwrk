@@ -253,7 +253,7 @@ static u8 counter_NEW_CFG_OBJECT_RECEIVED = 0;
 
 static void unittest_CFG_PARSER_NEW_OBJECT_CALLBACK(const void* p_argument) {
 
-	CFG_FILE_PARSER_CFG_OBJECT_TYPE* cfg_obj = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*)p_argument;
+	__UNUSED__ CFG_FILE_PARSER_CFG_OBJECT_TYPE* cfg_obj = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*)p_argument;
 
 	DEBUG_PASS("unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK()");
 	DEBUG_TRACE_STR(cfg_obj->key, "unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK() - KEY: ");
