@@ -72,6 +72,10 @@
 #define UT_EQUATION_ERROR(value, reference)		printf(" - !! FAILED !! : %s = %ld (expected: %ld) in %s:%d\n", UT_GET_VAR_NAME(value), (long)value, (long)reference, __FILE__, __LINE__);
 #define UT_EQUATION_OK(value)				printf(" - OK : %s = %ld\n", UT_GET_VAR_NAME(value), (long)value);
 
+#define UT_MAX_MIN_OK(value, min, max)			printf(" - OK : %s = %ld (%ld <= %ld <= %ld)\n", UT_GET_VAR_NAME(value), (long)value, (long)min, (long)value, (long)max);
+#define UT_MAX_ERROR(value, max)			printf(" - !! FAILED !! : %s = %ld (expected %ld <= %ld)\n", UT_GET_VAR_NAME(value), (long)value, (long)value, (long)max);
+#define UT_MIN_ERROR(value, min)			printf(" - !! FAILED !! : %s = %ld (expected %ld >= %ld)\n", UT_GET_VAR_NAME(value), (long)value, (long)value, (long)min);
+
 #define UT_GREATER_OK(value, reference)			printf(" - OK : %s = %d > %d\n", UT_GET_VAR_NAME(value), value, reference);
 #define UT_GREATER_ERROR(value, reference)		printf(" - !! FAILED !! : %s <= %d (expected: %d) in %s:%d\n", UT_GET_VAR_NAME(value), value, reference, __FILE__, __LINE__);
 
@@ -134,6 +138,20 @@
 								UT_EQUATION_OK(value)											\
 							}
 
+#define UT_CHECK_IS_BETWEEN(value, max, min)		if (value > max) {												\
+								counter_TEST_FAILED += 1;										\
+								__ut_number_of_test_failed += 1;									\
+								UT_MAX_ERROR(value, max)										\
+							} else if (value < min) {											\
+								counter_TEST_FAILED += 1;										\
+								__ut_number_of_test_failed += 1;									\
+								UT_MIN_ERROR(value, min)										\
+							} else {													\
+								counter_TEST_PASSED += 1;										\
+								__ut_number_of_test_passed += 1;									\
+								UT_MAX_MIN_OK(value, min, max)										\
+							}
+
 #define UT_COMPARE_STRING(value, reference)		if (strlen(reference) != strlen(value) || memcmp(value, reference, strlen(reference)) != 0) {			\
 								counter_TEST_FAILED += 1;										\
 								__ut_number_of_test_failed += 1;									\
@@ -158,7 +176,7 @@
 									counter_TEST_FAILED += 1;									\
 																					\
 								} else {												\
-									u8 i = 0;											\
+									u16 i = 0;											\
 									u8 is_equal = 1;										\
 									for ( ; i < length; i++) {									\
 										if ((array1)[i] != (array2)[i]) {							\
