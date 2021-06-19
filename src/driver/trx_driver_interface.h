@@ -36,15 +36,15 @@ typedef void (*TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK)	(void);
 
 /*
  */
-typedef u8 (*TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK)	(void);
+typedef u16 (*TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK)	(void);
 
 /*
  */
-typedef u8 (*TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK)		(u8 num_byts_max, u8* p_buffer_to);
+typedef u16 (*TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK)	(u16 num_byts_max, u8* p_buffer_to);
 
 /*
  */
-typedef u8 (*TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK)		(u8 num_byts_max, const u8* p_buffer_from);
+typedef u16 (*TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK)		(u16 num_byts_max, const u8* p_buffer_from);
 
 /*
  */
@@ -52,7 +52,7 @@ typedef void (*TRX_DRIVER_INTERFACE_START_RX_CALLBACK)		(u16 num_of_rx_bytes);
 
 /*
  */
-typedef void (*TRX_DRIVER_INTERFACE_WAIT_FOR_RX_CALLBACK)	(u8 num_byts_max, u16 timeout_ms);
+typedef void (*TRX_DRIVER_INTERFACE_WAIT_FOR_RX_CALLBACK)	(u16 num_byts_max, u16 timeout_ms);
 
 
 /*
@@ -61,7 +61,7 @@ typedef void (*TRX_DRIVER_INTERFACE_START_TX_CALLBACK)		(void);
 
 /*
  */
-typedef void (*TRX_DRIVER_INTERFACE_WAIT_FOR_TX_CALLBACK)	(u8 num_byts_max, u16 timeout_ms);
+typedef void (*TRX_DRIVER_INTERFACE_WAIT_FOR_TX_CALLBACK)	(u16 num_byts_max, u16 timeout_ms);
 
 /*
  */

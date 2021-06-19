@@ -260,7 +260,7 @@ void tracer_trace_long(const char* str, const char* file_name, u16 line_id, u32 
 	p_com_driver->start_tx();
 }
 
-void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 length, const u8* p_buffer) {
+void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u16 length, const u8* p_buffer) {
 
 	(void) str;
 

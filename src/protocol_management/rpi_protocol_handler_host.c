@@ -207,7 +207,7 @@ static void rpi_host_send_command(void) {
 
 	//DEBUG_PASS("rpi_host_send_command()");
 
-	u8 num_bytes = (u8)RPI_HOST_COMMAND_BUFFER_bytes_available();
+	u16 num_bytes = RPI_HOST_COMMAND_BUFFER_bytes_available();
 	u8 p_buffer[RPI_HOST_COMMAND_BUFFER_SIZE];
 	
 	RPI_HOST_COMMAND_BUFFER_start_read();

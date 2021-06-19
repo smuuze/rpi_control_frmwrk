@@ -48,12 +48,12 @@ void usart0_driver_power_off(void) {
 
 }
 
-u8 usart0_driver_bytes_available(void) {
+u16 usart0_driver_bytes_available(void) {
 	return 0;
 }
 
 
-u8 usart0_driver_get_N_bytes(u8 num_bytes, u8* p_buffer_to) {
+u16 usart0_driver_get_N_bytes(u16 num_bytes, u8* p_buffer_to) {
 
 	(void)num_bytes;
 	(void)p_buffer_to;
@@ -62,7 +62,7 @@ u8 usart0_driver_get_N_bytes(u8 num_bytes, u8* p_buffer_to) {
 }
 
 
-u8 usart0_driver_set_N_bytes(u8 num_bytes, const u8* p_buffer_from) {
+u16 usart0_driver_set_N_bytes(u16 num_bytes, const u8* p_buffer_from) {
 
 	(void)num_bytes;
 	(void)p_buffer_from;
@@ -83,7 +83,7 @@ void usart0_driver_start_rx(u16 num_of_rx_bytes) {
 	(void) num_of_rx_bytes;
 }
 
-void usart0_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+void usart0_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 
@@ -97,7 +97,7 @@ void usart0_driver_start_tx(void) {
 
 }
 
-void usart0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+void usart0_driver_wait_for_tx(u16 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 
