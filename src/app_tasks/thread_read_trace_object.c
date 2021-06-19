@@ -62,16 +62,28 @@ static u8 main_read_trace_object_raw(const TRX_DRIVER_INTERFACE* p_com_driver, T
 		return 0;
 	}
 
+	p_raw_obj->length = 0;
+
 	// ----- Read Trace-Header -----
 
-	p_raw_obj->length = length;
+	//p_raw_obj->length = length;
 	p_com_driver->get_N_bytes(TRACE_PARSER_NUM_BYTES_HEADER, p_raw_obj->data);
 
 	u8 header[] = {TRACE_PARSER_HEADER_BYTE_ARRAY};
-	if (memcmp(p_raw_obj->data, header, TRACE_PARSER_NUM_BYTES_HEADER) != 0) {
-		DEBUG_PASS("main_read_trace_object_raw() - Matching header has FAILED !!!");
-		return 0;
+	while (memcmp(p_raw_obj->data, header, TRACE_PARSER_NUM_BYTES_HEADER) != 0) {
+
+		if (p_com_driver->bytes_available() == 0) {
+			DEBUG_PASS("main_read_trace_object_raw() - Matching header has FAILED !!!");
+			return 0;
+		}
+
+		p_raw_obj->data[0] = p_raw_obj->data[1];
+		p_raw_obj->data[1] = p_raw_obj->data[2];
+		p_com_driver->get_N_bytes(1, p_raw_obj->data + 2);
 	}
+	
+	DEBUG_PASS("main_read_trace_object_raw() - HEADER found - reading data");
+	p_raw_obj->length += TRACE_PARSER_NUM_BYTES_HEADER;
 
 	// ----- Read Trace-Number-Of-Bytes -----
 
@@ -83,6 +95,7 @@ static u8 main_read_trace_object_raw(const TRX_DRIVER_INTERFACE* p_com_driver, T
 
 		if (length < TRACE_PARSER_NUM_BYTES_BYTE_COUNT) {
 			DEBUG_PASS("main_read_trace_object_raw() - Waiting for number of bytes has FAILED !!!");
+			p_raw_obj->length = 0;
 			return 0;
 		}
 	}
@@ -92,9 +105,12 @@ static u8 main_read_trace_object_raw(const TRX_DRIVER_INTERFACE* p_com_driver, T
 	p_raw_obj->length += TRACE_PARSER_NUM_BYTES_BYTE_COUNT;
 	length = common_tools_number_readU16_MSB(p_raw_obj->data + TRACE_PARSER_NUM_BYTES_HEADER);
 
+	DEBUG_TRACE_word(length, "main_read_trace_object_raw() - Number of bytes to read");
+
 	// CHECK FOR BUFFER-OVERFLOW !!! ---
 
 	if (length > TRACE_OBJECT_RAW_DATA_LENGTH - (TRACE_PARSER_NUM_BYTES_BYTE_COUNT + TRACE_PARSER_NUM_BYTES_HEADER)) {
+		DEBUG_TRACE_word(length, "main_read_trace_object_raw() - Too much bytes");
 		length = TRACE_OBJECT_RAW_DATA_LENGTH - (TRACE_PARSER_NUM_BYTES_BYTE_COUNT + TRACE_PARSER_NUM_BYTES_HEADER);
 	}
 
@@ -106,6 +122,7 @@ static u8 main_read_trace_object_raw(const TRX_DRIVER_INTERFACE* p_com_driver, T
 
 		if (p_com_driver->bytes_available() < length) {
 			DEBUG_PASS("main_read_trace_object_raw() - Waiting for trace-data has FAILED !!!");
+			p_raw_obj->length = 0;
 			return 0;
 		}
 	}
@@ -113,6 +130,7 @@ static u8 main_read_trace_object_raw(const TRX_DRIVER_INTERFACE* p_com_driver, T
 	p_com_driver->get_N_bytes(length, p_raw_obj->data + TRACE_PARSER_NUM_BYTES_HEADER + TRACE_PARSER_NUM_BYTES_BYTE_COUNT);
 	if (length == 0) {
 		DEBUG_PASS("main_read_trace_object_raw() - usart_read_bytes(PAYLOAD) has FAILED !!!");
+		p_raw_obj->length = 0;
 		return 0;
 	}
 
@@ -135,7 +153,7 @@ void* thread_read_trace_object_run(void* p_arg) {
 		}
 	};
 	
-	const TRX_DRIVER_INTERFACE* p_com_driver = (const TRX_DRIVER_INTERFACE*) &i_system.driver.usart0;
+	const TRX_DRIVER_INTERFACE* p_com_driver = (const TRX_DRIVER_INTERFACE*) i_system.driver.usart0;
 	p_com_driver->initialize();
 	p_com_driver->configure(&usart0_config);
 
