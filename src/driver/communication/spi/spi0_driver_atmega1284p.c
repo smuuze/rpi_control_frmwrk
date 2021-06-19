@@ -385,7 +385,7 @@ void spi0_driver_power_off(void) {
 }
 
 
-u8 spi0_driver_bytes_available(void) {
+u16 spi0_driver_bytes_available(void) {
 
 	#if defined TRACES_ENABLED && defined SPI_RX_TRACES
 	{
@@ -396,13 +396,11 @@ u8 spi0_driver_bytes_available(void) {
 	}
 	#endif
 
-	u8 bytes_available = SPI0_RX_BUFFER_bytes_available();
-
-	return bytes_available;
+	return SPI0_RX_BUFFER_bytes_available();
 }
 
 
-u8 spi0_driver_get_N_bytes(u8 num_bytes, u8* p_buffer_to) {
+u16 spi0_driver_get_N_bytes(u16 num_bytes, u8* p_buffer_to) {
 
 	SPI0_RX_BUFFER_start_read();
 	u16 num_bytes_read = SPI0_RX_BUFFER_get_N_bytes(num_bytes, p_buffer_to);
@@ -414,7 +412,7 @@ u8 spi0_driver_get_N_bytes(u8 num_bytes, u8* p_buffer_to) {
 }
 
 
-u8 spi0_driver_set_N_bytes(u8 num_bytes, const u8* p_buffer_from) {
+u16 spi0_driver_set_N_bytes(u16 num_bytes, const u8* p_buffer_from) {
 
 	if (num_bytes > SPI0_TX_BUFFER_size()) {
 		num_bytes = SPI0_TX_BUFFER_size();
@@ -448,7 +446,7 @@ void spi0_driver_start_rx(u16 num_of_rx_bytes) {
 	SPI0_STATUS_set(SPI0_STATUS_RX_ACTIVE);
 }
 
-void spi0_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+void spi0_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms) {
 
 	//DEBUG_TRACE_byte(num_bytes, "spi0_driver_wait_for_rx() - Number of bytes:");
 	
@@ -524,7 +522,7 @@ void spi0_driver_start_tx(void) {
 	}
 }
 
-void spi0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+void spi0_driver_wait_for_tx(u16 num_bytes, u16 timeout_ms) {
 
 	if (num_bytes > SPI0_TX_BUFFER_bytes_available()) {
 		num_bytes = SPI0_TX_BUFFER_bytes_available();
@@ -537,7 +535,7 @@ void spi0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
 
 	TRACE_byte(num_bytes); // spi0_driver_wait_for_tx()
 
-	u8 bytes_transmitted = 0;
+	u16 bytes_transmitted = 0;
 	u16 time_reference_ms = time_mgmnt_gettime_u16();
 
 	while (bytes_transmitted < num_bytes) {
