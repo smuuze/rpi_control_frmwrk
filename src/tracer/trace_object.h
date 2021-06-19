@@ -35,6 +35,7 @@
 // ------------------------------------------------------------------------------
 
 #define TRACE_PARSER_HEADER_BYTE_ARRAY		0xFA,0xFA,0xFA
+#define TRACE_PARSER_FOOTER_BYTE_ARRAY		'\n'
 
 #define TRACE_PARSER_NUM_BYTES_HEADER		3
 #define TRACE_PARSER_NUM_BYTES_BYTE_COUNT	2
