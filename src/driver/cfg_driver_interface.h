@@ -50,7 +50,7 @@
 
 //----------------------------------------------------------------------------- 
 
-#define DRIVER_CFG_DEVICE_NAME_MAX_LENGTH			64
+#define DRIVER_CFG_DEVICE_NAME_MAX_LENGTH			96
 
 //----------------------------------------------------------------------------- 
 
@@ -105,7 +105,15 @@ typedef enum {
 	PARITY_ODD,
 } DRIVER_CFG_PARITY;
 
-/*!
+/**
+ * @brief On linux-system name of device file
+ * 
+ */
+typedef struct DRIVER_CFG_DEVICE_NAME {
+	char name[DRIVER_CFG_DEVICE_NAME_MAX_LENGTH];
+} DRIVER_CFG_DEVICE_NAME_TYPE;
+
+/**
  *
  */
 typedef struct CFG_DRIVER_SPI {
@@ -117,7 +125,7 @@ typedef struct CFG_DRIVER_SPI {
 	u8 data_order;
 	u8 interrupt_enable;
 	u32 speed;
-	char device[DRIVER_CFG_DEVICE_NAME_MAX_LENGTH];
+	//char device[DRIVER_CFG_DEVICE_NAME_MAX_LENGTH];
 
 } CFG_DRIVER_SPI;
 
@@ -149,7 +157,6 @@ typedef struct CFG_DRIVER_USART {
 
 } CFG_DRIVER_USART;
 
-
 /*!
  *
  */
@@ -162,6 +169,10 @@ typedef struct TRX_DRIVER_CONFIGURATION {
 		CFG_DRIVER_USART usart;
 
 	} module;
+
+	#if defined __raspberrypi__ || defined __unittest__
+	DRIVER_CFG_DEVICE_NAME_TYPE device;
+	#endif
 
 } TRX_DRIVER_CONFIGURATION;
 
