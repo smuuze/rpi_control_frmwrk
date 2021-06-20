@@ -5,8 +5,9 @@
 
 #define TRACER_OFF
 
+
 #ifdef TRACER_ON
-#warning __WARNING__TRACER_ENABLED__WARNING__
+#pragma __WARNING__TRACES_ENABLED__
 #endif
 
 //-----------------------------------------------------------------------------
@@ -175,14 +176,16 @@ static TRX_DRIVER_INTERFACE* p_com_driver = 0;
 /*!
  *
  */
-static CFG_DRIVER_SPI _com_driver_cfg_spi = {
-	RPI_PROTOCOL_HANDLER_DRIVER_CFG
+static TRX_DRIVER_CONFIGURATION _com_driver_cfg_spi = {
+	.module.spi = {
+		RPI_PROTOCOL_HANDLER_DRIVER_CFG
+	}
 };
 
 /*!
  *
  */
-static TRX_DRIVER_CONFIGURATION driver_cfg;
+//static TRX_DRIVER_CONFIGURATION driver_cfg;
 
 //-----------------------------------------------------------------------------
 
@@ -384,8 +387,8 @@ static void rpi_protocol_task_run(void) {
 
 				DEBUG_PASS("rpi_protocol_task_run() - RPI_HOST_WAIT_FOR_USER_CFG >> RPI_HOST_STATE_SLEEP");
 
-				driver_cfg.module.spi = _com_driver_cfg_spi;
-				p_com_driver->configure(&driver_cfg);
+				//driver_cfg.module.spi = _com_driver_cfg_spi.module.spi;
+				p_com_driver->configure(&_com_driver_cfg_spi);
 				rpi_host_state = RPI_HOST_STATE_SLEEP;
 
 			} else {
@@ -498,14 +501,15 @@ static void rpi_protocol_new_cfg_object_CALLBACK(const void* p_argument) {
 	if (common_tools_string_compare(RPI_PROTOCOL_SPEED_CFG_STRING, p_cfg_object->key)) {
 		
 		DEBUG_TRACE_STR(p_cfg_object->value, "rpi_protocol_new_cfg_object_CALLBACK() - RPI_PROTOCOL_SPEED_CFG_STRING :");
-		_com_driver_cfg_spi.speed = common_tools_string_to_u32(p_cfg_object->value);
+		_com_driver_cfg_spi.module.spi.speed = common_tools_string_to_u32(p_cfg_object->value);
 		return;
 	}
 
 	if (common_tools_string_compare(RPI_PROTOCOL_DEVICE_CFG_STRING, p_cfg_object->key)) {
 		
 		DEBUG_TRACE_STR(p_cfg_object->value, "rpi_protocol_new_cfg_object_CALLBACK() - RPI_PROTOCOL_DEVICE_CFG_STRING :");
-		common_tools_string_copy_string(_com_driver_cfg_spi.device, p_cfg_object->value, DRIVER_CFG_DEVICE_NAME_MAX_LENGTH);
+		common_tools_string_clear(_com_driver_cfg_spi.device.name, DRIVER_CFG_DEVICE_NAME_MAX_LENGTH);
+		common_tools_string_copy_string(_com_driver_cfg_spi.device.name, p_cfg_object->value, DRIVER_CFG_DEVICE_NAME_MAX_LENGTH);
 		return;
 	}
 
