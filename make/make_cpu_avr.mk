@@ -10,6 +10,7 @@ MCU_SIZE_FLAGS = --mcu=$(MCU_NAME)
 
 LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
 LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
+DEFS 		+= -D__avr__
 
 include $(FRMWRK_PATH)/make/make_cpu_avr_atmega1284p.mk
 
