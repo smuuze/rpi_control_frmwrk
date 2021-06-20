@@ -10,6 +10,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#pragma __WARNING__TRACES_ENABLED__
+#endif
+
 // --------------------------------------------------------------------------------
 
 #include "config.h"
@@ -53,7 +57,11 @@ QEUE_INTERFACE_INCLUDE_QEUE(RAW_TRACE_OBJECT_QEUE)
 
 // --------------------------------------------------------------------------------
 
-static u8 main_read_trace_object_raw(const TRX_DRIVER_INTERFACE* p_com_driver, TRACE_OBJECT_RAW* p_raw_obj) {
+static TRX_DRIVER_INTERFACE* p_com_driver = NULL;
+
+// --------------------------------------------------------------------------------
+
+static u8 main_read_trace_object_raw(TRACE_OBJECT_RAW* p_raw_obj) {
 
 	u16 length = p_com_driver->bytes_available();
 	//usart_read_bytes(p_com_driver, TRACE_PARSER_NUM_BYTES_HEADER, p_raw_obj->data, DEFAULT_USART_TIMEOUT_MS);
@@ -142,28 +150,17 @@ void* thread_read_trace_object_run(void* p_arg) {
 
 	DEBUG_PASS("thread_read_trace_object_run() - Thread started");
 
-	TRX_DRIVER_CONFIGURATION usart0_config = {
-		.module = {
-			.usart = {
-				.baudrate = BAUDRATE_230400,
-				.databits = DATABITS_8,
-				.stopbits = STOPBITS_1,
-				.parity = PARITY_NONE
-			}
-		}
-	};
-	
-	const TRX_DRIVER_INTERFACE* p_com_driver = (const TRX_DRIVER_INTERFACE*) i_system.driver.usart0;
-	p_com_driver->initialize();
-	p_com_driver->configure(&usart0_config);
-
 	TRACE_OBJECT_RAW raw_obj;
 
 	while (1) {
 
 		usleep(50000); // reduce cpu-load
 
-		if (main_read_trace_object_raw(p_com_driver, &raw_obj) == 0) {
+		if (p_com_driver == NULL) {
+			continue;
+		}
+
+		if (main_read_trace_object_raw(&raw_obj) == 0) {
 			continue;
 		}
 
@@ -188,6 +185,13 @@ void* thread_read_trace_object_run(void* p_arg) {
 
 void thread_read_trace_object_terminate(void) {
 
+}
+
+void thread_read_trace_object_set_com_driver(TRX_DRIVER_INTERFACE* p_driver) {
+	
+	p_com_driver = p_driver; //(const TRX_DRIVER_INTERFACE*) i_system.driver.usart0;
+	//p_com_driver->initialize();
+	//p_com_driver->configure(&usart0_config);
 }
 
 // --------------------------------------------------------------------------------
