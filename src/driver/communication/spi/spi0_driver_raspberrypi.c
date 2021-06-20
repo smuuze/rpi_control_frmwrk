@@ -10,6 +10,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#pragma __WARNING__TRACES_ENABLED__
+#endif
+
 // --------------------------------------------------------------------------------
 
 #include "config.h"
@@ -178,9 +182,9 @@ void spi0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	// device -------------------------
 	
-	DEBUG_TRACE_STR(p_cfg->module.spi.device, "spi0_driver_configure() - open device :");
+	DEBUG_TRACE_STR(p_cfg->device.name, "spi0_driver_configure() - open device :");
 
-	if ((spi0_cfg.handle = (i32)open(p_cfg->module.spi.device, O_RDWR)) >= 0) {
+	if ((spi0_cfg.handle = (i32)open(p_cfg->evice.name, O_RDWR)) >= 0) {
 		DEBUG_PASS("spi0_driver_configure() - Device open successfull");
 	
 	} else {
