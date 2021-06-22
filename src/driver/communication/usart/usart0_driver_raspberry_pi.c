@@ -56,7 +56,7 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(USART0_TIMEOUT_TIMER)
 #define USART0_STATUS_INITIALIZED	2
 #define USART0_STATUS_TERMINATED	3
 
-BUILD_MODULE_STATUS_FAST_VOLATILE(USART0_STATUS, 2)
+BUILD_MODULE_STATUS_FAST_VOLATILE(USART0_STATUS, 4)
 
 // --------------------------------------------------------------------------------
 
@@ -66,16 +66,22 @@ static u16 remote_usart_rx_bytes = 0;
  * @brief 
  * 
  */
-static int device_handle_id;
+static int device_handle_id = -1;
 
 // --------------------------------------------------------------------------------
+
+/**
+ * @brief Must be called to build and initialize the thread-object befor it can be used.
+ * 
+ */
+static void usart0_driver_raspberry_pi_init(void);
 
 /**
  * @brief runs in background in a seperate thread, reading incomming data from 
  * the usart interface
  * 
  */
-static void usart0_driver_raspberry_pi_background_read(void* p_arg);
+static void* usart0_driver_raspberry_pi_background_read(void* p_arg);
 
 /**
  * @brief Termiantes the thread of this module
@@ -85,12 +91,13 @@ static void usart0_driver_raspberry_pi_thread_terminate(void);
 
 // ------------------------------------------------------------------------------
 
-THREAD_INTERFACE_BUILD_THREAD(USART0_DRIVER_RPI_RX_THREAD, THREAD_PRIORITY_MIDDLE, usart0_driver_raspberry_pi_background_read, usart0_driver_raspberry_pi_thread_terminate)
+THREAD_INTERFACE_BUILD_THREAD(USART0_DRIVER_RPI_RX_THREAD, THREAD_PRIORITY_MIDDLE, usart0_driver_raspberry_pi_init, usart0_driver_raspberry_pi_background_read, usart0_driver_raspberry_pi_thread_terminate)
 
 // --------------------------------------------------------------------------------
 
 void usart0_driver_initialize(void) {
 	DEBUG_PASS("usart0_driver_initialize()");
+	USART0_DRIVER_RPI_RX_THREAD_init();
 }
 
 void usart0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
@@ -100,13 +107,17 @@ void usart0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 		return;
 	}
 
-	DEBUG_PASS("usart0_driver_configure()");
+	DEBUG_TRACE_STR(p_cfg->device.name, "usart0_driver_configure() - Device:");
 
 	USART0_RX_BUFFER_init();
 	USART0_TX_BUFFER_init();
 
 	//Open in non blocking read/write mode
 	device_handle_id = open(p_cfg->device.name, O_RDWR | O_NOCTTY | O_NDELAY);
+	if (device_handle_id < 0) {
+		DEBUG_PASS("usart0_driver_configure() - Opening device has FAILED !!! ---");
+		return;
+	}
 	
 	//CONFIGURE THE UART
 	//The flags (defined in /usr/include/termios.h - see http://pubs.opengroup.org/onlinepubs/007908799/xsh/termios.h.html):
@@ -152,13 +163,13 @@ void usart0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	switch (p_cfg->module.usart.parity) {
 		default:
-		case PARITY_NONE:	USART0_DRIVER_SET_PARITY_NONE(); DEBUG_PASS("usart0_driver_configure()"); break;
-		case PARITY_EVEN:	options.c_cflag |= PARENB; USART0_DRIVER_SET_PARITY_EVEN(); DEBUG_PASS("usart0_driver_configure()"); break;
-		case PARITY_ODD:	options.c_cflag |= (PARENB | PARODD); USART0_DRIVER_SET_PARITY_ODD();  DEBUG_PASS("usart0_driver_configure()"); break;
+		case PARITY_NONE:	DEBUG_PASS("usart0_driver_configure()"); break;
+		case PARITY_EVEN:	options.c_cflag |= PARENB; DEBUG_PASS("usart0_driver_configure()"); break;
+		case PARITY_ODD:	options.c_cflag |= (PARENB | PARODD); DEBUG_PASS("usart0_driver_configure()"); break;
 	}
 
-	tcflush(p_device->_handle_id, TCIFLUSH);
-	tcsetattr(p_device->_handle_id, TCSANOW, &options);
+	tcflush(device_handle_id, TCIFLUSH);
+	tcsetattr(device_handle_id, TCSANOW, &options);
 
 	USART0_STATUS_set(USART0_STATUS_INITIALIZED);
 
@@ -189,8 +200,6 @@ u16 usart0_driver_bytes_available (void) {
 
 u16 usart0_driver_get_N_bytes (u16 num_bytes, u8* p_buffer_to) {
 
-	DEBUG_PASS("usart0_driver_get_N_bytes()");
-
 	u16 num_bytes_available = USART0_RX_BUFFER_bytes_available();
 
 	if (num_bytes < num_bytes_available) {
@@ -201,7 +210,7 @@ u16 usart0_driver_get_N_bytes (u16 num_bytes, u8* p_buffer_to) {
 	USART0_RX_BUFFER_get_N_bytes(num_bytes_available, p_buffer_to);
 	USART0_RX_BUFFER_stop_read();
 
-	DEBUG_TRACE_N(num_bytes_available, p_buffer_to, "local_usart_driver_bytes_available()");
+	//DEBUG_TRACE_N(num_bytes_available, p_buffer_to, "usart0_driver_get_N_bytes()");
 
 	return num_bytes_available;
 }
@@ -212,7 +221,7 @@ u16 usart0_driver_set_N_bytes (u16 num_bytes, const u8* p_buffer_from) {
 		num_bytes = USART0_TX_BUFFER_size();
 	}
 
-	DEBUG_TRACE_N(num_bytes, p_buffer_from, "local_usart_driver_bytes_available()");
+	DEBUG_TRACE_N(num_bytes, p_buffer_from, "usart0_driver_set_N_bytes()");
 
 	USART0_TX_BUFFER_start_write(); // this will delete all data added so far
 	USART0_TX_BUFFER_add_N_bytes(num_bytes, p_buffer_from);
@@ -239,12 +248,14 @@ void usart0_driver_start_rx(u16 num_of_rx_bytes) {
 
 void usart0_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms) {
 
+	DEBUG_TRACE_word(timeout_ms, "usart0_driver_wait_for_rx() - Timeout:");
+
 	USART0_TIMEOUT_TIMER_start();
 
 	while (USART0_RX_BUFFER_bytes_available() < num_bytes) {
 
 		if (USART0_TIMEOUT_TIMER_is_up(timeout_ms)) {
-			DEBUG_PASS("usart0_driver_wait_for_rx() - TIMEOUT !!! ---");
+			DEBUG_TRACE_word(USART0_TIMEOUT_TIMER_elapsed(), "usart0_driver_wait_for_rx() - TIMEOUT !!! ---");
 			break;
 		}
 
@@ -254,7 +265,7 @@ void usart0_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms) {
 
 void usart0_driver_stop_rx (void) {
 
-	LOCAL_USART_RX_PASS(); // local_usart_driver_stop_rx()
+	DEBUG_PASS("local_usart_driver_stop_rx()");
 	USART0_STATUS_unset(USART0_STATUS_RX_ACTIVE);
 }
 
@@ -265,19 +276,21 @@ u8 usart0_driver_is_ready_for_tx (void) {
 
 void usart0_driver_start_tx (void) {
 
-	LOCAL_USART_TX_PASS(); // local_usart_driver_start_tx()
+	DEBUG_PASS("local_usart_driver_start_tx()");
 
 	USART0_STATUS_set(USART0_STATUS_TX_ACTIVE);
 	USART0_TX_BUFFER_start_read();
 
+	/*
 	while (USART0_TX_BUFFER_bytes_available() > 0) {
 
 		USART0_DRIVER_WAIT_UNTIL_TX_RDY();
 
 		u8 byte = USART0_TX_BUFFER_get_byte();
-		LOCAL_USART_TX_TRACE_byte(byte); // local_usart_driver_start_tx
+		DEBUG_TRACE_byte(byte, "local_usart_driver_start_tx");
 		USART0_DRIVER_SET_BYTE(byte);
 	}
+	*/
 
 	USART0_TX_BUFFER_stop_read();
 }
@@ -317,13 +330,19 @@ void usart0_driver_mutex_release(u8 m_id) {
 
 // --------------------------------------------------------------------------------
 
-static void usart0_driver_raspberry_pi_background_read(void* p_arg) {
+static void usart0_driver_raspberry_pi_init(void) {
+	DEBUG_PASS("usart0_driver_raspberry_pi_init()");
+}
+
+static void* usart0_driver_raspberry_pi_background_read(void* p_arg) {
 
 	(void) p_arg;
 
+	DEBUG_PASS("usart0_driver_raspberry_pi_background_read() - Thread started");
+
 	while (1) {
 
-		usleep(50000);
+		usleep(1000);
 
 		if (USART0_STATUS_is_set(USART0_STATUS_TERMINATED)) {
 			break;
@@ -336,16 +355,20 @@ static void usart0_driver_raspberry_pi_background_read(void* p_arg) {
 		unsigned char byte = 0;
 		int length = read(device_handle_id, (void*)(&byte), 1);
 
-		if (length > 0) {
+		while (length > 0) {
 
 			USART0_RX_BUFFER_start_write();
 			USART0_RX_BUFFER_add_byte(byte);
 			USART0_RX_BUFFER_stop_write();
+
+			length = read(device_handle_id, (void*)(&byte), 1);
 		}
 	}
 
 	close(device_handle_id);
 	USART0_STATUS_unset(USART0_STATUS_INITIALIZED);
+
+	return NULL;
 }
 
 static void usart0_driver_raspberry_pi_thread_terminate(void) {
