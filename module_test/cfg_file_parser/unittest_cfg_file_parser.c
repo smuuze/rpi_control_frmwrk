@@ -30,6 +30,7 @@ UT_ACTIVATE()
 #include "ui/cfg_file_parser/cfg_file_parser.h"
 #include "ui/console/ui_console.h"
 #include "ui/file_interface/file_interface.h"
+#include "time_management/time_management.h"
 
 // --------------------------------------------------------------------------------
 
@@ -37,28 +38,31 @@ UT_ACTIVATE()
 
 // --------------------------------------------------------------------------------
 
-#define TEST_CASE_ID_FILE_NOT_EXISITING			0
-#define TEST_CASE_ID_FILE_NOT_READABLE			1
-#define TEST_CASE_ID_FILE_NOT_OPEN			2
+#define TEST_CASE_ID_FILE_NOT_EXISITING				0
+#define TEST_CASE_ID_FILE_NOT_READABLE				1
+#define TEST_CASE_ID_FILE_NOT_OPEN				2
 
 // --------------------------------------------------------------------------------
 
-#define TEST_CASE_ID_LINE_IS_EMPTY_01			3
-#define TEST_CASE_ID_LINE_IS_EMPTY_02			4
-#define TEST_CASE_ID_LINE_IS_COMMENT_01			5
-#define TEST_CASE_ID_LINE_IS_EMPTY_03			6
-#define TEST_CASE_ID_LINE_IS_COMMENT_02			7
-#define TEST_CASE_ID_LINE_IS_NO_CFG_PAIR_01		8
-#define TEST_CASE_ID_LINE_IS_TOO_LONG_01		9
-#define TEST_CASE_ID_LINE_CONTAINS_MULTIPLE_EQUALS	10
-#define TEST_CASE_ID_LINE_KEY_NOT_AVAILABLE_01		11
-#define TEST_CASE_ID_LINE_VALUE_NOT_AVAILABLE_01	12
-#define TEST_CASE_ID_LINE_STARTS_WITH_WHITESPACE	13
-#define TEST_CASE_ID_LINE_STARTS_WITH_TAB		14
+#define TEST_CASE_ID_INIT					1
+#define TEST_CASE_ID_WAIT_FOR_SIGNAL_COMPLETE_TIMEOUT		2
+#define TEST_CASE_ID_FILE_EXISTING				3
+#define TEST_CASE_ID_FILE_NOT_EXISTING				4
+// --------------------------------------------------------------------------------
 
-#define TEST_CASE_ID_END_OF_FILE			15
+TIME_MGMN_BUILD_STATIC_TIMER_U16(UNITTEST_TIMER)
 
 // --------------------------------------------------------------------------------
+
+static u8 counter_NEW_CFG_OBJECT_RECEIVED = 0;
+static u8 counter_CFG_COMPLETE_SIGNAL = 0;
+
+// --------------------------------------------------------------------------------
+
+static void unittest_reset_counter(void) {
+	counter_NEW_CFG_OBJECT_RECEIVED = 0;
+	counter_CFG_COMPLETE_SIGNAL = 0;
+}
 
 static int preapre_line(char* line_to, char* line_from, int line_length, int max_line_length) {
 
@@ -249,8 +253,6 @@ u8 file_append_line(FILE_INTERFACE* p_file, const char* new_line) {
 
 // slots
 
-static u8 counter_NEW_CFG_OBJECT_RECEIVED = 0;
-
 static void unittest_CFG_PARSER_NEW_OBJECT_CALLBACK(const void* p_argument) {
 
 	__UNUSED__ CFG_FILE_PARSER_CFG_OBJECT_TYPE* cfg_obj = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*)p_argument;
@@ -266,6 +268,7 @@ static void unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK(const void* p_argument) {
 	(void) p_argument;
 
 	DEBUG_PASS("unittest_CFG_PARSER_CFG_COMPLETE_CALLBACK()");
+	counter_CFG_COMPLETE_SIGNAL += 1;
 }
 
 // --------------------------------------------------------------------------------
@@ -277,11 +280,53 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONFIGURATION_SIGNAL)
 
 // --------------------------------------------------------------------------------
 
+static void TEST_CASE_init(void) {
+
+	UT_START_TEST_CASE("CFG_FILE_PARSER_INIT")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_INIT);
+		unittest_reset_counter();
+
+		cfg_file_parser_init();
+
+		UNITTEST_NEW_CFG_OBJECT_SLOT_connect();
+		UNITTEST_CFG_COMPLETE_SLOT_connect();
+
+		UNITTEST_TIMER_start();
+		while (UNITTEST_TIMER_is_up(50) == 0) {
+			mcu_task_controller_schedule();
+		}
+
+		UT_CHECK_IS_EQUAL(counter_NEW_CFG_OBJECT_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_CFG_COMPLETE_SIGNAL, 0);
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_wait_for_signal_complete_timeout(void) {
+
+	UT_START_TEST_CASE("CFG_FILE_PARSER_SEND_COMPLETE_SIGNAL_TIMEOUT")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_WAIT_FOR_SIGNAL_COMPLETE_TIMEOUT);
+		unittest_reset_counter();
+
+		UNITTEST_TIMER_start();
+		while (UNITTEST_TIMER_is_up(500) == 0) {
+			mcu_task_controller_schedule();
+		}
+
+		UT_CHECK_IS_EQUAL(counter_NEW_CFG_OBJECT_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_CFG_COMPLETE_SIGNAL, 1);
+	}
+	UT_END_TEST_CASE()
+}
+
 static void TEST_CASE_file_not_existing(void) {
 
-	UT_START_TEST_CASE("CLI_EXECUTER_EXECUTION_COMMAND_UNKNOWN")
+	UT_START_TEST_CASE("CFG_FILE_PARSER_FILE_NOT_EXISTING")
 	{	
-		UT_SET_TEST_CASE_ID(TEST_CASE_ID_FILE_NOT_OPEN);
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_FILE_NOT_EXISITING);
+		unittest_reset_counter();
 
 		const char cfg_file_path[] = UNITTEST_CFG_FILE_PATH;
 
@@ -298,9 +343,10 @@ static void TEST_CASE_file_not_existing(void) {
 
 static void TEST_CASE_file_existing(void) {
 
-	UT_START_TEST_CASE("CLI_EXECUTER_EXECUTION_COMMAND_UNKNOWN")
+	UT_START_TEST_CASE("CFG_FILE_PARSER_FILE_EXISTING")
 	{	
-		UT_SET_TEST_CASE_ID(TEST_CASE_ID_LINE_IS_EMPTY_01);
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_FILE_EXISTING);
+		unittest_reset_counter();
 
 		const char cfg_file_path[] = UNITTEST_CFG_FILE_PATH;
 
@@ -321,13 +367,9 @@ int main(void) {
 
 	UT_START_TESTBENCH("Welcome the the UNITTEST for cfg-file-parser v2.0")
 	{
-		cfg_file_parser_init();
-		cfg_file_parser_task_init();
-		UNITTEST_NEW_CFG_OBJECT_SLOT_connect();
-		UNITTEST_CFG_COMPLETE_SLOT_connect();
-
+		TEST_CASE_init();
+		TEST_CASE_wait_for_signal_complete_timeout();
 		TEST_CASE_file_not_existing();
-
 		TEST_CASE_file_existing();
 	}
 	UT_END_TESTBENCH()
