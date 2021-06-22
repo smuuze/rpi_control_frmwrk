@@ -73,7 +73,13 @@ typedef struct {
 // ------------------------------------------------------------------------------
 
 #define THREAD_INTERFACE_BUILD_THREAD(name, prio, p_init, p_run, p_terminate)				\
-	static THREAD_INTERFACE_TYPE __##name##_thread_obj;						\
+	static THREAD_INTERFACE_TYPE __##name##_thread_obj = {						\
+		.id = 0,										\
+		.priority = THREAD_PRIORITY_LOW,							\
+		.init = NULL,										\
+		.run = NULL,										\
+		.terminate = NULL,									\
+	};												\
 													\
 	void name##_init(void) {									\
 		thread_interface_build(&__##name##_thread_obj, prio, &p_init, &p_run, &p_terminate);	\
