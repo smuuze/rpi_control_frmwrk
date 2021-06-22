@@ -10,6 +10,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#pragma __WARNING__TRACES_ENABLED__
+#endif
+
 // --------------------------------------------------------------------------------
 
 #include "config.h"
@@ -93,7 +97,7 @@ static char src_base_path[PRINT_TRACE_OBJECT_TRACE_OUTPUT_FILE_NAME_MAX_LENGTH];
 
 static void main_get_traceoutput_from_source_line(char* p_string_to, char* p_string_from) {
 
-	DEBUG_PASS("main_get_traceoutput_from_source_line()");
+	//DEBUG_PASS("main_get_traceoutput_from_source_line()");
 
 	u16 length = common_tools_string_length(p_string_from);
 	u16 i = 0;
@@ -119,7 +123,7 @@ static void main_get_traceoutput_from_source_line(char* p_string_to, char* p_str
 	length = end - start + 1;
 	common_tools_string_copy_string(p_string_to, p_string_from + start, length);
 
-	DEBUG_TRACE_STR(p_string_to, "main_get_traceoutput_from_source_line() - DEBUG-STRING: ");
+	//DEBUG_TRACE_STR(p_string_to, "main_get_traceoutput_from_source_line() - DEBUG-STRING: ");
 }
 
 /**
@@ -133,13 +137,14 @@ static void main_get_traceoutput_from_source_line(char* p_string_to, char* p_str
  */
 static u8 main_read_source_file_line(char* base_path, TRACE_OBJECT* p_trace_obj) {
 
-	DEBUG_PASS("main_read_source_file_line");
-
 	char source_file_path[PRINT_TRACE_OBJECT_TRACE_OUTPUT_FILE_NAME_MAX_LENGTH];
 
 	common_tools_string_clear(source_file_path, PRINT_TRACE_OBJECT_TRACE_OUTPUT_FILE_NAME_MAX_LENGTH);
 	common_tools_string_copy_string(source_file_path, base_path, PRINT_TRACE_OBJECT_TRACE_OUTPUT_FILE_NAME_MAX_LENGTH);
 	common_tools_string_append(source_file_path, p_trace_obj->file_name, PRINT_TRACE_OBJECT_TRACE_OUTPUT_FILE_NAME_MAX_LENGTH);
+
+	//DEBUG_TRACE_STR(source_file_path, "main_read_source_file_line() - Source file:");
+	//DEBUG_TRACE_word(p_trace_obj->line_number, "main_read_source_file_line() - Line number:");
 
 	SOURCE_FILE_set_path(source_file_path);
 
@@ -162,8 +167,8 @@ static u8 main_read_source_file_line(char* base_path, TRACE_OBJECT* p_trace_obj)
 
 	main_get_traceoutput_from_source_line(p_trace_obj->source_line, trace_line);
 
-	DEBUG_TRACE_STR(trace_line, "main_read_source_file_line() - Trace-Line");
-	DEBUG_TRACE_STR(p_trace_obj->source_line, "main_read_source_file_line() - Source-Line");
+	//DEBUG_TRACE_STR(trace_line, "main_read_source_file_line() - Trace-Line");
+	//DEBUG_TRACE_STR(p_trace_obj->source_line, "main_read_source_file_line() - Source-Line");
 
 	return 0;
 }
@@ -274,17 +279,23 @@ void thread_print_trace_object_prepare_output(TRACE_OBJECT* p_trace_obj, char* p
 	}
 }
 
-void* thread_print_trace_object_run(void* p_arg) {
+// --------------------------------------------------------------------------------
 
-	(void) p_arg;
-
-	DEBUG_PASS("thread_print_trace_object_run() - Thread started");
-
+void thread_print_trace_object_init(void) {
+	DEBUG_PASS("thread_print_trace_object_init()");
+	
 	PRINT_TRACE_OBJECT_STATUS_clear_all();
 
 	PRINT_TRACE_OBJECT_CLI_CONSOLE_ACTIVATED_SLOT_connect();
 	PRINT_TRACE_OBJECT_CLI_ARGUMENT_FILE_SLOT_connect();
 	PRINT_TRACE_OBJECT_CLI_ARGUMENT_PATH_SLOT_connect();
+}
+
+void* thread_print_trace_object_run(void* p_arg) {
+
+	(void) p_arg;
+
+	DEBUG_PASS("thread_print_trace_object_run() - Thread started");
 
 	if (PRINT_TRACE_OBJECT_STATUS_is_set(PRINT_TRACE_OBJECT_STATUS_FILE_ACTIVE)) {
 		if (TRACE_OUTPUT_FILE_is_existing() == 0) {
@@ -296,9 +307,18 @@ void* thread_print_trace_object_run(void* p_arg) {
 
 	PRINT_TRACE_OBJECT_STATUS_unset(PRINT_TRACE_OBJECT_STATUS_TERMINATED);
 
+	if (PRINT_TRACE_OBJECT_STATUS_is_set(PRINT_TRACE_OBJECT_STATUS_FILE_ACTIVE)) {
+		if (TRACE_OUTPUT_FILE_is_existing()) {
+			DEBUG_PASS("thread_print_trace_object_run() - Trace-File already exists - will delete it");
+			TRACE_OUTPUT_FILE_delete();
+		}
+
+		TRACE_OUTPUT_FILE_open();
+	}
+
 	while (1) {
 
-		usleep(50000); // reduce cpu-load
+		usleep(900); // reduce cpu-load
 
 		if (PRINT_TRACE_OBJECT_STATUS_is_set(PRINT_TRACE_OBJECT_STATUS_TERMINATED)) {
 			DEBUG_PASS("thread_print_trace_object_run() - TERMINATE SIGNAL RECEIVED");
@@ -317,6 +337,7 @@ void* thread_print_trace_object_run(void* p_arg) {
 		TRACE_OBJECT_QEUE_mutex_release();
 
 		if (object_available == 0) {
+			DEBUG_PASS("thread_print_trace_object_run() - Reading qeue-object has FAILED !!! ---");
 			continue;
 		}
 
@@ -342,15 +363,14 @@ void* thread_print_trace_object_run(void* p_arg) {
 			thread_print_trace_object_prepare_output(&trace_obj, trace_line, PRINT_TRACE_OBJECT_TRACE_OUTPUT_LINE_MAX_LENGTH);
 		}
 
+		//DEBUG_TRACE_STR(trace_line, "thread_print_trace_object_run() - Output:");
+
 		if (PRINT_TRACE_OBJECT_STATUS_is_set(PRINT_TRACE_OBJECT_STATUS_CONSOLE_ACTIVE)) {
 			console_write_line(trace_line);
 		}
 
 		if (PRINT_TRACE_OBJECT_STATUS_is_set(PRINT_TRACE_OBJECT_STATUS_FILE_ACTIVE)) {
-			
-			TRACE_OUTPUT_FILE_open();
 			TRACE_OUTPUT_FILE_append_line(trace_line);
-			TRACE_OUTPUT_FILE_close();
 		}
 
 		if (PRINT_TRACE_OBJECT_STATUS_is_set(PRINT_TRACE_OBJECT_STATUS_MQTT_ACTIVE)) {
@@ -359,7 +379,11 @@ void* thread_print_trace_object_run(void* p_arg) {
 			//while ( !MQTT_TRACER_delivery_complete() ) { usleep(50000); };
 		}
 	}
-
+	
+	if (PRINT_TRACE_OBJECT_STATUS_is_set(PRINT_TRACE_OBJECT_STATUS_FILE_ACTIVE)) {
+		TRACE_OUTPUT_FILE_close();
+	}
+	
 	DEBUG_PASS("thread_print_trace_object_run() - THREAD FINISHED");
 
 	return NULL;
@@ -386,10 +410,10 @@ static void print_trace_object_CLI_ARGUMENT_FILE_SLOT_CALLBACK(const void* p_arg
 		return;
 	}
 
-	DEBUG_PASS("print_trace_object_CLI_CONSOLE_ACTIVATED_SLOT_CALLBACK()");
 	PRINT_TRACE_OBJECT_STATUS_set(PRINT_TRACE_OBJECT_STATUS_FILE_ACTIVE);
 
 	const char* p_argument_str = (const char*)p_argument;
+	DEBUG_TRACE_STR(p_argument_str, "print_trace_object_CLI_ARGUMENT_FILE_SLOT_CALLBACK()");
 
 	TRACE_OUTPUT_FILE_set_path(p_argument_str);
 }
@@ -415,4 +439,4 @@ static void print_trace_object_CLI_ARGUMENT_PATH_SLOT_CALLBACK(const void* p_arg
 
 // ------------------------------------------------------------------------------
 
-THREAD_INTERFACE_BUILD_THREAD(PRINT_TRACE_OBJECT_THREAD, THREAD_PRIORITY_MIDDLE, thread_print_trace_object_run, thread_print_trace_object_terminate)
+THREAD_INTERFACE_BUILD_THREAD(PRINT_TRACE_OBJECT_THREAD, THREAD_PRIORITY_MIDDLE, thread_print_trace_object_init, thread_print_trace_object_run, thread_print_trace_object_terminate)
