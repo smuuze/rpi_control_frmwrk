@@ -59,6 +59,7 @@ UT_ACTIVATE()
 // --------------------------------------------------------------------------------
 
 #define UNITTEST_GET_ARRAY_FROM_WORD_MSB(word)					(u8)(word >> 8), (u8)(word)
+#define UNITTEST_GET_ARRAY_FROM_WORD_LSB(word)					(u8)(word), (u8)(word >> 8)
 
 // --------------------------------------------------------------------------------
 
@@ -147,6 +148,7 @@ static void TEST_CASE_init(void) {
 		UT_SET_TEST_CASE_ID(TEST_CASE_ID_INIT);
 		unittest_reset_counter();
 
+		PARSE_TRACE_OBJECT_THREAD_init();
 		PARSE_TRACE_OBJECT_THREAD_start();
 		UNITTEST_WAIT_MSEC(50);
 	}
@@ -173,7 +175,7 @@ static void TEST_CASE_parse_trace_pass(void) {
 				UNITTEST_GET_ARRAY_FROM_WORD_MSB(length), // length 2 byte
 				TRACER_TRACE_TYPE_RAW_PASS, // type 1 byte
 				// trace data
-				UNITTEST_GET_ARRAY_FROM_WORD_MSB(111),// line number 2 byte
+				UNITTEST_GET_ARRAY_FROM_WORD_LSB(111),// line number 2 byte
 				UT_TEST_CASE_PARSE_TRACE_PASS_FILE_NAME_CHAR_ARRAY, //"file-name", // file name
 				0xFE // footer
 				},
@@ -246,7 +248,7 @@ static void TEST_CASE_parse_trace_byte(void) {
 				UNITTEST_GET_ARRAY_FROM_WORD_MSB(length), // length 2 byte
 				TRACER_TRACE_TYPE_RAW_BYTE, // type 1 byte
 				UT_TEST_CASE_PARSE_TRACE_BYTE_TRACE_DATA, // trace data
-				UNITTEST_GET_ARRAY_FROM_WORD_MSB(UT_TEST_CASE_PARSE_TRACE_BYTE_LINE_NUMBER),// line number 2 byte
+				UNITTEST_GET_ARRAY_FROM_WORD_LSB(UT_TEST_CASE_PARSE_TRACE_BYTE_LINE_NUMBER),// line number 2 byte
 				UT_TEST_CASE_PARSE_TRACE_BYTE_FILE_NAME_CHAR_ARRAY, //"file-name", // file name
 				0xFE // footer
 				},
@@ -328,7 +330,7 @@ static void TEST_CASE_parse_trace_word(void) {
 				UNITTEST_GET_ARRAY_FROM_WORD_MSB(length), // length 2 byte
 				TRACER_TRACE_TYPE_RAW_WORD, // type 1 byte
 				UT_TEST_CASE_PARSE_TRACE_WORD_TRACE_DATA, // trace data
-				UNITTEST_GET_ARRAY_FROM_WORD_MSB(UT_TEST_CASE_PARSE_TRACE_WORD_LINE_NUMBER),// line number 2 byte
+				UNITTEST_GET_ARRAY_FROM_WORD_LSB(UT_TEST_CASE_PARSE_TRACE_WORD_LINE_NUMBER),// line number 2 byte
 				UT_TEST_CASE_PARSE_TRACE_WORD_FILE_NAME_CHAR_ARRAY, //"file-name", // file name
 				0xFE // footer
 				},
@@ -410,7 +412,7 @@ static void TEST_CASE_parse_trace_long(void) {
 				UNITTEST_GET_ARRAY_FROM_WORD_MSB(length), // length 2 byte
 				TRACER_TRACE_TYPE_RAW_LONG, // type 1 byte
 				UT_TEST_CASE_PARSE_TRACE_LONG_TRACE_DATA, // trace data
-				UNITTEST_GET_ARRAY_FROM_WORD_MSB(UT_TEST_CASE_PARSE_TRACE_LONG_LINE_NUMBER),// line number 2 byte
+				UNITTEST_GET_ARRAY_FROM_WORD_LSB(UT_TEST_CASE_PARSE_TRACE_LONG_LINE_NUMBER),// line number 2 byte
 				UT_TEST_CASE_PARSE_TRACE_LONG_FILE_NAME_CHAR_ARRAY, //"file-name", // file name
 				0xFE // footer
 				},
@@ -504,7 +506,7 @@ static void TEST_CASE_parse_trace_array(void) {
 				UT_TEST_CASE_PARSE_TRACE_ARRAY_TRACE_DATA, // trace data
 
 				// SOURCE FILE
-				UNITTEST_GET_ARRAY_FROM_WORD_MSB(UT_TEST_CASE_PARSE_TRACE_ARRAY_LINE_NUMBER),// line number 2 byte
+				UNITTEST_GET_ARRAY_FROM_WORD_LSB(UT_TEST_CASE_PARSE_TRACE_ARRAY_LINE_NUMBER),// line number 2 byte
 				UT_TEST_CASE_PARSE_TRACE_ARRAY_FILE_NAME_CHAR_ARRAY, //"file-name", // file name
 
 				0xFE // footer
@@ -599,7 +601,7 @@ static void TEST_CASE_parse_trace_array_max_length(void) {
 				UT_TEST_CASE_PARSE_TRACE_ARRAY_TRACE_DATA_MAX_LENGTH, // trace data
 
 				// SOURCE FILE
-				UNITTEST_GET_ARRAY_FROM_WORD_MSB(UT_TEST_CASE_PARSE_TRACE_ARRAY_LINE_NUMBER),// line number 2 byte
+				UNITTEST_GET_ARRAY_FROM_WORD_LSB(UT_TEST_CASE_PARSE_TRACE_ARRAY_LINE_NUMBER),// line number 2 byte
 				UT_TEST_CASE_PARSE_TRACE_ARRAY_FILE_NAME_CHAR_ARRAY, //"file-name", // file name
 
 				0xFE // footer

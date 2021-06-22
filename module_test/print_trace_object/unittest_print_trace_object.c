@@ -368,6 +368,16 @@ static void TEST_CASE_init(void) {
 		UT_SET_TEST_CASE_ID(TEST_CASE_ID_INIT);
 		unittest_reset_counter();
 
+		CLI_ARGUMENT_FILE_SIGNAL_init();
+		CLI_ARGUMENT_PATH_SIGNAL_init();
+		CLI_CONSOLE_ACTIVATED_SIGNAL_init();
+
+		PRINT_TRACE_OBJECT_THREAD_init();
+
+		CLI_ARGUMENT_FILE_SIGNAL_send("unittest/trace_output_file.txt");
+		CLI_ARGUMENT_PATH_SIGNAL_send("unittest/source_base_path");
+		CLI_CONSOLE_ACTIVATED_SIGNAL_send(NULL);
+
 		PRINT_TRACE_OBJECT_THREAD_start();
 
 		UNITTEST_TIMER_start();
@@ -375,10 +385,6 @@ static void TEST_CASE_init(void) {
 			mcu_task_controller_schedule();
 		}
 		UNITTEST_TIMER_stop();
-
-		CLI_ARGUMENT_FILE_SIGNAL_send("unittest/trace_output_file.txt");
-		CLI_ARGUMENT_PATH_SIGNAL_send("unittest/source_base_path");
-		CLI_CONSOLE_ACTIVATED_SIGNAL_send(NULL);
 
 		UT_CHECK_IS_EQUAL(0, counter_CONSOLE_WRITE_LINE);
 	}
@@ -429,8 +435,8 @@ static void TEST_CASE_print_trace_pass(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 2);
-		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
@@ -488,8 +494,8 @@ static void TEST_CASE_print_trace_byte(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 2);
-		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
@@ -547,8 +553,8 @@ static void TEST_CASE_print_trace_word(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 2);
-		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
@@ -606,8 +612,8 @@ static void TEST_CASE_print_trace_long(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 2);
-		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
@@ -665,8 +671,8 @@ static void TEST_CASE_print_trace_array(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 2);
-		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
@@ -723,8 +729,8 @@ static void TEST_CASE_source_file_not_found(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 2);
-		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
@@ -781,8 +787,8 @@ static void TEST_CASE_source_line_not_found(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 2);
-		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 2);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
@@ -875,8 +881,8 @@ static void TEST_CASE_order_of_print_traces(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_HAS_CHANGED, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_READABLE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 10);
-		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 10);
+		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 5);
+		UT_CHECK_IS_EQUAL(counter_FILE_CLOSE, 5);
 		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_GET_SIZE, 0);
 		UT_CHECK_IS_EQUAL(counter_FILE_DELETE, 0);
@@ -922,10 +928,6 @@ int main(void) {
 
 	UT_START_TESTBENCH("Welcome the the UNITTEST for print trace object 1.0")
 	{
-		CLI_ARGUMENT_FILE_SIGNAL_init();
-		CLI_ARGUMENT_PATH_SIGNAL_init();
-		CLI_CONSOLE_ACTIVATED_SIGNAL_init();
-
 		TEST_CASE_init();
 		TEST_CASE_print_trace_pass();
 		TEST_CASE_print_trace_byte();
