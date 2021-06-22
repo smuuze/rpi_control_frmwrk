@@ -9,7 +9,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -430,6 +430,8 @@ static void TEST_CASE_init(void) {
 	{	
 		UT_SET_TEST_CASE_ID(TEST_CASE_ID_INIT);
 		unittest_reset_counter();
+
+		READ_TRACE_OBJECT_THREAD_init();
 
 		thread_read_trace_object_set_com_driver(&com_driver);
 
