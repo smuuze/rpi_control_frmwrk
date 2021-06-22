@@ -26,10 +26,6 @@
 #define CFG_FILE_PARSER_MAX_LENGTH_PATH				255
 #endif
 
-#ifndef CFG_FILE_PARSER_TASK_RUN_INTERVAL_MS
-#define CFG_FILE_PARSER_TASK_RUN_INTERVAL_MS			1000
-#endif
-
 // --------------------------------------------------------------------------------
 
 /*
