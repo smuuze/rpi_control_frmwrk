@@ -192,3 +192,16 @@ jobs:
       run: make all
     - name: run unittest
       run: make run
+      
+  unittest_cfg_file_parser:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/cfg_file_parser
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
