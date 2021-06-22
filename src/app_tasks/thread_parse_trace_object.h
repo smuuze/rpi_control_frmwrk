@@ -19,6 +19,12 @@
 
 #include "mcu_task_management/thread_interface.h"
 
+/**
+ * @brief 
+ * 
+ */
+void thread_parse_trace_object_init(void);
+
 /*!
  *
  */

@@ -10,6 +10,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#pragma __WARNING__TRACES_ENABLED__
+#endif
+
 // --------------------------------------------------------------------------------
 
 #include "config.h"
@@ -49,6 +53,10 @@ QEUE_INTERFACE_INCLUDE_QEUE(TRACE_OBJECT_QEUE)
 
 // --------------------------------------------------------------------------------
 
+void thread_parse_trace_object_init(void) {
+	DEBUG_PASS("thread_parse_trace_object_init()");
+}
+
 void* thread_parse_trace_object_run(void* p_arg) {
 
 	DEBUG_PASS("thread_parse_trace_object_run() - Thread started");
@@ -58,7 +66,7 @@ void* thread_parse_trace_object_run(void* p_arg) {
 
 	while (1) {
 
-		usleep(50000); // reduce cpu-load
+		usleep(900); // reduce cpu-load
 
 		if (PARSE_TRACE_OBJECT_STATUS_is_set(PARSE_TRACE_OBJECT_STATUS_TERMINATED)) {
 			DEBUG_PASS("thread_parse_trace_object_run() - TERMINATE SIGNAL RECEIVED");
@@ -77,6 +85,7 @@ void* thread_parse_trace_object_run(void* p_arg) {
 		RAW_TRACE_OBJECT_QEUE_mutex_release();
 
 		if (object_available == 0) {
+			DEBUG_PASS("thread_parse_trace_object_run() - Reading qeue-object has FAILED !!! ---");
 			continue;
 		}
 
@@ -88,14 +97,14 @@ void* thread_parse_trace_object_run(void* p_arg) {
 		while (TRACE_OBJECT_QEUE_mutex_get() == 0) {
 			//DEBUG_PASS("thread_parse_trace_object_run() - TRACE_OBJECT_QEUE is busy");
 			//continue;
-			usleep(50000); // reduce cpu-load
+			usleep(500); // reduce cpu-load
 		}
 			
 		if (TRACE_OBJECT_QEUE_is_full()) {
 			DEBUG_PASS("thread_parse_trace_object_run() - TRACE_OBJECT_QEUE is full");
 
 		} else if (TRACE_OBJECT_QEUE_enqeue(&trace_obj)) {
-			DEBUG_PASS("thread_parse_trace_object_run() - TRACE_OBJECT enqeued <<<");
+			//DEBUG_PASS("thread_parse_trace_object_run() - TRACE_OBJECT enqeued <<<");
 
 		} else {
 			DEBUG_PASS("thread_parse_trace_object_run() - TRACE_OBJECT enqeued has FAILED !!!");
@@ -116,4 +125,4 @@ void thread_parse_trace_object_terminate(void) {
 
 // ------------------------------------------------------------------------------
 
-THREAD_INTERFACE_BUILD_THREAD(PARSE_TRACE_OBJECT_THREAD, THREAD_PRIORITY_MIDDLE, thread_parse_trace_object_run, thread_parse_trace_object_terminate)
+THREAD_INTERFACE_BUILD_THREAD(PARSE_TRACE_OBJECT_THREAD, THREAD_PRIORITY_MIDDLE, thread_parse_trace_object_init, thread_parse_trace_object_run, thread_parse_trace_object_terminate)
