@@ -119,7 +119,7 @@ I2C_BUILD_CFG()
 // --------------------------------------------------------------------------------
 
 static u8 i2c0_driver_destination_addr = 0;
-static u8 _i2c_rx_counter = 0;
+static u16 _i2c_rx_counter = 0;
 
 // --------------------------------------------------------------------------------
 
@@ -244,7 +244,7 @@ void i2c0_driver_power_off(void) {
 	I2C_POWER_DOWN();
 }
 
-u8 i2c0_driver_bytes_available (void) {
+u16 i2c0_driver_bytes_available (void) {
 
 	#if defined TRACER_ENABLED
 	{
@@ -258,9 +258,9 @@ u8 i2c0_driver_bytes_available (void) {
 	return I2C0_RX_BUFFER_bytes_available();
 }
 
-u8 i2c0_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
+u16 i2c0_driver_get_N_bytes (u16 num_bytes, u8* p_buffer_to) {
 
-	u8 num_bytes_available = I2C0_RX_BUFFER_bytes_available();
+	u16 num_bytes_available = I2C0_RX_BUFFER_bytes_available();
 	if (num_bytes < num_bytes_available) {
 		num_bytes_available = num_bytes;
 	}
@@ -274,7 +274,7 @@ u8 i2c0_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 	return num_bytes_available;
 }
 
-u8 i2c0_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+u16 i2c0_driver_set_N_bytes (u16 num_bytes, const u8* p_buffer_from) {
 
 	if (num_bytes > I2C0_TX_BUFFER_size()) {
 		num_bytes = I2C0_TX_BUFFER_size();
@@ -341,7 +341,7 @@ void i2c0_driver_start_rx (u16 num_of_rx_bytes) {
 	}
 }
 
-void i2c0_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+void i2c0_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 
@@ -409,7 +409,7 @@ void i2c0_driver_start_tx (void) {
 	}
 }
 
-void i2c0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+void i2c0_driver_wait_for_tx(u16 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 }

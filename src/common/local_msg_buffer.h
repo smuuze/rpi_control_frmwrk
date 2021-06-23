@@ -27,8 +27,8 @@ typedef struct LOCAL_MSG_BUFFER_DESCR {
 #define INCLUDE_LOCAL_MSG_BUFFER(name)					\
 									\
 	void name##_init(void);						\
-	u8 name##_bytes_available(void);				\
-	u8 name##_bytes_free(void); 					\
+	u16 name##_bytes_available(void);				\
+	u16 name##_bytes_free(void); 					\
 	void name##_clear_all(void);					\
 									\
 	u16 name##_size(void);						\
@@ -62,8 +62,8 @@ typedef struct LOCAL_MSG_BUFFER_DESCR {
 	};																				\
 																					\
 	prefix void name##_init(void) 						{ local_msg_buffer_init(&__##name##_msg_buffer_descr); }				\
-	prefix u8 name##_bytes_available(void) 					{ return local_msg_buffer_bytes_available(&__##name##_msg_buffer_descr); }		\
-	prefix u8 name##_bytes_free(void) 					{ return local_msg_buffer_bytes_free(&__##name##_msg_buffer_descr); }			\
+	prefix u16 name##_bytes_available(void) 				{ return local_msg_buffer_bytes_available(&__##name##_msg_buffer_descr); }		\
+	prefix u16 name##_bytes_free(void) 					{ return local_msg_buffer_bytes_free(&__##name##_msg_buffer_descr); }			\
 	prefix void name##_clear_all(void) 					{ local_msg_buffer_clear_all(&__##name##_msg_buffer_descr); }				\
 																					\
 	prefix u8 name##_start_write(void)					{ return local_msg_buffer_start_write(&__##name##_msg_buffer_descr); }			\
@@ -92,8 +92,8 @@ typedef struct LOCAL_MSG_BUFFER_DESCR {
 	static u16 __##name##_write_counter = 0;															\
 																					\
 	inline void name##_init(void) 						{ __##name##_read_counter = 0; __##name##_write_counter = 0; }				\
-	inline u8 name##_bytes_available(void) 					{ return (__##name##_write_counter - __##name##_read_counter); }			\
-	inline u8 name##_bytes_free(void) 					{ return (__##name##_msg_buffer_size - __##name##_write_counter); }			\
+	inline u16 name##_bytes_available(void) 				{ return (__##name##_write_counter - __##name##_read_counter); }			\
+	inline u16 name##_bytes_free(void) 					{ return (__##name##_msg_buffer_size - __##name##_write_counter); }			\
 	inline void name##_clear_all(void) 					{ __##name##_read_counter = 0; __##name##_write_counter = 0; }				\
 																					\
 	inline u8 name##_start_write(void)					{ return 1;}										\

@@ -28,6 +28,7 @@
 #include "common/local_module_status.h"
 #include "common/signal_slot_interface.h"
 #include "common/common_tools_string.h"
+#include "time_management/time_management.h"
 
 // --------------------------------------------------------------------------------
 
@@ -37,30 +38,44 @@
 // --------------------------------------------------------------------------------
 
 #ifndef CFG_FILE_PARSER_MAX_LINE_LENGTH
-#define CFG_FILE_PARSER_MAX_LINE_LENGTH			255
+#define CFG_FILE_PARSER_MAX_LINE_LENGTH				255
 #endif
 
 #ifndef CFG_FILE_PARSER_KEY_VALUE_SPLITTER
-#define CFG_FILE_PARSER_KEY_VALUE_SPLITTER		'='
+#define CFG_FILE_PARSER_KEY_VALUE_SPLITTER			'='
 #endif
 
 #ifndef CFG_FILE_PARSER_COMMENT_CHARACTER
-#define CFG_FILE_PARSER_COMMENT_CHARACTER		'#'
+#define CFG_FILE_PARSER_COMMENT_CHARACTER			'#'
 #endif
 
-// --------------------------------------------------------------------------------
+#ifndef CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMEOUT_MS
+#define CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMEOUT_MS		150
+#endif
 
-#define CFG_FILE_PARSER_NEW_CFG_FILE_SET		(1 << 0)
-
-BUILD_MODULE_STATUS_U8(CFG_FILE_PARSER_STATUS)
+#ifndef CFG_FILE_PARSER_TASK_RUN_INTERVAL_MS
+#define CFG_FILE_PARSER_TASK_RUN_INTERVAL_MS			50
+#endif
 
 // --------------------------------------------------------------------------------
 
 typedef enum {
 	CFG_FILE_PARSER_TASK_STATE_IDLE,
 	CFG_FILE_PARSER_TASK_STATE_OPEN_FILE,
-	CFG_FILE_PARSER_TASK_STATE_LOAD_CONFIGURATION
+	CFG_FILE_PARSER_TASK_STATE_LOAD_CONFIGURATION,
+	CFG_FILE_PARSER_TASK_STATE_SIGNAL_COMPLETE
 } CFG_FILE_PARSER_TASK_STATE_TYPE;
+
+// --------------------------------------------------------------------------------
+
+#define CFG_FILE_PARSER_NEW_CFG_FILE_SET		(1 << 0)
+#define CFG_FILE_PARSER_STATUS_TIMEOUT_ACTIVE		(1 << 1)
+
+BUILD_MODULE_STATUS_U8(CFG_FILE_PARSER_STATUS)
+
+// --------------------------------------------------------------------------------
+
+TIME_MGMN_BUILD_STATIC_TIMER_U16(CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMER)
 
 // --------------------------------------------------------------------------------
 
@@ -169,13 +184,13 @@ static void cfg_file_parser_parse_configuration_file(void) {
 		}
 
 	} while (num_bytes_line != -1);
-
-	CFG_PARSER_CFG_COMPLETE_SIGNAL_send(NULL);
 }
 
 // --------------------------------------------------------------------------------
 
 void cfg_file_parser_init(void) {
+
+	CFG_FILE_PARSER_STATUS_clear_all();
 	
 	DEBUG_PASS("cfg_file_parser_init() - CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_init()");
 	CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_init();
@@ -190,6 +205,10 @@ void cfg_file_parser_init(void) {
 
 	DEBUG_PASS("cfg_file_parser_init() - mcu_task_controller_register_task()");
 	mcu_task_controller_register_task(&cfg_file_parser_task);
+
+	CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMER_start();
+
+	CFG_FILE_PARSER_STATUS_set(CFG_FILE_PARSER_STATUS_TIMEOUT_ACTIVE);
 }
 
 void cfg_file_parser_task_init(void) {
@@ -199,12 +218,7 @@ void cfg_file_parser_task_init(void) {
 }
 
 u16 cfg_file_parser_task_get_schedule_interval(void) {
-
-	if (CFG_FILE_PARSER_STATUS_is_set(CFG_FILE_PARSER_NEW_CFG_FILE_SET)) {
-		return 0;
-	} else {
-		return CFG_FILE_PARSER_TASK_RUN_INTERVAL_MS;
-	}
+	return CFG_FILE_PARSER_TASK_RUN_INTERVAL_MS;
 }
 
 MCU_TASK_INTERFACE_TASK_STATE cfg_file_parser_task_get_state(void) {
@@ -213,6 +227,13 @@ MCU_TASK_INTERFACE_TASK_STATE cfg_file_parser_task_get_state(void) {
 		DEBUG_PASS("cfg_file_parser_task_get_state() - New file has been set");
 		return MCU_TASK_RUNNING;
 	}
+
+	if (CFG_FILE_PARSER_STATUS_is_set(CFG_FILE_PARSER_STATUS_TIMEOUT_ACTIVE)) {
+		DEBUG_PASS("cfg_file_parser_task_get_state() - timeout is active");
+		return MCU_TASK_RUNNING;
+	}
+
+	//DEBUG_PASS("cfg_file_parser_task_get_state() - SLEEPING");
 	
 	return MCU_TASK_SLEEPING;
 }
@@ -229,6 +250,15 @@ void cfg_file_parser_task_run(void) {
 			// no break;
 
 		case CFG_FILE_PARSER_TASK_STATE_IDLE :
+
+			if (CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMER_is_active()) {
+				if (CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMER_is_up(CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMEOUT_MS)) {
+
+					DEBUG_PASS("cfg_file_parser_task_run() - CFG_FILE_PARSER_TASK_STATE_IDLE > CFG_FILE_PARSER_TASK_STATE_SIGNAL_COMPLETE");
+					app_task_state = CFG_FILE_PARSER_TASK_STATE_SIGNAL_COMPLETE;
+					break;
+				}
+			}
 
 			if (CFG_FILE_PARSER_STATUS_is_set(CFG_FILE_PARSER_NEW_CFG_FILE_SET) == 0) {
 				break;
@@ -256,7 +286,18 @@ void cfg_file_parser_task_run(void) {
 
 			cfg_file_parser_parse_configuration_file();
 
-			DEBUG_PASS("cfg_file_parser_task_run() - CFG_FILE_PARSER_TASK_STATE_LOAD_CONFIGURATION > CFG_FILE_PARSER_TASK_STATE_IDLE");
+			DEBUG_PASS("cfg_file_parser_task_run() - CFG_FILE_PARSER_TASK_STATE_SIGNAL_COMPLETE > CFG_FILE_PARSER_TASK_STATE_IDLE");
+			app_task_state = CFG_FILE_PARSER_TASK_STATE_SIGNAL_COMPLETE;
+
+			break;
+
+		case CFG_FILE_PARSER_TASK_STATE_SIGNAL_COMPLETE :
+
+			CFG_FILE_PARSER_STATUS_unset(CFG_FILE_PARSER_STATUS_TIMEOUT_ACTIVE);
+			CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMER_stop();
+			CFG_PARSER_CFG_COMPLETE_SIGNAL_send(NULL);
+
+			DEBUG_PASS("cfg_file_parser_task_run() - CFG_FILE_PARSER_TASK_STATE_SIGNAL_COMPLETE > CFG_FILE_PARSER_TASK_STATE_IDLE");
 			app_task_state = CFG_FILE_PARSER_TASK_STATE_IDLE;
 
 			break;

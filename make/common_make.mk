@@ -129,6 +129,11 @@ INC_PATH += $(APP_TASK_INC_PATH)
 CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/mcu_task_controller.c
 CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/mcu_idle_task.c
 
+ifneq '' '$(findstring THREAD_INTERFACE,$(APP_TASK_CFG))'
+DEFS  += -D HAS_THREAD_INTERFACE=1
+CSRCS += $(MCU_TASK_MANAGEMENT_INC_PATH)/thread_interface.c
+endif
+
 ifneq '' '$(findstring EVENT,$(APP_TASK_CFG))'
 DEFS  += -D HAS_APP_TASK_EVENT=1
 CSRCS += $(APP_TASK_INC_PATH)/local_event_task.c
@@ -167,6 +172,21 @@ endif
 ifneq '' '$(findstring CLI_EXECUTER,$(APP_TASK_CFG))'
 DEFS += -D HAS_APP_TASK_CLI_EXECUTER=1
 CSRCS += $(APP_TASK_INC_PATH)/cli_executer_task.c
+endif
+
+ifneq '' '$(findstring THREAD_READ_TRACE_OBJECT,$(APP_TASK_CFG))'
+DEFS += -D HAS_APP_TASK_THREAD_READ_TRACE_OBJECT=1
+CSRCS += $(APP_TASK_INC_PATH)/thread_read_trace_object.c
+endif
+
+ifneq '' '$(findstring THREAD_PARSE_TRACE_OBJECT,$(APP_TASK_CFG))'
+DEFS += -D HAS_APP_TASK_THREAD_PARSE_TRACE_OBJECT=1
+CSRCS += $(APP_TASK_INC_PATH)/thread_parse_trace_object.c
+endif
+
+ifneq '' '$(findstring THREAD_PRINT_TRACE_OBJECT,$(APP_TASK_CFG))'
+DEFS += -D HAS_APP_TASK_THREAD_PRINT_TRACE_OBJECT=1
+CSRCS += $(APP_TASK_INC_PATH)/thread_print_trace_object.c
 endif
 
 # ---- EXPANSION BOARDS -------------------------------------------------------------------

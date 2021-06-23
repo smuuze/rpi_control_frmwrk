@@ -6,3 +6,6 @@ INC_PATH	+= /usr/include
 	
 LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
 LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
+
+CFLAGS ?= 
+CFLAGS += -pthread

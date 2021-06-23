@@ -71,15 +71,15 @@ void test_driver_power_off(void) {
 
 }
 
-u8 test_driver_bytes_available (void) {
+u16 test_driver_bytes_available (void) {
 
-	u8 bytes_available = TEST_RX_BUFFER_bytes_available();
+	u16 bytes_available = TEST_RX_BUFFER_bytes_available();
 	DEBUG_TRACE_byte(bytes_available, "test_driver_bytes_available()");
 
 	return bytes_available;
 }
 
-u8 test_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
+u16 test_driver_get_N_bytes (u16 num_bytes, u8* p_buffer_to) {
 
 	TEST_RX_BUFFER_start_read();
 	u16 num_bytes_read = TEST_RX_BUFFER_get_N_bytes(num_bytes, p_buffer_to);
@@ -90,7 +90,7 @@ u8 test_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 	return num_bytes_read;
 }
 
-u8 test_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+u16 test_driver_set_N_bytes (u16 num_bytes, const u8* p_buffer_from) {
 
 	if (num_bytes > TEST_TX_BUFFER_size()) {
 		num_bytes = TEST_TX_BUFFER_size();
@@ -127,7 +127,7 @@ void test_driver_start_rx (u16 num_of_rx_bytes) {
 	SIGNAL_TEST_DRIVER_START_RX_send((void*) &num_of_rx_bytes);
 }
 
-void test_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+void test_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms) {
 			
 	DEBUG_TRACE_byte(num_bytes, "test_driver_wait_for_rx() - Num byts to send: ");
 	DEBUG_TRACE_byte(TEST_RX_BUFFER_bytes_available(), "test_driver_wait_for_rx() - Num byts available: ");
@@ -167,7 +167,7 @@ void test_driver_start_tx (void) {
 	SIGNAL_TEST_DRIVER_START_TX_send((void*) &num_bytes);
 }
 
-void test_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+void test_driver_wait_for_tx(u16 num_bytes, u16 timeout_ms) {
 			
 	DEBUG_TRACE_byte(num_bytes, "test_driver_wait_for_tx() - Num byts to send: ");
 	DEBUG_TRACE_byte(TEST_TX_BUFFER_bytes_available(), "test_driver_wait_for_tx() - Num byts available: ");
@@ -227,7 +227,7 @@ void test_driver_mutex_release(u8 m_id) {
 }
 
 
-void test_driver_set_rx_bytes(u8 num_bytes, u8* p_buffer_from) {
+void test_driver_set_rx_bytes(u16 num_bytes, u8* p_buffer_from) {
 
 	if (num_bytes > TEST_RX_BUFFER_size()) {
 		num_bytes = TEST_RX_BUFFER_size();
@@ -240,7 +240,7 @@ void test_driver_set_rx_bytes(u8 num_bytes, u8* p_buffer_from) {
 	TEST_RX_BUFFER_stop_write();
 }
 
-u8 test_driver_get_tx_bytes(u8 num_bytes, u8* p_buffer_to) {
+u16 test_driver_get_tx_bytes(u16 num_bytes, u8* p_buffer_to) {
 
 	DEBUG_TRACE_byte(num_bytes, "test_driver_clear_rx_buffer()");
 
@@ -257,7 +257,7 @@ u8 test_driver_get_tx_bytes(u8 num_bytes, u8* p_buffer_to) {
 	return num_bytes_read;
 }
 
-u8 test_driver_get_tx_bytes_num_available(void) {
+u16 test_driver_get_tx_bytes_num_available(void) {
 
 	DEBUG_TRACE_byte(TEST_TX_BUFFER_bytes_available(), "test_driver_get_tx_bytes_num_available()");
 	return TEST_TX_BUFFER_bytes_available();

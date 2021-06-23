@@ -39,6 +39,7 @@ UT_ACTIVATE()
 #define TEST_CASE_ID_INITIALIZE			1
 #define TEST_CASE_ID_UNKNOWN_COMMAND		2
 #define TEST_CASE_ID_JVC_RADIO_REMOTE_CONTROL	3
+#define TEST_CASE_ID_NO_ARGUMENT_GIVEN		4
 
 // --------------------------------------------------------------------------------
 
@@ -53,6 +54,7 @@ static u8 counter_CLI_CONSOLE_ACTIVATED = 0;
 static u8 counter_CLI_CONFIGURATION = 0;
 static u8 counter_CLI_MESSAGE = 0;
 static u8 counter_CLI_UNKNOWN_ARGUMENT = 0;
+static u8 counter_CLI_NO_ARGUMENT_GIVEN = 0;
 
 static COMMON_GENERIC_BUFFER_TYPE remote_control_command;
 
@@ -67,6 +69,7 @@ static void unittest_reset_counter(void) {
 	counter_CLI_CONFIGURATION = 0;
 	counter_CLI_MESSAGE = 0;
 	counter_CLI_UNKNOWN_ARGUMENT = 0;
+	counter_CLI_NO_ARGUMENT_GIVEN = 0;
 
 	remote_control_command.length = 0;
 	memset(remote_control_command.data, 0x00, COMMON_TYPES_GENERIC_BUFFER_SIZE);
@@ -127,11 +130,17 @@ static void ut_CLI_MESSAGE_CALLBACK(const void* p_argument) {
 	counter_CLI_MESSAGE += 1;
 }
 
+static void ut_CLI_NO_ARGUMENT_GIVEN_CALLBACK(const void* p_argument) {
+	(void) p_argument;
+	DEBUG_PASS("ut_CLI_NO_ARGUMENT_GIVEN_CALLBACK()");
+	counter_CLI_NO_ARGUMENT_GIVEN += 1;
+}
+
 static void ut_CLI_UNKNOWN_ARGUMENT_CALLBACK(const void* p_argument) {
 	(void) p_argument;
 	counter_CLI_UNKNOWN_ARGUMENT += 1;
 
-	const COMMAND_LINE_ARGUMENT_TYPE* unknown_argument = (COMMAND_LINE_ARGUMENT_TYPE*) p_argument;
+	__UNUSED__ const COMMAND_LINE_ARGUMENT_TYPE* unknown_argument = (COMMAND_LINE_ARGUMENT_TYPE*) p_argument;
 
 	DEBUG_TRACE_STR(unknown_argument->argument, "ut_CLI_UNKNOWN_ARGUMENT_CALLBACK() - UNKNOWN CLI-ARGUMENT: ");
 }
@@ -153,6 +162,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_CONSOLE_ACTIVATED_SIGNAL, UT_CLI_CONSOLE_A
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_CONFIGURATION_SIGNAL, 	UT_CLI_CONFIGURATION_SLOT, 	ut_CLI_CONFIGURATION_CALLBACK)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_MESSAGE_SIGNAL, 		UT_CLI_MESSAGE_SLOT, 		ut_CLI_MESSAGE_CALLBACK)
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_UNKNOWN_ARGUMENT_SIGNAL, 	UT_CLI_UNKNOWN_ARGUMENT_SLOT, 	ut_CLI_UNKNOWN_ARGUMENT_CALLBACK)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_NO_ARGUMENT_GIVEN_SIGNAL, UT_CLI_NO_ARGUMENT_GIVEN_SLOT, 	ut_CLI_NO_ARGUMENT_GIVEN_CALLBACK)
 
 // --------------------------------------------------------------------------------
 
@@ -178,6 +188,7 @@ static void TEST_CASE_initialization(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 	}
 	UT_END_TEST_CASE()
 
@@ -190,8 +201,8 @@ static void TEST_CASE_unknown_argument(void) {
 		UT_SET_TEST_CASE_ID(TEST_CASE_ID_UNKNOWN_COMMAND);
 		unittest_reset_counter();
 
-		int argc = 2;
-		char* argv[] = {"-eins", "zwei"};
+		int argc = 3;
+		char* argv[] = {"prog_call", "-eins", "zwei"};
 
 		command_line_interface(argc, argv);
 
@@ -204,6 +215,33 @@ static void TEST_CASE_unknown_argument(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 1);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
+	}
+	UT_END_TEST_CASE()
+}
+
+static void TEST_CASE_no_argument_given(void) {
+
+	UT_START_TEST_CASE("no argument given")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CASE_ID_NO_ARGUMENT_GIVEN);
+		unittest_reset_counter();
+
+		int argc = 0;
+		char* argv[] = {"prog_call"};
+
+		command_line_interface(argc, argv);
+
+		UT_CHECK_IS_EQUAL(counter_CLI_INVALID_ARGUMENT, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_INVALID_PARAMETER, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_HELP_REQUESTED, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_LCD_ACTIVATED, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_CONSOLE_ACTIVATED, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_CONFIGURATION, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
+		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 1);
 	}
 	UT_END_TEST_CASE()
 }
@@ -214,17 +252,17 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 	{	
 		UT_SET_TEST_CASE_ID(TEST_CASE_ID_JVC_RADIO_REMOTE_CONTROL);
 
-		int argc = 2;
-		char* arg_cmd_power_on[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_POWER_ON};
-		char* arg_cmd_volume_down[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_DOWN};
-		char* arg_cmd_volume_up[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_UP};
-		char* arg_cmd_volume_mute[]	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_MUTE};
-		char* arg_cmd_play[] 		= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PLAY};
-		char* arg_cmd_pause[] 		= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PAUSE};
-		char* arg_cmd_stop[] 		= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_STOP};
-		char* arg_cmd_bass_up[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_UP};
-		char* arg_cmd_bass_down[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_DOWN};
-		char* arg_cmd_sound_mode[] 	= {COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_SOUND_MODE};
+		int argc = 3;
+		char* arg_cmd_power_on[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_POWER_ON};
+		char* arg_cmd_volume_down[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_DOWN};
+		char* arg_cmd_volume_up[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_UP};
+		char* arg_cmd_volume_mute[]	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_MUTE};
+		char* arg_cmd_play[] 		= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PLAY};
+		char* arg_cmd_pause[] 		= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PAUSE};
+		char* arg_cmd_stop[] 		= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_STOP};
+		char* arg_cmd_bass_up[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_UP};
+		char* arg_cmd_bass_down[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_DOWN};
+		char* arg_cmd_sound_mode[] 	= {"prog_call", COMMAND_LINE_ARGUMENT_REMOTE, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_SOUND_MODE};
 
 		u8 cmd_power_on[]		= { 0x07, 0x0C, 0x11, 0x04, 0x0B, 0x02, 0x02, 0x01 };
 		u8 cmd_volume_down[]		= { 0x07, 0x0C, 0x11, 0x04, 0x0B, 0x02, 0x02, 0x04 };
@@ -251,6 +289,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_power_on));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_power_on, remote_control_command.length);
@@ -272,6 +311,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_volume_down));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_volume_down, remote_control_command.length);
@@ -293,6 +333,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_volume_up));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_volume_up, remote_control_command.length);
@@ -314,6 +355,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_volume_mute));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_volume_mute, remote_control_command.length);
@@ -335,6 +377,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_play));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_play, remote_control_command.length);
@@ -356,6 +399,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_pause));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_pause, remote_control_command.length);
@@ -377,6 +421,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_stop));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_stop, remote_control_command.length);
@@ -398,6 +443,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_volume_down));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_bass_up, remote_control_command.length);
@@ -419,6 +465,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_bass_down));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_bass_down, remote_control_command.length);
@@ -440,6 +487,7 @@ static void TEST_CASE_jvc_radio_remote_control(void) {
 		UT_CHECK_IS_EQUAL(counter_CLI_MESSAGE, 0);
 		UT_CHECK_IS_EQUAL(counter_CLI_UNKNOWN_ARGUMENT, 0);
 		UT_CHECK_IS_EQUAL(counter_RPI_HOST_COMMAND_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(counter_CLI_NO_ARGUMENT_GIVEN, 0);
 
 		UT_CHECK_IS_EQUAL(remote_control_command.length, sizeof(cmd_sound_mode));
 		UT_COMPARE_ARRAY(remote_control_command.data, cmd_sound_mode, remote_control_command.length);
@@ -468,9 +516,11 @@ int main(void) {
 		UT_CLI_CONFIGURATION_SLOT_connect();
 		UT_CLI_MESSAGE_SLOT_connect();
 		UT_CLI_UNKNOWN_ARGUMENT_SLOT_connect();
+		UT_CLI_NO_ARGUMENT_GIVEN_SLOT_connect();
 
 		UT_RPI_HOST_COMMAND_RECEIVED_SLOT_connect();
-
+		
+		TEST_CASE_no_argument_given();
 		TEST_CASE_unknown_argument();
 		TEST_CASE_jvc_radio_remote_control();
 	}

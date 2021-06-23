@@ -10,6 +10,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#pragma __WARNING__TRACES_ENABLED__
+#endif
+
 // --------------------------------------------------------------------------------
 
 #include "config.h"
@@ -36,7 +40,7 @@
 
 #include "cfg_driver_interface.h"
 
-#include "driver/communication/spi/spi0_driver_atmega1284p.h"
+#include "driver/communication/spi/spi0_driver.h"
 #include "local_module_status.h"
 #include "local_mutex.h"
 #include "time_management/time_management.h"
@@ -178,9 +182,9 @@ void spi0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 
 	// device -------------------------
 	
-	DEBUG_TRACE_STR(p_cfg->module.spi.device, "spi0_driver_configure() - open device :");
+	DEBUG_TRACE_STR(p_cfg->device.name, "spi0_driver_configure() - open device :");
 
-	if ((spi0_cfg.handle = (i32)open(p_cfg->module.spi.device, O_RDWR)) >= 0) {
+	if ((spi0_cfg.handle = (i32)open(p_cfg->device.name, O_RDWR)) >= 0) {
 		DEBUG_PASS("spi0_driver_configure() - Device open successfull");
 	
 	} else {
@@ -254,12 +258,12 @@ void spi0_driver_power_off(void) {
 	spi0_cfg.handle = SPI0_DEVICE_HANDLE_INVALID;
 }
 
-u8 spi0_driver_bytes_available(void) {
+u16 spi0_driver_bytes_available(void) {
 	return SPI0_RX_BUFFER_bytes_available();
 }
 
 
-u8 spi0_driver_get_N_bytes(u8 num_bytes, u8* p_buffer_to) {
+u16 spi0_driver_get_N_bytes(u16 num_bytes, u8* p_buffer_to) {
 
 	SPI0_RX_BUFFER_start_read();
 	u16 num_bytes_read = SPI0_RX_BUFFER_get_N_bytes(num_bytes, p_buffer_to);
@@ -271,7 +275,7 @@ u8 spi0_driver_get_N_bytes(u8 num_bytes, u8* p_buffer_to) {
 }
 
 
-u8 spi0_driver_set_N_bytes(u8 num_bytes, const u8* p_buffer_from) {
+u16 spi0_driver_set_N_bytes(u16 num_bytes, const u8* p_buffer_from) {
 
 	if (num_bytes > SPI0_TX_BUFFER_size()) {
 		num_bytes = SPI0_TX_BUFFER_size();
@@ -338,7 +342,7 @@ void spi0_driver_start_rx(u16 num_of_rx_bytes) {
 	}
 }
 
-void spi0_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+void spi0_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms) {
 
 }
 
@@ -396,7 +400,7 @@ void spi0_driver_start_tx(void) {
 	}
 }
 
-void spi0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+void spi0_driver_wait_for_tx(u16 num_bytes, u16 timeout_ms) {
 
 }
 

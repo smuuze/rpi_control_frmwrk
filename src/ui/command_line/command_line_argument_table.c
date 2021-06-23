@@ -11,7 +11,7 @@
 #define TRACER_OFF
 
 #ifdef TRACER_ON
-#warning __WARNING__TRACER_ENABLED__WARNING__
+#pragma __WARNING__TRACES_ENABLED__
 #endif
 
 // --------------------------------------------------------------------------------
@@ -82,6 +82,12 @@ void command_line_handler_message(const char* parameter);
 /* */
 void command_line_handler_console(const char* parameter);
 
+/* */
+void command_line_handler_file(const char* parameter);
+
+/* */
+void command_line_handler_path(const char* parameter);
+
 // --------------------------------------------------------------------------------
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_INVALID_ARGUMENT_SIGNAL)
@@ -89,8 +95,12 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_INVALID_PARAMETER_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_HELP_REQUESTED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_LCD_ACTIVATED_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONSOLE_ACTIVATED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_ARGUMENT_FILE_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_ARGUMENT_PATH_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_ARGUMENT_DEVICE_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONFIGURATION_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_MESSAGE_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_NO_ARGUMENT_GIVEN_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_UNKNOWN_ARGUMENT_SIGNAL)
 
 // --------------------------------------------------------------------------------
@@ -124,6 +134,8 @@ static COMMAND_LINE_ARGUMENT_TABLE_TYPE command_line_argument_table[] = {
 	{ COMMAND_LINE_ARGUMENT_HELP, &command_line_handler_help },
 	{ COMMAND_LINE_ARGUMENT_HELP_SHORT, &command_line_handler_help },
 	{ COMMAND_LINE_ARGUMENT_CONSOLE, &command_line_handler_console },
+	{ COMMAND_LINE_ARGUMENT_FILE, &command_line_handler_file },
+	{ COMMAND_LINE_ARGUMENT_PATH, &command_line_handler_path },
 
 	#ifdef CLI_REMOTE_CONTROL_ARGUMENT_AVAILABLE
 	{ COMMAND_LINE_ARGUMENT_REMOTE, &command_line_handler_remote_control },
@@ -158,14 +170,31 @@ void command_line_interface_init(void) {
 
 	DEBUG_PASS("command_line_interface_init() - CLI_UNKNOWN_ARGUMENT_SIGNAL_init()");
 	CLI_UNKNOWN_ARGUMENT_SIGNAL_init();
+
+	DEBUG_PASS("command_line_interface_init() - CLI_NO_ARGUMENT_GIVEN_SIGNAL_init()");
+	CLI_NO_ARGUMENT_GIVEN_SIGNAL_init();
+
+	DEBUG_PASS("command_line_interface_init() - CLI_ARGUMENT_FILE_SIGNAL_init()");
+	CLI_ARGUMENT_FILE_SIGNAL_init();
+
+	DEBUG_PASS("command_line_interface_init() - CLI_ARGUMENT_PATH_SIGNAL_init()");
+	CLI_ARGUMENT_PATH_SIGNAL_init();
+
+	DEBUG_PASS("command_line_interface_init() - CLI_ARGUMENT_DEVICE_SIGNAL_init()");
+	CLI_ARGUMENT_DEVICE_SIGNAL_init();
 }
 
 void command_line_interface(int argc, char* argv[]) {
 
 	DEBUG_TRACE_byte((u8)argc, "command_line_interface() - number of arguments: ");
 
+	if (argc <= 1) {
+		CLI_NO_ARGUMENT_GIVEN_SIGNAL_send(NULL);
+		return;
+	}
+
 	// loop through all given arguments
-	for (u8 j = 0; j < argc; j++) {
+	for (u8 j = 1; j < argc; j++) {
 
 		if (common_tools_string_starts_with(argv[j], COMMAND_LINE_ARGUMENT_PREFIX_CHAR) == 0) {
 			DEBUG_TRACE_STR(argv[j], "command_line_interface() - Not a cli-argument: ");

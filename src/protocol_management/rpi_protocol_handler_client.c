@@ -330,7 +330,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 			
 	RPI_TRX_TIMER_start();
 
-	u8 bytes_remain = rpi_protocol_spi_interface.command_length - 1; // command already received
+	u16 bytes_remain = (u16)rpi_protocol_spi_interface.command_length - 1; // command already received
 
 	while (bytes_remain) {
 
@@ -345,7 +345,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 		}
 
 		u8 t_buffer[RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE];
-		u8 read_count = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
+		u16 read_count = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
 
 		if (read_count > p_com_driver->bytes_available()) {
 			read_count = p_com_driver->bytes_available();
@@ -395,10 +395,10 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 	p_com_driver->clear_tx_buffer();
 	p_com_driver->set_N_bytes(3, answer_header);
 
-	u8 bytes_to_send = 3;
+	u16 bytes_to_send = 3;
 
 	RPI_ANSWER_BUFFER_start_read();
-	u8 bytes_left = RPI_ANSWER_BUFFER_bytes_available();
+	u16 bytes_left = RPI_ANSWER_BUFFER_bytes_available();
 
 	while (bytes_left != 0) {
 
@@ -406,7 +406,7 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 			break;
 		}
 
-		u8 read_length = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
+		u16 read_length = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
 		u8 t_buffer[RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE];
 
 		if (read_length > bytes_left) {

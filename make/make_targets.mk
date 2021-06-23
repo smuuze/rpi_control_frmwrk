@@ -30,7 +30,7 @@ DEPENDENCY_OBJECTS	:= $(CSRCS:%.c=$(DEPENDENCY_DIRECTORY)/%.o)
 LOCAL_OBJECTS		:= $(notdir $(RELEASE_OBJECTS))
 LOCAL_DEBUG_OBJECTS	:= $(notdir $(DEBUG_OBJECTS))
 
-TRACER_PATH		:= $(BASE_PATH)/rpi_control_sw/cfg_TRACER/shcTracer
+TRACER_PATH		:= $(BASE_PATH)/rpi_control_release/TRACER/shcTracer
 
 CFLAGS 			+= -pedantic -Wall
 

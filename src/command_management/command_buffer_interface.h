@@ -14,7 +14,7 @@
 // --------------------------------------------------------------------------------
 
 typedef u8 (*CMD_BUFFER_INTERFACE_START_READ_CALLBACK)		(void);
-typedef u8 (*CMD_BUFFER_INTERFACE_BYTES_AVAILABLE_CALLBACK)	(void);
+typedef u16 (*CMD_BUFFER_INTERFACE_BYTES_AVAILABLE_CALLBACK)	(void);
 typedef u8 (*CMD_BUFFER_INTERFACE_GET_BYTE_CALLBACK) 		(void);
 typedef u16 (*CMD_BUFFER_INTERFACE_GET_WORD_CALLBACK)		(void);
 typedef u32 (*CMD_BUFFER_INTERFACE_GET_LONG_CALLBACK)		(void);

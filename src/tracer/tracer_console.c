@@ -15,8 +15,8 @@
 void tracer_hex_dump(const u8* p_buffer, u16 length) {
 
 	u16 i = 0;
-	u8 buffer_index = 0;
-	u8 character_index = 0;
+	u16 buffer_index = 0;
+	u16 character_index = 0;
 	u16 address = 0;
 	u8 line_size = 16;
 	u8 end_of_line = 0;
@@ -126,7 +126,7 @@ void tracer_trace_long(const char* str, const char* file_name, u16 line_id, u32 
 	printf("%s:%d - %s \n - Data: %d (0x%08X)\n", file_name, line_id, str, integer, integer);
 }
 
-void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 length, const u8* p_buffer) {
+void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u16 length, const u8* p_buffer) {
 
 	if (is_initialized == 0) {
 		tracer_init();

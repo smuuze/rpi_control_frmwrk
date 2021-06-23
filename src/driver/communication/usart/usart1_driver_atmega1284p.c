@@ -131,7 +131,7 @@ void usart1_driver_power_off(void) {
 	USART1_TX_BUFFER_clear_all();
 }
 
-u8 usart1_driver_bytes_available (void) {
+u16 usart1_driver_bytes_available (void) {
 	#if defined TRACES_ENABLED && defined LOCAL_USART_RX_TRACES
 	{
 		u8 bytes_available = USART1_RX_BUFFER_bytes_available();
@@ -144,9 +144,9 @@ u8 usart1_driver_bytes_available (void) {
 	return USART1_RX_BUFFER_bytes_available();
 }
 
-u8 usart1_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
+u16 usart1_driver_get_N_bytes (u16 num_bytes, u8* p_buffer_to) {
 
-	u8 num_bytes_available = USART1_RX_BUFFER_bytes_available();
+	u16 num_bytes_available = USART1_RX_BUFFER_bytes_available();
 
 	if (num_bytes < num_bytes_available) {
 		num_bytes_available = num_bytes;
@@ -159,7 +159,7 @@ u8 usart1_driver_get_N_bytes (u8 num_bytes, u8* p_buffer_to) {
 	return num_bytes_available;
 }
 
-u8 usart1_driver_set_N_bytes (u8 num_bytes, const u8* p_buffer_from) {
+u16 usart1_driver_set_N_bytes (u16 num_bytes, const u8* p_buffer_from) {
 	if (num_bytes > USART1_TX_BUFFER_size()) {
 		num_bytes = USART1_TX_BUFFER_size();
 	}
@@ -185,7 +185,7 @@ void usart1_driver_start_rx (u16 num_of_rx_bytes) {
 	usart1_status_set(USART1_STATUS_RX_ACTIVE);
 }
 
-void usart1_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms) {
+void usart1_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 }
@@ -221,7 +221,7 @@ void usart1_driver_start_tx (void) {
 	DEBUG_PASS("usart1_driver_start_tx() - Finished");
 }
 
-void usart1_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms) {
+void usart1_driver_wait_for_tx(u16 num_bytes, u16 timeout_ms) {
 	(void) num_bytes;
 	(void) timeout_ms;
 }

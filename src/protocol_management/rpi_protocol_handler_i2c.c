@@ -319,11 +319,11 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 		}
 	}
 
-	u8 bytes_available = 0;
+	u16 bytes_available = 0;
 
 	while (bytes_available < rpi_protocol_i2c_interface.command_length) {
 
-		p_com_driver->wait_for_rx(rpi_protocol_i2c_interface.command_length, RPI_PROTOCOL_HANDLER_DATA_EXCHANGE_TIMEOUT_MS); // blocking function
+		p_com_driver->wait_for_rx((u16)rpi_protocol_i2c_interface.command_length, RPI_PROTOCOL_HANDLER_DATA_EXCHANGE_TIMEOUT_MS); // blocking function
 		bytes_available = p_com_driver->bytes_available();
 
 		if (RPI_TRX_TIMER_is_up(1000)) {
@@ -343,7 +343,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 	while (bytes_available != 0) {
 
 		u8 t_buffer[RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE];
-		u8 read_count = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
+		u16 read_count = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
 
 		if (read_count > p_com_driver->bytes_available()) {
 			read_count = p_com_driver->bytes_available();
@@ -405,10 +405,10 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 	p_com_driver->clear_tx_buffer();
 	p_com_driver->set_N_bytes(3, answer_header);
 
-	u8 bytes_to_send = 3;
+	u16 bytes_to_send = 3;
 
 	RPI_ANSWER_BUFFER_start_read();
-	u8 bytes_left = RPI_ANSWER_BUFFER_bytes_available();
+	u16 bytes_left = RPI_ANSWER_BUFFER_bytes_available();
 
 	while (bytes_left != 0) {
 
@@ -416,7 +416,7 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
 			break;
 		}
 
-		u8 read_length = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
+		u16 read_length = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
 		u8 t_buffer[RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE];
 
 		if (read_length > bytes_left) {

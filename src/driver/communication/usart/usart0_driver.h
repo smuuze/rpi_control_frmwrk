@@ -11,7 +11,15 @@
 #ifndef _USART0_DRIVER_H_
 #define _USART0_DRIVER_H_
 
+// --------------------------------------------------------------------------------
+
+#include "config.h"
+
+// --------------------------------------------------------------------------------
+
 #include "trx_driver_interface.h"
+
+// --------------------------------------------------------------------------------
 
 #ifndef USART0_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER
 #define USART0_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER	128
@@ -31,6 +39,8 @@
 
 #define USART0_DRIVER_RESPONSE_TO_BROADCAST_ENABLED	(1 << 0)
 #define USART0_DRIVER_RESPONSE_TO_BROADCAST_DISABLED	(0)
+
+// --------------------------------------------------------------------------------
 
 
 /*! --- Function prototypes --- */
@@ -52,13 +62,13 @@ void usart0_driver_power_off(void);
 /* this function gives information if and how many bytes have been received
  * since the last time this function was called
  */
-u8 usart0_driver_bytes_available(void);
+u16 usart0_driver_bytes_available(void);
 
 /*
  * get at maximum n bytes from the trx's modules internal buffer (the sw-buffer)
  * returns the number of bytes that have been copied into the given buffer
  */
-u8 usart0_driver_get_N_bytes(u8 num_bytes, u8* p_buffer_to);
+u16 usart0_driver_get_N_bytes(u16 num_bytes, u8* p_buffer_to);
 
 /*
  * copys at maximum n bytes into the trx-modules' internal buffer
@@ -66,7 +76,7 @@ u8 usart0_driver_get_N_bytes(u8 num_bytes, u8* p_buffer_to);
  * this function does not start any operation, only the buffer is prepared.
  * returns the number of byts that have been copied into the given buffer
  */
-u8 usart0_driver_set_N_bytes(u8 num_bytes, const u8* p_buffer_from);
+u16 usart0_driver_set_N_bytes(u16 num_bytes, const u8* p_buffer_from);
 
 /*
  *
@@ -86,7 +96,7 @@ void usart0_driver_start_rx(u16 num_of_rx_bytes);
  * @param num_bytes
  * @param timeout_ms
  */
-void usart0_driver_wait_for_rx(u8 num_bytes, u16 timeout_ms);
+void usart0_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms);
 
 /*
  * stops any active rx-operation
@@ -111,7 +121,7 @@ void usart0_driver_start_tx(void);
  * @param num_bytes
  * @param timeout_ms
  */
-void usart0_driver_wait_for_tx(u8 num_bytes, u16 timeout_ms);
+void usart0_driver_wait_for_tx(u16 num_bytes, u16 timeout_ms);
 
 /*
  * stops any active tx-operation, internal buffer will left unchanged
@@ -144,5 +154,7 @@ u8 usart0_driver_mutex_request(void);
  * @param m_id
  */
 void usart0_driver_mutex_release(u8 m_id);
+
+// --------------------------------------------------------------------------------
 
 #endif // _USART0_DRIVER_H_

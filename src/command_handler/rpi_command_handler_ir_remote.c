@@ -71,18 +71,25 @@ u8 rpi_cmd_handler_ir_remote(PROTOCOL_INTERFACE* p_protocol) {
 	u8 err_code = CMD_NO_ERR;
 
 	switch (manufactor) {
-		default :			err_code = CMD_ERR_INVALID_ARGUMENT; break;
+		default :
+			err_code = CMD_ERR_INVALID_ARGUMENT; break;
 
 		#ifdef RPI_CMD_HANDLER_IR_REMOTE_SAMSUNG_AVAILABLE
-		case IR_MANUFACTOR_SAMSUNG :	err_code = rpi_cmd_handler_ir_remote_samsung(device, command);
+		case IR_MANUFACTOR_SAMSUNG :
+			err_code = rpi_cmd_handler_ir_remote_samsung(device, command);
+			break;
 		#endif
 
 		#ifdef RPI_CMD_HANDLER_IR_REMOTE_JVC_AVAILABLE
-		case IR_MANUFACTOR_JVC :	err_code = rpi_cmd_handler_ir_remote_jvc(device, command);
+		case IR_MANUFACTOR_JVC :
+			err_code = rpi_cmd_handler_ir_remote_jvc(device, command);
+			break;
 		#endif
 
 		#ifdef RPI_CMD_HANDLER_IR_REMOTE_SONY_AVAILABLE
-		case IR_MANUFACTOR_SONY :	err_code = rpi_cmd_handler_ir_remote_sony(device, command);
+		case IR_MANUFACTOR_SONY :
+			err_code = rpi_cmd_handler_ir_remote_sony(device, command);
+			break;
 		#endif
 
 	}

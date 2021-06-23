@@ -9,6 +9,8 @@ INC_PATH += $(TRACER_INC_PATH)
 
 ifdef TRACER_CFG
 
+CSRCS += $(TRACER_INC_PATH)/trace_parser.c
+
 ifneq '' '$(findstring CONSOLE,$(TRACER_CFG))'
 	CSRCS += $(TRACER_INC_PATH)/tracer_console.c
 endif

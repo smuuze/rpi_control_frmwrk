@@ -260,7 +260,7 @@ void tracer_trace_long(const char* str, const char* file_name, u16 line_id, u32 
 	p_com_driver->start_tx();
 }
 
-void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 length, const u8* p_buffer) {
+void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u16 length, const u8* p_buffer) {
 
 	(void) str;
 
@@ -278,8 +278,13 @@ void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u8 leng
 	TRACER_SET_BYTE_COUNT(byte_count);
 	TRACER_SET_TYPE(TRACER_TRANSFER_ID_ARRAY);
 
+	u8 u8_length = (u8)length;
+	if (length > 255) {
+		u8_length = 255;
+	}
+
 	p_com_driver->set_N_bytes(TRACER_HEADER_DATA_LENGTH, TRACER_GET_HEADER());
-	p_com_driver->set_N_bytes(1, &length);
+	p_com_driver->set_N_bytes(1, &u8_length);
 	p_com_driver->set_N_bytes(length, p_buffer);
 	p_com_driver->set_N_bytes(TRACER_NUM_BYTES_LINE_NUMER, (u8*)&line_id);
 	p_com_driver->set_N_bytes(file_name_length, (u8*)file_name);
