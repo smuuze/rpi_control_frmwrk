@@ -1,0 +1,12 @@
+FRAMEKWORK - CHANGELOG
+
+-----------------------------------------------------------
+
+Version:	6.00
+
+Date: 		23.06.2021
+Author:		Sebastian Lesse
+
+Changes:	- FIX: spi0_driver_raspberry_pi - Syntax-Error on open device-file
+		- FIX: rpi_command_handler_ir_remote - Added missing break statements in switch-case
+		

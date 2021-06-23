@@ -184,7 +184,7 @@ void spi0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
 	
 	DEBUG_TRACE_STR(p_cfg->device.name, "spi0_driver_configure() - open device :");
 
-	if ((spi0_cfg.handle = (i32)open(p_cfg->evice.name, O_RDWR)) >= 0) {
+	if ((spi0_cfg.handle = (i32)open(p_cfg->device.name, O_RDWR)) >= 0) {
 		DEBUG_PASS("spi0_driver_configure() - Device open successfull");
 	
 	} else {
