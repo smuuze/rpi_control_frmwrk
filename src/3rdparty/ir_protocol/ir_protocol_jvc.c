@@ -43,6 +43,10 @@
 #define JVC_IR_PROTOCOL_TRANSMIT_BUFFER_BYTE_COUNT				2
 #endif
 
+#ifndef JVC_IR_PROTOCOL_WORD_TRANSMIT_COUNT
+#define JVC_IR_PROTOCOL_WORD_TRANSMIT_COUNT					3
+#endif
+
 #define JVC_IR_PROTOCOL_MOD_TIME_START_PREAMBLE_US				8440
 #define JVC_IR_PROTOCOL_MOD_TIME_START_PAUSE_US					4220
 #define JVC_IR_PROTOCOL_MOD_TIME_DATA_START_US					527
@@ -55,6 +59,7 @@
 #define JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PAUSE			(8 + JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PULSE)
 #define JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_STOP_BIT				(1 + JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PAUSE)
 #define JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE				(88)
+#define JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE_SHORT			(81)
 
 #define JVC_IR_PROTOCOL_MOD_TIME_OFF						0xFFFF
 
@@ -85,9 +90,10 @@ static u8 data_bit_length;
  */
 static u8 data_bit_counter;
 
-/*
- * every byte represents a single bit
+/**
+ * @brief every byte represents a single bit
  * is used for a faster access
+ * 
  */
 static u8 transmit_buffer[JVC_IR_PROTOCOL_TRANSMIT_BUFFER_SIZE];
 
@@ -100,6 +106,12 @@ static u8 transmit_guard = 0;
  *
  */
 static u8 irq_counter = 0;
+
+/**
+ * @brief counts the number of repeats of the data-word
+ * 
+ */
+static u8 word_transmit_counter = 0;
 
 /*
  *
@@ -124,7 +136,7 @@ void ir_protocol_jvc_irq_callback(void) {
 
 	} else if (data_bit_counter < data_bit_length) {
 
-		word_cycle_interval_counter += 1;
+		word_cycle_interval_counter -= 1;
 
 		// Data Bits
 
@@ -138,18 +150,21 @@ void ir_protocol_jvc_irq_callback(void) {
 
 		// Stop-Bit Pulse
 		irq_counter += 1;
-		word_cycle_interval_counter += 1;
+		word_cycle_interval_counter -= 1;
 
 		IR_MOD_OUT_drive_high(); 
 
-	} else if (word_cycle_interval_counter < JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE) {
+	} else if (word_transmit_counter < JVC_IR_PROTOCOL_WORD_TRANSMIT_COUNT) {
 
 		// Word-Cycle Puase
-		
-		word_cycle_interval_counter += 1;
+		word_cycle_interval_counter -= 1;
 		IR_MOD_OUT_drive_low();
 
-		if (word_cycle_interval_counter == JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE) {
+		if (word_cycle_interval_counter == 0) {
+
+			word_transmit_counter += 1;
+			word_cycle_interval_counter = JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE_SHORT;
+
 			data_bit_counter = 0;
 			irq_counter = JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PAUSE;
 		}	
@@ -228,6 +243,8 @@ void ir_protocol_jvc_transmit(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 
 	transmit_guard = 1;
 
+	word_transmit_counter = 0;
+
 	p_carrier->stop();
 	p_modulator->stop();
 
@@ -237,7 +254,7 @@ void ir_protocol_jvc_transmit(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 	ir_protocol_jvc_prepare_transmit_buffer(p_command);
 
 	irq_counter = 0;
-	word_cycle_interval_counter = 0;
+	word_cycle_interval_counter = JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE;
 
 	IR_MOD_OUT_drive_low();
 

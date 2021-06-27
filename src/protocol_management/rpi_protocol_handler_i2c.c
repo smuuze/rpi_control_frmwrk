@@ -508,9 +508,9 @@ static MCU_TASK_INTERFACE_TASK_STATE rpi_protocol_task_get_state(void) {
 		return MCU_TASK_SLEEPING;
 	}
 
-	u8 is_ready = p_com_driver->bytes_available(); // i2c_has_bytes_available()
+	u16 bytes_available = p_com_driver->bytes_available(); // i2c_has_bytes_available()
 
-	if ((actual_task_state == MCU_TASK_SLEEPING) && is_ready) {
+	if ((actual_task_state == MCU_TASK_SLEEPING) && bytes_available != 0) {
 		DEBUG_PASS("rpi_protocol_task_get_state() - Start-Signal detected - will enter Task-State RUNNING");
 		actual_task_state = MCU_TASK_RUNNING;
 	}

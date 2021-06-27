@@ -205,3 +205,16 @@ jobs:
       run: make all
     - name: run unittest
       run: make run
+      
+  unittest_cli_remote_control:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/cli_remote_control
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run

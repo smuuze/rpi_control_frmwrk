@@ -38,140 +38,42 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(RPI_HOST_COMMAND_RECEIVED_SIGNAL)
 
 // --------------------------------------------------------------------------------
 
-static inline u8 command_line_handler_remote_control_is_jvc_command(const char* cmd_name, COMMON_GENERIC_BUFFER_TYPE* p_buffer) {
+/**
+ * @brief Table for Samsung commands and it's HEX-Strings
+ * 
+ */
+static CLI_REMOTE_CONTROL_COMMAND_PAIR cmd_array_samsung[] = { CLI_REMOTE_CONTROL_CMD_ARRAY_SAMSUNG };
 
-	if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_POWER_ON) ) {
+/**
+ * @brief Table for JVC commands and it's HEX-Strings
+ * 
+ */
+static CLI_REMOTE_CONTROL_COMMAND_PAIR cmd_array_jvc[] = { CLI_REMOTE_CONTROL_CMD_ARRAY_JVC };
 
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_POWER_ON");
+// --------------------------------------------------------------------------------
 
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_POWER_ON_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_POWER_ON_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
+static u8 command_line_handler_remote_control_get_command(const char* cmd_name, CLI_REMOTE_CONTROL_COMMAND_PAIR* p_cmd_table, u16 table_length, COMMON_GENERIC_BUFFER_TYPE* p_buffer) {
 
-		return 1;
+	DEBUG_TRACE_word(table_length, "command_line_handler_remote_control_get_command() - Table-Size:");
 
-	} else if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_DOWN) ) {
+	u16 i = 0;
+	for ( ; i < table_length ; i++ ) {
 
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_DOWN");
+		if ( common_tools_string_compare(p_cmd_table[i].cmd_name, cmd_name) ) {
 
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_VOLUME_DOWN_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_VOLUME_DOWN_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
+			DEBUG_TRACE_STR(p_cmd_table[i].cmd_name, "command_line_handler_remote_control_get_command() - Command Found");
 
-		return 1;
+			p_buffer->length = common_tools_hex_string_to_byte_array(
+				p_cmd_table[i].cmd_hex_str,
+				CLI_REMOTE_CONTROL_CMD_HEX_STR_LENGTH,
+				p_buffer->data,
+				COMMON_TYPES_GENERIC_BUFFER_SIZE
+			);
 
-	} else if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_UP) ) {
-
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_UP");
-
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_VOLUME_UP_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_VOLUME_UP_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
-
-		return 1;
-
-	} else if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_MUTE) ) {
-
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_VOLUME_MUTE");
-
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_VOLUME_MUTE_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_VOLUME_MUTE_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
-
-		return 1;
-
-	} else if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PLAY) ) {
-
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PLAY");
-
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_PLAY_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_PLAY_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
-
-		return 1;
-
-	} else if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PAUSE) ) {
-
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_PAUSE");
-
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_PAUSE_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_PAUSE_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
-
-		return 1;
-
-	} else if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_STOP) ) {
-
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_STOP");
-
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_STOP_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_STOP_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
-
-		return 1;
-
-	} else if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_UP) ) {
-
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_UP");
-
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_BASS_UP_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_BASS_UP_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
-
-		return 1;
-
-	} else if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_DOWN) ) {
-
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_BASS_DOWN");
-
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_BASS_DOWN_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_BASS_DOWN_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
-
-		return 1;
-
-	} else if ( common_tools_string_compare(cmd_name, CLI_REMOTE_CONTROL_NAME_JVC_RADIO_SOUND_MODE) ) {
-
-		DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - CLI_REMOTE_CONTROL_NAME_JVC_RADIO_SOUND_MODE");
-
-		p_buffer->length = common_tools_hex_string_to_byte_array(
-			CLI_REMOTE_CONTROL_CMD_JVC_RADIO_SOUND_MODE_HEX_STR,
-			common_tools_string_length(CLI_REMOTE_CONTROL_CMD_JVC_RADIO_SOUND_MODE_HEX_STR),
-			p_buffer->data,
-			COMMON_TYPES_GENERIC_BUFFER_SIZE
-		);
-
-		return 1;
+			return 1;
+		} 
 	}
 
-	DEBUG_PASS("command_line_handler_remote_control_is_jvc_command() - This is not a JVC remote-control command");
 	return 0;
 }
 
@@ -186,7 +88,7 @@ void command_line_handler_remote_control(const char* parameter) {
 	}
 
 	if (common_tools_string_length(parameter) == 0) {
-		DEBUG_PASS("command_line_handler_command() - INVALID PARAMETER - not a multiple of 2");
+		DEBUG_PASS("command_line_handler_command() - INVALID PARAMETER - parameter has length of zero");
 		CLI_INVALID_PARAMETER_SIGNAL_send((void*)COMMAND_LINE_ARGUMENT_COMMAND);
 		return;
 	}
@@ -196,8 +98,14 @@ void command_line_handler_remote_control(const char* parameter) {
 	u8 command_available = 0;
 	COMMON_GENERIC_BUFFER_TYPE buffer;
 
-	if (command_line_handler_remote_control_is_jvc_command(parameter, &buffer)) {
+	if ( command_line_handler_remote_control_get_command(parameter, cmd_array_jvc, CLI_REMOTE_SIZEOF_COMMAND_PAIR_TABLE(cmd_array_jvc), &buffer) ) {
+
 		DEBUG_PASS("command_line_handler_remote_control() - this a JVC remote-control command");
+		command_available = 1;
+
+	} else if ( command_line_handler_remote_control_get_command(parameter, cmd_array_samsung, CLI_REMOTE_SIZEOF_COMMAND_PAIR_TABLE(cmd_array_samsung), &buffer) ) {
+
+		DEBUG_PASS("command_line_handler_remote_control() - this a SAMSUNG remote-control command");
 		command_available = 1;
 	}
 
