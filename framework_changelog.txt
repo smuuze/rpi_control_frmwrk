@@ -2,6 +2,17 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
+Version:	6.01
+
+Date: 		27.06.2021
+Author:		Sebastian Lesse
+
+Changes:	- FIX: ir_protocol_jvc - Correct frame-spacing
+		- FIX: rpi_protocol_handler_i2c - respect return type of p_com->bytes_availaable() (u16 instead of u8)
+		
+
+-----------------------------------------------------------
+
 Version:	6.00
 
 Date: 		23.06.2021
