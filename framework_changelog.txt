@@ -2,6 +2,15 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
+Version:	6.02.01 (Beta)
+
+Date: 		30.06.2021
+Author:		Sebastian Lesse
+
+Changes:	- FIX: protocol_json_response_parser - support for rpi-command-response routing: ir-remote
+
+-----------------------------------------------------------
+
 Version:	6.01
 
 Date: 		27.06.2021
