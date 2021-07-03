@@ -2,12 +2,14 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
-Version:	6.02.01 (Beta)
+Version:	6.02.02 (Beta)
 
 Date: 		30.06.2021
 Author:		Sebastian Lesse
 
 Changes:	- FIX: protocol_json_response_parser - support for rpi-command-response routing: ir-remote
+		- FIX: ir_protocol_sony - correct spacing between two frames
+		- FIX: timer1_driver_atmega1284p - correct value for OCRA register to generate 600us interval signal
 
 -----------------------------------------------------------
 
