@@ -316,6 +316,7 @@ AS_EXTRA_FLAGS +=
 include $(MAKE_PATH)/make_toolchain.mk
 include $(MAKE_PATH)/make_avr_dude.mk
 include $(MAKE_PATH)/make_targets.mk
+include $(MAKE_PATH)/make_repository.mk
 
 # -----------------------------------------------------------------------
 # Debug-Ausgabe aller Variablen
