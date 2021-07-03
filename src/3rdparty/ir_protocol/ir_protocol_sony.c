@@ -48,13 +48,14 @@
 #define SONY_IR_PROTOCOL_EXTENDED_BIT_COUNT					8
 
 #define SONY_IR_PROTOCOL_FRAME_MIN_COUNT					3
-#define SON_IR_PROTOCOL_FRAME_INTERVAL_MS					46
 
 #define SONY_IR_PROTOCOL_START_BIT_MASK_COMMAND					0x80
 #define SONY_IR_PROTOCOL_START_BIT_MASK_DEVICE					0x10
 #define SONY_IR_PROTOCOL_START_BIT_MASK_EXTENDED				0x80
 
 #define SONY_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT				20
+
+#define SONY_IR_PROTOCOL_FRAME_SPACE_COUNTER_VALUE				75
 
 #ifndef SONY_IR_PROTOCOL_TRANSMIT_BUFFER_BYTE_COUNT
 #define SONY_IR_PROTOCOL_TRANSMIT_BUFFER_BYTE_COUNT				3
@@ -73,10 +74,6 @@
 #define SONY_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE				(88)
 
 #define SONY_IR_PROTOCOL_MOD_TIME_OFF						0xFFFF
-
-// --------------------------------------------------------------------------------
-
-TIME_MGMN_BUILD_STATIC_TIMER_U8(IR_SONY_FRAME_SPACE_TIMER)
 
 // --------------------------------------------------------------------------------
 
@@ -128,6 +125,11 @@ static u8 frame_counter = 0;
  */
 static u8 turn_off_signal = 0;
 
+/**
+ * @brief this counter is used to count the 600us timesteps between two following frames
+ */
+static u16 frame_space_counter = 0;
+
 // --------------------------------------------------------------------------------
 
 void ir_protocol_sony_irq_callback(void) {
@@ -141,9 +143,13 @@ void ir_protocol_sony_irq_callback(void) {
 		}
 
 		irq_counter += 1;
+		frame_space_counter -= 1;
+
 		IR_MOD_OUT_drive_high(); 
 
 	} else if (data_bit_counter < data_bit_length) {
+
+		frame_space_counter -= 1;
 
 		// Data Bits
 
@@ -172,13 +178,14 @@ void ir_protocol_sony_irq_callback(void) {
 			p_carrier->stop();
 		}
 
-		if (IR_SONY_FRAME_SPACE_TIMER_is_up(SON_IR_PROTOCOL_FRAME_INTERVAL_MS)) {
+		frame_space_counter -= 1;
 
-			IR_SONY_FRAME_SPACE_TIMER_start();
+		if (frame_space_counter == 0) {
 
 			p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
 			IR_MOD_OUT_drive_high(); 
 
+			frame_space_counter = SONY_IR_PROTOCOL_FRAME_SPACE_COUNTER_VALUE;
 			frame_counter += 1;
 			irq_counter = 1;
 			data_bit_counter = 0;
@@ -288,6 +295,7 @@ void ir_protocol_sony_transmit(SONY_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 	irq_counter = 0;
 	frame_counter = 0;
 	turn_off_signal = 0;
+	frame_space_counter = SONY_IR_PROTOCOL_FRAME_SPACE_COUNTER_VALUE;
 
 	IR_MOD_OUT_drive_low();
 
@@ -308,6 +316,4 @@ void ir_protocol_sony_transmit(SONY_IR_PROTOCOL_COMMAND_TYPE* p_command) {
 	
 	p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
 	p_modulator->start(TIME_CONFIGURATION_RUN_FOREVER);
-
-	IR_SONY_FRAME_SPACE_TIMER_start();
 }
