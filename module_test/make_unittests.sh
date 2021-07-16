@@ -40,14 +40,14 @@ for i in "${!source_dir_list[@]}"; do
 	time=$(date +"%H:%M:%S")
 
         printf "\n\n%s\n" "---------------------------------------------------------------" #>> $log_file
-        printf "TIME: $time\n" #>> $log_file
-        printf "SOURCE: $source_dir\n" #>> $log_file
+        printf " - TIME: $time\n" #>> $log_file
+        printf " - SOURCE: $source_dir\n" #>> $log_file
 
         # check if source is available
         if ls | grep $source_dir > /dev/null; then
-                printf "%s\n" "- AVAILABLE" #>> $log_file
+                printf "%s\n" " - AVAILABLE" #>> $log_file
         else
-                printf "%s\n" "- NOT AVAILABLE !!!" #>> $log_file
+                printf "%s\n" " - NOT AVAILABLE !!!" #>> $log_file
                 continue
         fi
 
@@ -56,10 +56,10 @@ for i in "${!source_dir_list[@]}"; do
                 printf "%s\n" "- EMPTY !!" #>> $log_file
                 continue
         else
-                printf "%s\n" "- NOT EMPTY" #>> $log_file
+                printf "%s\n" " - NOT EMPTY" #>> $log_file
         fi
 
-        printf "\n%s\n\n" "STARTING UNITTEST:" #>> $log_file
+        printf "%s\n" " - STARTING UNITTEST:" #>> $log_file
 
 	cd $source_dir
 	if make clean all run; then
@@ -68,5 +68,10 @@ for i in "${!source_dir_list[@]}"; do
 		printf "%s\n" "- FAILED !!!";
 		exit 1;
 	fi
+
+	printf "%s\n" " - CLEANING UP"
+	make clean
+
+	printf "\n\n"
 	cd ..
 done
