@@ -10,6 +10,10 @@
 
 #define TRACER_OFF
 
+#ifdef TRACER_ON
+#pragma __WARNING__TRACES_ENABLED__
+#endif
+
 // --------------------------------------------------------------------------------
 
 #include "config.h"
