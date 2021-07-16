@@ -287,7 +287,7 @@ static void TEST_CASE_5V_no_requeest_count_overflow(void) {
 		u8 power_is_on = 0;
 
 		UT_TIMER_start();
-		while (UT_TIMER_is_up(POWER_UNIT_5V_POWER_UP_TIME_MS * 2) == 0) {
+		while (UT_TIMER_is_up(POWER_UNIT_5V_POWER_UP_TIME_MS * 3) == 0) {
 
 			mcu_task_controller_schedule();
 

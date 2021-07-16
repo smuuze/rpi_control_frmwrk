@@ -224,7 +224,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: module_test/power_management_test
+        working-directory: module_test/power_management
     steps:
     - uses: actions/checkout@v2
     - name: build unittest

@@ -32,6 +32,7 @@ source_dir_list=(
 	parse_trace_object
 	rpi_protocol_client
 	read_trace_object
+	power_management
 )
 
 for i in "${!source_dir_list[@]}"; do
