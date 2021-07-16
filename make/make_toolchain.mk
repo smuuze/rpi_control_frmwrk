@@ -15,13 +15,15 @@ else
 		CROSS_COMPILER_PATH   = /usr/bin
 	else
 		ifeq ($(UNAME_S),Darwin)
-		CCFLAGS += -D OSX
+		
+			CCFLAGS += -D OSX
+			GREP := | /usr/bin/grep
 
-		ifeq ($(CROSS_COMPILER_PREFIX),avr-)
-			CROSS_COMPILER_PATH   = /usr/local/bin
-		else
-			CROSS_COMPILER_PATH   = /usr/bin
-		endif
+			ifeq ($(CROSS_COMPILER_PREFIX),avr-)
+				CROSS_COMPILER_PATH   = /usr/local/bin
+			else
+				CROSS_COMPILER_PATH   = /usr/bin
+			endif
 		endif
 	endif
     
@@ -76,3 +78,6 @@ MAKE_SERVICE_DISABLE	:= systemctl disable
 
 RM_FLAGS		:= -rf
 VERBOSE 		:= @
+
+GREP			?= | grep
+AWK			?= | awk
