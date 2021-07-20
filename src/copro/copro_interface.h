@@ -1,7 +1,7 @@
 
  /*
-  * \@file	copro/copro_interface.h
-  * \author	sebastian lesse
+  * @file	copro/copro_interface.h
+  * @author	sebastian lesse
   */
 
 #ifndef _COPRO_INTERFACE_H_
@@ -174,7 +174,7 @@ typedef struct COPRO_INTERFACE {
 																\
 	void name##_power_off(void) {												\
 		power_off_callback();												\
-		copro_power_on(&_##name##_copro_interface);									\
+		copro_power_off(&_##name##_copro_interface);									\
 	}															\
 																\
 	u8 name##_power_is_on(void) {												\
