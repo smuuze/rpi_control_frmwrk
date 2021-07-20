@@ -11,7 +11,6 @@
 #include "system/system_interface.h"
 #include "time_management/time_management.h"
 
-#include "power_management/power_management.h"
 #include "expansion/driver_PCA9670.h"
 
 //---------- Implementation of Traces -----------------------------------------
