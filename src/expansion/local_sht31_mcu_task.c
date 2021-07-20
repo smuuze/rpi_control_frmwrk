@@ -22,7 +22,7 @@
 #include "local_sht31_mcu_task.h"
 
 #include "time_management/time_management.h"
-#include "power_management/power_management.h"
+#include "power_management/power_module_5V.h"
 
 #include "cfg_driver_interface.h"
 
@@ -74,8 +74,6 @@ TIME_MGMN_BUILD_STATIC_TIMER_U32(operation_timer)
 
 BUILD_LOCAL_DATA_STORAGE_ARRAY_I8(sht31_temp_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
 BUILD_LOCAL_DATA_STORAGE_ARRAY_U8(sht31_hum_24hour, SHT31_TASK_NUMBER_OF_HISTORY_VALUES)
-
-POWER_MGMN_INCLUDE_UNIT(POWER_UNIT_5V)
 
 //-----------------------------------------------------------------------------
 
