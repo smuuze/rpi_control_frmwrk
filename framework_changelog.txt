@@ -2,9 +2,9 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
-Version:	6.02.04 (Beta)
+Version:	6.02.05 (Beta)
 
-Date: 		16.07.2021
+Date: 		20.07.2021
 Author:		Sebastian Lesse
 
 Changes:	- FIX: protocol_json_response_parser - support for rpi-command-response routing: ir-remote
@@ -13,6 +13,9 @@ Changes:	- FIX: protocol_json_response_parser - support for rpi-command-response
 		- ADD: make_repository - make tagets to perform repository based operations
 		- ADD: power_management_unit now has a power_off delay feature
 		- FIX: power_management_unit is run as task
+		- FIX: correc tinclude of 5V power-unit in several modules
+		- FIX: copro_routing_mcu_task - using power_on() / power_off functions of copro-unit
+		- FIX: copro_inteface - on calling power_off() off copro module, power_on() was executed
 
 -----------------------------------------------------------
 
