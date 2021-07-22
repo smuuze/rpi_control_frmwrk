@@ -356,7 +356,7 @@ static void UNITTEST_rpi_protocol_host_response_timeout(void) {
 
 		UNITTEST_TIMER_start();
 
-		while (UNITTEST_TIMER_is_up(1000) == 0) {
+		while (UNITTEST_TIMER_is_up(RPI_PROTOCOL_HOST_CLIENT_WAIT_TIMEOUT_MS + 500) == 0) {
 			mcu_task_controller_schedule();
 
 		}
