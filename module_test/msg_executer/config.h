@@ -32,7 +32,7 @@
 
 #define MQTT_APPLICATION_IDLE_SCHEDULE_INTERVAL_MS			32
 #define MQTT_APPLICATION_CONNECT_INTERVAL_TIMEOUT_MS			5000
-
+#define MSG_EXECUTER_RESPONSE_TIMEOUT_MS				600
 
 //-------------------------------------------------------------------------
 

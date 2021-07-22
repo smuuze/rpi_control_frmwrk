@@ -46,7 +46,7 @@
 
 // must be more than the timeout of com / exe module !
 #ifndef MSG_EXECUTER_RESPONSE_TIMEOUT_MS
-#define MSG_EXECUTER_RESPONSE_TIMEOUT_MS				600
+#define MSG_EXECUTER_RESPONSE_TIMEOUT_MS				1600
 #endif
 
 #ifndef MSG_EXECUTER_MAX_MESSAGE_LENGTH
