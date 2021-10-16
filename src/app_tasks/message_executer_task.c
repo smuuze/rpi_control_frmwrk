@@ -845,10 +845,10 @@ static u8 msg_executer_parse_line(char* line, const char* p_command_msg, char* p
 		return 0;
 	}
 
-	if (common_tools_string_get_char_count(MSG_EXECUTER_COMMAND_TYPE_SPLITTER, line) != 1) {
-		DEBUG_PASS("msg_executer_parse_line() - Invalid number of command-type / data splitter");
-		return 0;
-	}
+	//if (common_tools_string_get_char_count(MSG_EXECUTER_COMMAND_TYPE_SPLITTER, line) != 1) {
+	//	DEBUG_PASS("msg_executer_parse_line() - Invalid number of command-type / data splitter");
+	//	return 0;
+	//}
 
 	char command_str[MSG_EXECUTER_MAX_FILE_LINE_LENGTH];
 
