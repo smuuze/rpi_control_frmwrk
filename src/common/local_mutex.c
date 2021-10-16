@@ -14,12 +14,6 @@
 
 //-----------------------------------------------------------------------------
 
-
-/*!
- *
- * @param p_status
- * @param bit_flag
- */
 u8 mutex_request(MUTEX_TYPE* p_mutex) {
 
 	if (p_mutex->is_requested != 0) {
@@ -36,12 +30,6 @@ u8 mutex_request(MUTEX_TYPE* p_mutex) {
 	return p_mutex->id;
 }
 
-/*!
- *
- * @param p_status
- * @param bit_flag
- * @return
- */
 void mutex_release(MUTEX_TYPE* p_mutex, u8 mutex_id) {
 
 	if (p_mutex->is_requested == 0) {
@@ -67,11 +55,6 @@ void mutex_release(MUTEX_TYPE* p_mutex, u8 mutex_id) {
 	p_mutex->is_requested = 0;
 }
 
-/*!
- *
- * @param p_status
- * @param bit_flag
- */
 u8 mutex_is_requested(MUTEX_TYPE* p_mutex) {
 
 	return p_mutex->is_requested != 0 ? 1 : 0;

@@ -22,11 +22,15 @@ typedef enum {
 
 #define TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH		0xFFFF
 
-/*
+/**
+ * @brief 
+ * 
  */
 typedef void (*TRX_DRIVER_INTERFACE_INITIALIZE_CALLBACK)	(void);
 
-/*
+/**
+ * @brief 
+ * 
  */
 typedef void (*TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK)		(TRX_DRIVER_CONFIGURATION* p_configuration);
 

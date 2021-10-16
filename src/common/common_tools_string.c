@@ -415,67 +415,6 @@ void common_tools_string_from_i32(char* string_to, u16 max_string_length, i32 nu
 	snprintf(string_to, max_string_length, "%d", number);
 }
 
-/*
-
-u16 read_line(FILE* file_handle, char* p_buffer_to, u16 num_max_bytes) {
-	
-	if (num_max_bytes == 0) {
-		return 0;
-	}
-	
-	char character;
-	u16 num_bytes_read = 0;
-	
-	STRING_DEBUG_MSG("read_line() - Line: ");
-	
-	while ((character = getc(file_handle)) != 255) {
-		
-		if (num_bytes_read == num_max_bytes) {
-			break;
-		}
-		
-		if (character == '\n') {
-			//STRING_DEBUG_MSG("----> End of line reached (LF)\n");
-			break;
-		}	
-		
-		if ((character  < 32 || character > 254)) {		
-			//STRING_DEBUG_MSG("----> Character is not supported (%d)\n", character);
-			continue;
-		}
-		
-		STRING_DEBUG_MSG("%d ", character);		
-		p_buffer_to[num_bytes_read++] = character;
-	}
-	
-	STRING_DEBUG_MSG("\n");
-	
-	if (num_bytes_read < num_max_bytes) {
-		memset(p_buffer_to + num_bytes_read, '\0', num_max_bytes - num_bytes_read);
-	}
-	
-	return num_bytes_read;
-}
-
-u16 string_length(char* p_str) {
-	
-	return strlen(p_str);
-}
-
-u16 string_append(char* p_string_to, char* p_string_from, u16 max_length) {
-
-	u16 len_string_to   = string_length(p_string_to);
-	u16 len_string_from = string_length(p_string_to);
-	
-	if ((len_string_to + len_string_from) > max_length) {
-		len_string_from = max_length - len_string_to;
-	}
-	
-	memcpy((u8*)(p_string_to + len_string_to), (u8*)p_string_from, len_string_from);
-	return (len_string_to + len_string_from);	
-}
-*/
-
 u16 common_tools_hex_string_to_byte_array(const char* hex_string, u16 hex_string_len, u8* byte_array, u16 byte_array_max_len) {
 	
 	if (hex_string_len < 2) {
