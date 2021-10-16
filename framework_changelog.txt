@@ -2,6 +2,16 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
+Version:	6.03
+
+Date: 		16.10.2021
+Author:		Sebastian Lesse
+
+Changes:	- CHANGE:	message-executer-task does not check for additional double-point in execution command
+				to accept cli commands with url parameter
+
+-----------------------------------------------------------
+
 Version:	6.02.06 (Beta)
 
 Date: 		22.07.2021
