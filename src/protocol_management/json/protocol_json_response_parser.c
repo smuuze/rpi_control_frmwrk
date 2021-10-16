@@ -3,7 +3,7 @@
  * @file 	protocol_json_response_parser.c
  * @author 	sebastian lesse
  * @brief 	Creates a JSon string from RPi-Command Response
- * @version 	1.0
+ * @version 	1.1
  * @date 	2021-02-05
  * 
  * @copyright 	Copyright (c) 2021
@@ -50,6 +50,8 @@
 #define JSON_RESPONSE_PARSER_STRING_ON_TIME				"ON_TIME_MS"
 #define JSON_RESPONSE_PARSER_STRING_TOGGLE_DURATION			"DURATION_MS"
 #define JSON_RESPONSE_PARSER_STRING_TOGGLE_PERIOD			"PERIOD_MS"
+#define JSON_RESPONSE_PARSER_STRING_IR_REMOTE				"IR_REMOTE"
+#define JSON_RESPONSE_PARSER_STRING_ROUTING				"ROUTING"
 
 #define JSON_RESPONSE_PARSER_STRING_ERROR				"ERR"
 
@@ -63,6 +65,32 @@
 #define JSON_PARSER_CLI_RESPONSE_SPLITTER_CHAR				'='
 
 // --------------------------------------------------------------------------------
+
+static void json_parser_response_get_command_name(COMMON_GENERIC_BUFFER_TYPE* p_com_buffer, char* p_name, u16 max_string_length) {
+
+	DEBUG_TRACE_byte(CMD_HANDLER_GET_RESPONSE_COMMAND_CODE(p_com_buffer), "json_parser_response_get_command_name() - Command:");
+
+	common_tools_string_clear(p_name, max_string_length);
+
+	switch (CMD_HANDLER_GET_RESPONSE_COMMAND_CODE(p_com_buffer)) {
+		case RPI_COMMAND_GET_VERSION: break;
+		case RPI_COMMAND_GET_INPUT_LIST: break;
+		case RPI_COMMAND_GET_OUTPUT_LIST: break;
+		case RPI_COMMAND_SET_OUTPUT: break;
+		case RPI_COMMAND_GET_OUTPUT_STATE: break;
+		case RPI_COMMAND_GET_INPUT_STATE: break;
+		case RPI_COMMAND_GET_TEMPERATURE: break;
+		case RPI_COMMAND_GET_HUMIDTY: break;
+		case RPI_COMMAND_GET_ADC: break;
+		case RPI_COMMAND_GET_LIGHT: break;
+		case RPI_COMMAND_ROUTING: break;
+
+		case RPI_COMMAND_IR_REMOTE:
+			DEBUG_PASS("json_parser_response_get_command_name() - RPI_COMMAND_IR_REMOTE");
+			common_tools_string_copy_string(p_name, JSON_RESPONSE_PARSER_STRING_IR_REMOTE, max_string_length);
+			break;
+	}
+}
 
 static void json_parser_resposne_error_code(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
 
@@ -271,6 +299,45 @@ static void json_parser_response_set_output_state(JSON_OPJECT_TYPE* p_json_objec
  * @param p_json_object 
  * @param p_com_buffer 
  */
+static void json_parser_response_set_ir_remote_response(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
+
+	json_parser_start_group(p_json_object, JSON_RESPONSE_PARSER_STRING_IR_REMOTE);
+	json_parser_resposne_error_code(p_json_object, p_com_buffer);
+	json_parser_end_group(p_json_object);
+}
+
+/**
+ * @brief 
+ * 
+ * @param p_json_object 
+ * @param p_com_buffer 
+ */
+static void json_parser_response_set_routing_response(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
+
+	DEBUG_TRACE_N(p_com_buffer->length, p_com_buffer->data, "json_parser_response_set_routing_response() - Response:");
+
+	COMMON_GENERIC_BUFFER_TYPE routing_command;
+	routing_command.length = p_com_buffer->length - 2;
+	memcpy(routing_command.data, p_com_buffer->data + 2, routing_command.length);
+
+	json_parser_start_group(p_json_object, JSON_RESPONSE_PARSER_STRING_ROUTING);
+	json_parser_resposne_error_code(p_json_object, p_com_buffer);
+
+	char group_name[JSON_PARSER_TEMP_STRING_LENGTH];
+	json_parser_response_get_command_name(&routing_command, group_name, JSON_PARSER_TEMP_STRING_LENGTH);
+	json_parser_start_group(p_json_object, group_name);
+
+	json_parser_resposne_error_code(p_json_object, &routing_command); // error-code of routed command
+	json_parser_end_group(p_json_object);
+	json_parser_end_group(p_json_object);
+}
+
+/**
+ * @brief 
+ * 
+ * @param p_json_object 
+ * @param p_com_buffer 
+ */
 static void json_parser_response_bad_command(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {
 
 	DEBUG_PASS("json_parser_append_rpi_cmd_response() - BAD_COMMAND");
@@ -334,6 +401,13 @@ void json_parser_append_rpi_cmd_response(JSON_OPJECT_TYPE* p_json_object, COMMON
 			json_parser_response_set_output_state(p_json_object, p_com_buffer);
 			break;
 
+		case RPI_COMMAND_IR_REMOTE:
+			json_parser_response_set_ir_remote_response(p_json_object, p_com_buffer);
+			break;
+
+		case RPI_COMMAND_ROUTING:
+			json_parser_response_set_routing_response(p_json_object, p_com_buffer);
+			break;
 
 		/*
 		case RPI_COMMAND_GET_LIGHT:

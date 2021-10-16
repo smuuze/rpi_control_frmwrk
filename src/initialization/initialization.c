@@ -1,13 +1,25 @@
-/*! \file *********************************************************************
-
- *****************************************************************************/
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	initialization.c
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
 #define TRACER_OFF
+
+#ifdef TRACER_ON
+#pragma __WARNING__TRACES_ENABLED__
+#endif
 
 //-----------------------------------------------------------------------------
 
 #include "config.h"  // immer als erstes einbinden!
-#include "specific.h"
+
+//-----------------------------------------------------------------------------
+
 #include "tracer.h"
 
 //-----------------------------------------------------------------------------
@@ -19,7 +31,6 @@
 #include "local_context.h"
 
 #include "initialization/system_initialization.h"
-#include "initialization/power_initialization.h"
 #include "initialization/button_initialization.h"
 #include "initialization/output_initialization.h"
 #include "initialization/protocol_initialization.h"
@@ -34,6 +45,8 @@
 #include "app_tasks/message_executer_task.h"
 #include "app_tasks/cli_executer_task.h"
 
+#include "power_management/power_management_interface.h"
+
 //-----------------------------------------------------------------------------
 
 SYSTEM_T system_context;
@@ -47,15 +60,19 @@ void initialization(void) {
 
 	system_initialization();
 
-	power_initialization();
+	task_initialization();
+
+	#ifdef HAS_POWER_MANAGEMENT_MODULE
+	{
+		power_management_initialization();
+	}
+	#endif
 
 	sensor_initialization();
 
 	button_initialization();
 
 	output_initialization();
-
-	task_initialization();
 
 	protocol_initialization();
 

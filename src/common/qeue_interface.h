@@ -1,11 +1,12 @@
-/*! 
- * --------------------------------------------------------------------------------
- *
- * \file	qeue_interface.h
- * \brief
- * \author	sebastian lesse
- *
- * --------------------------------------------------------------------------------
+/**
+ * @file qeue_interface.h
+ * @author sebastian lesse (sebastian lesse)
+ * @brief 
+ * @version 1.0
+ * @date 2021-09-25
+ * 
+ * @copyright Copyright (c) 2021
+ * 
  */
  
 #ifndef _QEUE_INTERFACE_H_
@@ -21,8 +22,9 @@
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 typedef struct {
 	u8* p_memory;
@@ -37,6 +39,10 @@ typedef struct {
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief 
+ * 
+ */
 #define QEUE_INTERFACE_BUILD_QEUE(name, object_type, obj_size, max_num_of_elements)				\
 														\
 	static u8 __##name##_memory[max_num_of_elements * obj_size];						\
@@ -79,7 +85,10 @@ typedef struct {
 		return qeue_interface_is_full(&__##name##_qeue_context);					\
 	}
 
-
+/**
+ * @brief 
+ * 
+ */
 #define QEUE_INTERFACE_INCLUDE_QEUE(name)									\
 	void name##_init(void);											\
 	u8 name##_enqeue(void* p_object);									\
@@ -91,38 +100,59 @@ typedef struct {
 
 // --------------------------------------------------------------------------------
 
-/*
- *
+/**
+ * @brief 
+ * 
+ * @param p_qeue_context 
  */
 void qeue_interface_init(QEUE_CONTEXT_TYPE* p_qeue_context);
 
-/*
- *
+/**
+ * @brief 
+ * 
+ * @param p_qeue_context 
+ * @param p_object_from 
+ * @return u8 
  */
 u8 qeue_interface_enqeue(QEUE_CONTEXT_TYPE* p_qeue_context, const void* p_object_from);
 
-/*
- *
+/**
+ * @brief 
+ * 
+ * @param p_qeue_context 
+ * @param p_object_to 
+ * @return u8 
  */
 u8 qeue_interface_deqeue(QEUE_CONTEXT_TYPE* p_qeue_context, void* p_object_to);
 
-/*
- *
+/**
+ * @brief 
+ * 
+ * @param p_qeue_context 
+ * @return u8 
  */
 u8 qeue_interface_mutex_get(QEUE_CONTEXT_TYPE* p_qeue_context);
 
-/*
- *
+/**
+ * @brief 
+ * 
+ * @param p_qeue_context 
  */
 void qeue_interface_mutex_release(QEUE_CONTEXT_TYPE* p_qeue_context);
 
-/*
- *
+/**
+ * @brief 
+ * 
+ * @param p_qeue_context 
+ * @return u8 
  */
 u8 qeue_interface_is_empty(QEUE_CONTEXT_TYPE* p_qeue_context);
 
-/*
- *
+/**
+ * @brief 
+ * 
+ * @param p_qeue_context 
+ * @return u8 
  */
 u8 qeue_interface_is_full(QEUE_CONTEXT_TYPE* p_qeue_context);
 

@@ -1,13 +1,17 @@
-
- /*
-  * \@file	copro/copo.c
-  * \author	sebastian lesse
-  */
+/*! 
+ * --------------------------------------------------------------------------------
+ *
+ * \file	copro.c
+ * \brief
+ * \author	sebastian lesse
+ *
+ * --------------------------------------------------------------------------------
+ */
 
 #define TRACER_OFF
 
 #ifdef TRACER_ON
-#warning __WARNING__TRACER_ENABLED__WARNING__
+#pragma __WARNING__TRACES_ENABLED__
 #endif
 
 //-----------------------------------------------------------------------------
@@ -24,6 +28,7 @@
 #include "copro/copro_interface.h"
 #include "common/local_mutex.h"
 #include "command_handler/rpi_cmd_handler_routing.h"
+#include "power_management/power_module_5V.h"
 
 #include "driver/cfg_driver_interface.h"
 
@@ -37,10 +42,23 @@
 
 #ifdef COPRO1_AVAILABLE
 
-void copro1_POWER_ON_CALLBACK(void) { }
-void copro1_POWER_OFF_CALLBACK(void) { }
+void copro1_POWER_ON_CALLBACK(void) {
 
-COPRO_INTERFACE_CRATE(COPRO1, copro1_POWER_ON_CALLBACK, copro1_POWER_OFF_CALLBACK)
+	if (POWER_UNIT_5V_is_on() == 0) {
+			DEBUG_PASS("copro1_POWER_ON_CALLBACK() - Requesting 5V power-unit");
+			POWER_UNIT_5V_request();
+	}
+}
+
+void copro1_POWER_OFF_CALLBACK(void) {
+	//POWER_UNIT_5V_release();
+}
+
+u8 copro1_POWER_IS_ON_CALLBACK(void) {
+	return POWER_UNIT_5V_is_on();
+}
+
+COPRO_INTERFACE_CRATE(COPRO1, copro1_POWER_ON_CALLBACK, copro1_POWER_IS_ON_CALLBACK, copro1_POWER_OFF_CALLBACK)
  
 static TRX_DRIVER_CONFIGURATION copro1_driver_cfg = { COPRO1_DRIVER_CFG };
 
@@ -98,7 +116,7 @@ void copro_power_on(COPRO_INTERFACE* p_copro) {
 }
 
 void copro_power_off(COPRO_INTERFACE* p_copro) {
-	
+
 }
 
 u8 copro_bytes_available(COPRO_INTERFACE* p_copro) {

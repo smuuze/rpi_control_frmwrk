@@ -62,17 +62,17 @@
 // --------------------------------------------------------------------------------------
 
 /**
- * @brief 	avoid sending signals if already in signal-context
- * 		Only one signal at a time!
+ * @brief There must always be one signal active at a time.
+ * To avoid sending another signal before a signal has not
+ * finisehd, e.g. if a connected slot tries to send an other
+ * signal this guard is set. After a signal has finished the
+ * guard is reseted.
  * 
  */
 static u8 is_in_signal_context_guard = 0;
 
 // --------------------------------------------------------------------------------------
 
-/*!
- *
- */
 void signal_slot_init(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_context) {
 
 	DEBUG_PASS("signal_slot_init()");
@@ -83,9 +83,6 @@ void signal_slot_init(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_contex
 	p_signal_context->time_reference_ms = 0;
 }
 
-/*!
- *
- */
 void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_context, const void* p_arg) {
 
 	if (p_signal_context->time_interval_ms != 0 && time_mgmnt_istimeup_raw_u16(p_signal_context->time_reference_ms, p_signal_context->time_interval_ms) == 0) {
@@ -126,9 +123,6 @@ void signal_slot_send(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_contex
 	is_in_signal_context_guard = 0;
 }
 
-/*!
- *
- */
 void signal_slot_connect(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_context, SIGNAL_SLOT_INTERFACE_SLOT_CONTEXT_TYPE* p_slot_context) {
 
 	DEBUG_PASS("signal_slot_connect()");

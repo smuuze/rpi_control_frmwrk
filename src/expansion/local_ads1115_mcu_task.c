@@ -24,7 +24,7 @@
 #include "common/signal_slot_interface.h"
 
 #include "time_management/time_management.h"
-#include "power_management/power_management.h"
+#include "power_management/power_module_5V.h"
 
 #include "asic_information_ads115.h"
 

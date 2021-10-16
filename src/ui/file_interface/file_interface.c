@@ -62,7 +62,7 @@ const char* file_get_path(FILE_INTERFACE* p_file) {
 }
 
 u8 file_is_open(FILE_INTERFACE* p_file) {
-	return p_file->handle != NULL;
+	return p_file->handle != NULL ? 1 : 0;
 }
 
 u8 file_is_existing(FILE_INTERFACE* p_file) {
@@ -90,11 +90,16 @@ u32 file_get_size(FILE_INTERFACE* p_file) {
 }
 
 u8 file_delete(FILE_INTERFACE* p_file) {
-	return (u8)remove(p_file->path);
+	return (u8)remove(p_file->path) ? 1 : 0;
 }
 
 u8 file_rename(FILE_INTERFACE* p_old_file, const char* new_path) {
-	return rename(p_old_file->path, new_path);
+	if (rename(p_old_file->path, new_path)) {
+		file_set_path(p_old_file, new_path); 
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 u8 file_create(FILE_INTERFACE* p_file) {

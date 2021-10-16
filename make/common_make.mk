@@ -220,16 +220,18 @@ include $(MAKE_PATH)/make_sensor.mk
 
 # ---- PROTOCOL ---------------------------------------------------------------------------
 
+ifdef PROTOCOL_CFG
 include $(MAKE_PATH)/make_protocol.mk
+endif
+
+# ---- POWER MANAGEMENT -------------------------------------------------------------------
+
+ifdef POWER_MANAGEMENT_CFG
+include $(MAKE_PATH)/make_power_management.mk
+endif
 
 # ---- MANAGEMENT MODULES -----------------------------------------------------------------
 	
-ifneq '' '$(findstring POWER,$(MANAGEMENT_MODULE_CFG))'
-	DEFS  += -D HAS_POWER_MANAGEMENT_MODULE=1
-	POWER_MANAGEMENT_PATH = $(APP_PATH)/power_management
-	CSRCS += $(POWER_MANAGEMENT_PATH)/power_management.c
-endif
-
 ifneq '' '$(findstring IO,$(MANAGEMENT_MODULE_CFG))'
 	DEFS  += -D HAS_MANAGEMENT_MODULE_IO=1
 
@@ -264,7 +266,6 @@ CSRCS += $(INITIALIZATION_INC_PATH)/protocol_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/command_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/task_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/system_initialization.c
-CSRCS += $(INITIALIZATION_INC_PATH)/power_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/initialization.c
 
 # -----------------------------------------------------------------------
@@ -316,6 +317,7 @@ AS_EXTRA_FLAGS +=
 include $(MAKE_PATH)/make_toolchain.mk
 include $(MAKE_PATH)/make_avr_dude.mk
 include $(MAKE_PATH)/make_targets.mk
+include $(MAKE_PATH)/make_repository.mk
 
 # -----------------------------------------------------------------------
 # Debug-Ausgabe aller Variablen

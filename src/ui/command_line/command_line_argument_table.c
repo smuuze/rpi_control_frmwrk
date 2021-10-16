@@ -38,17 +38,6 @@
 
 // --------------------------------------------------------------------------------
 
-typedef void (*COMMAND_LINE_ARGUMENT_PARSER_CALLBACK)	(const char* parameter);
-
-// --------------------------------------------------------------------------------
-
-typedef struct {
-	const char* argument;
-	COMMAND_LINE_ARGUMENT_PARSER_CALLBACK callback;
-} COMMAND_LINE_ARGUMENT_TABLE_TYPE;
-
-// --------------------------------------------------------------------------------
-
 /* */
 void command_line_handler_device(const char* parameter);
 

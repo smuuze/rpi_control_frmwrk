@@ -2,6 +2,35 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
+Version:	6.03
+
+Date: 		16.10.2021
+Author:		Sebastian Lesse
+
+Changes:	- CHANGE:	message-executer-task does not check for additional double-point in execution command
+				to accept cli commands with url parameter
+
+-----------------------------------------------------------
+
+Version:	6.02.06 (Beta)
+
+Date: 		22.07.2021
+Author:		Sebastian Lesse
+
+Changes:	- FIX: protocol_json_response_parser - support for rpi-command-response routing: ir-remote
+		- FIX: ir_protocol_sony - correct spacing between two frames
+		- FIX: timer1_driver_atmega1284p - correct value for OCRA register to generate 600us interval signal
+		- ADD: make_repository - make tagets to perform repository based operations
+		- ADD: power_management_unit now has a power_off delay feature
+		- FIX: power_management_unit is run as task
+		- FIX: correc tinclude of 5V power-unit in several modules
+		- FIX: copro_routing_mcu_task - using power_on() / power_off functions of copro-unit
+		- FIX: copro_inteface - on calling power_off() off copro module, power_on() was executed
+		- CHANGE: message_executer_task - changed default response-timout to 1600ms to respect copro startup time
+		- CHANGE: rpi_rpotocol_host - changed default command response timeout to 1505 ms to respect copro bootup time
+
+-----------------------------------------------------------
+
 Version:	6.01
 
 Date: 		27.06.2021

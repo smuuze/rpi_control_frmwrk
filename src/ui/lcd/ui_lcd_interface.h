@@ -17,23 +17,29 @@
 
 //-----------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 void lcd_init(void);
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 void lcd_deinit(void);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param message 
  */
 void lcd_write_line(char* message);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param enabled 
  */
 void lcd_set_enabled(u8 enabled);
 

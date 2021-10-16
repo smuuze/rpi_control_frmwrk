@@ -31,8 +31,6 @@
 #include "time_management/time_management.h"
 #include "driver/timer/timer_interface.h"
 
-#include "power_management/power_management.h"
-
 #include "command_management/protocol_interface.h"
 #include "command_management/command_handler_interface.h"
 
@@ -128,10 +126,6 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(COPRO_WAIT_TIMER)
 
 // --------------------------------------------------------------------------------
 
-POWER_MGMN_BUILD_UNIT(COPRO_POWER_UNIT_5V, COPRO_ROUTING_TASK_POWER_UP_TIMEOUT_MS, EXT_POWER_01_drive_high, EXT_POWER_01_drive_low)
-
-// --------------------------------------------------------------------------------
-
 void copro_routing_task_init(void) {
 
 	DEBUG_PASS("copro_routing_task_init()");
@@ -143,8 +137,6 @@ void copro_routing_task_init(void) {
 		COPRO1_ROUTING_COMMAND_SLOT_connect();
 	}
 	#endif
-
-	COPRO_POWER_UNIT_5V_init();
 	
 	// only for debugging --- EVENT_OUTPUT_drive_low();
 
@@ -210,13 +202,13 @@ void copro_routing_task_run(void) {
 			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_IDLE -> COPRO_ROUTING_TASK_STATE_PREPARE");
 			task_state = COPRO_ROUTING_TASK_STATE_POWER_ON;
 
-			COPRO_POWER_UNIT_5V_request();
+			p_copro_obj->power_on();
 
 			// no break;
 
 		case COPRO_ROUTING_TASK_STATE_POWER_ON :
 
-			if (COPRO_POWER_UNIT_5V_is_on() == 0) {
+			if (p_copro_obj->power_is_on() == 0) {
 				//DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_POWER_ON - Waiting for power-management");
 				break;
 			}
@@ -246,7 +238,6 @@ void copro_routing_task_run(void) {
 
 			DEBUG_TRACE_N(num_bytes, t_data_buffer, "copro_routing_task_run() - Routing Command");
 
-			p_copro_obj->power_on();
 			p_copro_obj->clear_tx_buffer();
 			p_copro_obj->set_N_bytes(num_bytes, t_data_buffer);
 			p_copro_obj->start_tx();
@@ -363,11 +354,10 @@ void copro_routing_task_run(void) {
 
 		case COPRO_ROUTING_TASK_STATE_FINISH :
 
-			COPRO_POWER_UNIT_5V_release();
-
 			p_scheduled_protocol = 0;
 
 			p_copro_obj->mutex_rel();
+			p_copro_obj->power_off();
 			p_copro_obj = 0;
 
 			DEBUG_PASS("copro_routing_task_run() - COPRO_ROUTING_TASK_STATE_FINISH -> COPRO_ROUTING_TASK_STATE_IDLE");

@@ -37,6 +37,7 @@ UT_ACTIVATE()
 #define TEST_CASE_ID_ADD_VALUE_INTO_GROUP	5
 #define TEST_CASE_ID_ADD_STRING_INTO_GROUP	6
 #define TEST_CASE_ID_CLOSE_GROUP		7
+#define TEST_CAS_ID_CMD_RESPONSE_ROUTING	8
 
 // --------------------------------------------------------------------------------
 
@@ -455,6 +456,32 @@ static void TEST_CASE_active_and_complete(void) {
 	UT_END_TEST_CASE()
 }
 
+static void TEST_CASE_get_cmd_response_routing(void) {
+
+	UT_START_TEST_CASE("Get CMD-Response - Rotuing")
+	{	
+		UT_SET_TEST_CASE_ID(TEST_CAS_ID_CMD_RESPONSE_ROUTING);
+
+		COMMON_GENERIC_BUFFER_TYPE response_buffer = {
+			.length = 4,
+			.data = {0x0C, 0x00, 0x0B, 0x00}
+		};
+		char temp_string[JSON_TEMP_STRING_LENGTH];
+
+		UT_JASON_OBJECT_initialize();
+		UT_JASON_OBJECT_start_group("RESPONSE");
+		UT_JASON_OBJECT_add_rpi_response(&response_buffer);
+		UT_JASON_OBJECT_finish();
+		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
+
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_active(), 0);
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_is_complete(), 1);
+		UT_CHECK_IS_EQUAL(UT_JASON_OBJECT_get_length(), 62);
+		UT_COMPARE_STRING(temp_string, "{\"RESPONSE\":{\"ROUTING\":{\"ERR\":\"OK\",\"IR_REMOTE\":{\"ERR\":\"OK\"}}}}");
+	}
+	UT_END_TEST_CASE()
+}
+
 // --------------------------------------------------------------------------------
 
 int main(void) {
@@ -483,6 +510,8 @@ int main(void) {
 		TEST_CASE_finish_response();
 
 		TEST_CASE_active_and_complete();
+
+		TEST_CASE_get_cmd_response_routing();
 	}
 	UT_END_TESTBENCH()
 

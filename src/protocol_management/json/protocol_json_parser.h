@@ -53,14 +53,14 @@ typedef struct JSON_OBJECT_STRUCT {
 // --------------------------------------------------------------------------------
 
 /**
- * @brief 	Initialized the json-object for usage. Data of an already initialized object gets lost.
+ * @brief Initialized the json-object for usage. Data of an already initialized object gets lost.
  * 
  * @param p_json_object The json-object to initialize.
  */
 void json_parser_initialize(JSON_OPJECT_TYPE* p_json_object);
 
 /**
- * @brief 	Parses the response of a RPi-Protocol command into its json representation.
+ * @brief Parses the response of a RPi-Protocol command into its json representation.
  * 
  * @param p_json_object The Json object where the response is added. The object must be initialized
  * @param p_com_buffer byte-array that holds the command-response
@@ -68,7 +68,7 @@ void json_parser_initialize(JSON_OPJECT_TYPE* p_json_object);
 void json_parser_append_rpi_cmd_response(JSON_OPJECT_TYPE* p_json_object, COMMON_GENERIC_BUFFER_TYPE* p_com_buffer);
 
 /**
- * @brief 	Parses the response of a Command-Line-Executer command into its json representation
+ * @brief Parses the response of a Command-Line-Executer command into its json representation
  * 
  * @param p_json_object  The Json object where the response is added. The object must be initialized
  * @param p_cli_response Response-String in the form command_name_str=command_response_str
@@ -76,7 +76,7 @@ void json_parser_append_rpi_cmd_response(JSON_OPJECT_TYPE* p_json_object, COMMON
 void json_parser_append_cli_cmd_response(JSON_OPJECT_TYPE* p_json_object, const char*p_cli_response);
 
 /**
- * @brief 	Starts a new group with the given name.
+ * @brief Starts a new group with the given name.
  * 
  * @param p_json_object The Json object to use for the new group entry
  * @param group_name name of the new group as string
@@ -84,7 +84,7 @@ void json_parser_append_cli_cmd_response(JSON_OPJECT_TYPE* p_json_object, const 
 void json_parser_start_group(JSON_OPJECT_TYPE* p_json_object, const char* group_name);
 
 /**
- * @brief 	Adds a new integer value to the Json object using the given name
+ * @brief Adds a new integer value to the Json object using the given name
  * 
  * @param p_json_object Json object where the new value is added to
  * @param name Name of the new value added
@@ -93,7 +93,7 @@ void json_parser_start_group(JSON_OPJECT_TYPE* p_json_object, const char* group_
 void json_parser_add_integer(JSON_OPJECT_TYPE* p_json_object, const char* name, i32 value);
 
 /**
- * @brief	Adds a string to the json object with the given name
+ * @brief Adds a string to the json object with the given name
  * 
  * @param p_json_object Json object where the string is added to
  * @param name The name of the string to add
@@ -102,16 +102,16 @@ void json_parser_add_integer(JSON_OPJECT_TYPE* p_json_object, const char* name, 
 void json_parser_add_string(JSON_OPJECT_TYPE* p_json_object, const char* name, const char*  p_string);
 
 /**
- * @brief	Stops a group that was started before. Be sure not to call this function twice
+ * @brief Stops a group that was started before. Be sure not to call this function twice
  * 
  * @param p_json_object The Json object where the group will be ended
  */
 void json_parser_end_group(JSON_OPJECT_TYPE* p_json_object);
 
 /**
- * @brief 	Finishes the json-object. A json-object has to be finished to be valid.
- * 		This function also closes all remaining groups that are still open.
- * 		After the json-object has finished no more data can be added to it
+ * @brief Finishes the json-object. A json-object has to be finished to be valid.
+ * This function also closes all remaining groups that are still open.
+ * After the json-object has finished no more data can be added to it
  * 
  * @param p_json_object json-object to finish
  */
@@ -125,9 +125,9 @@ void json_parser_finish(JSON_OPJECT_TYPE* p_json_object);
 u16 json_parser_get_length(JSON_OPJECT_TYPE* p_json_object);
 
 /**
- * @brief 	Copies the actual content of the json-object into the given string.
- * 		If the lenght of p_String is below the conetnt of the json object no
- * 		data is copied and 0 is returned.
+ * @brief Copies the actual content of the json-object into the given string.
+ * If the lenght of p_String is below the conetnt of the json object no
+ * data is copied and 0 is returned.
  * 
  * @param p_json_object The finished json-object
  * @param p_string Content of the json-object will copied into here

@@ -16,7 +16,7 @@
 //-----------------------------------------------------------------------------
 
 #include "io_management/io_controller.h"
-#include "power_management/power_management.h"
+//#include "power_management/power_management_interface.h"
 
 #ifdef EXPANSION_BOARD_PC9670_AVAILABLE
 #include "driver_PCA9670.h"
