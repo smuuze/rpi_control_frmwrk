@@ -139,7 +139,7 @@ void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 #define BUILD_GPIO(pin_name, port_id, pin_id, pin_cfg)									\
 															\
-	GPIO_DRIVER_PIN_DESCRIPTOR pin_name = {									\
+	GPIO_DRIVER_PIN_DESCRIPTOR pin_name = {										\
 		port_id,												\
 		pin_id,													\
 		(pin_cfg)												\
@@ -222,7 +222,9 @@ void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	void pin_name##_no_pull(void);											\
 	u8 pin_name##_is_high_level(void);										\
 	u8 pin_name##_is_low_level(void);										\
-	void pin_name##_print_state(void);
+	void pin_name##_print_state(void);										\
+	void pin_name##_activate(void);											\
+	void pin_name##_deactivate(void);
 
 //-----------------------------------------------------------------------------
 
@@ -236,14 +238,16 @@ void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	void pin_name##_no_pull(void);											\
 	u8 pin_name##_is_high_level(void);										\
 	u8 pin_name##_is_low_level(void);										\
-	void pin_name##_print_state(void);
+	void pin_name##_print_state(void);										\
+	void pin_name##_activate(void);											\
+	void pin_name##_deactivate(void);
 
 //-----------------------------------------------------------------------------
 	
-#define INCLUDE_GPIO_REFRENCE(port_id, pin_id)			\
+#define INCLUDE_GPIO_REFRENCE(port_id, pin_id)										\
 	extern const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id;
 	
-#define GET_GPIO_REFERENCE(port_id, pin_id)			\
+#define GET_GPIO_REFERENCE(port_id, pin_id)										\
 	p_pin_##port_id##_##pin_id
 
 //-----------------------------------------------------------------------------
@@ -264,6 +268,8 @@ void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	u8 exisitng_name##_is_high_level(void);										\
 	u8 exisitng_name##_is_low_level(void);										\
 	void exisitng_name##_print_state(void);										\
+	void exisitng_name##_activate(void);										\
+	void exisitng_name##_deactivate(void);										\
 															\
 	void new_name##_drive_high(void) {										\
 		exisitng_name##_drive_high();										\
@@ -303,6 +309,14 @@ void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 															\
 	void new_name##_print_state(void) {										\
 		exisitng_name##_print_state();										\
+	}														\
+															\
+	void new_name##_activate(void) {										\
+		exisitng_name##_activate();										\
+	}														\
+															\
+	void new_name##_deactivate(void) {										\
+		exisitng_name##_deactivate(&pin_name);									\
 	}
 
 #endif
@@ -363,4 +377,10 @@ void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	}														\
 															\
 	void pin_name##_print_state(void) {										\
+	}														\
+															\
+	void new_name##_activate(void) {										\
+	}														\
+															\
+	void new_name##_deactivate(void) {										\
 	}
