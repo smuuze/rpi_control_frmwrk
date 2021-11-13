@@ -36,6 +36,7 @@
 #define GPIO_PULL_UP_DOWN(pin_num, pull_down)		pullUpDnControl(pin_num, (pull_down == 0) ? PUD_DOWN : (pull_down == 1) ? PUD_UP : PUD_OFF )
 
 #define GPIO_GET_PIN_NUMBER(p_descr)			(10)
+#define GPIO_DRIVER_PIN_IS_DEACTIVATED(p_descr)		((p_pin_descr->pin_cfg & GPIO_DEACTIVATE) != 0 ? 1 : 0)
 #define GPIO_DRIVER_IS_OUTPUT(p_pin_descr)		((p_pin_descr->pin_cfg & GPIO_OUTPUT) != 0 ? 1 : 0)
 #define GPIO_DRIVER_IS_IDLE_LOW(p_pin_descr)		((p_pin_descr->pin_cfg & GPIO_IDLE_LOW) != 0 ? 1 : 0)
 #define GPIO_DRIVER_IS_IDLE_HIGH(p_pin_descr)		((p_pin_descr->pin_cfg & GPIO_IDLE_HIGH) != 0 ? 1 : 0)
@@ -181,7 +182,12 @@ void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 	}
 	#endif
 
-	if (GPIO_DRIVER_IS_OUTPUT(p_pin_descr) != 0) {
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+
+		DEBUG_PASS("gpio_driver_init_pin() - ignored");
+		return;
+
+	} else if (GPIO_DRIVER_IS_OUTPUT(p_pin_descr) != 0) {
 
 		DEBUG_PASS("gpio_driver_init_pin() - is output");
 		gpio_driver_set_direction(p_pin_descr, GPIO_DIRECTION_OUTPUT);
@@ -213,6 +219,10 @@ void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) {
 
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+		return;
+	}
+
 	if (direction == GPIO_DIRECTION_INPUT) {
 		DEBUG_TRACE_byte(GPIO_DRIVER_GET_PIN(p_pin_descr), "gpio_driver_set_direction() - new direction: INPUT - PIN:");
 	} else {
@@ -223,6 +233,10 @@ void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GP
 }
 
 void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) {
+
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+		return;
+	}
 
 	u8 pin_num = GPIO_DRIVER_GET_PIN(p_pin_descr);
 
@@ -244,6 +258,10 @@ void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_D
 }
 
 void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+	
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+		return;
+	}
 
 	if (GPIO_DRIVER_IS_OUTPUT(p_pin_descr) == 0) {
 		DEBUG_TRACE_byte(GPIO_DRIVER_GET_PIN(p_pin_descr), "gpio_driver_toggle_level() - This is not an output");
@@ -256,6 +274,10 @@ void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 }
 
 GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+	
+	if (GPIO_DRIVER_PIN_IS_IGNORED(p_pin_descr) != 0) {
+		return GPIO_LEVEL_HIGH_Z;
+	}
 
 	u8 pin_num   = GPIO_DRIVER_GET_PIN(p_pin_descr);
 	GPIO_DRIVER_LEVEL pin_level = GPIO_READ_PIN(pin_num) ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW;
@@ -272,4 +294,13 @@ GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_
 
 void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 	(void) p_pin_descr;
+}
+
+void gpio_driver_deactivate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+	p_pin_descr->pin_cfg |= GPIO_DEACTIVATE;
+}
+
+void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+	p_pin_descr->pin_cfg &= ~GPIO_DEACTIVATE;
+	gpio_driver_init_pin(p_pin_descr);
 }
