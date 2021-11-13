@@ -379,8 +379,8 @@ void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	void pin_name##_print_state(void) {										\
 	}														\
 															\
-	void new_name##_activate(void) {										\
+	void pin_name##_activate(void) {										\
 	}														\
 															\
-	void new_name##_deactivate(void) {										\
+	void pin_name##_deactivate(void) {										\
 	}
