@@ -275,7 +275,7 @@ void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 	
-	if (GPIO_DRIVER_PIN_IS_IGNORED(p_pin_descr) != 0) {
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
 		return GPIO_LEVEL_HIGH_Z;
 	}
 
