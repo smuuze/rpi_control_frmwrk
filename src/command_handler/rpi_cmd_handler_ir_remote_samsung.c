@@ -35,10 +35,17 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SAMSUNG_IR_CMD_RECEIVED_SIGNAL)
 // --------------------------------------------------------------------------------
 
 /**
- * @brief 
+ * @brief Generates a command for a samsung tv and sends the signal
+ * SAMSUNG_IR_CMD_RECEIVED_SIGNAL with the generated command
+ * as parameter. 
+ * In this context send means, that the generated command is send
+ * via the signalslot-interface.
+ * This function does not block until the command
+ * was transfered over ir-interface.
  * 
- * @param command 
- * @return u8 
+ * @param command command to generated for the samsung device.
+ * @return	CMD_ERR_INVALID_ARGUMENT if the given command is unknown
+ * 		CMD_NO_ERR if the command was generated and send
  */
 static inline u8 rpi_cmd_ir_samsung_tv(u8 command);
 
