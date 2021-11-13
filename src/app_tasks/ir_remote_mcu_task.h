@@ -22,8 +22,8 @@
 // --------------------------------------------------------------------------------
 
 /**
- * @brief 	Initializes the IR-Remote Task-Module
- * 		and registers the task to the MCU Task-Controller
+ * @brief Initializes the IR-Remote Task-Module
+ * and registers the task to the MCU Task-Controller
  * 
  */
 void ir_remote_app_task_init(void);

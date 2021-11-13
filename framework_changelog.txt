@@ -2,6 +2,23 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
+Version:	6.04
+
+Date: 		13.11.2021
+Author:		Sebastian Lesse
+
+New-Features:	-	GPIO-interface - (De)activate) pins 
+			- gpio-pins can be deactivated in gpio-map, they then will be ignored on initialization
+			- gpio-pins can be (de)activated on runtime, e.g. if they where deactiavted on initialization time
+
+Bugfixes:	-	none
+
+Misc:		-	none
+
+Known-Bugs:	-	none
+
+-----------------------------------------------------------
+
 Version:	6.03
 
 Date: 		16.10.2021

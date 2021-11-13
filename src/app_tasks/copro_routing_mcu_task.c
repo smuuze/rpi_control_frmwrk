@@ -51,18 +51,73 @@
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief Actual task state of the copro routing task
+ * 
  */
 typedef enum {
+
+	/**
+	 * @brief Task is in idle state and waits for new command
+	 * 
+	 */
 	COPRO_ROUTING_TASK_STATE_IDLE,
+
+	/**
+	 * @brief task waits until the actual active copro module has powered up
+	 * @see COPRO_ROUTING_TASK_POWER_UP_TIMEOUT_MS
+	 * 
+	 */
 	COPRO_ROUTING_TASK_STATE_POWER_ON,
+
+	/**
+	 * @brief Builds the routing command from the actual active protocol
+	 * and gives it to the actual active copro module
+	 * 
+	 */
 	COPRO_ROUTING_TASK_STATE_PREPARE,
+
+	/**
+	 * @brief Waits until the actual copro-module
+	 * has finished transfering the routing command
+	 * This state also requests the mutex of the actual active
+	 * copor module
+	 * 
+	 */
 	COPRO_ROUTING_TASK_STATE_TRANSMIT,
+
+	/**
+	 * @brief Polls the actual active copro module in a regular interval
+	 * unitl the command answer is available or the timeout has occured.
+	 * @see COPRO_ROUTING_TASK_POLLING_INTERVAL_MS
+	 * @see COPRO_ROUTING_TASK_PROCESS_TIMEOUT_MS
+	 * 
+	 */
 	COPRO_ROUTING_TASK_STATE_PROCESS,
+
+	/**
+	 * @brief Reads the response of the actual active copro from the 
+	 * and transfer them to the actual active protocol
+	 * 
+	 */
 	COPRO_ROUTING_TASK_STATE_RESPONSE,
+
+	/**
+	 * @brief This is always the last state in the processing
+	 * order. Here the mutex of the actual active copro
+	 * module is released.
+	 * 
+	 */
 	COPRO_ROUTING_TASK_STATE_FINISH,
+
+	/**
+	 * @brief THis state is entered if a timeout in an other
+	 * state occured. The actual active protocol
+	 * is informed by the error-code CMD_ERR_TIMEOUT
+	 * 
+	 */
 	COPRO_ROUTING_TASK_TIMEOUT
+	
 } COPRO_ROUTING_TASK_STATE;
 
 //-----------------------------------------------------------------------------
@@ -78,6 +133,14 @@ typedef void (*COPRO_TABLE_SIGNAL_CALLBACK)		(const void* p_arg);
 
 static PROTOCOL_INTERFACE* p_copro1_protocol = 0;
 
+/**
+ * @brief Callback of the COPRO1_ROUTING_COMMAND_SIGNAL
+ * This activates transfereing the command given by p_arg
+ * to copor1.
+ * 
+ * @param p_arg pointer to the protocol context containing the command-buffer with a valid command
+ * and the response buffer where the answer of the copro1 is stored into.
+ */
 static void copro1_slot_CMD_RECEIVED(const void* p_arg) {
 
 	if (p_copro1_protocol != 0) {
@@ -99,29 +162,50 @@ COPRO_INTERFACE_INCLUDE(COPRO1)
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief Pointer to the actual active copro protocol
+ * Points to 0 if there is no protocol is active right now.
+ * 
  */
 static PROTOCOL_INTERFACE* p_scheduled_protocol = 0;
 
-/*!
- *
+/**
+ * @brief Pointer to thea ctual active copro object.
+ * Points to 0 if there is no copro is active right now
+ * 
  */
 static COPRO_INTERFACE_OBJECT* p_copro_obj = 0;
 
-/*!
- *
+/**
+ * @brief Pointer to the response signal of the actual copro object
+ * If the reponse of the copro is received the response signal of this copro
+ * is called.
+ * Points to COPROx_ROUTING_RESPONSE_SIGNAL_send where x is
+ * the number of the actual active copro object
+ * 
  */
 static COPRO_TABLE_SIGNAL_CALLBACK p_response_callback = 0;
 
-/*!
- *
+/**
+ * @brief Actual state of this task
+ * 
  */
 static COPRO_ROUTING_TASK_STATE task_state;
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Timer object to check for timeout on
+ * procesing copro communication
+ * 
+ */
 TIME_MGMN_BUILD_STATIC_TIMER_U16(COPRO_OP_TIMER)
+
+/**
+ * @brief Timer object to realize the polling interval
+ * in the wait for response state
+ * 
+ */
 TIME_MGMN_BUILD_STATIC_TIMER_U16(COPRO_WAIT_TIMER)
 
 // --------------------------------------------------------------------------------
@@ -192,7 +276,7 @@ void copro_routing_task_run(void) {
 		default: // no break;
 		case COPRO_ROUTING_TASK_STATE_IDLE :
 
-			if (p_scheduled_protocol == 0) {
+			if (p_scheduled_protocol == 0 || p_copro_obj == 0) {
 				DEBUG_PASS("copro_routing_task_run() - No copro selected -> what's wrong ?!?");
 				break;
 			}

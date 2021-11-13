@@ -25,7 +25,7 @@
  * 
  * @param device Type of device where the command will be send to
  * @param command type of operation that the command will perform
-//  * @return 	CMD_NO_ERR if the command and device are known
+ * @return 	CMD_NO_ERR if the command and device are known
  * 		CMD_ERR_INVALID_ARGUMENT otherwise
  */
 u8 rpi_cmd_handler_ir_remote_sony(u8 device, u8 command);

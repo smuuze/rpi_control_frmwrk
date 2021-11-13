@@ -22,6 +22,7 @@
 #define GPIO_DRIVER_IS_OUTPUT(p_pin_descr)				((p_pin_descr->pin_cfg & GPIO_OUTPUT) != 0 ? 1 : 0)
 #define GPIO_DRIVER_IS_IDLE_LOW(p_pin_descr)				((p_pin_descr->pin_cfg & GPIO_IDLE_LOW) != 0 ? 1 : 0)
 #define GPIO_DRIVER_IS_IDLE_HIGH(p_pin_descr)				((p_pin_descr->pin_cfg & GPIO_IDLE_HIGH) != 0 ? 1 : 0)
+#define GPIO_DRIVER_PIN_IS_DEACTIVATED(p_descr)				((p_pin_descr->pin_cfg & GPIO_DEACTIVATE) != 0 ? 1 : 0)
 
 #define GPIO_DRIVER_SET_PIN_DIRECTION(port, pin, direction)		if (direction == GPIO_DIRECTION_INPUT) {		\
 										SET_PIN_AS_INPUT(port, pin);			\
@@ -130,6 +131,10 @@ void gpio_driver_init(void) {
 
 void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+		return;
+	}
+
 	PASS(); // gpio_driver_init_pin()
 	TRACE_byte(GPIO_DRIVER_GET_PORT(p_pin_descr));  // gpio_driver_get_level() - PORT
 	TRACE_byte(GPIO_DRIVER_GET_PIN(p_pin_descr));  // gpio_driver_get_level() - PIN
@@ -161,6 +166,10 @@ void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) {
 
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+		return;
+	}
+
 	u8 port_id = GPIO_DRIVER_GET_PORT(p_pin_descr);
 	u8 pin_num = GPIO_DRIVER_GET_PIN(p_pin_descr);
 
@@ -178,6 +187,10 @@ void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GP
 }
 
 void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) {
+
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+		return;
+	}
 
 	u8 port_id = GPIO_DRIVER_GET_PORT(p_pin_descr);
 	u8 pin_num = GPIO_DRIVER_GET_PIN(p_pin_descr);
@@ -203,6 +216,10 @@ void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_D
 
 void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+		return;
+	}
+
 	u8 port_id = GPIO_DRIVER_GET_PORT(p_pin_descr);
 	u8 pin_num = GPIO_DRIVER_GET_PIN(p_pin_descr);
 
@@ -222,6 +239,10 @@ void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 }
 
 GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+	
+	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+		return GPIO_LEVEL_HIGH_Z;
+	}
 
 	u8 port_id = GPIO_DRIVER_GET_PORT(p_pin_descr);
 	u8 pin_num = GPIO_DRIVER_GET_PIN(p_pin_descr);
@@ -245,4 +266,14 @@ GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_
 	TRACE_byte(pin_level);  // gpio_driver_get_level() - LEVEL
 
 	return pin_level;
+}
+
+void gpio_driver_deactivate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+	p_pin_descr->pin_cfg |= GPIO_DEACTIVATE;
+}
+
+void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+	p_pin_descr->pin_cfg &= ~GPIO_DEACTIVATE;
+	gpio_driver_init_pin(p_pin_descr);
+
 }

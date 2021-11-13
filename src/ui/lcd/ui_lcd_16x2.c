@@ -91,17 +91,15 @@ void lcd_init(void) {
 		return;
 	}
 	
-	DEBUG_PASS("lcd_init()");
+	DEBUG_PASS("lcd_init() - activate");
 
-	DEBUG_PASS("lcd_init() - set initial state");
+	LCD_RS_activate();	LCD_RS_drive_low();
+	LCD_EN_activate();	LCD_EN_drive_low();
 
-	LCD_RS_drive_low();
-	LCD_EN_drive_low();
-
-	LCD_D4_drive_low();
-	LCD_D5_drive_low();
-	LCD_D6_drive_low();
-	LCD_D7_drive_low();
+	LCD_D4_activate();	LCD_D4_drive_low();
+	LCD_D5_activate();	LCD_D5_drive_low();
+	LCD_D6_activate();	LCD_D6_drive_low();
+	LCD_D7_activate();	LCD_D7_drive_low();
 
 	DEBUG_PASS("lcd_init() - running init sequence");
 

@@ -11,8 +11,24 @@
 #define GPIO_IDLE_LOW					0x20
 #define GPIO_IDLE_HIGH_Z				0x10
 
+/**
+ * @brief Tell the GPIO driver to use this pin as output
+ * 
+ */
 #define GPIO_OUTPUT					0x08
+
+/**
+ * @brief Tell the GPIO driver to use this pin as input
+ * 
+ */
 #define GPIO_INPUT					0x00
+
+/**
+ * @brief Tell the GPIO driver to do not use this pin
+ * This causes that the pin does not have any functionality at all
+ * 
+ */
+#define GPIO_DEACTIVATE					0x01
 
 #define GPIO_PIN_0					0x01
 #define GPIO_PIN_1					0x02
@@ -35,7 +51,7 @@ typedef struct  {
 
 	const u8 port_id;
 	const u8 pin_id;
-	const u8 pin_cfg;
+	u8 pin_cfg;
 
 } GPIO_DRIVER_PIN_DESCRIPTOR;
 
@@ -52,22 +68,83 @@ typedef enum {
 
 //-----------------------------------------------------------------------------
 
+/**
+ * @brief 
+ * 
+ */
 void gpio_driver_init(void);
+
+/**
+ * @brief 
+ * 
+ * @param p_pin_descr 
+ */
 void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+
+/**
+ * @brief 
+ * 
+ * @param p_pin_descr 
+ * @param direction 
+ */
 void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction);
+
+/**
+ * @brief 
+ * 
+ * @param p_pin_descr 
+ * @param level 
+ */
 void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level);
+
+/**
+ * @brief 
+ * 
+ * @param p_pin_descr 
+ */
 void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+
+/**
+ * @brief 
+ * 
+ * @param p_pin_descr 
+ * @return GPIO_DRIVER_LEVEL 
+ */
 GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+
+/**
+ * @brief 
+ * 
+ * @param p_pin_descr 
+ */
 void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+
+/**
+ * @brief Deactivates the GPIO pin given by p_pin_descr. The configuration of this pin
+ * is set to deactivated. The pin then cannot be used at all.
+ * 
+ * @param p_pin_descr descriptor of the pin to deactivate.
+ */
+void gpio_driver_deactivate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+
+/**
+ * @brief Activates the GPIO pin given by p_pin_descr. The configuration of this pin
+ * is set to activated. The pin then can be used.
+ * 
+ * @param p_pin_descr descriptor of the pin to be activate
+ */
+void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 //-----------------------------------------------------------------------------
 
 #define BUILD_GPIO(pin_name, port_id, pin_id, pin_cfg)									\
-	const GPIO_DRIVER_PIN_DESCRIPTOR pin_name = {									\
+															\
+	GPIO_DRIVER_PIN_DESCRIPTOR pin_name = {										\
 		port_id,												\
 		pin_id,													\
 		(pin_cfg)												\
 	};														\
+															\
 	const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id = &pin_name;					\
 															\
 	void pin_name##_drive_high(void) {										\
@@ -122,12 +199,20 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 															\
 	void pin_name##_print_state(void) {										\
 		gpio_driver_print_pin_state(&pin_name);									\
+	}														\
+															\
+	void pin_name##_activate(void) {										\
+		gpio_driver_activate(&pin_name);									\
+	}														\
+															\
+	void pin_name##_deactivate(void) {										\
+		gpio_driver_deactivate(&pin_name);									\
 	}
 
 //-----------------------------------------------------------------------------
 
 #define INCLUDE_GPIO(pin_name)												\
-	extern const GPIO_DRIVER_PIN_DESCRIPTOR pin_name;								\
+	extern GPIO_DRIVER_PIN_DESCRIPTOR pin_name;									\
 	void pin_name##_drive_high(void);										\
 	void pin_name##_drive_low(void);										\
 	void pin_name##_no_drive(void);											\
@@ -137,7 +222,9 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	void pin_name##_no_pull(void);											\
 	u8 pin_name##_is_high_level(void);										\
 	u8 pin_name##_is_low_level(void);										\
-	void pin_name##_print_state(void);
+	void pin_name##_print_state(void);										\
+	void pin_name##_activate(void);											\
+	void pin_name##_deactivate(void);
 
 //-----------------------------------------------------------------------------
 
@@ -151,14 +238,16 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	void pin_name##_no_pull(void);											\
 	u8 pin_name##_is_high_level(void);										\
 	u8 pin_name##_is_low_level(void);										\
-	void pin_name##_print_state(void);
+	void pin_name##_print_state(void);										\
+	void pin_name##_activate(void);											\
+	void pin_name##_deactivate(void);
 
 //-----------------------------------------------------------------------------
 	
-#define INCLUDE_GPIO_REFRENCE(port_id, pin_id)			\
+#define INCLUDE_GPIO_REFRENCE(port_id, pin_id)										\
 	extern const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id;
 	
-#define GET_GPIO_REFERENCE(port_id, pin_id)			\
+#define GET_GPIO_REFERENCE(port_id, pin_id)										\
 	p_pin_##port_id##_##pin_id
 
 //-----------------------------------------------------------------------------
@@ -179,6 +268,8 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	u8 exisitng_name##_is_high_level(void);										\
 	u8 exisitng_name##_is_low_level(void);										\
 	void exisitng_name##_print_state(void);										\
+	void exisitng_name##_activate(void);										\
+	void exisitng_name##_deactivate(void);										\
 															\
 	void new_name##_drive_high(void) {										\
 		exisitng_name##_drive_high();										\
@@ -218,6 +309,14 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 															\
 	void new_name##_print_state(void) {										\
 		exisitng_name##_print_state();										\
+	}														\
+															\
+	void new_name##_activate(void) {										\
+		exisitng_name##_activate();										\
+	}														\
+															\
+	void new_name##_deactivate(void) {										\
+		exisitng_name##_deactivate();										\
 	}
 
 #endif
@@ -278,4 +377,10 @@ void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 	}														\
 															\
 	void pin_name##_print_state(void) {										\
+	}														\
+															\
+	void pin_name##_activate(void) {										\
+	}														\
+															\
+	void pin_name##_deactivate(void) {										\
 	}
