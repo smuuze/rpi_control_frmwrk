@@ -16,7 +16,7 @@
  * @file   rpi_cmd_handler_ir_remote_led_lights.c
  * @author Sebastian Lesse
  * @date   2021 / 12 / 28
- * @brief  Short description of this file
+ * @brief  Module to handle ir led-lights commands
  * 
  */
 
@@ -91,9 +91,9 @@ static inline u8 rpi_cmd_ir_led_lights_bauhaus(u8 cmd) {
 
         default: return CMD_ERR_INVALID_ARGUMENT;
 
-        case IR_COMMAND_POWER_ON :              ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_POWER_OFF :             ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-
+        case IR_COMMAND_POWER_ON :              ir_command_led_lights_bauhaus_cmd_on(&ir_command); break;
+        case IR_COMMAND_POWER_OFF :             ir_command_led_lights_bauhaus_cmd_off(&ir_command); break;
+/*
         case IR_COMMAND_LIGHT_BRIGHTER :        ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
         case IR_COMMAND_LIGHT_DARKER :          ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
         case IR_COMMAND_LIGHT_FLASH :           ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
@@ -116,6 +116,7 @@ static inline u8 rpi_cmd_ir_led_lights_bauhaus(u8 cmd) {
         case IR_COMMAND_LIGHT_EGGPLANT :        ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
         case IR_COMMAND_LIGHT_PURPLE :          ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
         case IR_COMMAND_LIGHT_PINK :            ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
+*/
     }
 
     ir_command_led_lights_bauhaus_address(&ir_command);

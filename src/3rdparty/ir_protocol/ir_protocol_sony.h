@@ -1,18 +1,30 @@
 /**
- * 
- * --------------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	ir_protocol_sony.h
- * \brief	This file includes all IR-commands of the Sony BD9400 Blueray Disc-Player.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file   ir_protocol_sony.h
+ * @author Sebastian Lesse
+ * @date   2021 / 03 / 21
+ * @brief  This file includes all IR-commands of the Sony BD9400 Blueray Disc-Player.
+ * 
  * 		Usage:
  * 		- set the pointer to carrier and modulation timer at initialization
  * 		- set the device address into the actual command-container
  * 		- set the data of the requested ir-command into the command.-container
  * 		- start transmitting the command
  * 		- wait until transmitting is done before sending a new command
- * \author	sebastian lesse
- *
- * --------------------------------------------------------------------------------
+ * 
  */
 
 #ifndef _IR_PROTOCOL_SONY_H_

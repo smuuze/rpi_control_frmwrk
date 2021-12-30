@@ -16,7 +16,37 @@
  * @file   ir_protocol_interface.h
  * @author Sebastian Lesse
  * @date   2021 / 12 / 30
- * @brief  Contains common definitions 
+ * @brief  Interface to realize a ir-protocol generation module.
+ * 
+ *      Usage:
+ * 
+ *      - Define callback structure:
+ * 
+ *              IR_PROTOCOL_GENERATOR ir_protocol_module = {
+ *                      .uid = UNIQUE_IR_PROTOCOL_IDENTIFIER,
+ *                      .set_timer = p_callback_set_timer,
+ *                      .transmit = &p_callback_transmit,
+ *                      .is_busy = &p_callback_is_busy,
+ *                      ._p_next = 0
+ *              };
+ * 
+ *      - Register module:
+ * 
+ *              ir_protocol_interface_register_ir_protocol(&ir_protocol_module);
+ * 
+ *      - Generate ir-command:
+ * 
+ *              IR_COMMON_COMMAND_TYPE ir_command = {
+ *                      .type = UNIQUE_IR_PROTOCOL_IDENTIFIER,
+ *                      .data_1 = ir_protocol_data_1,
+ *                      .data_2 = ir_protocol_data_2,
+ *                      .data_3 = ir_protocol_data_3,
+ *                      .data_4 = ir_protocol_data_4,
+ *              };
+ * 
+ *      - Send ir-command via signal-slot-interface
+ * 
+ *              IR_CMD_RECEIVED_SIGNAL_send(&ir_command);
  * 
  */
 
@@ -90,7 +120,7 @@ typedef struct IR_COMMON_COMMAND {
  * @brief Callback time to set for the ir-protocol-generator
  * 
  */
-typedef u8 (*IR_PROTOCOL_INTERFACE_SET_TIMER_CALLBACK) (TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator);
+typedef void (*IR_PROTOCOL_INTERFACE_SET_TIMER_CALLBACK) (TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator);
 
 /**
  * @brief Callback time to start transmission of a ir-command

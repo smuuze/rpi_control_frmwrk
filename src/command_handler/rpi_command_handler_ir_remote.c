@@ -16,7 +16,7 @@
  * @file   rpi_command_handler_ir_remote.c
  * @author Sebastian Lesse
  * @date   2020 / 03 / 31
- * @brief  Short description of this file
+ * @brief  Command handling module for ir-control-commands
  * 
  */
 
@@ -80,7 +80,7 @@ typedef struct IR_COMMAND_TABLE {
 	IR_CMD_HANDLER_CALLBACK p_callback;
 } IR_COMMAND_TABLE;
 
-#define IR_CMD_HANDLER_MAX_SIZE_TABLE = 255
+#define IR_CMD_HANDLER_MAX_SIZE_TABLE 255
 
 // --------------------------------------------------------------------------------
 
