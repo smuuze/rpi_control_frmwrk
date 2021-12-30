@@ -40,6 +40,10 @@
 
 // --------------------------------------------------------------------------------
 
+#include "3rdparty/ir_protocol/ir_protocol_interface.h"
+
+// --------------------------------------------------------------------------------
+
 #define IR_REMOTE_TASK_RUN_INTERVAL_MS			100
 #define IR_REMOTE_TASK_CHANGE_FREQ_INTERVAL_MS		2000
 
@@ -47,9 +51,10 @@
 
 #define IR_REMOTE_TASK_STATUS_TX_ACTIVE			(1 << 0)
 #define IR_REMOTE_TASK_STATUS_CMD_PENDING		(1 << 1)
-#define IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED	(1 << 2)
-#define IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED		(1 << 3)
-#define IR_REMOTE_TASK_STATUS_SONY_CMD_RECEIVED		(1 << 4)
+#define IR_REMOTE_TASK_STATUS_CMD_RECEIVED	        (1 << 2)
+#define IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED	(1 << 3)
+#define IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED		(1 << 4)
+#define IR_REMOTE_TASK_STATUS_SONY_CMD_RECEIVED		(1 << 5)
 
 // --------------------------------------------------------------------------------
 
@@ -148,6 +153,68 @@ static MCU_TASK_INTERFACE ir_remote_task = {
 	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
 	0						// next-task
 };
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Always points to the first available ir-protocol.
+ * 
+ */
+static IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol_first = 0;
+
+/**
+ * @brief Always points to the last available ir_protocol.
+ * 
+ */
+static IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol_last = 0;
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief temporarily sotre the new ir-command.
+ * The command is processed within the task-schedule
+ * 
+ */
+static IR_COMMON_COMMAND_TYPE ir_command;
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Pointer to the actual active protocol
+ * 
+ */
+static IR_PROTOCOL_GENERATOR_TYPE* p_act_protocol = 0;
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Slot to receive a new ir-command
+ * The ir-command is stored temporarily and will be processed within task-schedule.
+ * 
+ * @param p_arg pointer to the new ir-command of type IR_COMMON_COMMAND_TYPE
+ */
+static void ir_remote_task_slot_IR_CMD_RECEIVED(const void* p_arg) {
+
+	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_CMD_PENDING)) {
+		return;
+	}
+
+	const IR_COMMON_COMMAND_TYPE* p_command = (const IR_COMMON_COMMAND_TYPE*) p_arg;
+	ir_command.type = p_command->type;
+	ir_command.data_1 = p_command->data_1;
+	ir_command.data_2 = p_command->data_2;
+	ir_command.data_3 = p_command->data_3;
+	ir_command.data_4 = p_command->data_4;
+
+	IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_CMD_PENDING | IR_REMOTE_TASK_STATUS_CMD_RECEIVED);
+
+	DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_slot_IR_CMD_RECEIVED()");
+}
+
+// --------------------------------------------------------------------------------
+
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(IR_CMD_RECEIVED_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(IR_CMD_RECEIVED_SIGNAL, IR_CMD_RECEIVED_SLOT, ir_remote_task_slot_IR_CMD_RECEIVED)
 
 // --------------------------------------------------------------------------------
 
@@ -313,6 +380,38 @@ static void ir_remote_task_run(void) {
 
 	u8 is_active = 0;
 
+	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_CMD_RECEIVED)) {
+
+		if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
+
+			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_PENDING);
+                        IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
+
+                        p_act_protocol = p_ir_protocol_first;
+
+                        while (p_act_protocol != 0) {
+
+                                if (p_act_protocol->uid == ir_command.type) {
+
+                                        p_act_protocol->transmit(&ir_command);
+			                is_active = 1;
+                                        break;
+                                }
+
+                                p_act_protocol = p_act_protocol->_p_next;
+                        }
+
+		} else  if (p_act_protocol != 0 && p_act_protocol->is_busy()) {
+			is_active = 1;
+
+		} else {
+
+			DEBUG_PASS("ir_remote_task_run() - IR-Command finished");
+			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED);
+                        p_act_protocol = 0;
+		}
+	}
+
 	#ifdef HAS_IR_PROTOCOL_SAMSUNG
 	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED)) {
 
@@ -414,4 +513,24 @@ static void ir_remote_task_finish(void) {
 
 static void ir_remote_task_terminate(void) {
 
+}
+
+// --------------------------------------------------------------------------------
+
+void ir_protocol_interface_register_ir_protocol(IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol) {
+
+        p_ir_protocol->_p_next = 0;
+
+        if (p_ir_protocol_first == 0) {
+
+                p_ir_protocol_first = p_ir_protocol;
+                p_ir_protocol_last = p_ir_protocol;
+
+        } else {
+
+                p_ir_protocol_last->_p_next = p_ir_protocol;
+                p_ir_protocol_last = p_ir_protocol;
+        }
+
+	DEBUG_TRACE_byte(p_ir_protocol->uid, "ir_protocol_interface_register_ir_protocol() - new ir-protocol added");
 }

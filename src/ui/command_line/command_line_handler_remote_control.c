@@ -65,7 +65,7 @@ static u8 command_line_handler_remote_control_get_command(const char* cmd_name, 
 
 			p_buffer->length = common_tools_hex_string_to_byte_array(
 				p_cmd_table[i].cmd_hex_str,
-				CLI_REMOTE_CONTROL_CMD_HEX_STR_LENGTH,
+				CLI_REMOTE_CONTROL_CMD_HEX_STR_LENGTH, // always has the same length for every command
 				p_buffer->data,
 				COMMON_TYPES_GENERIC_BUFFER_SIZE
 			);

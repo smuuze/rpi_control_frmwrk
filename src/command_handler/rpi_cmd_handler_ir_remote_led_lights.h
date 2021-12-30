@@ -13,15 +13,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @file   rpi_cmd_handler_ir_remote_samsung.h
+ * @file   rpi_cmd_handler_ir_remote_led_lights.h
  * @author Sebastian Lesse
  * @date   2021 / 12 / 28
- * @brief  Command handler to generate ir-commands of devices that use the Samsung ir-protocol
+ * @brief  Command handler to generate ir-commands of LED-light devices
  * 
  */
 
-#ifndef _RPI_COMMAND_HANDLER_IR_REMOTE_SAMSUNG_H_
-#define _RPI_COMMAND_HANDLER_IR_REMOTE_SAMSUNG_H_
+// --------------------------------------------------------------------------------
+
+#ifndef _H_rpi_cmd_handler_ir_remote_led_lights_
+#define _H_rpi_cmd_handler_ir_remote_led_lights_
 
 // --------------------------------------------------------------------------------
 
@@ -30,8 +32,8 @@
 // --------------------------------------------------------------------------------
 
 /**
- * @brief Generates and sends a ir-command to a samsung device.
- * This functions sends the SAMSUNG_IR_CMD_RECEIVED_SIGNAL signal
+ * @brief Generates and sends a ir-command to a NEC device.
+ * This functions sends the LED_LIGHTS_IR_CMD_RECEIVED_SIGNAL signal
  * with the generates ir-command as a parameter.
  * In this context send means, that the generated command is send
  * via the signalslot-interface.
@@ -43,8 +45,10 @@
  * 		CMD_ERR_INVALID_ARGUMENT if the type of the command is unknown or
  * 		if the device is unknown or unsupported
  */
-u8 rpi_cmd_handler_ir_remote_samsung(u8 device, u8 command);
+u8 rpi_cmd_handler_ir_remote_led_lights(u8 device, u8 command);
 
 // --------------------------------------------------------------------------------
 
-#endif // _RPI_COMMAND_HANDLER_IR_REMOTE_SAMSUNG_H_
+#endif // _H_rpi_cmd_handler_ir_remote_led_lights_
+
+// --------------------------------------------------------------------------------

@@ -16,7 +16,7 @@
  * @file   ir_command_led_lights.c
  * @author Sebastian Lesse
  * @date   2021 / 12 / 30
- * @brief  Short description of this file
+ * @brief  Commands that are used by LED-Light devices
  * 
  */
 

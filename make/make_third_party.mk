@@ -16,3 +16,13 @@ ifneq '' '$(findstring IR_PROTOCOL_SONY,$(THIRD_PARTY_MODULES))'
 	CSRCS += $(APP_PATH)/3rdparty/ir_protocol/ir_protocol_sony.c
 	CSRCS += $(APP_PATH)/3rdparty/ir_protocol/ir_protocol_sony_commands.c
 endif
+
+ifneq '' '$(findstring IR_PROTOCOL_NEC,$(THIRD_PARTY_MODULES))'
+	DEFS += -D HAS_IR_PROTOCOL_NEC=1
+	CSRCS += $(APP_PATH)/3rdparty/ir_protocol/ir_protocol_nec.c
+endif
+
+ifneq '' '$(findstring IR_COMMAND_LED_LIGHT,$(THIRD_PARTY_MODULES))'
+	DEFS += -D HAS_IR_COMMAND_LED_LIGHT=1
+	CSRCS += $(APP_PATH)/3rdparty/ir_protocol/ir_command_led_lights.c
+endif
