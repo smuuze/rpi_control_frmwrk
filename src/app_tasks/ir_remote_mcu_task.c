@@ -353,6 +353,9 @@ void ir_remote_app_task_init(void) {
 
 	timer_carrier.init();
 	timer_modulator.init();
+
+        IR_CMD_RECEIVED_SIGNAL_init();
+        IR_CMD_RECEIVED_SLOT_connect();
 	
 	#ifdef HAS_IR_PROTOCOL_SAMSUNG
 	{
@@ -570,6 +573,8 @@ void ir_protocol_interface_register_ir_protocol(IR_PROTOCOL_GENERATOR_TYPE* p_ir
                 p_ir_protocol_last->_p_next = p_ir_protocol;
                 p_ir_protocol_last = p_ir_protocol;
         }
+
+        p_ir_protocol_last->set_timer(&timer_carrier, &timer_modulator);
 
 	DEBUG_TRACE_byte(p_ir_protocol->uid, "ir_protocol_interface_register_ir_protocol() - new ir-protocol added");
 }
