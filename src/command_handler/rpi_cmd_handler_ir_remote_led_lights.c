@@ -69,7 +69,7 @@ static inline u8 rpi_cmd_ir_led_lights_bauhaus(u8 command);
 
 u8 rpi_cmd_handler_ir_remote_led_lights(u8 device, u8 command) {
 
-    DEBUG_PASS("rpi_cmd_handler_ir_remote_led_lights()");
+    DEBUG_TRACE_byte(device, "rpi_cmd_handler_ir_remote_led_lights() - Device:");
 
     switch (device) {
         default:
@@ -93,30 +93,28 @@ static inline u8 rpi_cmd_ir_led_lights_bauhaus(u8 cmd) {
 
         case IR_COMMAND_POWER_ON :              ir_command_led_lights_bauhaus_cmd_on(&ir_command); break;
         case IR_COMMAND_POWER_OFF :             ir_command_led_lights_bauhaus_cmd_off(&ir_command); break;
-/*
-        case IR_COMMAND_LIGHT_BRIGHTER :        ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_DARKER :          ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_FLASH :           ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_STROBE :          ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_FADE :            ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_SMOOTH :          ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_WHITE :           ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_RED :             ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_RED_INDIAN :      ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_COPPER :          ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_ORANGE :          ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_YELLOW :          ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_GREEN_FOREST :    ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_GREEN :           ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_BLUE_AZURE :      ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_BLUE_STEEL :      ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_JADE :            ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_BLUE :            ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_BLUE_MARINE :     ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_EGGPLANT :        ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_PURPLE :          ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-        case IR_COMMAND_LIGHT_PINK :            ir_protocol_led_lights_bauhaus_cmd_tv_power(&ir_command); break;
-*/
+        case IR_COMMAND_LIGHT_BRIGHTER :        ir_command_led_lights_bauhaus_cmd_brighter(&ir_command); break;
+        case IR_COMMAND_LIGHT_DARKER :          ir_command_led_lights_bauhaus_cmd_darker(&ir_command); break;
+        case IR_COMMAND_LIGHT_FLASH :           ir_command_led_lights_bauhaus_cmd_flash(&ir_command); break;
+        case IR_COMMAND_LIGHT_STROBE :          ir_command_led_lights_bauhaus_cmd_strobe(&ir_command); break;
+        case IR_COMMAND_LIGHT_FADE :            ir_command_led_lights_bauhaus_cmd_fade(&ir_command); break;
+        case IR_COMMAND_LIGHT_SMOOTH :          ir_command_led_lights_bauhaus_cmd_smooth(&ir_command); break;
+        case IR_COMMAND_LIGHT_WHITE :           ir_command_led_lights_bauhaus_cmd_white(&ir_command); break;
+        case IR_COMMAND_LIGHT_RED :             ir_command_led_lights_bauhaus_cmd_red(&ir_command); break;
+        case IR_COMMAND_LIGHT_RED_INDIAN :      ir_command_led_lights_bauhaus_cmd_red_indian(&ir_command); break;
+        case IR_COMMAND_LIGHT_COPPER :          ir_command_led_lights_bauhaus_cmd_copper(&ir_command); break;
+        case IR_COMMAND_LIGHT_ORANGE :          ir_command_led_lights_bauhaus_cmd_orange(&ir_command); break;
+        case IR_COMMAND_LIGHT_YELLOW :          ir_command_led_lights_bauhaus_cmd_yellow(&ir_command); break;
+        case IR_COMMAND_LIGHT_GREEN_FOREST :    ir_command_led_lights_bauhaus_cmd_green_forest(&ir_command); break;
+        case IR_COMMAND_LIGHT_GREEN :           ir_command_led_lights_bauhaus_cmd_green(&ir_command); break;
+        case IR_COMMAND_LIGHT_BLUE_AZURE :      ir_command_led_lights_bauhaus_cmd_blue_azure(&ir_command); break;
+        case IR_COMMAND_LIGHT_BLUE_STEEL :      ir_command_led_lights_bauhaus_cmd_blue_steel(&ir_command); break;
+        case IR_COMMAND_LIGHT_JADE :            ir_command_led_lights_bauhaus_cmd_jade(&ir_command); break;
+        case IR_COMMAND_LIGHT_BLUE :            ir_command_led_lights_bauhaus_cmd_blue(&ir_command); break;
+        case IR_COMMAND_LIGHT_BLUE_MARINE :     ir_command_led_lights_bauhaus_cmd_blue_marine(&ir_command); break;
+        case IR_COMMAND_LIGHT_EGGPLANT :        ir_command_led_lights_bauhaus_cmd_eggplant(&ir_command); break;
+        case IR_COMMAND_LIGHT_PURPLE :          ir_command_led_lights_bauhaus_cmd_purple(&ir_command); break;
+        case IR_COMMAND_LIGHT_PINK :            ir_command_led_lights_bauhaus_cmd_pink(&ir_command); break;
     }
 
     ir_command_led_lights_bauhaus_address(&ir_command);

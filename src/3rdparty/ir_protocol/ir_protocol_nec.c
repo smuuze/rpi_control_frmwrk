@@ -33,11 +33,13 @@
  * 
  *          Concept:
  * 
- *          The given command is transformed into its correct byte representation.
- *          Then a buffer is created where the number of 560us intervals are stored into.
+ *          The given command is transformed into a byte representation.
+ *          The transformed command is stored into a buffer that holds  the number of 560us intervals.
  *          The number of intervals depends on the actual command. Four intervals for a logical one
  *          and two intervals for a logical zero. Every interval is represented by a single byte.
+ * 
  *          The correct frequency of the carrier and the modulator is automatically selected.
+ * 
  *          For every interval that is set to one the modulation pin is activated,
  *          for every 0 interval the pin is deactivated
  * 
@@ -153,14 +155,22 @@ static u8 transmit_buffer[NEC_IR_PROTOCOL_TRANSMIT_BUFFER_SIZE];
  */
 static u8 transmit_guard = 0;
 
-/*
- *
+/**
+ * @brief Is used by ir_protocol_nec_irq_callback()
+ * to generate the single phases of the ir-signal (preamble - pause - data - stop-bit)
+ * 
  */
 static u8 interval_counter = 0;
 
 // --------------------------------------------------------------------------------
 
-void ir_protocol_nec_irq_callback(void) {
+/**
+ * @brief Is executed everytime the irq of the modulation-timer rises.
+ * This will generate the ir-signal by controlling the modulation gpio-pin
+ * depending on the actual ir-command inside of the transmit_buffer.
+ * 
+ */
+static void ir_protocol_nec_irq_callback(void) {
 
 	if (interval_counter < NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PULSE) {
 
@@ -204,6 +214,13 @@ void ir_protocol_nec_irq_callback(void) {
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Prepares the transmit-buffer.
+ * The bits from the given command are copied into the transmit_buffer.
+ * Every byte of the transmit_buffer represents one bit of the given command.
+ * 
+ * @param p_command valid ir command that will be transmitted
+ */
 static void ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_command) {
 
 	data_bit_length = 0;
@@ -241,7 +258,7 @@ static void ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_co
 		bit_mask = bit_mask >> 1;
 	}
 
-	//DEBUG_TRACE_N(data_bit_length, transmit_buffer, "ir_protocol_nec_prepare_transmit_buffer() - Transmit-Buffer :");
+	DEBUG_TRACE_N(data_bit_length, transmit_buffer, "ir_protocol_nec_prepare_transmit_buffer() - Transmit-Buffer :");
 }
 
 // --------------------------------------------------------------------------------
@@ -319,7 +336,8 @@ static u8 ir_protocol_nec_is_busy(void) {
 // --------------------------------------------------------------------------------
 
 /**
- * @brief 
+ * @brief Interface to this ir-protocol implementation.
+ * Is used for register this implementation to the ir-handler module.
  * 
  */
 static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_nec = {
@@ -335,5 +353,6 @@ static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_nec = {
 // --------------------------------------------------------------------------------
 
 void ir_protocol_nec_init(void) {
+        DEBUG_PASS("ir_protocol_nec_init()");
         ir_protocol_interface_register_ir_protocol(&ir_protocol_nec);
 }

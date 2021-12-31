@@ -424,7 +424,6 @@ static void ir_remote_task_run(void) {
 
 		if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
 
-			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_PENDING);
                         IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
 
                         p_act_protocol = p_ir_protocol_first;
@@ -447,7 +446,7 @@ static void ir_remote_task_run(void) {
 		} else {
 
 			DEBUG_PASS("ir_remote_task_run() - IR-Command finished");
-			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED);
+			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
                         p_act_protocol = 0;
 		}
 	}

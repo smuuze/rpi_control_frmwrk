@@ -156,7 +156,6 @@ u8 rpi_cmd_handler_ir_remote(PROTOCOL_INTERFACE* p_protocol) {
                 if (ir_command_table[i].protocol_id == manufactor || ir_command_table[i].protocol_id == 0x00) {
                         err_code = ir_command_table[i].p_callback(device, command);
                         break;
-
                 }
 
                 i++;
