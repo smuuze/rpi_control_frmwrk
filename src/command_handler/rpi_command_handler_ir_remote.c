@@ -59,7 +59,7 @@
  * @brief Pointer type of a ir-command handler callback
  * 
  */
-typedef u8 (*IR_CMD_HANDLER_CALLBACK) 		(u8, u8);
+typedef u8 (*IR_CMD_HANDLER_CALLBACK)         (u8, u8);
 
 /**
  * @brief Structure of a single command-handler table entry
@@ -67,17 +67,17 @@ typedef u8 (*IR_CMD_HANDLER_CALLBACK) 		(u8, u8);
  */
 typedef struct IR_COMMAND_TABLE {
 
-        /**
-         * @brief id of the ir-protocol to use
-         * 
-         */
-	u8 protocol_id;
+    /**
+     * @brief id of the ir-protocol to use
+     * 
+     */
+    u8 protocol_id;
 
-        /**
-         * @brief Callback to execute on matching ir-command id
-         * 
-         */
-	IR_CMD_HANDLER_CALLBACK p_callback;
+    /**
+     * @brief Callback to execute on matching ir-command id
+     * 
+     */
+    IR_CMD_HANDLER_CALLBACK p_callback;
 } IR_COMMAND_TABLE;
 
 #define IR_CMD_HANDLER_MAX_SIZE_TABLE 255
@@ -90,9 +90,9 @@ typedef struct IR_COMMAND_TABLE {
  * @return CMD_ERR_INVALID_ARGUMENT
  */
 static u8 rpi_cmd_handler_ir_invalid_argument(u8 device, u8 command) {
-        (void) device;
-        (void) command;
-        return CMD_ERR_INVALID_ARGUMENT;
+    (void) device;
+    (void) command;
+    return CMD_ERR_INVALID_ARGUMENT;
 }
 
 // --------------------------------------------------------------------------------
@@ -103,66 +103,66 @@ static u8 rpi_cmd_handler_ir_invalid_argument(u8 device, u8 command) {
  */
 static IR_COMMAND_TABLE ir_command_table[] = {
 
-        #ifdef RPI_CMD_HANDLER_IR_REMOTE_SAMSUNG_AVAILABLE
-	{IR_MANUFACTOR_SAMSUNG, &rpi_cmd_handler_ir_remote_samsung},
-	#endif
+    #ifdef RPI_CMD_HANDLER_IR_REMOTE_SAMSUNG_AVAILABLE
+    {IR_MANUFACTOR_SAMSUNG, &rpi_cmd_handler_ir_remote_samsung},
+    #endif
 
-        #ifdef RPI_CMD_HANDLER_IR_REMOTE_JVC_AVAILABLE
-	{IR_MANUFACTOR_JVC, &rpi_cmd_handler_ir_remote_jvc},
-	#endif
+    #ifdef RPI_CMD_HANDLER_IR_REMOTE_JVC_AVAILABLE
+    {IR_MANUFACTOR_JVC, &rpi_cmd_handler_ir_remote_jvc},
+    #endif
 
-        #ifdef RPI_CMD_HANDLER_IR_REMOTE_SONY_AVAILABLE
-	{IR_MANUFACTOR_SONY, &rpi_cmd_handler_ir_remote_sony},
-	#endif
+    #ifdef RPI_CMD_HANDLER_IR_REMOTE_SONY_AVAILABLE
+    {IR_MANUFACTOR_SONY, &rpi_cmd_handler_ir_remote_sony},
+    #endif
 
-        #ifdef RPI_CMD_HANDLER_IR_REMOTE_LED_LIGHTS_AVAILABLE
-	{IR_MANUFACTOR_LED_LIGHTS, &rpi_cmd_handler_ir_remote_led_lights},
-	#endif
+    #ifdef RPI_CMD_HANDLER_IR_REMOTE_LED_LIGHTS_AVAILABLE
+    {IR_MANUFACTOR_LED_LIGHTS, &rpi_cmd_handler_ir_remote_led_lights},
+    #endif
 
-	{0x00, &rpi_cmd_handler_ir_invalid_argument} // must always be the last one
+    {0x00, &rpi_cmd_handler_ir_invalid_argument} // must always be the last one
 };
 
 // --------------------------------------------------------------------------------
 
 u8 rpi_cmd_handler_ir_remote(PROTOCOL_INTERFACE* p_protocol) {
 
-	if (p_protocol->cmd_buffer->bytes_available() == 0) {
+    if (p_protocol->cmd_buffer->bytes_available() == 0) {
 
-		DEBUG_PASS("rpi_cmd_handler_ir_remote() - No Argument given !!! ---");
+        DEBUG_PASS("rpi_cmd_handler_ir_remote() - No Argument given !!! ---");
 
-		p_protocol->set_finished(CMD_ERR_INVALID_COMMAND);
-		return CMD_ERR_INVALID_COMMAND;
-	}
+        p_protocol->set_finished(CMD_ERR_INVALID_COMMAND);
+        return CMD_ERR_INVALID_COMMAND;
+    }
 
-	DEBUG_PASS("rpi_cmd_handler_ir_remote()");
+    DEBUG_PASS("rpi_cmd_handler_ir_remote()");
 
-	p_protocol->cmd_buffer->start_read();
+    p_protocol->cmd_buffer->start_read();
 
-	u8 manufactor = p_protocol->cmd_buffer->get_byte();	// samsung / jvc / sony / ...
-	u8 device     = p_protocol->cmd_buffer->get_byte();	// tv / radio / blueray-player / ..
-	u8 command    = p_protocol->cmd_buffer->get_byte();	// on/off, vol_up/vol_down, mute, ...
+    u8 manufactor = p_protocol->cmd_buffer->get_byte();    // samsung / jvc / sony / ...
+    u8 device     = p_protocol->cmd_buffer->get_byte();    // tv / radio / blueray-player / ..
+    u8 command    = p_protocol->cmd_buffer->get_byte();    // on/off, vol_up/vol_down, mute, ...
 
-	DEBUG_TRACE_byte(manufactor, "rpi_cmd_handler_ir_remote() - Manufactor:");
-	DEBUG_TRACE_byte(device,     "rpi_cmd_handler_ir_remote() - Device:");
-	DEBUG_TRACE_byte(command,    "rpi_cmd_handler_ir_remote() - Command:");
+    DEBUG_TRACE_byte(manufactor, "rpi_cmd_handler_ir_remote() - Manufactor:");
+    DEBUG_TRACE_byte(device,     "rpi_cmd_handler_ir_remote() - Device:");
+    DEBUG_TRACE_byte(command,    "rpi_cmd_handler_ir_remote() - Command:");
 
-	p_protocol->cmd_buffer->stop_read();
+    p_protocol->cmd_buffer->stop_read();
 
-	u8 err_code = CMD_NO_ERR;
+    u8 err_code = CMD_NO_ERR;
 
-        u8 i = 0;
-        while (i < IR_CMD_HANDLER_MAX_SIZE_TABLE) {
+    u8 i = 0;
+    while (i < IR_CMD_HANDLER_MAX_SIZE_TABLE) {
 
-                if (ir_command_table[i].protocol_id == manufactor || ir_command_table[i].protocol_id == 0x00) {
-                        err_code = ir_command_table[i].p_callback(device, command);
-                        break;
-                }
-
-                i++;
+        if (ir_command_table[i].protocol_id == manufactor || ir_command_table[i].protocol_id == 0x00) {
+            err_code = ir_command_table[i].p_callback(device, command);
+            break;
         }
 
-	p_protocol->set_finished(err_code);
-	return err_code;
+        i++;
+    }
+
+    p_protocol->set_finished(err_code);
+    return err_code;
 }
 
 // --------------------------------------------------------------------------------

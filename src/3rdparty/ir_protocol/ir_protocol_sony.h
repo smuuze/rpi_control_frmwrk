@@ -18,12 +18,12 @@
  * @date   2021 / 03 / 21
  * @brief  This file includes all IR-commands of the Sony BD9400 Blueray Disc-Player.
  * 
- * 		Usage:
- * 		- set the pointer to carrier and modulation timer at initialization
- * 		- set the device address into the actual command-container
- * 		- set the data of the requested ir-command into the command.-container
- * 		- start transmitting the command
- * 		- wait until transmitting is done before sending a new command
+ *         Usage:
+ *         - set the pointer to carrier and modulation timer at initialization
+ *         - set the device address into the actual command-container
+ *         - set the data of the requested ir-command into the command.-container
+ *         - start transmitting the command
+ *         - wait until transmitting is done before sending a new command
  * 
  */
 
@@ -41,9 +41,9 @@
  * 
  */
 typedef struct {
-	u8 command;
-	u8 device;
-	u8 extended;
+    u8 command;
+    u8 device;
+    u8 extended;
 } SONY_IR_PROTOCOL_COMMAND_TYPE;
 
 // --------------------------------------------------------------------------------

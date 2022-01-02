@@ -73,10 +73,10 @@ u8 rpi_cmd_handler_ir_remote_led_lights(u8 device, u8 command) {
 
     switch (device) {
         default:
-                return CMD_ERR_INVALID_ARGUMENT;
+            return CMD_ERR_INVALID_ARGUMENT;
 
         case IR_DEVICE_LED_LIGHT_BAUHAUS :
-                return rpi_cmd_ir_led_lights_bauhaus(command);
+            return rpi_cmd_ir_led_lights_bauhaus(command);
     }
 }
 

@@ -421,11 +421,11 @@ static MCU_TASK_INTERFACE_TASK_STATE ir_remote_task_get_state(void) {
 
 static void ir_remote_task_run(void) {
 
-	u8 is_active = 0;
+        u8 is_active = 0;
 
-	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_CMD_RECEIVED)) {
+        if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_CMD_RECEIVED)) {
 
-		if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
+                if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
 
                         IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
 
@@ -436,23 +436,23 @@ static void ir_remote_task_run(void) {
                                 if (p_act_protocol->uid == ir_command.type) {
 
                                         p_act_protocol->transmit(&ir_command);
-			                is_active = 1;
+                                        is_active = 1;
                                         break;
                                 }
 
                                 p_act_protocol = p_act_protocol->_p_next;
                         }
 
-		} else  if (p_act_protocol != 0 && p_act_protocol->is_busy()) {
-			is_active = 1;
+                } else  if (p_act_protocol != 0 && p_act_protocol->is_busy()) {
+                        is_active = 1;
 
-		} else {
+                } else {
 
-			DEBUG_PASS("ir_remote_task_run() - IR-Command finished");
-			IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
+                        DEBUG_PASS("ir_remote_task_run() - IR-Command finished");
+                        IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
                         p_act_protocol = 0;
-		}
-	}
+                }
+        }
 
 	#ifdef HAS_IR_PROTOCOL_SAMSUNG
 	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED)) {
@@ -526,15 +526,15 @@ static void ir_remote_task_run(void) {
 	}
 	#endif
 
-	if (is_active == 0) {
+        if (is_active == 0) {
 
-		IR_CARRIER_IN_no_pull();
-		IR_CARRIER_OUT_drive_low();
-		IR_MOD_OUT_drive_low();
+                IR_CARRIER_IN_no_pull();
+                IR_CARRIER_OUT_drive_low();
+                IR_MOD_OUT_drive_low();
 
-		DEBUG_PASS("ir_remote_task_run() - All operations finished");
-		IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
-	}
+                DEBUG_PASS("ir_remote_task_run() - All operations finished");
+                IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
+        }
 }
 
 static void ir_remote_task_background_run(void) {
@@ -576,5 +576,5 @@ void ir_protocol_interface_register_ir_protocol(IR_PROTOCOL_GENERATOR_TYPE* p_ir
 
         p_ir_protocol_last->set_timer(&timer_carrier, &timer_modulator);
 
-	DEBUG_TRACE_byte(p_ir_protocol->uid, "ir_protocol_interface_register_ir_protocol() - new ir-protocol added");
+        DEBUG_TRACE_byte(p_ir_protocol->uid, "ir_protocol_interface_register_ir_protocol() - new ir-protocol added");
 }
