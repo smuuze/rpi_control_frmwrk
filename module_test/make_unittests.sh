@@ -26,6 +26,7 @@ source_dir_list=(
 	qeue_interface
 	#timer
 	ir_remote_sony
+	ir_remote_led_lights
 	msg_executer
 	#timer_test
 	json_parser
