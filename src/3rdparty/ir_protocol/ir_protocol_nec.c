@@ -95,7 +95,7 @@
 
 #define NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PULSE         16
 #define NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PAUSE         (NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PULSE + 8)
-#define NEC_IR_PROTOCOL_INTERVAL_STOP_BIT               17
+#define NEC_IR_PROTOCOL_INTERVAL_STOP_BIT               (NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PAUSE + 1)
 
 #define NEC_IR_PROTOCOL_MOD_TIME_OFF                    0xFFFF
 
@@ -200,14 +200,14 @@ static void ir_protocol_nec_irq_callback(void) {
 		interval_counter += 1;
 		IR_MOD_OUT_drive_high(); 
 
-	} else {
+	} else if (transmit_guard == 1) {
 			
 		IR_MOD_OUT_drive_low();
 
 		p_carrier->stop();
 		p_modulator->stop();
 
-		interval_counter = 0;
+		interval_counter = 0xFF; // invalid value
 		transmit_guard = 0;
 	}
 }
@@ -247,11 +247,15 @@ static void ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_co
 			transmit_buffer[data_bit_length++] = 0;
 			transmit_buffer[data_bit_length++] = 0;
 
+                        //DEBUG_PASS("ir_protocol_nec_prepare_transmit_buffer() - DATA-BIT 1");
+
 		} else {
 
 			// Data-Bit : 0
                         transmit_buffer[data_bit_length++] = 1;
 			transmit_buffer[data_bit_length++] = 0;
+
+                        //DEBUG_PASS("ir_protocol_nec_prepare_transmit_buffer() - DATA-BIT 0");
 
 		}
 
@@ -296,8 +300,8 @@ static void ir_protocol_nec_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
 	p_carrier->stop();
 	p_modulator->stop();
 
-	DEBUG_TRACE_word(p_command->data_1, "ir_protocol_nec_transmit() - Device Address:");
-	DEBUG_TRACE_word(p_command->data_2, "ir_protocol_nec_transmit() - Device Control:");
+	DEBUG_TRACE_byte(p_command->data_1, "ir_protocol_nec_transmit() - Device Address:");
+	DEBUG_TRACE_byte(p_command->data_2, "ir_protocol_nec_transmit() - Device Control:");
 
 	ir_protocol_nec_prepare_transmit_buffer(p_command);
 
