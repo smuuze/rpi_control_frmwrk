@@ -113,7 +113,6 @@ void command_line_handler_remote_control(const char* parameter) {
 
     DEBUG_TRACE_STR(parameter, "command_line_handler_remote_control() - parameter:");
     
-    u8 command_available = 0;
     COMMON_GENERIC_BUFFER_TYPE buffer;
 
     if ( command_line_handler_remote_control_get_command(parameter, cmd_array, CLI_REMOTE_SIZEOF_COMMAND_PAIR_TABLE(cmd_array), &buffer) ) {
