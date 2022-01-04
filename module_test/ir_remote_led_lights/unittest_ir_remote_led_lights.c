@@ -541,7 +541,7 @@ static void TEST_CASE_cancel_ir_command(void) {
 
         UNITTEST_TIMER_start();
 
-        while (UNITTEST_TIMER_is_up(250) == 0) {
+        while (UNITTEST_TIMER_is_up(5000) == 0) {
                 mcu_task_controller_schedule();
 
                 if (p_irq_callback == 0) {
@@ -551,7 +551,8 @@ static void TEST_CASE_cancel_ir_command(void) {
                 unittest_pin_was_changed = 0;
                 p_irq_callback();
                 if (unittest_pin_was_changed == 0) {
-                        break;
+                    mcu_task_controller_schedule();
+                    break;
                 }
 	}
 }
@@ -568,38 +569,37 @@ static void TEST_CASE_ir_transmit_ir_light_brighter(void) {
 		UNITTEST_TIMER_start();
 
 		while (UNITTEST_TIMER_is_up(1000) == 0) {
-			mcu_task_controller_schedule();
+            mcu_task_controller_schedule();
 
-                        if (p_irq_callback == 0) {
-                                break;
-                        }
+            if (p_irq_callback == 0) {
+                break;
+            }
 
-                        unittest_pin_was_changed = 0;
-                        p_irq_callback();
-                        if (unittest_pin_was_changed == 0) {
-                                break;
-                        }
+            unittest_pin_was_changed = 0;
+            p_irq_callback();
+
+            if (unittest_pin_was_changed == 0) {
+                mcu_task_controller_schedule();
+                break;
+            }
 		}
 
 		u8 compare_MOD_ARRAY[] = {
-
-                        // initialization MOD pin is set to low
-			0x00                                                                                                    // Index: 0
                         
                         // Preamble Pulse - 9000us - 16 x 560us
-                         ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01  ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01, 0x01       // Index: 17
+                         0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01  ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01, 0x01       // Index: 16
 
                         // Preamble Puse - 4500us - 8 x 560us
-                        ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00                                                         // Index: 25
+                        ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00                                                         // Index: 24
 
                          // Address 0x00 - Upper Nibble
-                        ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00                                                         // Index: 33
+                        ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00                                                         // Index: 32
 
                          // Address 0x00 - Lower Nibble
-                        ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00                                                         // Index: 41
+                        ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00                                                         // Index: 40
 
                          // Inverted Address 0xFF - Upper Nibble
-                        ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00  ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00        // Index: 57
+                        ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00  ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00        // Index: 56
 
                          // Inverted Address 0xFF - Lower Nibble
                         ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00  ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00        // Index: 72
@@ -617,13 +617,13 @@ static void TEST_CASE_ir_transmit_ir_light_brighter(void) {
                         ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00  ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00        // Index: 120
 
                         // Stop Bit Pulse
-			,0x01                                                                                                   // Index: 121
+                        ,0x01                                                                                                   // Index: 121
 
                         // set to low at the end of the signal
-			,0x00                                                                                                   // Index: 122
+                        ,0x00                                                                                                   // Index: 122
 
                         // Is set by the ir-mcu-task to prepare power-down mode
-			,0x00                                                                                                   // Index: 123
+                        ,0x00                                                                                                   // Index: 123
 
                         // Logical 1 :,0x01 ,0x00 ,0x00 ,0x00
                         // Logical 0: ,0x01 ,0x00
@@ -645,7 +645,7 @@ static void TEST_CASE_ir_transmit_ir_light_brighter(void) {
                 UT_CHECK_IS_EQUAL(counter_TIMER1_START, 1);
 
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_SEQUENCE, expected_array_length);
-		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_LOW, 75); // 75 times a low pin level
+		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_LOW, 74); // 74 times a low pin level
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_HIGH, 49); // 49 times a high pin level
 
 		UT_COMPARE_ARRAY(array_IR_MOD_SEQUENCE, compare_MOD_ARRAY, expected_array_length);
@@ -665,38 +665,37 @@ static void TEST_CASE_ir_transmit_ir_command_LIGHT_GREEN(void) {
 		UNITTEST_TIMER_start();
 
 		while (UNITTEST_TIMER_is_up(250) == 0) {
-			mcu_task_controller_schedule();
+            mcu_task_controller_schedule();
 
-                        if (p_irq_callback == 0) {
-                                break;
-                        }
+            if (p_irq_callback == 0) {
+                break;
+            }
 
-                        unittest_pin_was_changed = 0;
-                        p_irq_callback();
-                        if (unittest_pin_was_changed == 0) {
-                                break;
-                        }
+            unittest_pin_was_changed = 0;
+            p_irq_callback();
+
+            if (unittest_pin_was_changed == 0) {
+                mcu_task_controller_schedule();
+                break;
+            }
 		}
 
 		u8 compare_MOD_ARRAY[] = {
-
-                        // initialization MOD pin is set to low
-			0x00                                                                                                    // Index: 0
                         
                         // Preamble Pulse - 9000us - 16 x 560us
-                        ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01  ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01, 0x01       // Index: 17
+                         0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01  ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01, 0x01       // Index: 16
 
                         // Preamble Puse - 4500us - 8 x 560us
-                        ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00                                                         // Index: 25
+                        ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00                                                         // Index: 24
 
                          // Address 0x00 - Upper Nibble
-                        ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00                                                         // Index: 33
+                        ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00                                                         // Index: 32
 
                          // Address 0x00 - Lower Nibble
-                        ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00                                                         // Index: 41
+                        ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00 ,0x01 ,0x00                                                         // Index: 40
 
                          // Inverted Address 0xFF - Upper Nibble
-                        ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00  ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00        // Index: 57
+                        ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00  ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00        // Index: 56
 
                          // Inverted Address 0xFF - Lower Nibble
                         ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00  ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00        // Index: 72
@@ -714,13 +713,13 @@ static void TEST_CASE_ir_transmit_ir_command_LIGHT_GREEN(void) {
                         ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00  ,0x01 ,0x00 ,0x00 ,0x00, 0x01 ,0x00 ,0x00 ,0x00        // Index: 120
 
                         // Stop Bit Pulse
-			,0x01                                                                                                   // Index: 121
+                        ,0x01                                                                                                   // Index: 121
 
                         // set to low at the end of the signal
-			,0x00                                                                                                   // Index: 122
+                        ,0x00                                                                                                   // Index: 122
 
                         // Is set by the ir-mcu-task to prepare power-down mode
-			,0x00                                                                                                   // Index: 123
+                        ,0x00                                                                                                   // Index: 123
 
                         // Logical 1 :,0x01 ,0x00 ,0x00 ,0x00 
                         // Logical 0: ,0x01 ,0x00 
@@ -742,7 +741,7 @@ static void TEST_CASE_ir_transmit_ir_command_LIGHT_GREEN(void) {
                 UT_CHECK_IS_EQUAL(counter_TIMER1_START, 1);
 
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_SEQUENCE, expected_array_length);
-		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_LOW, 75); // 75 times a low pin level
+		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_LOW, 74); // 74 times a low pin level
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_HIGH, 49); // 49 times a high pin level
 
 		UT_COMPARE_ARRAY(array_IR_MOD_SEQUENCE, compare_MOD_ARRAY, expected_array_length);

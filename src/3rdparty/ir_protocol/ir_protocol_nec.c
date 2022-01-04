@@ -94,8 +94,8 @@
 #define NEC_IR_PROTOCOL_TRNASMIT_BUFFER_BYTE_COUNT      4
 
 #define NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PULSE         16
-#define NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PAUSE         (NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PULSE + 8)
-#define NEC_IR_PROTOCOL_INTERVAL_STOP_BIT               (NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PAUSE + 1)
+#define NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PAUSE         (8)
+#define NEC_IR_PROTOCOL_INTERVAL_STOP_BIT               (1)
 
 #define NEC_IR_PROTOCOL_MOD_TIME_OFF                    0xFFFF
 
@@ -128,39 +128,11 @@ static TIMER_INTERFACE_TYPE* p_carrier;
 static TIMER_INTERFACE_TYPE* p_modulator;
 
 /**
- * @brief Number of 560us intervals that are
- * needed to transmit the data of the actual command.
- * Depends on the number of logical ones and zeros
- * 
- */
-static u8 data_bit_length;
-
-/**
- * @brief Number of 560us intervals that have
- * already been transmitted
- * 
- */
-static u8 data_bit_counter;
-
-/**
- * @brief Every byte represents a single bit.
- * 
- */
-static u8 transmit_buffer[NEC_IR_PROTOCOL_TRANSMIT_BUFFER_SIZE];
-
-/**
  * @brief If a transmission is ongoing this variable
  * will be set to 1 to prevent a caller starting a new transmission
  * 
  */
 static u8 transmit_guard = 0;
-
-/**
- * @brief Is used by ir_protocol_nec_irq_callback()
- * to generate the single phases of the ir-signal (preamble - pause - data - stop-bit)
- * 
- */
-static u8 interval_counter = 0;
 
 // --------------------------------------------------------------------------------
 
@@ -172,44 +144,27 @@ static u8 interval_counter = 0;
  */
 static void ir_protocol_nec_irq_callback(void) {
 
-	if (interval_counter < NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PULSE) {
+    if (ir_protocol_interface_transmit_buffer_end() == 0) {
 
-		// Preamle Pulse
-		interval_counter += 1;
-		IR_MOD_OUT_drive_high(); 
+        if (ir_protocol_interface_transmit_buffer_get_next() == IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE) {
 
-	} else if (interval_counter < NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PAUSE) {
+            IR_MOD_OUT_drive_high(); 
 
-		// Preamble Pause
-		interval_counter += 1;
-		IR_MOD_OUT_drive_low(); 
+        } else {
 
-	} else if (data_bit_counter < data_bit_length) {
+            IR_MOD_OUT_drive_low(); 
+        }
 
-		// Data Bits
+    } else if (transmit_guard != 0) {
 
-		if (transmit_buffer[data_bit_counter++]) {
-			IR_MOD_OUT_drive_high(); 
-		} else {
-			IR_MOD_OUT_drive_low(); 
-		}
+        p_carrier->stop();
+        p_modulator->stop();
 
-	} else if (interval_counter < NEC_IR_PROTOCOL_INTERVAL_STOP_BIT) {
+        transmit_guard = 0;
+        ir_protocol_interface_transmit_buffer_release();
 
-		// Stop-Bit Pulse
-		interval_counter += 1;
-		IR_MOD_OUT_drive_high(); 
-
-	} else if (transmit_guard == 1) {
-			
-		IR_MOD_OUT_drive_low();
-
-		p_carrier->stop();
-		p_modulator->stop();
-
-		interval_counter = 0xFF; // invalid value
-		transmit_guard = 0;
-	}
+        DEBUG_PASS("ir_protocol_nec_irq_callback() - FINISHED");
+    }
 }
 
 // --------------------------------------------------------------------------------
@@ -220,49 +175,78 @@ static void ir_protocol_nec_irq_callback(void) {
  * Every byte of the transmit_buffer represents one bit of the given command.
  * 
  * @param p_command valid ir command that will be transmitted
+ * @return 1 if the transmit-buffer is ready, otherwise 0
  */
-static void ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_command) {
+static u8 ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_command) {
 
-	data_bit_length = 0;
-	data_bit_counter = 0;
+    if (ir_protocol_interface_transmit_buffer_request() == 0) {
+        DEBUG_PASS("ir_protocol_nec_prepare_transmit_buffer() - Transmit-Buffer is busy!");
+        return 0;
+    }
 
-        u8 bit_mask = 0x80;
-        u8 byte_index = 0;
+	DEBUG_TRACE_byte(p_command->data_1, "ir_protocol_nec_prepare_transmit_buffer() - Device Address:");
+	DEBUG_TRACE_byte(p_command->data_2, "ir_protocol_nec_prepare_transmit_buffer() - Device Control:");
 
-        NEC_IR_PROTOCOL_NEW_DATA_BUFFER(data_buffer, p_command);
+    ir_protocol_interface_transmit_buffer_start();
 
-	u8 i = 0;
-	for ( ; i < NEC_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT; i++ ) {
+    // Append the preamble pulse - 9000us = 16 x 560us
 
-		if (bit_mask == 0) {
-			bit_mask = 0x80;
-			byte_index += 1;
-		}
+    u8 i = 0;
+    for ( ; i < NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PULSE; i++) {
+        ir_protocol_interface_transmit_buffer_append_pulse();
+    }
 
-		if (data_buffer[byte_index] & bit_mask) {
+    // append the preamble pause - 4500us = 8 x 560us
 
-			// Data-Bit 1:
-			transmit_buffer[data_bit_length++] = 1;
-			transmit_buffer[data_bit_length++] = 0;
-			transmit_buffer[data_bit_length++] = 0;
-			transmit_buffer[data_bit_length++] = 0;
+    i = 0;
+    for ( ; i < NEC_IR_PROTOCOL_INTERVAL_PREAMBLE_PAUSE; i++) {
+        ir_protocol_interface_transmit_buffer_append_pause();
+    }
 
-                        //DEBUG_PASS("ir_protocol_nec_prepare_transmit_buffer() - DATA-BIT 1");
+    // append the data-bits
 
-		} else {
+    u8 bit_mask = 0x80;
+    u8 byte_index = 0;
 
-			// Data-Bit : 0
-                        transmit_buffer[data_bit_length++] = 1;
-			transmit_buffer[data_bit_length++] = 0;
+    NEC_IR_PROTOCOL_NEW_DATA_BUFFER(data_buffer, p_command);
 
-                        //DEBUG_PASS("ir_protocol_nec_prepare_transmit_buffer() - DATA-BIT 0");
+    i = 0;
+    for ( ; i < NEC_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT; i++ ) {
 
+        if (bit_mask == 0) {
+            bit_mask = 0x80;
+            byte_index += 1;
+        }
+
+        if (data_buffer[byte_index] & bit_mask) {
+
+            // Data-Bit 1:
+            ir_protocol_interface_transmit_buffer_append_pulse();
+            ir_protocol_interface_transmit_buffer_append_pause();
+            ir_protocol_interface_transmit_buffer_append_pause();
+            ir_protocol_interface_transmit_buffer_append_pause();
+
+            //DEBUG_PASS("ir_protocol_nec_prepare_transmit_buffer() - DATA-BIT 1");
+
+        } else {
+
+            // Data-Bit : 0
+            ir_protocol_interface_transmit_buffer_append_pulse();
+            ir_protocol_interface_transmit_buffer_append_pause();
+
+            //DEBUG_PASS("ir_protocol_nec_prepare_transmit_buffer() - DATA-BIT 0");
 		}
 
 		bit_mask = bit_mask >> 1;
 	}
 
-	DEBUG_TRACE_N(data_bit_length, transmit_buffer, "ir_protocol_nec_prepare_transmit_buffer() - Transmit-Buffer :");
+    i = 0;
+    for ( ; i < NEC_IR_PROTOCOL_INTERVAL_STOP_BIT; i++) {
+        ir_protocol_interface_transmit_buffer_append_pulse();
+        ir_protocol_interface_transmit_buffer_append_pause();
+    }
+
+    return 1;
 }
 
 // --------------------------------------------------------------------------------
@@ -297,17 +281,15 @@ static void ir_protocol_nec_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
 
 	transmit_guard = 1;
 
+    DEBUG_PASS("ir_protocol_nec_transmit()");
+
 	p_carrier->stop();
 	p_modulator->stop();
 
-	DEBUG_TRACE_byte(p_command->data_1, "ir_protocol_nec_transmit() - Device Address:");
-	DEBUG_TRACE_byte(p_command->data_2, "ir_protocol_nec_transmit() - Device Control:");
-
-	ir_protocol_nec_prepare_transmit_buffer(p_command);
-
-	interval_counter = 0;
-
-	IR_MOD_OUT_drive_low();
+	if (ir_protocol_nec_prepare_transmit_buffer(p_command) == 0) {
+        transmit_guard = 0;
+        return;
+    }
 
 	TIMER_CONFIGURATION_TYPE timer_config;
 	

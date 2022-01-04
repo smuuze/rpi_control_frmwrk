@@ -73,6 +73,15 @@
 
 // --------------------------------------------------------------------------------
 
+#ifndef IR_PROTOCOL_INTERFACE_TRANSMIT_BUFFER_MAX_LENGTH
+#define IR_PROTOCOL_INTERFACE_TRANSMIT_BUFFER_MAX_LENGTH                        512
+#endif // IR_PROTOCOL_INTERFACE_TRANSMIT_BUFFER_MAX_LENGTH
+
+#define IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE                           0x01
+#define IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PAUSE                           0x00
+
+// --------------------------------------------------------------------------------
+
 /**
  * @brief Common ir-command type taht can hold data of various ir-protocols
  * This type is used to transfer a generated ir-command from the command-handler
@@ -188,6 +197,83 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(IR_CMD_RECEIVED_SIGNAL)
  * @param p_ir_protocol valid pointer to the new ir-protocol, must not be 0
  */
 void ir_protocol_interface_register_ir_protocol(IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol);
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Requests the access to the transmit buffer.
+ * If the access is granted the maximum length of the buffer is returned.
+ * If the buffer is busy right now, 0 is returned.
+ * 
+ * @return length of the transmit buffer in number of bytes, or 0 if buffer is busy right now
+ */
+u16 ir_protocol_interface_transmit_buffer_request(void);
+
+/**
+ * @brief Releases the transmit buffer.
+ * The buffer then can be used by other ir-protocol implementations.
+ * 
+ */
+void ir_protocol_interface_transmit_buffer_release(void);
+
+/**
+ * @brief Checks if the common transmit buffer is busy right now.
+ * 
+ * @return 0 the buffer is not busy and can be used, otherwise 0
+ */
+u8 ir_protocol_interface_transmit_buffer_busy(void);
+
+/**
+ * @brief Restarts the transmit buffer.
+ * New data is appended at the beginning
+ * 
+ */
+void ir_protocol_interface_transmit_buffer_start(void);
+
+/**
+ * @brief Checks if the transmit-buffer has data left or not.
+ * 
+ * @return 1 data is still available, 0 no more data available
+ */
+u8 ir_protocol_interface_transmit_buffer_end(void);
+
+/**
+ * @brief Appends a pulse interval to the transmit-buffer
+ * 
+ */
+void ir_protocol_interface_transmit_buffer_append_pulse(void);
+
+/**
+ * @brief Appends a pause-interval to the transmit buffer
+ * 
+ */
+void ir_protocol_interface_transmit_buffer_append_pause(void);
+
+/**
+ * @brief After the buffer was restarted and all data has appended
+ * The next interval, starting from the beginning, is returned.
+ * If the end of the actual buffer-content is reached,
+ * a pause-interval is always returned.
+ * 
+ * @return The next interval (pulse / pause) is returned
+ */
+u8 ir_protocol_interface_transmit_buffer_get_next(void);
+
+/**
+ * @brief The number of actual appended intervals
+ * 
+ * @return The number of actual appended intervals
+ */
+u16 ir_protocol_interface_transmit_buffer_act_length(void);
+
+/**
+ * @brief The maximum length of the transmit-buffer in number of bytes
+ * 
+ * @return The maximum length of the transmit-buffer in number of bytes
+ */
+u16 ir_protocol_interface_transmit_buffer_max_length(void);
+
+// --------------------------------------------------------------------------------
 
 #endif // _H_ir_protocol_interface_
 

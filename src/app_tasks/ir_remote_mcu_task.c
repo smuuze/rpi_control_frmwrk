@@ -236,6 +236,7 @@ static IR_PROTOCOL_GENERATOR_TYPE* p_act_protocol = 0;
 static void ir_remote_task_slot_IR_CMD_RECEIVED(const void* p_arg) {
 
 	if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_CMD_PENDING)) {
+        DEBUG_PASS("ir_remote_task_slot_IR_CMD_RECEIVED() - Another command is pending");
 		return;
 	}
 
