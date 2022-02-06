@@ -1,14 +1,29 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	app_tasks/message_executer_task.c
- * \brief
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file   message_executer_task.c
+ * @author Sebastian Lesse
+ * @date   2020 / 12 / 18
+ * @brief   Receives command-messages and executes the given command from the
+ *          actual configured command-file
+ * 
  */
 
 #define TRACER_OFF
+
+// --------------------------------------------------------------------------------
 
 #ifdef TRACER_ON
 #warning __WARNING__TRACER_ENABLED__WARNING__
@@ -21,6 +36,10 @@
 // --------------------------------------------------------------------------------
 
 #include "tracer.h"
+
+// --------------------------------------------------------------------------------
+
+#include "cpu.h"
 
 // --------------------------------------------------------------------------------
 
@@ -99,8 +118,11 @@
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief 
+ * 
+ */
 typedef enum {
-
 	MSG_EXECUTER_TASK_STATE_IDLE,
 	MSG_EXECUTER_TASK_STATE_WAIT_FOR_USER_CFG,
 	MSG_EXECUTER_TASK_STATE_PARSE_MSG,
@@ -121,69 +143,93 @@ typedef enum {
 
 // --------------------------------------------------------------------------------
 
-// TASK INTERFACE
+/**
+ * @brief Task-Interface
+ * 
+ */
 
-/*!
- *
+/**
+ * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.init
+ * 
  */
 static void msg_executer_task_init(void);
 
-/*!
- *
+/**
+ * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_schedule_interval
+ * 
  */
 static u16 msg_executer_task_get_schedule_interval(void);
 
-/*!
- *
+/**
+ * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_schedule_interval
+ * 
  */
 static MCU_TASK_INTERFACE_TASK_STATE msg_executer_task_get_state(void);
 
-/*!
- *
+/**
+ * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.run
+ * 
  */
 static void msg_executer_task_run(void);
 
-/*!
- *
+/**
+ * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.finish
+ * 
  */
 static void msg_executer_task_finish(void);
 
-/*!
- *
+/**
+ * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.terminate
+ * 
  */
 static void msg_executer_task_terminate(void);
 
 // --------------------------------------------------------------------------------
 
-// SLOT CALLBACKS
+/**
+ * @brief Slot Callbacks
+ * 
+ */
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_argument 
  */
 static void msg_executer_cfg_object_CALLBACK(const void* p_argument);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_argument 
  */
 static void msg_executer_cfg_complete_CALLBACK(const void* p_argument);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_argument 
  */
 static void msg_executer_MQTT_MESSAGE_RECEIVED_CALLBACK(const void* p_argument);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_argument 
  */
 static void msg_executer_RPI_HOST_RESPONSE_RECEIVED_SLOT_CALLBACK(const void* p_argument);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_argument 
  */
 static void msg_executer_RPI_HOST_RESPONSE_TIMEOUT_SLOT_CALLBACK(const void* p_argument);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_argument 
  */
 static void msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK(const void* p_argument);
 
@@ -220,14 +266,19 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(CLI_EXECUTER_COMMAND_NOT_FOUND_SIGNAL, MSG_EXE
 
 // --------------------------------------------------------------------------------
 
-#define MSG_EXECUTER_STATUS_USER_CFG_SET			(1 << 0)
-#define MSG_EXECUTER_STATUS_MSG_RECEIVED			(1 << 1)
-#define MSG_EXECUTER_STATUS_RESPONSE_RECEIVED			(1 << 2)
-#define MSG_EXECUTER_STATUS_COMMUNICATAION_MSG_PENDING		(1 << 3)
-#define MSG_EXECUTER_STATUS_EXECUTION_MSG_PENDING		(1 << 4)
-#define MSG_EXECUTER_STATUS_REPORT_ACTIVE			(1 << 5)
-#define MSG_EXECUTER_STATUS_RESPONSE_TIMEOUT			(1 << 6)
-#define MSG_EXECUTER_STATUS_COMMAND_NOT_FOUND			(1 << 7)
+/**
+ * @brief Module Status
+ * 
+ */
+
+#define MSG_EXECUTER_STATUS_USER_CFG_SET                (1 << 0)
+#define MSG_EXECUTER_STATUS_MSG_RECEIVED                (1 << 1)
+#define MSG_EXECUTER_STATUS_RESPONSE_RECEIVED           (1 << 2)
+#define MSG_EXECUTER_STATUS_COMMUNICATAION_MSG_PENDING  (1 << 3)
+#define MSG_EXECUTER_STATUS_EXECUTION_MSG_PENDING       (1 << 4)
+#define MSG_EXECUTER_STATUS_REPORT_ACTIVE               (1 << 5)
+#define MSG_EXECUTER_STATUS_RESPONSE_TIMEOUT            (1 << 6)
+#define MSG_EXECUTER_STATUS_COMMAND_NOT_FOUND           (1 << 7)
 
 BUILD_MODULE_STATUS_U8(MSG_EXECUTER_STATUS)
 
@@ -268,8 +319,9 @@ static MCU_TASK_INTERFACE msg_executer_task = {
 	0						// 	next-task
 };
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 static MSG_EXECUTER_TASK_STATE_TYPE msg_executer_task_state = MSG_EXECUTER_TASK_STATE_WAIT_FOR_USER_CFG;
 
@@ -279,23 +331,28 @@ static MSG_EXECUTER_TASK_STATE_TYPE msg_executer_task_state = MSG_EXECUTER_TASK_
  */
 static char msg_executer_received_command_name[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 static char msg_executer_pending_command[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
 
-/*!
- *
+/**
+ * @brief The buffer holds the response of a cli-command
+ * it is filled on the CLI_EXECUTER_COMMAND_RESPONSE signal
+ * 
  */
 static char pending_response_cli_command[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 static char msg_executer_pending_report_name[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 static u32 msg_executer_report_interval_timeout_ms = 0;
 
@@ -307,30 +364,49 @@ static COMMON_GENERIC_BUFFER_TYPE pending_response_rpi_command;
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_command_msg 
+ * @param p_command_data 
  */
 static void msg_executer_parse_command_message(const char* p_command_msg, char* p_command_data);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_com_command 
+ * @return u8 
  */
 static u8 msg_executer_parse_communication_command(const char* p_com_command);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_exe_command 
+ * @return u8 
  */
 static u8 msg_executer_parse_execution_command(const char* p_exe_command);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param p_report_name 
+ * @param p_command_data 
+ * @return i8 
  */
 static i8 msg_executer_parse_report_command(char* p_report_name, char* p_command_data);
 
-/*!
+/**
+ * @brief Prepares the report resposne by adding the commands output string at the end to the actual command-name.
+ * A '=' is inserted between the command and the response.
+ * The resulting string then is <p_command_name>=<p_response>
  * 
+ * @param p_response response that has been received
+ * @param p_command_name name of the cli-command that was requested (received-command / report-command)
+ * @param max_response_length maximum lenght of p_response in number of characters
  */
-static void msg_executer_prepare_report(char* p_response_message, char* p_response_buffer, char* p_report_name, u16 max_response_length);
+static void msg_executer_prepare_report(char* p_response, char* p_command_name, u16 max_response_length);
 
 // --------------------------------------------------------------------------------
 
@@ -636,7 +712,7 @@ static void msg_executer_task_run(void) {
 
 			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE)) {
 		
-				msg_executer_prepare_report(pending_response_cli_command, pending_response_cli_command, msg_executer_pending_report_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+				msg_executer_prepare_report(pending_response_cli_command, msg_executer_pending_report_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 
 				DEBUG_PASS("msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK() - Adding response to json-object --- --- --- ---");
 				REPORT_JSON_OBJECT_add_cli_response(pending_response_cli_command);
@@ -650,7 +726,7 @@ static void msg_executer_task_run(void) {
 				break;
 			}
 
-			msg_executer_prepare_report(pending_response_cli_command, pending_response_cli_command, msg_executer_received_command_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+			msg_executer_prepare_report(pending_response_cli_command, msg_executer_received_command_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 			
 			RESPONSE_JSON_OBJECT_initialize();
 			RESPONSE_JSON_OBJECT_start_group(MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING);
@@ -968,28 +1044,30 @@ static i8 msg_executer_parse_report_command(char* p_report_name, char* p_command
 	return 1;
 }
 
-static void msg_executer_prepare_report(char* p_response_message, char* p_response_buffer, char* p_report_name, u16 max_response_length) {
+static void msg_executer_prepare_report(char* p_response, char* p_command_name, u16 max_response_length) {
 
-	DEBUG_PASS("msg_executer_prepare_report()");
+    DEBUG_PASS("msg_executer_prepare_report()");
 
-	char t_message[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
+    t_message[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
+    common_tools_string_copy_string(t_message, p_command_name, max_response_length);
+    common_tools_string_append(t_message, MSG_EXECUTER_KEY_VALUE_SPLITTER, max_response_length);
+    common_tools_string_append(t_message, p_response, max_response_length);
+    common_tools_string_copy_string(p_response_message, t_message, max_response_length);
 
-	memset(t_message, '\0', MSG_EXECUTER_MAX_MESSAGE_LENGTH);
+	//memcpy(t_message, p_report_name, strlen(p_report_name));
+	//memcpy(t_message + strlen(p_report_name) + 1, p_response_buffer, strlen(p_response_buffer));
 
-	memcpy(t_message, p_report_name, strlen(p_report_name));
-	memcpy(t_message + strlen(p_report_name) + 1, p_response_buffer, strlen(p_response_buffer));
+	//t_message[strlen(p_report_name)] = MSG_EXECUTER_KEY_VALUE_SPLITTER;
 
-	t_message[strlen(p_report_name)] = MSG_EXECUTER_KEY_VALUE_SPLITTER;
+	//u16 length = strlen(t_message);
 
-	u16 length = strlen(t_message);
-
-	if (length > max_response_length) {
-		length = max_response_length;
-	} 
+	//if (length > max_response_length) {
+	//	length = max_response_length;
+	//} 
 
 	//memset(p_response_message, '\0', max_response_length);
 	//memcpy(p_response_message, t_message, strlen(t_message));
-	common_tools_string_copy_string(p_response_message, t_message, max_response_length);
+	//common_tools_string_copy_string(p_response_message, t_message, max_response_length);
 }
 
 // --------------------------------------------------------------------------------
