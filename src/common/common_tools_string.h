@@ -1,13 +1,26 @@
 /**
- * @file common_tools_string.h
- * @author sebastian lesse (sebastian lesse)
- * @brief 
- * @version 1.0
- * @date 2021-09-24
- * 
- * @copyright Copyright (c) 2021
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file   common_tools_string.h
+ * @author Sebastian Lesse
+ * @date   2021 / 09 / 24
+ * @brief  Short description of this file
  * 
  */
+
+// --------------------------------------------------------------------------------
 
 #ifndef COMMON_TOOLS_STRING_H_
 #define COMMON_TOOLS_STRING_H_
@@ -247,12 +260,18 @@ void common_tools_string_remove_last_character(char* p_string);
 u8 common_tools_string_compare(const char* p_string1, const char* p_string2);
 
 /**
- * @brief 
+ * @brief Copies a string into another string.
+ * The source-string is copied at the beginning of the destination string.
+ * Existing data is overwritten. The destination-string is set to all '\0'
+ * before the source is copied. The number of characters to copy is determined by the length of
+ * the source-string (null-termination). If the source-string is longer than the destination,
+ * only the number of characters that fits into the destination are copied (max_length-1). The resulting string
+ * always has a null-termination sign at the end.
  * 
- * @param p_string_to 
- * @param p_string_from 
- * @param max_length 
- * @return u16 
+ * @param p_string_to destination where the source is copied into, is deleted befor copying
+ * @param p_string_from source-string that is copied to the destination, must end with null-termination
+ * @param max_length maximum length of the destination string in number of characters.
+ * @return number of characters that have been copied
  */
 u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from, u16 max_length);
 
