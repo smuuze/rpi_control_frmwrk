@@ -65,7 +65,7 @@
 
 // must be more than the timeout of com / exe module !
 #ifndef MSG_EXECUTER_RESPONSE_TIMEOUT_MS
-#define MSG_EXECUTER_RESPONSE_TIMEOUT_MS				1600
+#define MSG_EXECUTER_RESPONSE_TIMEOUT_MS                1600
 #endif
 
 #ifndef MSG_EXECUTER_MAX_MESSAGE_LENGTH
@@ -77,43 +77,47 @@
 #endif
 
 #ifndef MSG_EXECUTER_KEY_VALUE_SPLITTER
-#define MSG_EXECUTER_KEY_VALUE_SPLITTER					'='
+#define MSG_EXECUTER_KEY_VALUE_SPLITTER                 '='
+#endif
+
+#ifndef MSG_EXECUTER_KEY_VALUE_SPLITTER_STR
+#define MSG_EXECUTER_KEY_VALUE_SPLITTER_STR             "="
 #endif
 
 #ifndef MSG_EXECUTER_COMMAND_TYPE_SPLITTER
-#define MSG_EXECUTER_COMMAND_TYPE_SPLITTER				':'
+#define MSG_EXECUTER_COMMAND_TYPE_SPLITTER              ':'
 #endif
 
 #ifndef MSG_EXECUTER_COMMENT_CHARACTER
-#define MSG_EXECUTER_COMMENT_CHARACTER					'#'
+#define MSG_EXECUTER_COMMENT_CHARACTER                  '#'
 #endif
 
 #ifndef MSG_EXECUTER_COMMAND_TYPE_EXE_STR
-#define MSG_EXECUTER_COMMAND_TYPE_EXE_STR				"exe"
+#define MSG_EXECUTER_COMMAND_TYPE_EXE_STR               "exe"
 #endif
 
 #ifndef MSG_EXECUTER_COMMAND_TYPE_COM_STR
-#define MSG_EXECUTER_COMMAND_TYPE_COM_STR				"com"
+#define MSG_EXECUTER_COMMAND_TYPE_COM_STR               "com"
 #endif
 
 #ifndef MSG_EXECUTER_REPORT_JSON_GROUP_STRING
-#define MSG_EXECUTER_REPORT_JSON_GROUP_STRING				"REPORT"
+#define MSG_EXECUTER_REPORT_JSON_GROUP_STRING           "REPORT"
 #endif
 
 #ifndef MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING
-#define MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING				"RESPONSE"
+#define MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING         "RESPONSE"
 #endif
 
 #ifndef MSG_EXECUTER_DEFAULT_REPORT_INTERVAL_MS
-#define MSG_EXECUTER_DEFAULT_REPORT_INTERVAL_MS				300000
+#define MSG_EXECUTER_DEFAULT_REPORT_INTERVAL_MS         300000
 #endif
 
 #ifndef MSG_EXECUTER_DEFAULT_REPORT_FILE_PATH
-#define MSG_EXECUTER_DEFAULT_REPORT_FILE_PATH				"default_report_file.txt"
+#define MSG_EXECUTER_DEFAULT_REPORT_FILE_PATH           "default_report_file.txt"
 #endif
 
 #ifndef MSG_EXECUTER_DEFAULT_COMMAND_FILE_PATH
-#define MSG_EXECUTER_DEFAULT_COMMAND_FILE_PATH				"default_command_file.txt"
+#define MSG_EXECUTER_DEFAULT_COMMAND_FILE_PATH          "default_command_file.txt"
 #endif
 
 // --------------------------------------------------------------------------------
@@ -1046,28 +1050,13 @@ static i8 msg_executer_parse_report_command(char* p_report_name, char* p_command
 
 static void msg_executer_prepare_report(char* p_response, char* p_command_name, u16 max_response_length) {
 
-    DEBUG_PASS("msg_executer_prepare_report()");
-
-    t_message[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
+    char t_message[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
     common_tools_string_copy_string(t_message, p_command_name, max_response_length);
-    common_tools_string_append(t_message, MSG_EXECUTER_KEY_VALUE_SPLITTER, max_response_length);
+    common_tools_string_append(t_message, MSG_EXECUTER_KEY_VALUE_SPLITTER_STR, max_response_length);
     common_tools_string_append(t_message, p_response, max_response_length);
-    common_tools_string_copy_string(p_response_message, t_message, max_response_length);
+    common_tools_string_copy_string(p_response, t_message, max_response_length);
 
-	//memcpy(t_message, p_report_name, strlen(p_report_name));
-	//memcpy(t_message + strlen(p_report_name) + 1, p_response_buffer, strlen(p_response_buffer));
-
-	//t_message[strlen(p_report_name)] = MSG_EXECUTER_KEY_VALUE_SPLITTER;
-
-	//u16 length = strlen(t_message);
-
-	//if (length > max_response_length) {
-	//	length = max_response_length;
-	//} 
-
-	//memset(p_response_message, '\0', max_response_length);
-	//memcpy(p_response_message, t_message, strlen(t_message));
-	//common_tools_string_copy_string(p_response_message, t_message, max_response_length);
+    DEBUG_TRACE_STR(p_response, "msg_executer_prepare_report() - Result");
 }
 
 // --------------------------------------------------------------------------------
