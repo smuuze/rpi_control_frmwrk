@@ -401,17 +401,6 @@ static u8 msg_executer_parse_execution_command(const char* p_exe_command);
  */
 static i8 msg_executer_parse_report_command(char* p_report_name, char* p_command_data);
 
-/**
- * @brief Prepares the report resposne by adding the commands output string at the end to the actual command-name.
- * A '=' is inserted between the command and the response.
- * The resulting string then is <p_command_name>=<p_response>
- * 
- * @param p_response response that has been received
- * @param p_command_name name of the cli-command that was requested (received-command / report-command)
- * @param max_response_length maximum lenght of p_response in number of characters
- */
-static void msg_executer_prepare_report(char* p_response, char* p_command_name, u16 max_response_length);
-
 // --------------------------------------------------------------------------------
 
 void msg_executer_init(void) {
@@ -715,11 +704,9 @@ static void msg_executer_task_run(void) {
 			}
 
 			if (MSG_EXECUTER_STATUS_is_set(MSG_EXECUTER_STATUS_REPORT_ACTIVE)) {
-		
-				msg_executer_prepare_report(pending_response_cli_command, msg_executer_pending_report_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 
 				DEBUG_PASS("msg_executer_CLI_EXECUTER_COMMAND_RESPONSE_SLOT_CALLBACK() - Adding response to json-object --- --- --- ---");
-				REPORT_JSON_OBJECT_add_cli_response(pending_response_cli_command);
+				REPORT_JSON_OBJECT_add_cli_response(msg_executer_pending_report_name, pending_response_cli_command);
 
 				//DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE >> MSG_EXECUTER_TASK_STATE_IDLE");
 				//msg_executer_task_state = MSG_EXECUTER_TASK_STATE_IDLE;
@@ -729,12 +716,10 @@ static void msg_executer_task_run(void) {
 
 				break;
 			}
-
-			msg_executer_prepare_report(pending_response_cli_command, msg_executer_received_command_name, MSG_EXECUTER_MAX_MESSAGE_LENGTH);
 			
 			RESPONSE_JSON_OBJECT_initialize();
 			RESPONSE_JSON_OBJECT_start_group(MSG_EXECUTER_RESPONSE_JSON_GROUP_STRING);
-			RESPONSE_JSON_OBJECT_add_cli_response(pending_response_cli_command);
+			RESPONSE_JSON_OBJECT_add_cli_response(msg_executer_received_command_name, pending_response_cli_command);
 			RESPONSE_JSON_OBJECT_finish();
 
 			DEBUG_PASS("msg_executer_task_run() - MSG_EXECUTER_TASK_STATE_WAIT_FOR_EXE_RESPONSE >> MSG_EXECUTER_TASK_STATE_SEND_RESPONSE");
@@ -1046,17 +1031,6 @@ static i8 msg_executer_parse_report_command(char* p_report_name, char* p_command
 	}
 
 	return 1;
-}
-
-static void msg_executer_prepare_report(char* p_response, char* p_command_name, u16 max_response_length) {
-
-    char t_message[MSG_EXECUTER_MAX_MESSAGE_LENGTH];
-    common_tools_string_copy_string(t_message, p_command_name, max_response_length);
-    common_tools_string_append(t_message, MSG_EXECUTER_KEY_VALUE_SPLITTER_STR, max_response_length);
-    common_tools_string_append(t_message, p_response, max_response_length);
-    common_tools_string_copy_string(p_response, t_message, max_response_length);
-
-    DEBUG_TRACE_STR(p_response, "msg_executer_prepare_report() - Result");
 }
 
 // --------------------------------------------------------------------------------

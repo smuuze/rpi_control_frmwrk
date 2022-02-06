@@ -388,9 +388,10 @@ static void TEST_CASE_add_hostname_response(void) {
 	{	
 		UT_SET_TEST_CASE_ID(TEST_CASE_ID_CLOSE_GROUP);
 
-		char cmd_response[] = "SYS_HOSTNAME=unittest_hostname";
+		char command[] = "SYS_HOSTNAME";
+		char response[] = "unittest_hostname";
 
-		UT_JASON_OBJECT_add_cli_response(cmd_response);
+		UT_JASON_OBJECT_add_cli_response(command, response);
 
 		char temp_string[JSON_TEMP_STRING_LENGTH];
 		UT_JASON_OBJECT_copy_to(temp_string, JSON_TEMP_STRING_LENGTH);
