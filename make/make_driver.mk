@@ -22,8 +22,14 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 	ifneq '' '$(findstring GPIO_WIRINGPI,$(DRIVER_MODULE_CFG))'
 
 		DEFS += -D HAS_DRIVER_GPIO=1
-		CSRCS += $(APP_PATH)/driver/gpio/wiringpi/gpio_driver_wiring_pi.c
+		CSRCS += $(APP_PATH)/driver/gpio/wiringpi/gpio_driver_wiringpi.c
 		LIBS += -l wiringPi
+
+	else
+	ifneq '' '$(findstring GPIO_EMPTY,$(DRIVER_MODULE_CFG))'
+
+		DEFS += -D HAS_DRIVER_GPIO=1
+		CSRCS += $(APP_PATH)/driver/gpio/wiringpi/gpio_driver_empty.c
 
 	else
 
