@@ -16,7 +16,7 @@
  * @file   protocol_json_parser.h
  * @author Sebastian Lesse
  * @date   2021 / 02 / 05
- * @brief  Interface to create an static isntance of an JSON string parser
+ * @brief  Interface to create an static isntance of a JSON string parser
  * 
  */
 
@@ -35,24 +35,13 @@
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Maximum number of characters that can be added to a json string
+ * 
+ */
 #ifndef PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH
 #define PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH                1024
 #endif
-
-#define PROTOCOL_JSON_PARSER_CHARACTER_SEPERATOR                    ','
-#define PROTOCOL_JSON_PARSER_STRING_SEPERATOR                       ","
-
-#define PROTOCOL_JSON_PARSER_CHARACTER_GROUP_START                  '{'
-#define PROTOCOL_JSON_PARSER_STRING_GROUP_START                     "{"
-
-#define PROTOCOL_JSON_PARSER_STRING_GROUP_END                       "}"
-#define PROTOCOL_JSON_PARSER_STRING_KEY_VALUE_SEPERATOR             ":"
-#define PROTOCOL_JSON_PARSER_STRING_NAME_SEPERATOR                  "\""
-
-// --------------------------------------------------------------------------------
-
-#define JSON_OBJECT_STATUS_COMPLETE                                 (1 << 0)
-#define JSON_OBJECT_STATUS_ACTIVE                                   (1 << 1)
 
 // --------------------------------------------------------------------------------
 
@@ -235,3 +224,5 @@ u8 json_parser_is_complete(JSON_OPJECT_TYPE* p_json_object);
 // --------------------------------------------------------------------------------
 
 #endif // _PROTOCOL_JSON_PARSER_H_
+
+// --------------------------------------------------------------------------------

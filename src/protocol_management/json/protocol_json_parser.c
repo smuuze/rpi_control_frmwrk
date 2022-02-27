@@ -1,16 +1,28 @@
-
 /**
- * @file 	protocol_json_parser.c
- * @author 	sebastian lesse
- * @brief 	Creates a JSon string from RPi-Command Response
- * @version 	1.0
- * @date 	2021-02-05
- * 
- * @copyright 	Copyright (c) 2021
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    protocol_json_parser.c
+ * @author  Sebastian Lesse
+ * @date    2021 / 02 / 05
+ * @brief   Short description of this file
  * 
  */
 
 #define TRACER_OFF
+
+// --------------------------------------------------------------------------------
 
 #ifdef TRACER_ON
 #warning __WARNING__TRACER_ENABLED__WARNING__
@@ -26,6 +38,10 @@
 
 // --------------------------------------------------------------------------------
 
+#include "cpu.h"
+
+// --------------------------------------------------------------------------------
+
 #include "common/common_tools_string.h"
 #include "command_management/command_handler_interface.h"
 
@@ -33,7 +49,22 @@
 
 // --------------------------------------------------------------------------------
 
-#define JSON_PARSER_TEMP_STRING_LENGTH						32
+#define JSON_PARSER_TEMP_STRING_LENGTH                              32
+
+#define PROTOCOL_JSON_PARSER_CHARACTER_SEPERATOR                    ','
+#define PROTOCOL_JSON_PARSER_STRING_SEPERATOR                       ","
+
+#define PROTOCOL_JSON_PARSER_CHARACTER_GROUP_START                  '{'
+#define PROTOCOL_JSON_PARSER_STRING_GROUP_START                     "{"
+
+#define PROTOCOL_JSON_PARSER_STRING_GROUP_END                       "}"
+#define PROTOCOL_JSON_PARSER_STRING_KEY_VALUE_SEPERATOR             ":"
+#define PROTOCOL_JSON_PARSER_STRING_NAME_SEPERATOR                  "\""
+
+// --------------------------------------------------------------------------------
+
+#define JSON_OBJECT_STATUS_COMPLETE                                 (1 << 0)
+#define JSON_OBJECT_STATUS_ACTIVE                                   (1 << 1)
 
 // --------------------------------------------------------------------------------
 
@@ -250,3 +281,5 @@ u8 json_parser_is_complete(JSON_OPJECT_TYPE* p_json_object) {
 	DEBUG_TRACE_byte(p_json_object->status, "json_parser_is_complete()");
 	return p_json_object->status == JSON_OBJECT_STATUS_COMPLETE ? 1 : 0;
 }
+
+// --------------------------------------------------------------------------------
