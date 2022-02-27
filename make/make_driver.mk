@@ -29,7 +29,7 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 	ifneq '' '$(findstring GPIO_EMPTY,$(DRIVER_MODULE_CFG))'
 
 		DEFS += -D HAS_DRIVER_GPIO=1
-		CSRCS += $(APP_PATH)/driver/gpio/wiringpi/gpio_driver_empty.c
+		CSRCS += $(APP_PATH)/driver/gpio/empty/gpio_driver_empty.c
 
 	else
 
