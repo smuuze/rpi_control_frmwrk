@@ -11,28 +11,30 @@ MSG_LISTING		:= - Generating Disassembly
 MAP_LISTING		:= - Generating memory map
 MSG_TRACER		:= Starting Tracer in
 MSG_FINISH		:= --------------- Make done ---------------
+NEWLINE			:= "\n"
+TABULATOR		:= "\t"
 
 # --------- 
 
-TARGET			:= $(PROJECT)
-VERSION			:= $(VERSION_MAJOR).$(VERSION_MINOR)
-OBJECT_DIRECTORY	:= obj
-DEBUG_DIRECTORY		:= $(OBJECT_DIRECTORY)/debug
+TARGET					:= $(PROJECT)
+VERSION					:= $(VERSION_MAJOR).$(VERSION_MINOR)
+OBJECT_DIRECTORY		:= obj
+DEBUG_DIRECTORY			:= $(OBJECT_DIRECTORY)/debug
 DEPENDENCY_DIRECTORY	:= $(OBJECT_DIRECTORY)/dependency
-RELEASE_DIRECTORY	:= release/$(VERSION)
-FORMAT			:= ihex
-DEBUG_ENABLED		:= -DTRACER_ENABLED
+RELEASE_DIRECTORY		:= release/$(VERSION)
+FORMAT					:= ihex
+DEBUG_ENABLED			:= -DTRACER_ENABLED
 
-RELEASE_OBJECTS		:= $(CSRCS:%.c=$(OBJECT_DIRECTORY)/%.o)
-DEBUG_OBJECTS		:= $(CSRCS:%.c=$(DEBUG_DIRECTORY)/%.o)
-DEPENDENCY_OBJECTS	:= $(CSRCS:%.c=$(DEPENDENCY_DIRECTORY)/%.o)
+RELEASE_OBJECTS			:= $(CSRCS:%.c=$(OBJECT_DIRECTORY)/%.o)
+DEBUG_OBJECTS			:= $(CSRCS:%.c=$(DEBUG_DIRECTORY)/%.o)
+DEPENDENCY_OBJECTS		:= $(CSRCS:%.c=$(DEPENDENCY_DIRECTORY)/%.o)
 
-LOCAL_OBJECTS		:= $(notdir $(RELEASE_OBJECTS))
-LOCAL_DEBUG_OBJECTS	:= $(notdir $(DEBUG_OBJECTS))
+LOCAL_OBJECTS			:= $(notdir $(RELEASE_OBJECTS))
+LOCAL_DEBUG_OBJECTS		:= $(notdir $(DEBUG_OBJECTS))
 
-TRACER_PATH		:= $(BASE_PATH)/rpi_control_release/TRACER/shcTracer
+TRACER_PATH				:= $(BASE_PATH)/rpi_control_release/TRACER/shcTracer
 
-CFLAGS 			+= -pedantic -Wall
+CFLAGS					+= -pedantic -Wall
 
 # --------- 
 
@@ -146,6 +148,26 @@ dependency_dir: obj_dir
 release_dir:
 	$(VERBOSE) $(ECHO) - Creating Release directory: $(RELEASE_DIRECTORY)
 	$(VERBOSE) $(MK) $(RELEASE_DIRECTORY)
+
+# ---------
+
+.PHONY: show_config
+show_config:
+	$(VERBOSE) $(ECHO) MCU: $(foreach elem, $(MCU), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) PLATTFORM: $(foreach elem, $(PLATTFORM), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) COMMON_MODULES: $(foreach elem, $(COMMON_MODULES), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) APP_TASK_CFG: $(foreach elem, $(APP_TASK_CFG), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) EXPANSION_BOARD_CFG: $(foreach elem, $(EXPANSION_BOARD_CFG), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) DRIVER_MODULE_CFG: $(foreach elem, $(DRIVER_MODULE_CFG), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) PROTOCOL_CFG: $(foreach elem, $(PROTOCOL_CFG), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) POWER_MANAGEMENT_CFG: $(foreach elem, $(POWER_MANAGEMENT_CFG), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) COPRO_INTERFACE_CFG: $(foreach elem, $(COPRO_INTERFACE_CFG), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) COMMAND_INTERFACE_CFG: $(foreach elem, $(COMMAND_INTERFACE_CFG), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) SENSOR_MODULE_CFG: $(foreach elem, $(SENSOR_MODULE_CFG), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) THIRD_PARTY_MODULES: $(foreach elem, $(THIRD_PARTY_MODULES), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) CSRCS: $(foreach elem, $(CSRCS), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) LIBS: $(foreach elem, $(subst -l , , $(LIBS)), $(NEWLINE)$(TABULATOR)$(elem))
+	$(VERBOSE) $(ECHO) DEFS: $(foreach elem, $(subst -D , , $(DEFS)), $(NEWLINE)$(TABULATOR)$(elem))
 
 # ---------
 
