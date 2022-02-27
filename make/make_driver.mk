@@ -41,6 +41,7 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 		endif
 
 	endif
+	endif
 endif
 
 ifneq '' '$(findstring I2C0,$(DRIVER_MODULE_CFG))'
