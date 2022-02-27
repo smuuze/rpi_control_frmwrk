@@ -19,11 +19,21 @@ endif
 
 ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 
-	DEFS += -D HAS_DRIVER_GPIO=1
-	CSRCS += $(APP_PATH)/driver/gpio/$(CPU_FAMILY)/gpio_driver_$(MCU_NAME).c
+	ifneq '' '$(findstring GPIO_WIRINGPI,$(DRIVER_MODULE_CFG))'
 
-	ifneq '' '$(findstring raspberrypi,$(MCU_NAME))'
+		DEFS += -D HAS_DRIVER_GPIO=1
+		CSRCS += $(APP_PATH)/driver/gpio/wiringpi/gpio_driver_wiring_pi.c
 		LIBS += -l wiringPi
+
+	else
+
+		DEFS += -D HAS_DRIVER_GPIO=1
+		CSRCS += $(APP_PATH)/driver/gpio/$(CPU_FAMILY)/gpio_driver_$(MCU_NAME).c
+
+		ifneq '' '$(findstring raspberrypi,$(MCU_NAME))'
+			LIBS += -l wiringPi
+		endif
+
 	endif
 endif
 
