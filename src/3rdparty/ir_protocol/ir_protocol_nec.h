@@ -18,32 +18,26 @@
  * @date   2021 / 12 / 28
  * @brief   Module to generate a NEC ir-command
  * 
- *          Frequency:          36 kHz
+ *  Frequency:  36 kHz
  * 
- *          Preamble:           9000us Pulse
- *                              4500us Pause
+ *  Preamble:       9000us Pulse
+ *                  4500us Pause
  * 
- *          Logical-One:        560us Pulse
- *                              1690 s Pause
+ *  Logical-One:    560us Pulse
+ *                  1690 s Pause
  * 
- *          Logical Zero:       560us Pulse
- *                              560us Pause
+ *  Logical Zero:   560us Pulse
+ *                  560us Pause
  * 
- *          Stop-Bit:           560us Pulse
+ *  Stop-Bit:       560us Pulse
  * 
- *          Usage:
+ *  Usage:
  * 
- *              1. Set timers
- *              
- *                  ir_protocol_nec_set_timer()
- *                      
- *              2. Start transmission
- *                          
- *                  ir_protocol_nec_transmit()
- *                      
- *              3. Wait for completion
+ *  The IR-protocl module uses the IR-Protocol-Interface.
+ *  By calling ir_protocol_sony_init() a new ir-protocol will
+ *  be registered. The ID of this procotol is set to 0x03
  * 
- *                  ir_protocol_nec_is_busy()
+ *  @see 3rdparty/ir_protocol/ir_protocol_interface.h
  * 
  */
 
@@ -55,7 +49,8 @@
 // --------------------------------------------------------------------------------
 
 /**
- * @brief 
+ * @brief  Initialized the NEC ir-protocol.
+ * Registers a new ir-protocol to the ir-protocol-interface
  * 
  */
 void ir_protocol_nec_init(void);

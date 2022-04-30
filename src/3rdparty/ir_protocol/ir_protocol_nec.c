@@ -187,7 +187,7 @@ static u8 ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_comm
 	DEBUG_TRACE_byte(p_command->data_1, "ir_protocol_nec_prepare_transmit_buffer() - Device Address:");
 	DEBUG_TRACE_byte(p_command->data_2, "ir_protocol_nec_prepare_transmit_buffer() - Device Control:");
 
-    ir_protocol_interface_transmit_buffer_start();
+    ir_protocol_interface_transmit_buffer_reset();
 
     // Append the preamble pulse - 9000us = 16 x 560us
 
@@ -342,3 +342,5 @@ void ir_protocol_nec_init(void) {
         DEBUG_PASS("ir_protocol_nec_init()");
         ir_protocol_interface_register_ir_protocol(&ir_protocol_nec);
 }
+
+// --------------------------------------------------------------------------------

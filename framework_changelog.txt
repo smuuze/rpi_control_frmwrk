@@ -2,6 +2,29 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
+Version:	6.05
+
+Date: 		< NOT RELEASED >
+Author:		Sebastian Lesse
+
+New-Features:
+
+    -
+
+Bugfixes:
+
+    - 
+
+Misc:
+
+    -   SONY ir-protocol implemenation now uses ir-interface (common-ir-command-type / ir-transmit-buffer)
+
+Known-Bugs:
+
+    -
+
+-----------------------------------------------------------
+
 Version:	6.04
 
 Date: 		13.11.2021

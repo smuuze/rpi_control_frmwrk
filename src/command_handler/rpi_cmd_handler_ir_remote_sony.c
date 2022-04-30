@@ -42,10 +42,7 @@
 #include "command_management/command_handler_interface.h"
 #include "command_handler/rpi_command_handler_ir_remote.h"
 #include "3rdparty/ir_protocol/ir_protocol_sony.h"
-
-// --------------------------------------------------------------------------------
-
-SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SONY_IR_CMD_RECEIVED_SIGNAL)
+#include "3rdparty/ir_protocol/ir_protocol_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -57,30 +54,10 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SONY_IR_CMD_RECEIVED_SIGNAL)
  * @return      CMD_NO_ERR if the command is known and the SONY_IR_CMD_RECEIVED_SIGNAL was send
  *              CMD_ERR_INVALID_ARGUMENT if the command is unknown
  */
-static inline u8 rpi_cmd_ir_sony_bdplayer(u8 command);
-
-// --------------------------------------------------------------------------------
-
-u8 rpi_cmd_handler_ir_remote_sony(u8 device, u8 command) {
-
-    DEBUG_PASS("rpi_cmd_handler_ir_remote_sony()");
-
-    switch (device) {
-
-        default:
-            return CMD_ERR_INVALID_ARGUMENT;
-
-        case IR_DEVICE_BLUE_RAY_PLAYER :
-            return rpi_cmd_ir_sony_bdplayer(command);
-    }
-}
-
-// --------------------------------------------------------------------------------
-
-static inline u8 rpi_cmd_ir_sony_bdplayer(u8 cmd) {
+static inline u8 rpi_cmd_ir_sony_bdplayer(u8 command) {
     
     DEBUG_TRACE_byte(cmd, "rpi_cmd_ir_sony_bdplayer() - Command:");
-    SONY_IR_PROTOCOL_COMMAND_TYPE ir_command;
+    IR_COMMON_COMMAND_TYPE ir_command;
 
     switch (cmd) {
 
@@ -109,7 +86,28 @@ static inline u8 rpi_cmd_ir_sony_bdplayer(u8 cmd) {
 
     ir_protocol_sony_address_bdplayer(&ir_command);
 
-    SONY_IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
+    IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
 
     return CMD_NO_ERR;
 }
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @see command_handler/rpi_cmd_handler_ir_remote_sony.c#rpi_cmd_handler_ir_remote_sony
+ */
+u8 rpi_cmd_handler_ir_remote_sony(u8 device, u8 command) {
+
+    DEBUG_PASS("rpi_cmd_handler_ir_remote_sony()");
+
+    switch (device) {
+
+        default:
+            return CMD_ERR_INVALID_ARGUMENT;
+
+        case IR_DEVICE_BLUE_RAY_PLAYER :
+            return rpi_cmd_ir_sony_bdplayer(command);
+    }
+}
+
+// --------------------------------------------------------------------------------

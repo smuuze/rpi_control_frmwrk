@@ -81,6 +81,9 @@ static u8 is_requested = 0;
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_request
+ */
 u16 ir_protocol_interface_transmit_buffer_request(void) {
     if (is_requested) {
         return 0;
@@ -92,21 +95,50 @@ u16 ir_protocol_interface_transmit_buffer_request(void) {
     return 1;
 }
 
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_release
+ */
 void ir_protocol_interface_transmit_buffer_release(void) {
     DEBUG_PASS("ir_protocol_interface_transmit_buffer_release()");
     is_requested = 0;
 }
 
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_busy
+ */
 u8 ir_protocol_interface_transmit_buffer_busy(void) {
     return is_requested;
 }
 
-void ir_protocol_interface_transmit_buffer_start(void) {
-    DEBUG_PASS("ir_protocol_interface_transmit_buffer_start()");
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_reset
+ */
+void ir_protocol_interface_transmit_buffer_reset(void) {
+    DEBUG_PASS("ir_protocol_interface_transmit_buffer_reset()");
     write_pointer = 0;
     read_pointer = 0;
 }
 
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_restart
+ */
+void ir_protocol_interface_transmit_buffer_restart(u16 start_position){
+
+    if (start_position > IR_PROTOCOL_INTERFACE_TRANSMIT_BUFFER_MAX_LENGTH) {
+        DEBUG_PASS("ir_protocol_interface_transmit_buffer_restart() - ERR - OVERFLOW");
+
+    } else if (start_position > write_pointer) {
+        DEBUG_PASS("ir_protocol_interface_transmit_buffer_restart() - ERR - BEYOND");
+
+    } else {
+        DEBUG_TRACE_word(start_position, "ir_protocol_interface_transmit_buffer_restart() - START-POS:");
+        read_pointer = start_position;
+    }
+}
+
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_end
+ */
 u8 ir_protocol_interface_transmit_buffer_end(void) {
     if (read_pointer == write_pointer) {
         DEBUG_PASS("ir_protocol_interface_transmit_buffer_end()");
@@ -116,24 +148,41 @@ u8 ir_protocol_interface_transmit_buffer_end(void) {
     return 0;
 }
 
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_append_pulse
+ */
 void ir_protocol_interface_transmit_buffer_append_pulse(void) {
 
     if (write_pointer < IR_PROTOCOL_INTERFACE_TRANSMIT_BUFFER_MAX_LENGTH) {
+
         //DEBUG_PASS("ir_protocol_interface_transmit_buffer_append_pulse()");
         transmit_buffer[write_pointer] = IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE;
         write_pointer += 1;
+
+    } else {
+        DEBUG_PASS("ir_protocol_interface_transmit_buffer_append_pulse() - OVERFLOW !!! ---");
     }
 }
 
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_append_pause
+ */
 void ir_protocol_interface_transmit_buffer_append_pause(void) {
 
     if (write_pointer < IR_PROTOCOL_INTERFACE_TRANSMIT_BUFFER_MAX_LENGTH) {
+
         //DEBUG_PASS("ir_protocol_interface_transmit_buffer_append_pause()");
         transmit_buffer[write_pointer] = IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PAUSE;
         write_pointer += 1;
+
+    } else {
+        DEBUG_PASS("ir_protocol_interface_transmit_buffer_append_pause() - OVERFLOW !!! ---");
     }
 }
 
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_get_next
+ */
 u8 ir_protocol_interface_transmit_buffer_get_next(void) {
 
     if (read_pointer < write_pointer) {
@@ -148,10 +197,16 @@ u8 ir_protocol_interface_transmit_buffer_get_next(void) {
     return IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PAUSE;
 }
 
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_act_length
+ */
 u16 ir_protocol_interface_transmit_buffer_act_length(void) {
     return write_pointer;
 }
 
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_interface.h#ir_protocol_interface_transmit_buffer_max_length
+ */
 u16 ir_protocol_interface_transmit_buffer_max_length(void) {
     return IR_PROTOCOL_INTERFACE_TRANSMIT_BUFFER_MAX_LENGTH;
 }

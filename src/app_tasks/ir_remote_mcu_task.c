@@ -300,35 +300,6 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(JVC_IR_CMD_RECEIVED_SIGNAL, JVC_IR_CMD_RECEIVE
 
 // --------------------------------------------------------------------------------
 
-#ifdef HAS_IR_PROTOCOL_SONY
-
-#include "3rdparty/ir_protocol/ir_protocol_sony.h"
-
-static SONY_IR_PROTOCOL_COMMAND_TYPE sony_ir_command;
-
-static void ir_remote_task_slot_SONY_IR_CMD_RECEIVED(const void* p_arg) {
-
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SONY_CMD_RECEIVED)) {
-        return;
-    }
-
-    DEBUG_PASS("ir_remote_task_slot_SONY_IR_CMD_RECEIVED()");
-
-    const SONY_IR_PROTOCOL_COMMAND_TYPE* p_command = (const SONY_IR_PROTOCOL_COMMAND_TYPE*) p_arg;
-    sony_ir_command.command  = p_command->command;
-    sony_ir_command.device   = p_command->device;
-    sony_ir_command.extended = p_command->extended;
-
-    IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_SONY_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
-}
-
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SONY_IR_CMD_RECEIVED_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SONY_IR_CMD_RECEIVED_SIGNAL, SONY_IR_CMD_RECEIVED_SLOT, ir_remote_task_slot_SONY_IR_CMD_RECEIVED)
-
-#endif
-
-// --------------------------------------------------------------------------------
-
 /**
  * @see  app_task/ir_remote_mcu_task.h#ir_remote_app_task_init
  * 
@@ -344,8 +315,8 @@ void ir_remote_app_task_init(void) {
     timer_carrier.init();
     timer_modulator.init();
 
-        IR_CMD_RECEIVED_SIGNAL_init();
-        IR_CMD_RECEIVED_SLOT_connect();
+    IR_CMD_RECEIVED_SIGNAL_init();
+    IR_CMD_RECEIVED_SLOT_connect();
     
     #ifdef HAS_IR_PROTOCOL_SAMSUNG
     {
@@ -366,17 +337,6 @@ void ir_remote_app_task_init(void) {
         JVC_IR_CMD_RECEIVED_SLOT_connect();
     
         ir_protocol_jvc_set_timer(&timer_carrier, &timer_modulator);
-    }
-    #endif
-    
-    #ifdef HAS_IR_PROTOCOL_SONY
-    {
-        DEBUG_PASS("ir_remote_task_init() - SONY");
-
-        SONY_IR_CMD_RECEIVED_SIGNAL_init();
-        SONY_IR_CMD_RECEIVED_SLOT_connect();
-    
-        ir_protocol_sony_set_timer(&timer_carrier, &timer_modulator);
     }
     #endif
 
@@ -530,30 +490,6 @@ static void ir_remote_task_run(void) {
 
             DEBUG_PASS("ir_remote_task_run() - Jvc IR-Command finished");
             IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED);
-        }
-    }
-    #endif
-
-    #ifdef HAS_IR_PROTOCOL_SONY
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SONY_CMD_RECEIVED)) {
-
-        if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
-
-            DEBUG_PASS("ir_remote_task_run() - Start SONY IR-Command");
-
-            IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
-            IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_PENDING);
-
-            ir_protocol_sony_transmit(&sony_ir_command);
-            is_active = 1;
-
-        } else  if (ir_protocol_sony_is_busy()) {
-            is_active = 1;
-
-        } else {
-
-            DEBUG_PASS("ir_remote_task_run() - SONY IR-Command finished");
-            IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_SONY_CMD_RECEIVED);
         }
     }
     #endif

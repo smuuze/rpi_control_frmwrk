@@ -224,11 +224,24 @@ void ir_protocol_interface_transmit_buffer_release(void);
 u8 ir_protocol_interface_transmit_buffer_busy(void);
 
 /**
- * @brief Restarts the transmit buffer.
- * New data is appended at the beginning
+ * @brief Resets the transmit buffer.
+ * New data is appended at the beginning.
+ * Existing data is lost
  * 
  */
-void ir_protocol_interface_transmit_buffer_start(void);
+void ir_protocol_interface_transmit_buffer_reset(void);
+
+/**
+ * @brief Restarts the transmit buffer.
+ * Existing data can be read once again.
+ * Data is not lost.
+ * If start_position is above the maximum buffer size or the actual
+ * length of the buffer reset will be ignored and the buffer remains at its actual position.
+ * 
+ * @param start_position position where to restart from
+ * 
+ */
+void ir_protocol_interface_transmit_buffer_restart(u16 start_position);
 
 /**
  * @brief Checks if the transmit-buffer has data left or not.
