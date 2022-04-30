@@ -592,7 +592,7 @@ static void TEST_CASE_ir_transmit_ir_command_audio_language(void) {
 
 int main(void) {
 
-    TRACER_RESTART()
+    TRACER_RESTART();
 
 	UT_START_TESTBENCH("Welcome the the UNITTEST for IR-Remote Sony 1.0")
 	{
