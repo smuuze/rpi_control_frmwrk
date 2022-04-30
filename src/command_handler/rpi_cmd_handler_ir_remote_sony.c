@@ -56,10 +56,10 @@
  */
 static inline u8 rpi_cmd_ir_sony_bdplayer(u8 command) {
     
-    DEBUG_TRACE_byte(cmd, "rpi_cmd_ir_sony_bdplayer() - Command:");
+    DEBUG_TRACE_byte(command, "rpi_cmd_ir_sony_bdplayer() - Command:");
     IR_COMMON_COMMAND_TYPE ir_command;
 
-    switch (cmd) {
+    switch (command) {
 
         default:                                return CMD_ERR_INVALID_ARGUMENT;
 
