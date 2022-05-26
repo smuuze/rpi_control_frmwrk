@@ -38,6 +38,10 @@
 
 // --------------------------------------------------------------------------------
 
+#include "cpu.h"
+
+// --------------------------------------------------------------------------------
+
 #include <string.h>
 
 // --------------------------------------------------------------------------------
@@ -48,7 +52,9 @@
 
 #include "ui/cfg_file_parser/cfg_file_parser.h"
 
+#ifdef HAS_PROTOCOL_MQTT
 #include "protocol_management/mqtt/mqtt_interface.h"
+#endif
 
 // --------------------------------------------------------------------------------
 
@@ -61,6 +67,7 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_CONFIGURATION_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_FILE_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_PATH_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_DEVICE_SIGNAL)
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_N_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_MESSAGE_SIGNAL)
 
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(RPI_HOST_COMMAND_RECEIVED_SIGNAL)
@@ -72,30 +79,42 @@ void command_line_handler_device(const char* parameter) {
     CLI_ARGUMENT_DEVICE_SIGNAL_send((const void*)parameter);
 }
 
+// --------------------------------------------------------------------------------
+
 void command_line_handler_cfg_file(const char* parameter) {
     DEBUG_PASS("command_line_handler_cfg_file()");
     CLI_CONFIGURATION_SIGNAL_send((void*)parameter);
 }
+
+// --------------------------------------------------------------------------------
 
 void command_line_handler_lcd(const char* parameter) {
     DEBUG_PASS("command_line_handler_lcd()");
     CLI_LCD_ACTIVATED_SIGNAL_send(NULL);
 }
 
+// --------------------------------------------------------------------------------
+
 void command_line_handler_console(const char* parameter) {
     DEBUG_PASS("command_line_handler_console()");
     CLI_CONSOLE_ACTIVATED_SIGNAL_send(NULL);
 }
+
+// --------------------------------------------------------------------------------
 
 void command_line_handler_file(const char* parameter) {
     DEBUG_PASS("command_line_handler_file()");
     CLI_ARGUMENT_FILE_SIGNAL_send((const void*) parameter);
 }
 
+// --------------------------------------------------------------------------------
+
 void command_line_handler_path(const char* parameter) {
     DEBUG_PASS("command_line_handler_path()");
     CLI_ARGUMENT_PATH_SIGNAL_send((const void*) parameter);
 }
+
+// --------------------------------------------------------------------------------
 
 void command_line_handler_command(const char* parameter) {
 
@@ -136,11 +155,16 @@ void command_line_handler_controller(const char* parameter) {
     DEBUG_PASS("command_line_handler_command()");
 }
 
+// --------------------------------------------------------------------------------
+
 void command_line_handler_help(const char* parameter) {
     DEBUG_PASS("command_line_handler_help()");
     CLI_HELP_REQUESTED_SIGNAL_send(NULL);
 }
 
+// --------------------------------------------------------------------------------
+
+#ifdef HAS_PROTOCOL_MQTT
 void command_line_handler_topic(const char* parameter) {
     DEBUG_PASS("command_line_handler_topic()");
 
@@ -160,7 +184,11 @@ void command_line_handler_topic(const char* parameter) {
 
     CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send(&cfg_obj);
 }
+#endif // #ifdef HAS_PROTOCOL_MQTT
 
+// --------------------------------------------------------------------------------
+
+#ifdef HAS_PROTOCOL_MQTT
 void command_line_handler_host(const char* parameter) {
     DEBUG_TRACE_STR(parameter, "command_line_handler_host() - ");
 
@@ -180,7 +208,11 @@ void command_line_handler_host(const char* parameter) {
 
     CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send(&cfg_obj);
 }
+#endif // #ifdef HAS_PROTOCOL_MQTT
 
+// --------------------------------------------------------------------------------
+
+#ifdef HAS_PROTOCOL_MQTT
 void command_line_handler_client(const char* parameter) {
     DEBUG_TRACE_STR(parameter, "command_line_handler_client() - ");
 
@@ -200,8 +232,35 @@ void command_line_handler_client(const char* parameter) {
 
     CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_send(&cfg_obj);
 }
+#endif // #ifdef HAS_PROTOCOL_MQTT
+
+// --------------------------------------------------------------------------------
 
 void command_line_handler_message(const char* parameter) {
     DEBUG_TRACE_STR(parameter, "command_line_handler_message() - ");
     CLI_MESSAGE_SIGNAL_send(parameter);
 }
+
+// --------------------------------------------------------------------------------
+
+void command_line_handler_n(const char* parameter) {
+
+    if (parameter == NULL) {
+        DEBUG_PASS("command_line_handler_n() - INVALID PARAMETER - parameter is NULL");
+        CLI_INVALID_PARAMETER_SIGNAL_send((void*)COMMAND_LINE_ARGUMENT_N);
+        return;
+    }
+
+    if (common_tools_sting_is_number(parameter) == 0) {
+        DEBUG_PASS("command_line_handler_n() - INVALID PARAMETER - parameter is not a number");
+        CLI_INVALID_PARAMETER_SIGNAL_send((void*)COMMAND_LINE_ARGUMENT_N);
+        return;
+    }
+
+    DEBUG_TRACE_STR(parameter, "command_line_handler_n() - ");
+
+    u32 n = common_tools_string_to_u32(parameter);
+    CLI_ARGUMENT_N_SIGNAL_send(&n);
+}
+
+// --------------------------------------------------------------------------------

@@ -143,6 +143,12 @@
 #define COMMAND_LINE_ARGUMENT_MESSAGE		"-msg"
 
 /**
+ * @brief Command line argument to give a count of something
+ * 
+ */
+#define COMMAND_LINE_ARGUMENT_N             "-n"
+
+/**
  * @brief 
  * 
  */

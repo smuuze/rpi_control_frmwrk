@@ -95,6 +95,12 @@ void command_line_handler_file(const char* parameter);
 /* */
 void command_line_handler_path(const char* parameter);
 
+/**
+ * @brief Handle the -n argument
+ * 
+ */
+void command_line_handler_n(const char* parameter);
+
 // --------------------------------------------------------------------------------
 
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_INVALID_ARGUMENT_SIGNAL)
@@ -109,6 +115,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_CONFIGURATION_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_MESSAGE_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_NO_ARGUMENT_GIVEN_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_UNKNOWN_ARGUMENT_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_ARGUMENT_N_SIGNAL)
 
 #ifdef CLI_GPIO_ARGUMENT_AVAILABLE
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_ARGUMENT_GPIO_SIGNAL)
@@ -144,14 +151,19 @@ static COMMAND_LINE_ARGUMENT_TABLE_TYPE command_line_argument_table[] = {
     { COMMAND_LINE_ARGUMENT_DEVICE, &command_line_handler_device },
     { COMMAND_LINE_ARGUMENT_COMMAND, &command_line_handler_command },
     { COMMAND_LINE_ARGUMENT_MESSAGE, &command_line_handler_message },
+
+    #ifdef HAS_PROTOCOL_MQTT
     { COMMAND_LINE_ARGUMENT_TOPIC, &command_line_handler_topic },
     { COMMAND_LINE_ARGUMENT_HOST, &command_line_handler_host },
     { COMMAND_LINE_ARGUMENT_CLIENT, &command_line_handler_client },
+    #endif // #ifdef HAS_PROTOCOL_MQTT
+    
     { COMMAND_LINE_ARGUMENT_HELP, &command_line_handler_help },
     { COMMAND_LINE_ARGUMENT_HELP_SHORT, &command_line_handler_help },
     { COMMAND_LINE_ARGUMENT_CONSOLE, &command_line_handler_console },
     { COMMAND_LINE_ARGUMENT_FILE, &command_line_handler_file },
     { COMMAND_LINE_ARGUMENT_PATH, &command_line_handler_path },
+    { COMMAND_LINE_ARGUMENT_N, &command_line_handler_n },
 
     #ifdef CLI_GPIO_ARGUMENT_AVAILABLE
     { COMMAND_LINE_ARGUMENT_GPIO, &command_line_handler_gpio },
@@ -202,6 +214,9 @@ void command_line_interface_init(void) {
 
     DEBUG_PASS("command_line_interface_init() - CLI_ARGUMENT_DEVICE_SIGNAL_init()");
     CLI_ARGUMENT_DEVICE_SIGNAL_init();
+
+    DEBUG_PASS("command_line_interface_init() - CLI_ARGUMENT_N_SIGNAL_init()");
+    CLI_ARGUMENT_N_SIGNAL_init();
 
     #ifdef CLI_GPIO_ARGUMENT_AVAILABLE
         DEBUG_PASS("command_line_interface_init() - CLI_GPIO_SIGNAL_init()");
