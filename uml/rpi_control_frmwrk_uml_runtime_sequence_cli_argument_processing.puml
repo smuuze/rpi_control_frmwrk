@@ -1,0 +1,87 @@
+@startuml rpi_control_frmwrk_uml_runtime_sequence_cli_argument_processing
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+mainframe sequence: RPi-Control - Runtime - CLI Argument Processing
+
+'***************************************************************************
+
+participant ":Main" as main
+participant ":Initialization" as initialization
+participant "Argument-Table\n:command_line_argument_table" as arg_table
+participant "Handler\n:command_line_handler" as cli_handler
+participant ":common_tools_string" as string_tools
+participant ":SignalSlotInterface" as signal_slot
+
+'***************************************************************************
+
+group initialization
+
+    critical 
+        main -> initialization : initialization()
+        initialization -> arg_table : command_line_interface_init()
+    end
+
+    loop for every signal
+        arg_table -> signal_slot : init()
+    end
+
+    loop for every slot
+        main -> signal_slot : connect()
+    end
+end
+
+group process cli commands
+
+    main -> arg_table : command_line_interface(argc, argv)
+    note right
+        every main calls the cli-interface by itself.
+        All cli commands are given at once.
+    end note
+    activate arg_table
+
+        loop over argv
+
+            arg_table -> string_tools : common_tools_string_starts_with(argv[i], '-')
+            note right
+                a cli-command starts with '-'
+            end note
+
+            alt is cli-command
+
+                loop over available cli-handler
+                    arg_table -> string_tools : common_tools_string_compare(argv[i], table[j].argument)
+
+                    alt cli-command matches table-entry
+                        arg_table -> cli_handler : callback(argv[i + 1])
+                        note right
+                            if argv[i + 1] is not available
+                            callback is called with arguemtn NULL
+                        end note
+
+                        activate cli_handler
+
+                            cli_handler -> signal_slot : send()
+                            activate signal_slot
+
+                                signal_slot -> main : slot_callback()
+                                activate main
+                                deactivate main
+
+                            deactivate signal_slot
+                        deactivate cli_handler
+                    end
+                end
+            end
+        end
+    deactivate arg_table
+end
+
+'***************************************************************************
+
+@enduml
