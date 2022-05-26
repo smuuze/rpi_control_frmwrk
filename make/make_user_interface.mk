@@ -72,6 +72,13 @@ ifneq '' '$(findstring CLI_ARG_REMOTE_CONTROL,$(USER_INTERFACE_CFG))'
 	CSRCS += $(COMMAND_LINE_INTERFACE_PATH)/command_line_handler_remote_control.c
 endif
 
+ifneq '' '$(findstring CLI_ARG_GPIO,$(USER_INTERFACE_CFG))'
+	DEFS += -D CLI_GPIO_ARGUMENT_AVAILABLE=1
+	USER_INTERFACE_CFG += CLI_TABLE
+	USER_INTERFACE_CFG += CLI_HANDLER
+	CSRCS += $(COMMAND_LINE_INTERFACE_PATH)/command_line_handler_gpio.c
+endif
+
 # --------------------------------------------------------------------------------
 
 ifneq '' '$(findstring CLI_TABLE,$(USER_INTERFACE_CFG))'

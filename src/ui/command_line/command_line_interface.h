@@ -95,6 +95,12 @@
 #define COMMAND_LINE_ARGUMENT_HELP		"-help"
 
 /**
+ * @brief CLI-Argument to control a gpio pin.
+ * 
+ */
+#define COMMAND_LINE_ARGUMENT_GPIO		"-gpio"
+
+/**
  * @brief 
  * 
  */

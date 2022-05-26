@@ -9,7 +9,7 @@ Author:		Sebastian Lesse
 
 New-Features:
 
-    -
+    -   New command line arguemnt handler -gpio
 
 Bugfixes:
 

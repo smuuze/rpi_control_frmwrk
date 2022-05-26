@@ -52,6 +52,7 @@
 // --------------------------------------------------------------------------------
 
 #include "ui/command_line/command_line_handler_remote_control.h"
+#include "ui/command_line/command_line_handler_gpio.h"
 
 // --------------------------------------------------------------------------------
 
@@ -109,6 +110,10 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_MESSAGE_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_NO_ARGUMENT_GIVEN_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_UNKNOWN_ARGUMENT_SIGNAL)
 
+#ifdef CLI_GPIO_ARGUMENT_AVAILABLE
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(CLI_ARGUMENT_GPIO_SIGNAL)
+#endif
+
 // --------------------------------------------------------------------------------
 
 void command_line_handler_unknown_argument(const char* argument) {
@@ -127,6 +132,11 @@ void command_line_handler_unknown_argument(const char* argument) {
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Table of all available cli arguments and the handler that is
+ * called if this argument is given at program start.
+ * 
+ */
 static COMMAND_LINE_ARGUMENT_TABLE_TYPE command_line_argument_table[] = {
     { COMMAND_LINE_ARGUMENT_CFG_FILE, &command_line_handler_cfg_file },
     { COMMAND_LINE_ARGUMENT_LCD, &command_line_handler_lcd },
@@ -142,6 +152,10 @@ static COMMAND_LINE_ARGUMENT_TABLE_TYPE command_line_argument_table[] = {
     { COMMAND_LINE_ARGUMENT_CONSOLE, &command_line_handler_console },
     { COMMAND_LINE_ARGUMENT_FILE, &command_line_handler_file },
     { COMMAND_LINE_ARGUMENT_PATH, &command_line_handler_path },
+
+    #ifdef CLI_GPIO_ARGUMENT_AVAILABLE
+    { COMMAND_LINE_ARGUMENT_GPIO, &command_line_handler_gpio },
+    #endif
 
     #ifdef CLI_REMOTE_CONTROL_ARGUMENT_AVAILABLE
     { COMMAND_LINE_ARGUMENT_REMOTE, &command_line_handler_remote_control },
@@ -188,13 +202,17 @@ void command_line_interface_init(void) {
 
     DEBUG_PASS("command_line_interface_init() - CLI_ARGUMENT_DEVICE_SIGNAL_init()");
     CLI_ARGUMENT_DEVICE_SIGNAL_init();
+
+    #ifdef CLI_GPIO_ARGUMENT_AVAILABLE
+        DEBUG_PASS("command_line_interface_init() - CLI_GPIO_SIGNAL_init()");
+        CLI_ARGUMENT_GPIO_SIGNAL_init();
+    #endif
 }
 
 void command_line_interface(int argc, char* argv[]) {
 
-    DEBUG_TRACE_byte((u8)argc, "command_line_interface() - number of arguments: ");
-
     if (argc <= 1) {
+        DEBUG_TRACE_byte((u8)argc, "command_line_interface() - Not enpugh arguments - Num: ");
         CLI_NO_ARGUMENT_GIVEN_SIGNAL_send(NULL);
         return;
     }
