@@ -1,56 +1,123 @@
- /*
-  * \@file	driver/communication/communication_driver_interface.c
-  * \author	sebastian lesse
-  */
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    trx_driver_interface.h
+ * @author  Sebastian Lesse
+ * @date    2022 / 04 / 11
+ * @brief   Short description of this file
+ * 
+ */
 
-#ifndef _TRX_DRIVER_INTERFACE_H_
-#define _TRX_DRIVER_INTERFACE_H_
+// --------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+#ifndef _H_trx_driver_interface_
+#define _H_trx_driver_interface_
+
+// --------------------------------------------------------------------------------
 
 #include "cfg_driver_interface.h"
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
+/**
+ * @brief enumeration to identify the type of the driver-interface
+ * actual supported types are:
+ * - SPI
+ * - USART
+ * - I2C
+ * 
+ */
 typedef enum {
 	SPI,
 	USART,
 	I2C
 } TRX_DRIVER_INTERFACE_TYPE;
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
+/**
+ * @brief Tells trx-driver-interface module to start receiving data as long
+ * it is stopped by the caller
+ * 
+ */
 #define TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH		0xFFFF
 
 /**
- * @brief 
+ * @brief Callback to initialize a tr-driver-module.
+ * Is only called at system-startup time
+ * does not take any arguments.
  * 
  */
-typedef void (*TRX_DRIVER_INTERFACE_INITIALIZE_CALLBACK)	(void);
+typedef void (*TRX_DRIVER_INTERFACE_INITIALIZE_CALLBACK) (void);
 
 /**
- * @brief 
+ * @brief Callback to configure a trx-driver-module.
+ * Call this function with your config-parameters before any operation takes place
+ * Every application that uses the trx-driver-module my sets its own configuration.
+ * To ensure correect operation set application depending configuration before using.
+ * 
+ * @param p_configuration configuration to apply on this module,
+ * 
+ * @see cfg_driver_interface.h#TRX_DRIVER_CONFIGURATION
  * 
  */
-typedef void (*TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK)		(TRX_DRIVER_CONFIGURATION* p_configuration);
+typedef void (*TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK) (TRX_DRIVER_CONFIGURATION* p_configuration);
 
-/*
+/**
+ * @brief Disables the hw module and canels all current pending operations.
+ * Use this function to enter power-safe mode of the trx-driver-module.
+ * 
  */
-typedef void (*TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK)	(void);
+typedef void (*TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK) (void);
 
-/*
+/**
+ * @brief Gets the number of bytes that are ready to be read from the trx-driver-module.
+ * @return the number of bytes that are available for reading.
+ * 
  */
-typedef u16 (*TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK)	(void);
+typedef u16 (*TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK) (void);
 
-/*
+/**
+ * @brief Read bytes from the trx-driver-module. Data is copied into the given buffer.
+ * 
+ * @param num_byts_max maximum number of bytes to be copied, must not be larger than the given buffer
+ * @param p_buffer_to the destination were the data is copied into
+ * 
+ * @return the number of bytes that have been copied into the given buffer.
  */
-typedef u16 (*TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK)	(u16 num_byts_max, u8* p_buffer_to);
+typedef u16 (*TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK) (u16 num_byts_max, u8* p_buffer_to);
 
-/*
+/**
+ * @brief Copies the given number of bytes from the the given buffer into the tx-devices internal buffer.
+ * If the internal buffer is les than the given number of bytes, only the number of bytes that fit into
+ * the internal buffer will be copied. This function only copies data, no other operation is started.
+ * 
+ * @param num_byts_max number of bytes to be copied into the internal buffer.
+ * @param p_buffer_to the destination were the data is copied into
+ * 
+ * @return the number of bytes that have been copied into the given buffer.
+ * 
  */
-typedef u16 (*TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK)		(u16 num_byts_max, const u8* p_buffer_from);
+typedef u16 (*TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK) (u16 num_byts_max, const u8* p_buffer_from);
 
-/*
+/**
+ * @brief starts receiving of data
+ * data is received until the stop_rx function is called or the internal buffer is full
+ * 
+ * @param num_of_rx_bytes
+ * 
  */
 typedef void (*TRX_DRIVER_INTERFACE_START_RX_CALLBACK)		(u16 num_of_rx_bytes);
 
@@ -112,45 +179,52 @@ typedef void (*TRX_DRIVER_INTERFACE_RELEASE_MUTEX_CALLBACK)	(u8 m_id);
  */
 typedef struct TRX_DRIVER_INTERFACE {
 
-	TRX_DRIVER_INTERFACE_TYPE type;
+    /**
+     * @see trx_driver_interface.h#TRX_DRIVER_INTERFACE_TYPE
+     * 
+     */
+    TRX_DRIVER_INTERFACE_TYPE type;
 
-	/* Shall only be called once during boot time
-	 */
-	TRX_DRIVER_INTERFACE_INITIALIZE_CALLBACK initialize;
+    /**
+     * @see trx_driver_interface.h#TRX_DRIVER_INTERFACE_INITIALIZE_CALLBACK
+     * 
+     */
+    TRX_DRIVER_INTERFACE_INITIALIZE_CALLBACK initialize;
 
-	/* call this function with your config-parameters before any operation takes place
-	 * you can call this function again before your operation is started, if this module is used as a master
-	 */
-	TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
+    /**
+     * @see trx_driver_interface.h#TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK
+     * 
+     */
+    TRX_DRIVER_INTERFACE_CONFIGURE_CALLBACK configure;
 
-	/* disables the hw module and canels all current pending operations
-	 *
-	 */
-	TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
+    /**
+     * @see trx_driver_interface.h#TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK
+     * 
+     */
+    TRX_DRIVER_INTERFACE_MODULE_OFF_CALLBACK shut_down;
 
-	/* this function gives information if and how many bytes have been received
-	 * since the last time this function was called
-	 */
-	TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
+    /**
+     * @see trx_driver_interface.h#TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK
+     * 
+     */
+    TRX_DRIVER_INTERFACE_BYTES_AVAILABLE_CALLBACK bytes_available;
 
-	/*
-	 * get at maximum n bytes from the trx's modules internal buffer (the sw-buffer)
-	 * returns the number of bytes that have been copied into the given buffer
-	 */
-	TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
+    /**
+     * @see trx_driver_interface.h#TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK
+     * 
+     */
+    TRX_DRIVER_INTERFACE_GET_N_BYTES_CALLBACK get_N_bytes;
 
-	/*
-	 * copys at maximum n bytes into the trx-modules' internal buffer
-	 * remember the maximum size of the buffer
-	 * this function does not start any operation, only the buffer is prepared.
-	 * returns the number of byts that have been copied into the given buffer
-	 */
-	TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
+    /**
+     * @see trx_driver_interface.h#TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK
+     * 
+     */
+    TRX_DRIVER_INTERFACE_SET_N_BYTES_CALLBACK set_N_bytes;
 
-	/*
-	 * starts receiving of data
-	 * data is received until the stop_rx function is called or the internal buffer is full
-	 */
+    /**
+     * @see trx_driver_interface.h#	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
+     * 
+     */
 	TRX_DRIVER_INTERFACE_START_RX_CALLBACK start_rx;
 
 	/*
@@ -220,4 +294,6 @@ typedef struct TRX_DRIVER_INTERFACE {
 
 } TRX_DRIVER_INTERFACE;
 
-#endif // _TRX_DRIVER_INTERFACE_H_
+// --------------------------------------------------------------------------------
+
+#endif // _H_trx_driver_interface_
