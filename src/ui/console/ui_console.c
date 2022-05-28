@@ -45,7 +45,7 @@ void console_write_string(const char* p_string, const char* p_argment_string) {
 	printf("%s %s\n", p_string, p_argment_string);
 }
 
-void console_write_number(u32 number) {
+void console_write_number(i32 number) {
 	printf("%d", number);
 }
 
