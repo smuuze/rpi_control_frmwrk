@@ -19,6 +19,12 @@ endif
 
 ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 
+	ifneq '' '$(findstring GPIO_LINUX,$(DRIVER_MODULE_CFG))'
+
+		DEFS += -D HAS_DRIVER_GPIO=1
+		CSRCS += $(APP_PATH)/driver/gpio/gpio_driver_linux/gpio_driver_linux.c
+
+	else
 	ifneq '' '$(findstring GPIO_WIRINGPI,$(DRIVER_MODULE_CFG))'
 
 		DEFS += -D HAS_DRIVER_GPIO=1
@@ -40,6 +46,7 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 			LIBS += -l wiringPi
 		endif
 
+	endif
 	endif
 	endif
 endif

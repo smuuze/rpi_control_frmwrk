@@ -32,6 +32,15 @@
 
 // --------------------------------------------------------------------------------
 
+#define GPIO_GET_PIN_NUMBER(p_descr)                (10)
+#define GPIO_DRIVER_PIN_IS_DEACTIVATED(p_descr)     ((p_pin_descr->pin_cfg & GPIO_DEACTIVATE) != 0 ? 1 : 0)
+#define GPIO_DRIVER_IS_OUTPUT(p_pin_descr)          ((p_pin_descr->pin_cfg & GPIO_OUTPUT) != 0 ? 1 : 0)
+#define GPIO_DRIVER_IS_IDLE_LOW(p_pin_descr)        ((p_pin_descr->pin_cfg & GPIO_IDLE_LOW) != 0 ? 1 : 0)
+#define GPIO_DRIVER_IS_IDLE_HIGH(p_pin_descr)       ((p_pin_descr->pin_cfg & GPIO_IDLE_HIGH) != 0 ? 1 : 0)
+#define GPIO_DRIVER_PIN_IS_INVERTED(p_pin_descr)    ((p_pin_descr->pin_cfg & GPIO_INVERTED) != 0 ? 1 : 0)
+
+// --------------------------------------------------------------------------------
+
 #endif // _H_gpio_interface_
 
 // --------------------------------------------------------------------------------
