@@ -68,6 +68,7 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_FILE_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_PATH_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_DEVICE_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_N_SIGNAL)
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_ARGUMENT_ADDR_SIGNAL)
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(CLI_MESSAGE_SIGNAL)
 
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(RPI_HOST_COMMAND_RECEIVED_SIGNAL)
@@ -262,5 +263,30 @@ void command_line_handler_n(const char* parameter) {
     u32 n = common_tools_string_to_u32(parameter);
     CLI_ARGUMENT_N_SIGNAL_send(&n);
 }
+
+// --------------------------------------------------------------------------------
+
+void command_line_handler_addr(const char* parameter) {
+
+    if (parameter == NULL) {
+        DEBUG_PASS("command_line_handler_addr() - INVALID PARAMETER - parameter is NULL");
+        CLI_INVALID_PARAMETER_SIGNAL_send((void*)COMMAND_LINE_ARUGMENT_ADDR);
+        return;
+    }
+
+    if (common_tools_sting_is_number(parameter) == 0) {
+        DEBUG_PASS("command_line_handler_addr() - INVALID PARAMETER - parameter is not a number");
+        CLI_INVALID_PARAMETER_SIGNAL_send((void*)COMMAND_LINE_ARUGMENT_ADDR);
+        return;
+    }
+
+    DEBUG_TRACE_STR(parameter, "command_line_handler_addr() - ");
+
+    u32 addr = common_tools_string_to_u32(parameter);
+    CLI_ARGUMENT_ADDR_SIGNAL_send(&addr);
+}
+
+
+
 
 // --------------------------------------------------------------------------------

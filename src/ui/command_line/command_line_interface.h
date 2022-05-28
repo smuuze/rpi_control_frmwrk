@@ -49,116 +49,122 @@
  * at program start
  * 
  */
-#define COMMAND_LINE_ARGUMENT_CFG_FILE		"-cfg"
+#define COMMAND_LINE_ARGUMENT_CFG_FILE      "-cfg"
 
 /**
  * @brief CLI-argument to activate the LCD output
  * 
  */
-#define COMMAND_LINE_ARGUMENT_LCD		"-lcd"
+#define COMMAND_LINE_ARGUMENT_LCD           "-lcd"
 
 /**
  * @brief
  * 
  */
-#define COMMAND_LINE_ARGUMENT_CONTROLLER	"-control"
+#define COMMAND_LINE_ARGUMENT_CONTROLLER    "-control"
 
 /**
  * @brief CLI-argument to set a file-name on program start
  * 
  */
-#define COMMAND_LINE_ARGUMENT_FILE		"-file"
+#define COMMAND_LINE_ARGUMENT_FILE          "-file"
 
 /**
  * @brief 
  * 
  */
-#define COMMAND_LINE_ARGUMENT_MQTT		"-mgtt"
+#define COMMAND_LINE_ARGUMENT_MQTT          "-mgtt"
 
 /**
  * @brief 
  * 
  */
-#define COMMAND_LINE_ARGUMENT_PATH		"-path"
+#define COMMAND_LINE_ARGUMENT_PATH          "-path"
 
 /**
  * @brief CLI-Argument to activate the console-output.
  * This argument does not need any parameter.
  * 
  */
-#define COMMAND_LINE_ARGUMENT_CONSOLE		"-console"
+#define COMMAND_LINE_ARGUMENT_CONSOLE       "-console"
 
 /**
  * @brief CLI-argument to shw the help menu of your program
  * 
  */
-#define COMMAND_LINE_ARGUMENT_HELP		"-help"
+#define COMMAND_LINE_ARGUMENT_HELP          "-help"
 
 /**
  * @brief CLI-Argument to control a gpio pin.
  * 
  */
-#define COMMAND_LINE_ARGUMENT_GPIO		"-gpio"
+#define COMMAND_LINE_ARGUMENT_GPIO          "-gpio"
 
 /**
  * @brief 
  * 
  */
-#define COMMAND_LINE_ARGUMENT_DEVICE		"-dev"
+#define COMMAND_LINE_ARGUMENT_DEVICE        "-dev"
 
 /**
  * @brief 
  * 
  */
-#define COMMAND_LINE_ARGUMENT_COMMAND		"-cmd"
+#define COMMAND_LINE_ARGUMENT_COMMAND       "-cmd"
 
 /**
  * @brief 
  * 
  */
-#define COMMAND_LINE_ARGUMENT_REMOTE		"-remote"
+#define COMMAND_LINE_ARGUMENT_REMOTE        "-remote"
 
 /**
  * @brief 
  * 
  */
-#define COMMAND_LINE_ARGUMENT_TOPIC		"-topic"
+#define COMMAND_LINE_ARGUMENT_TOPIC         "-topic"
 
 /**
  * @brief 
  * 
  */
-#define COMMAND_LINE_ARGUMENT_HOST		"-host"
+#define COMMAND_LINE_ARGUMENT_HOST          "-host"
 
 /**
  * @brief 
  * 
  */
-#define COMMAND_LINE_ARGUMENT_CLIENT		"-client"
+#define COMMAND_LINE_ARGUMENT_CLIENT        "-client"
 
 /**
- * @brief 
+ * @brief Command line argument to give a message "-msg"
  * 
  */
 #define COMMAND_LINE_ARGUMENT_MESSAGE		"-msg"
 
 /**
- * @brief Command line argument to give a count of something
+ * @brief Command line argument to give a count of something "-n"
  * 
  */
 #define COMMAND_LINE_ARGUMENT_N             "-n"
 
 /**
- * @brief 
+ * @brief Command line argument to give a adress "-addr"
  * 
  */
-#define COMMAND_LINE_ARGUMENT_HELP		"-help"
+#define COMMAND_LINE_ARUGMENT_ADDR          "-addr"
 
 /**
  * @brief 
  * 
  */
-#define COMMAND_LINE_ARGUMENT_HELP_SHORT	"-h"
+#define COMMAND_LINE_ARGUMENT_HELP          "-help"
+
+/**
+ * @brief 
+ * 
+ */
+#define COMMAND_LINE_ARGUMENT_HELP_SHORT    "-h"
 
 // --------------------------------------------------------------------------------
 
