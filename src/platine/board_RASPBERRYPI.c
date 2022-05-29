@@ -41,7 +41,7 @@
 	BUILD_GPIO ( SPI_MISO,      GPIO_PORT_C,    GPIO_PIN_4, GPIO_DEACTIVATE             ) //    SPI_MISO        GPIO_13
 	BUILD_GPIO ( GPIO25,        GPIO_PORT_C,    GPIO_PIN_5, GPIO_INPUT | GPIO_IDLE_HIGH	) //                    GPIO_06
 	BUILD_GPIO ( SPI_SCLK,      GPIO_PORT_C,    GPIO_PIN_6, GPIO_DEACTIVATE             ) //    SPI_SCLK        GPIO_14
-	BUILD_GPIO ( SPI_CE0,       GPIO_PORT_C,    GPIO_PIN_7, GPIO_INPUT | GPIO_IDLE_HIGH ) //    SPI0_CS         GPIO_10
+	BUILD_GPIO ( SPI_CE0,       GPIO_PORT_C,    GPIO_PIN_7, GPIO_DEACTIVATE             ) //    SPI0_CS         GPIO_10
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 // PORT D
