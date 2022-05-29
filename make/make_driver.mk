@@ -19,6 +19,12 @@ endif
 
 ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 
+	ifneq '' '$(findstring GPIO_NO_INIT_ON_START,$(DRIVER_MODULE_CFG))'
+
+		DEFS += -D GPIO_NO_INIT_ON_START=1
+
+	endif
+
 	ifneq '' '$(findstring GPIO_LINUX,$(DRIVER_MODULE_CFG))'
 
 		DEFS += -D HAS_DRIVER_GPIO=1

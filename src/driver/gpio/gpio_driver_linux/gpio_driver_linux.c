@@ -165,38 +165,42 @@ void gpio_driver_init(void) {
         return;
     }
 
-    DEBUG_PASS("gpio_driver_init_pin() - Initializing gpio-subset has succeeded!");
-    
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_A, GPIO_PIN_2)); // I2C_SDA
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_A, GPIO_PIN_4)); // I2C_SCL
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_A, GPIO_PIN_6)); // GPIO04
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_A, GPIO_PIN_7)); // UART_TXD
-    
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_1)); // UART_RXD
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_2)); // GPIO17
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_3)); // GPIO18
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_4)); // GPIO27
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_6)); // GPIO22
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_7)); // GPIO23
-    
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_1)); // GPIO24
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_2)); // SPI_MOSI
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_4)); // SPI_MISO
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_5)); // GPIO25
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_6)); // SPI_SCLK
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_7)); // SPI_CE0
-    
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_1)); // SPI_CE1
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_4)); // GPIO05
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_6)); // GPIO06
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_7)); // GPIO12
+    #ifndef GPIO_NO_INIT_ON_START
+    {
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_A, GPIO_PIN_2)); // I2C_SDA
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_A, GPIO_PIN_4)); // I2C_SCL
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_A, GPIO_PIN_6)); // GPIO04
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_A, GPIO_PIN_7)); // UART_TXD
+        
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_1)); // UART_RXD
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_2)); // GPIO17
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_3)); // GPIO18
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_4)); // GPIO27
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_6)); // GPIO22
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_B, GPIO_PIN_7)); // GPIO23
+        
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_1)); // GPIO24
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_2)); // SPI_MOSI
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_4)); // SPI_MISO
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_5)); // GPIO25
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_6)); // SPI_SCLK
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_C, GPIO_PIN_7)); // SPI_CE0
+        
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_1)); // SPI_CE1
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_4)); // GPIO05
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_6)); // GPIO06
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_7)); // GPIO12
 
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_0)); // GPIO13
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_2)); // GPIO19
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_3)); // GPIO16
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_4)); // GPIO26
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_5)); // GPIO20
-    gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_7)); // GPIO20
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_0)); // GPIO13
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_2)); // GPIO19
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_3)); // GPIO16
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_4)); // GPIO26
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_5)); // GPIO20
+        gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_7)); // GPIO20
+
+        DEBUG_PASS("gpio_driver_init_pin() - Initializing gpio-subset has succeeded!");
+    }
+    #endif
 }
 
 // --------------------------------------------------------------------------------
