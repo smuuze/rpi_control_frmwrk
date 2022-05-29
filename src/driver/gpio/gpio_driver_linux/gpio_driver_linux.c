@@ -289,6 +289,7 @@ void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GP
 void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) {
 
     if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+        DEBUG_TRACE_byte(gpio_driver_get_pin_id(p_pin_descr),   "gpio_driver_set_level() - DEACTIVATED - PIN:");
         return;
     }
 
