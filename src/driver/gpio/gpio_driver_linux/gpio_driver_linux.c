@@ -388,8 +388,10 @@ void gpio_driver_deactivate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 // --------------------------------------------------------------------------------
 
 void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
-    p_pin_descr->pin_cfg &= ~GPIO_DEACTIVATE;
-    gpio_driver_init_pin(p_pin_descr);
+    if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
+        p_pin_descr->pin_cfg &= ~GPIO_DEACTIVATE;
+        gpio_driver_init_pin(p_pin_descr);
+    }
 }
 
 // --------------------------------------------------------------------------------
