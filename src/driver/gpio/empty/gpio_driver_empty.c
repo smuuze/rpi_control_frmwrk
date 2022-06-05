@@ -59,6 +59,10 @@ void gpio_driver_init(void) {
     DEBUG_PASS("gpio_driver_init_pin() - EMPTY");
 }
 
+void gpio_driver_deinit(void) {
+    
+}
+
 /**
  * @see driver/gpio/gpio_interface.h#gpio_driver_init_pin
  * 

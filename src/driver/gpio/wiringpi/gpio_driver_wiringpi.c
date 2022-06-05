@@ -189,6 +189,10 @@ void gpio_driver_init(void) {
     gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_7)); // GPIO20
 }
 
+void gpio_driver_deinit(void) {
+    
+}
+
 /**
  * @see driver/gpio/gpio_interface.h#gpio_driver_init_pin
  * 
