@@ -186,7 +186,7 @@ void lcd_set_enabled(u8 enabled) {
 
 // --------------------------------------------------------------------------------
 
-void lcd_write_line(char* message) {
+void lcd_write_line(const char* message) {
 
 	if (is_enabled == 0) {
 		DEBUG_PASS("lcd_write_line() - LCD is not enabled!");

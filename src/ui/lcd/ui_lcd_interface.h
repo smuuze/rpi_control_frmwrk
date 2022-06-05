@@ -39,7 +39,7 @@ void lcd_deinit(void);
  * 
  * @param message 
  */
-void lcd_write_line(char* message);
+void lcd_write_line(const char* message);
 
 /**
  * @brief 
