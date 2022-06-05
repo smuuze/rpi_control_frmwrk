@@ -17,6 +17,11 @@
 
 //-----------------------------------------------------------------------------
 
+#define LCD_ENABLE          1
+#define LCD_DISABLE         0
+
+//-----------------------------------------------------------------------------
+
 /**
  * @brief 
  * 
@@ -42,6 +47,20 @@ void lcd_write_line(char* message);
  * @param enabled 
  */
 void lcd_set_enabled(u8 enabled);
+
+/**
+ * @brief Get the number of lines of the actual connected LCD
+ * 
+ * @return number of lines of the LCD
+ */
+u8 lcd_line_count(void);
+
+/**
+ * @brief Get the number of character per line.
+ * 
+ * @return Number of characters per line
+ */
+u8 lcd_character_count(void);
 
 //-----------------------------------------------------------------------------
 

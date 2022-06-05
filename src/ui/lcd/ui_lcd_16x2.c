@@ -1,32 +1,50 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	ui_lcd_16x2.c
- * \brief
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    ui_lcd_16x2.c
+ * @author  Sebastian Lesse
+ * @date    2022 / 06 / 05
+ * @brief   Short description of this file
+ * 
  */
 
 #define TRACER_OFF
+
+// --------------------------------------------------------------------------------
 
 #ifdef TRACER_ON
 #warning __WARNING__TRACER_ENABLED__WARNING__
 #endif
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "config.h"
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "tracer.h"
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "cpu.h"
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
+
+#include "ui/lcd/ui_lcd_interface.h"
+
+// --------------------------------------------------------------------------------
 
 // helping definitions for fast access to pins via function lcd_set_pins()
 #define LCD_PIN_RS				(1 << 7)
@@ -38,15 +56,20 @@
 #define LCD_NUM_LINES				2
 #define LCD_NUM_CHARS				16
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 static char line_buffer[LCD_NUM_LINES][LCD_NUM_CHARS + 1];
 
 static u8 is_initialized = 0;
 static u8 is_enabled = 0;
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
+/**
+ * @brief 
+ * 
+ * @param pins 
+ */
 static void lcd_set_pins(u8 pins) {
 	
 	if (pins & LCD_PIN_RS) LCD_RS_drive_high();  else  LCD_RS_drive_low();
@@ -63,6 +86,13 @@ static void lcd_set_pins(u8 pins) {
 	LCD_EN_drive_low();
 }
 
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief 
+ * 
+ * @param line_index 
+ */
 static void lcd_select_line(u8 line_index) {
 
 	switch (line_index) {
@@ -79,10 +109,14 @@ static void lcd_select_line(u8 line_index) {
 	}
 }
 
+// --------------------------------------------------------------------------------
+
 void lcd_write_char(char character) {
 	lcd_set_pins(LCD_PIN_RS | (u8)(character >> 4));
 	lcd_set_pins(LCD_PIN_RS | (u8)(character & 0x0F));
 }
+
+// --------------------------------------------------------------------------------
 
 void lcd_init(void) {
 
@@ -138,13 +172,19 @@ void lcd_init(void) {
 	is_initialized = 1;
 }
 
+// --------------------------------------------------------------------------------
+
 void lcd_deinit(void) {
 	is_initialized = 0;
 }
 
+// --------------------------------------------------------------------------------
+
 void lcd_set_enabled(u8 enabled) {
-	is_enabled = enabled != 0 ? 1 : 0;
+	is_enabled = enabled != LCD_DISABLE ? 1 : 0;
 }
+
+// --------------------------------------------------------------------------------
 
 void lcd_write_line(char* message) {
 
@@ -199,3 +239,17 @@ void lcd_write_line(char* message) {
 		}
 	}
 }
+
+// --------------------------------------------------------------------------------
+
+u8 lcd_line_count(void) {
+    return LCD_NUM_LINES;
+}
+
+// --------------------------------------------------------------------------------
+
+u8 lcd_character_count(void) {
+    return LCD_NUM_CHARS;
+}
+
+// --------------------------------------------------------------------------------
