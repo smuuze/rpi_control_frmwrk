@@ -90,8 +90,14 @@ void command_line_handler_cfg_file(const char* parameter) {
 // --------------------------------------------------------------------------------
 
 void command_line_handler_lcd(const char* parameter) {
+    
     DEBUG_PASS("command_line_handler_lcd()");
-    CLI_LCD_ACTIVATED_SIGNAL_send(NULL);
+    
+    if (parameter != NULL) {
+        CLI_LCD_ACTIVATED_SIGNAL_send((const void*)parameter);
+    } else {
+        CLI_LCD_ACTIVATED_SIGNAL_send(NULL);
+    }
 }
 
 // --------------------------------------------------------------------------------
