@@ -152,7 +152,7 @@ static u8 gpio_driver_get_pin_id(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) 
         if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 21; }
     }
 
-    return pin_num - 2;
+    return pin_num;
 }
 
 // --------------------------------------------------------------------------------
