@@ -56,28 +56,29 @@ else
 endif
 
 
-RM			:= rm
-MK			:= mkdir -p
-CP			:= cp
-MAKE_EXE		:= chmod ug=+rwx
-MAKE_FILE_RIGHTS	:= chmod ug=+rw
-MAKE_DIR_RIGHTS		:= chmod ug=rwx
-MAKE_SERVICE_RIGHTS	:= chmod 644
-ECHO			:= echo
+RM						:= rm
+MK						:= mkdir -p
+CP						:= cp
+MAKE_EXE				:= chmod ug=+rwx
+MAKE_FILE_RIGHTS		:= chmod ug=+rw
+MAKE_DIR_RIGHTS			:= chmod ug=rwx
+MAKE_SERVICE_RIGHTS		:= chmod 644
+ECHO					:= printf '%s\n'
+ECHO_NO_N				:= printf '%s'
 
-MAKE_OWNER		:= chown shc:shc
+MAKE_OWNER				:= chown shc:shc
 
 MAKE_SERVVICE_RELOAD	:= systemctl daemon-reload
-MAKE_SERVICE_ENABLE	:= systemctl enable
-MAKE_SERVICE_START	:= systemctl start
-MAKE_SERVICE_STOP	:= systemctl stop
+MAKE_SERVICE_ENABLE		:= systemctl enable
+MAKE_SERVICE_START		:= systemctl start
+MAKE_SERVICE_STOP		:= systemctl stop
 MAKE_SERVICE_DISABLE	:= systemctl disable
 
 #MAKE_FILE_RIGHTS	:= find ./$(APP_PATH) -type f -exec chmod ug+=rw {} \;
 #MAKE_FOLDER_RIGHTS	:= find ./$(APP_PATH) -type d -exec chmod ug+rwx {} \;
 
-RM_FLAGS		:= -rf
-VERBOSE 		:= @
+RM_FLAGS				:= -rf
+VERBOSE 				:= @
 
-GREP			?= | grep
-AWK			?= | awk
+GREP					?= | grep
+AWK						?= | awk
