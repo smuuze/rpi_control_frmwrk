@@ -11,7 +11,11 @@ New-Features:
 
     -   New command line arguemnt handler -gpio
     -   New command line arguemnt handler -n
+    -   New command line argument handler -addr
+    -   Command line handler -lcd now supports a string as argument
     -   Initializing GPIO-pins can be deactivated by makefile (if driver does support it)
+    -   New driver adapter added - Linux-GPIO
+    -   de-initialization on program end
 
 Bugfixes:
 
