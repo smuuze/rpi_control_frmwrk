@@ -37,5 +37,8 @@ show_frmwrk_revision:
 
 load_frmwrk_revision:
 ifneq  ($(FRMWRK_REV), UNDEFINED)
+	$(VERBOSE) $(ECHO_NO_N) "CHANGE TO FRMWKR-REV: $(FRMWRK_REV)"
 	$(VERBOSE) $(GIT) $(GIT_FRMWRK_PATH) checkout $(FRMWRK_REV)
+else
+	$(VERBOSE) $(ECHO_NO_N) "NOTHING TO DO HERER"
 endif
