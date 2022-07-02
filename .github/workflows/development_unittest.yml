@@ -231,3 +231,16 @@ jobs:
       run: make all
     - name: run unittest
       run: make run
+      
+  unittest_ir_remote_led_lights:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/ir_remote_led_lights
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run

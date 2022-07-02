@@ -30,6 +30,10 @@ void gpio_driver_init(void) {
 	DEBUG_PASS("gpio_driver_init()");
 }
 
+void gpio_driver_deinit(void) {
+    
+}
+
 void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 	(void) p_pin_descr;
 	DEBUG_PASS("gpio_driver_init_pin()");

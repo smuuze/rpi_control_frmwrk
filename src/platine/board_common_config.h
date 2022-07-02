@@ -69,10 +69,20 @@ typedef enum {
 //-----------------------------------------------------------------------------
 
 /**
- * @brief 
+ * @brief Initializes the gpio-driver.
+ * This fucntion must be called before any
+ * gpio-pin operation is performed
  * 
  */
 void gpio_driver_init(void);
+
+/**
+ * @brief Deinitializes the gpio-driver.
+ * The driver then cannot be used anymore until 
+ * gpio_driver_init() is called once again.
+ * 
+ */
+void gpio_driver_deinit(void);
 
 /**
  * @brief 

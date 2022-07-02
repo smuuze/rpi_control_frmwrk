@@ -83,7 +83,7 @@
 #define UT_STRING_OK(value)				printf(" - OK : %s = %s\n", UT_GET_VAR_NAME(value), value);
 
 #define UT_ARRAY_LENGTH_ERROR(value, len, ref)		printf(" - !! ARRAY-LENGTH ERROR !! : sizeof(%s) = %d < %d  in %s:%d\n", UT_GET_VAR_NAME(value), (int)len, (int)ref, __FILE__, __LINE__);
-#define UT_ARRAY_ERROR(value, reference, length)	printf(" - !! FAILED !! : %s  in %s:%d\n", UT_GET_VAR_NAME(value), __FILE__, __LINE__);				\
+#define UT_ARRAY_ERROR(value, reference, length, index)	printf(" - !! FAILED !! : %s[%u] in %s:%d\n", UT_GET_VAR_NAME(value), index, __FILE__, __LINE__);				\
 							printf(" - - content  :");											\
 							UT_PRINT_HEX_DUMP((value), length)										\
 							printf("\n - - expected :");											\
@@ -165,13 +165,13 @@
 #define UT_COMPARE_ARRAY(array1, array2, length)	{														\
 								if (sizeof(array1) < length) {										\
 									UT_ARRAY_LENGTH_ERROR(array1, sizeof(array1), length)						\
-									UT_ARRAY_ERROR(array1, array2, length);								\
+									UT_ARRAY_ERROR(array1, array2, length, 0);								\
 									__ut_number_of_test_failed += 1;								\
 									counter_TEST_FAILED += 1;									\
 																					\
 								} else if (sizeof(array2) < length) {									\
 									UT_ARRAY_LENGTH_ERROR(array2, sizeof(array2), length)						\
-									UT_ARRAY_ERROR(array1, array2, length);								\
+									UT_ARRAY_ERROR(array1, array2, length, 0);								\
 									__ut_number_of_test_failed += 1;								\
 									counter_TEST_FAILED += 1;									\
 																					\
@@ -180,7 +180,7 @@
 									u8 is_equal = 1;										\
 									for ( ; i < length; i++) {									\
 										if ((array1)[i] != (array2)[i]) {							\
-											UT_ARRAY_ERROR(array1, array2, length);						\
+											UT_ARRAY_ERROR(array1, array2, length, i);						\
 											__ut_number_of_test_failed += 1;						\
 											counter_TEST_FAILED += 1;							\
 											is_equal = 0;									\

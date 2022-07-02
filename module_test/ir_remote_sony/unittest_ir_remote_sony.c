@@ -40,6 +40,7 @@ UT_ACTIVATE()
 
 #include "app_tasks/ir_remote_mcu_task.h"
 #include "3rdparty/ir_protocol/ir_protocol_sony.h"
+#include "3rdparty/ir_protocol/ir_protocol_interface.h"
 
 #include "command_handler/rpi_command_handler_ir_remote.h"
 #include "command_management/command_handler_interface.h"
@@ -66,7 +67,7 @@ UT_ACTIVATE()
 
 // --------------------------------------------------------------------------------
 
-SONY_IR_PROTOCOL_COMMAND_TYPE ir_command_received_via_signal;
+IR_COMMON_COMMAND_TYPE ir_command_received_via_signal;
 TIMER_CONFIGURATION_IRQ_COUNTER_IRQ_CALLBACK p_irq_callback;
 
 // --------------------------------------------------------------------------------
@@ -187,21 +188,21 @@ void timer0_driver_stop(void) {
 
 // --------------------------------------------------------------------------------
 
-// slots callbacksstatic SONY_IR_PROTOCOL_COMMAND_TYPE sony_ir_command;
+// slots callbacksstatic IR_COMMON_COMMAND sony_ir_command;
 
-static void uinittest_slot_SONY_IR_CMD_RECEIVED(const void* p_arg) {
+static void uinittest_slot_IR_CMD_RECEIVED(const void* p_arg) {
 
-	DEBUG_PASS("uinittest_slot_SONY_IR_CMD_RECEIVED()");
+	DEBUG_PASS("uinittest_slot_IR_CMD_RECEIVED()");
 
 	counter_SLOT_SONY_IR_CMD_RECEIVED += 1;
 
-	const SONY_IR_PROTOCOL_COMMAND_TYPE* p_command = (const SONY_IR_PROTOCOL_COMMAND_TYPE*) p_arg;
-	ir_command_received_via_signal.command  = p_command->command;
-	ir_command_received_via_signal.device   = p_command->device;
-	ir_command_received_via_signal.extended = p_command->extended;
+	const IR_COMMON_COMMAND_TYPE* p_command = (const IR_COMMON_COMMAND_TYPE*) p_arg;
+	ir_command_received_via_signal.data_1  = p_command->data_1;
+	ir_command_received_via_signal.data_2   = p_command->data_2;
+	ir_command_received_via_signal.data_3 = p_command->data_3;
 }
 
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SONY_IR_CMD_RECEIVED_SIGNAL, UT_SONY_IR_CMD_RECEIVED_SLOT, uinittest_slot_SONY_IR_CMD_RECEIVED)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(IR_CMD_RECEIVED_SIGNAL, UT_SONY_IR_CMD_RECEIVED_SLOT, uinittest_slot_IR_CMD_RECEIVED)
 
 // --------------------------------------------------------------------------------
 
@@ -232,71 +233,71 @@ static void TEST_CASE_ir_command_build(void) {
 		UT_SET_TEST_CASE_ID(TEST_CASE_ID_BUILD_IR_COMMANDS);
 		unittest_reset_counter();
 
-		SONY_IR_PROTOCOL_COMMAND_TYPE ir_command_sony;
+		IR_COMMON_COMMAND_TYPE ir_command_sony;
 
 		ir_protocol_sony_address_bdplayer(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 
 		ir_protocol_sony_cmd_bdplayer_power(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(1,0,1,0,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(1,0,1,0,1,0,0,0));
 
 		ir_protocol_sony_cmd_bdplayer_play(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(0,1,0,1,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(0,1,0,1,1,0,0,0));
 
 		ir_protocol_sony_cmd_bdplayer_stop(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(0,0,0,1,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(0,0,0,1,1,0,0,0));
 
 		ir_protocol_sony_cmd_bdplayer_pause(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(1,0,0,1,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(1,0,0,1,1,0,0,0));
 
 		ir_protocol_sony_cmd_bdplayer_audio_language(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(0,0,1,0,0,1,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(0,0,1,0,0,1,1,0));
 
 		ir_protocol_sony_cmd_bdplayer_subtitle_language(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(1,1,0,0,0,1,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(1,1,0,0,0,1,1,0));
 
 		ir_protocol_sony_cmd_bdplayer_eject(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,0,0));
 
 		ir_protocol_sony_cmd_bdplayer_return(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(1,1,0,0,0,0,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(1,1,0,0,0,0,1,0));
 
 		ir_protocol_sony_cmd_bdplayer_top_menu(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(0,0,1,1,0,1,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(0,0,1,1,0,1,0,0));
 
 		ir_protocol_sony_cmd_bdplayer_pop_up_menu(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(1,0,0,1,0,1,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(1,0,0,1,0,1,0,0));
 
 		ir_protocol_sony_cmd_bdplayer_next(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,1,0));
 
 		ir_protocol_sony_cmd_bdplayer_previous(&ir_command_sony);
-		UT_CHECK_IS_EQUAL(ir_command_sony.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_sony.command, BUILD_BIT_VECTOR_U8(1,1,1,0,1,0,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_sony.data_1, BUILD_BIT_VECTOR_U8(1,1,1,0,1,0,1,0));
 	}
 	UT_END_TEST_CASE()
 }
@@ -313,9 +314,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(1,0,1,0,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,0,1,0,1,0,0,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_PLAY);
@@ -323,9 +324,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(0,1,0,1,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,1,0,1,1,0,0,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_STOP);
@@ -333,9 +334,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(0,0,0,1,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,0,0,1,1,0,0,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_PAUSE);
@@ -343,9 +344,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(1,0,0,1,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,0,0,1,1,0,0,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_AUDIO_LANGUAGE);
@@ -353,9 +354,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(0,0,1,0,0,1,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,0,1,0,0,1,1,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_SUBTITLE_LANGUAGE);
@@ -363,9 +364,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(1,1,0,0,0,1,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,1,0,0,0,1,1,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_EJECT);
@@ -373,9 +374,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,0,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_RETURN);
@@ -383,9 +384,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(1,1,0,0,0,0,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,1,0,0,0,0,1,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_TOP_MENU);
@@ -393,9 +394,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(0,0,1,1,0,1,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,0,1,1,0,1,0,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_POP_UP_MENU);
@@ -403,9 +404,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(1,0,0,1,0,1,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,0,0,1,0,1,0,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_NEXT);
@@ -413,9 +414,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,1,0));
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_PREVIOUS);
@@ -423,9 +424,9 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(1,1,1,0,1,0,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,1,1,0,1,0,1,0));
 	}
 	UT_END_TEST_CASE()
 }
@@ -442,9 +443,9 @@ static void TEST_CASE_ir_invalid_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_ERR_INVALID_ARGUMENT);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 0);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, 0);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, 0);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, 0);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, 0);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, 0);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, 0);
 
 		unittest_reset_counter();
 		err_code = rpi_cmd_handler_ir_remote_sony(IR_DEVICE_BLUE_RAY_PLAYER, IR_COMMAND_PROGRAM_GUIDE);
@@ -452,9 +453,9 @@ static void TEST_CASE_ir_invalid_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_ERR_INVALID_ARGUMENT);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 0);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, 0);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, 0);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, 0);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, 0);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, 0);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -481,10 +482,10 @@ static void TEST_CASE_ir_cancel_ir_command(void) {
 			}
 		}
 		
-		UT_CHECK_IS_EQUAL(ir_protocol_sony_is_busy(), 0);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, 0);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, 0);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, 0);
+		// UT_CHECK_IS_EQUAL(ir_protocol_sony_is_busy(), 0);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, 0);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, 0);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, 0);
 	}
 	UT_END_TEST_CASE()
 }
@@ -501,11 +502,14 @@ static void TEST_CASE_ir_transmit_ir_command_power_on(void) {
 		UNITTEST_TIMER_start();
 
 		while (UNITTEST_TIMER_is_up(250) == 0) {
+
+            if (p_irq_callback == 0) {
+                break;
+            }
+
 			mcu_task_controller_schedule();
 
-			if (ir_protocol_sony_is_busy()) {
-				p_irq_callback();
-			}
+			p_irq_callback();
 		}
 
 		u8 compare_MOD_ARRAY[] = {
@@ -526,9 +530,9 @@ static void TEST_CASE_ir_transmit_ir_command_power_on(void) {
 
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(1,0,1,0,1,0,0,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,0,1,0,1,0,0,0));
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_SEQUENCE, sizeof(compare_MOD_ARRAY));
 		UT_COMPARE_ARRAY(array_IR_MOD_SEQUENCE, compare_MOD_ARRAY, expected_array_length);
 	}
@@ -547,11 +551,14 @@ static void TEST_CASE_ir_transmit_ir_command_audio_language(void) {
 		UNITTEST_TIMER_start();
 
 		while (UNITTEST_TIMER_is_up(250) == 0) {
+
+            if (p_irq_callback == 0) {
+                break;
+            }
+
 			mcu_task_controller_schedule();
 
-			if (ir_protocol_sony_is_busy()) {
-				p_irq_callback();
-			}
+			p_irq_callback();
 		}
 
 		u8 compare_MOD_ARRAY[] = {
@@ -572,9 +579,9 @@ static void TEST_CASE_ir_transmit_ir_command_audio_language(void) {
 
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.device, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.extended, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
-		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.command, BUILD_BIT_VECTOR_U8(0,0,1,0,0,1,1,0));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,0,1,0,0,1,1,0));
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_SEQUENCE, sizeof(compare_MOD_ARRAY));
 		UT_COMPARE_ARRAY(array_IR_MOD_SEQUENCE, compare_MOD_ARRAY, expected_array_length);
 	}
@@ -584,6 +591,8 @@ static void TEST_CASE_ir_transmit_ir_command_audio_language(void) {
 // --------------------------------------------------------------------------------
 
 int main(void) {
+
+    TRACER_RESTART();
 
 	UT_START_TESTBENCH("Welcome the the UNITTEST for IR-Remote Sony 1.0")
 	{

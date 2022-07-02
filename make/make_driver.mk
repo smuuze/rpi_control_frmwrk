@@ -19,11 +19,41 @@ endif
 
 ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 
-	DEFS += -D HAS_DRIVER_GPIO=1
-	CSRCS += $(APP_PATH)/driver/gpio/$(CPU_FAMILY)/gpio_driver_$(MCU_NAME).c
+	ifneq '' '$(findstring GPIO_NO_INIT_ON_START,$(DRIVER_MODULE_CFG))'
 
-	ifneq '' '$(findstring raspberrypi,$(MCU_NAME))'
+		DEFS += -D GPIO_NO_INIT_ON_START=1
+
+	endif
+
+	ifneq '' '$(findstring GPIO_LINUX,$(DRIVER_MODULE_CFG))'
+
+		DEFS += -D HAS_DRIVER_GPIO=1
+		CSRCS += $(APP_PATH)/driver/gpio/gpio_driver_linux/gpio_driver_linux.c
+
+	else
+	ifneq '' '$(findstring GPIO_WIRINGPI,$(DRIVER_MODULE_CFG))'
+
+		DEFS += -D HAS_DRIVER_GPIO=1
+		CSRCS += $(APP_PATH)/driver/gpio/wiringpi/gpio_driver_wiringpi.c
 		LIBS += -l wiringPi
+
+	else
+	ifneq '' '$(findstring GPIO_EMPTY,$(DRIVER_MODULE_CFG))'
+
+		DEFS += -D HAS_DRIVER_GPIO=1
+		CSRCS += $(APP_PATH)/driver/gpio/empty/gpio_driver_empty.c
+
+	else
+
+		DEFS += -D HAS_DRIVER_GPIO=1
+		CSRCS += $(APP_PATH)/driver/gpio/$(CPU_FAMILY)/gpio_driver_$(MCU_NAME).c
+
+		ifneq '' '$(findstring raspberrypi,$(MCU_NAME))'
+			LIBS += -l wiringPi
+		endif
+
+	endif
+	endif
 	endif
 endif
 

@@ -173,6 +173,12 @@ void gpio_driver_init(void) {
 	gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_E, GPIO_PIN_7)); // GPIO20
 }
 
+// --------------------------------------------------------------------------------
+
+void gpio_driver_deinit(void) {
+    
+}
+
 void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 	#ifdef TRACER_ON

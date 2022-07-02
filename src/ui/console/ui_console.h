@@ -55,7 +55,7 @@ void console_write_string(const char* p_string, const char* p_argment_string);
  * 
  * @param number number to write on the console
  */
-void console_write_number(u32 number);
+void console_write_number(i32 number);
 
 /**
  * @brief Writes a new-line character only on the console.

@@ -1,13 +1,26 @@
 /**
- * @file common_tools_string.h
- * @author sebastian lesse (sebastian lesse)
- * @brief 
- * @version 1.0
- * @date 2021-09-24
- * 
- * @copyright Copyright (c) 2021
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file   common_tools_string.h
+ * @author Sebastian Lesse
+ * @date   2021 / 09 / 24
+ * @brief  Short description of this file
  * 
  */
+
+// --------------------------------------------------------------------------------
 
 #ifndef COMMON_TOOLS_STRING_H_
 #define COMMON_TOOLS_STRING_H_
@@ -60,8 +73,9 @@ u16 common_tools_string_get_char_count(char char_to_count, const char* p_string)
  * @param string_out_1_max_len maximum length of p_string_out_1
  * @param p_string_out_2 destination for the sub-string of the right side of the splitter
  * @param string_out_2_max_len maximum length of p_string_out_2
+ * @return length of p_string_out_1 in number of characters (without 0-terminator)
  */
-void common_tools_string_split(char splitter, const char* p_string_in, char* p_string_out_1, u16 string_out_1_max_len, char* p_string_out_2, u16 string_out_2_max_len);
+u16 common_tools_string_split(char splitter, const char* p_string_in, char* p_string_out_1, u16 string_out_1_max_len, char* p_string_out_2, u16 string_out_2_max_len);
 
 /**
  * @brief Appends a string at the end of the given string
@@ -128,7 +142,7 @@ u16 common_tools_string_append_hex_number(char* p_string_base, u32 number, u8 bi
 u16 common_tools_string_length(const char* p_string);
 
 /**
- * @brief Checks if a string is inside of another string
+ * @brief Checks if p_search_str is somewhere inside of p_base_str.
  * 
  * @param p_base_str null-terminated string where to look at
  * @param p_search_str null-terminated string to look for
@@ -197,6 +211,25 @@ u16 common_tools_hex_string_to_byte_array(const char* hex_string, u16 hex_string
 u16 common_tools_byte_array_string_to_hex_string(u8* byte_array, u8 byte_array_len, char* hex_string, u16 hex_string_max_len);
 
 /**
+ * @brief Converts the number of p_str
+ * into an unsigned 8 bit numeric value
+ * 
+ * @param p_str string representation of the number
+ * @return unsigned 8-bit number
+ * 
+ */
+u8 common_tools_to_u8(const char* p_str);
+
+/**
+ * @brief Checks if the given string is a number.
+ * This means every character musst be in the range '0' to '9'
+ * 
+ * @param p_str the string to check if it is a number
+ * @return 1: p_str represents a number, otherwise 0
+ */
+u8 common_tools_sting_is_number(const char* p_str);
+
+/**
  * @brief 
  * 
  * @param p_str 
@@ -238,23 +271,39 @@ u8 common_tools_string_starts_with(const char* p_string, char character);
 void common_tools_string_remove_last_character(char* p_string);
 
 /**
- * @brief 
+ * @brief Checks if p_string1 is equal to p_string2.
  * 
- * @param p_string1 
- * @param p_string2 
- * @return u8 
+ * @param p_string1 first string for compare
+ * @param p_string2 second string for compare
+ * @return 1 if p_string1 and p_string2 are equal, 0 otherwise
  */
 u8 common_tools_string_compare(const char* p_string1, const char* p_string2);
 
 /**
- * @brief 
+ * @brief Copies a string into another string.
+ * The source-string is copied at the beginning of the destination string.
+ * Existing data is overwritten. The destination-string is set to all '\0'
+ * before the source is copied. The number of characters to copy is determined by the length of
+ * the source-string (null-termination). If the source-string is longer than the destination,
+ * only the number of characters that fits into the destination are copied (max_length-1). The resulting string
+ * always has a null-termination sign at the end.
  * 
- * @param p_string_to 
- * @param p_string_from 
- * @param max_length 
- * @return u16 
+ * @param p_string_to destination where the source is copied into, is deleted befor copying
+ * @param p_string_from source-string that is copied to the destination, must end with null-termination
+ * @param max_length maximum length of the destination string in number of characters.
+ * @return number of characters that have been copied
  */
 u16 common_tools_string_copy_string(char* p_string_to, const char* p_string_from, u16 max_length);
+
+/**
+ * @brief Checks if p_string_base starts with p_string_find.
+ * This function is case sensitive.
+ * 
+ * @param p_string_base 0-terminated string where to search
+ * @param p_string_find  0-terminated string to look for
+ * @return 1 if p_string_base starts with p_string_find
+ */
+u8 common_tools_string_is_in_front(const char* p_string_base, const char* p_string_find);
 
 /**
  * @brief 

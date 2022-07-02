@@ -129,6 +129,12 @@ void gpio_driver_init(void) {
 	gpio_driver_init_pin(GET_GPIO_REFERENCE(GPIO_PORT_D, GPIO_PIN_7));
 }
 
+// --------------------------------------------------------------------------------
+
+void gpio_driver_deinit(void) {
+    
+}
+
 void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 	if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {

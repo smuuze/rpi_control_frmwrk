@@ -2,6 +2,37 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
+Version:	6.05
+
+Date: 		2022 / 07 / 02
+Author:		Sebastian Lesse
+
+New-Features:
+
+    -   New command line arguemnt handler -gpio
+    -   New command line arguemnt handler -n
+    -   New command line argument handler -addr
+    -   Command line handler -lcd now supports a string as argument
+    -   Initializing GPIO-pins can be deactivated by makefile (if driver does support it)
+    -   New driver adapter added - Linux-GPIO
+    -   de-initialization on program end
+    -   New IR-protocol NEC
+    -   NEW IR-commands tween-light LED-lamp
+
+Bugfixes:
+
+    - 
+
+Misc:
+
+    -   SONY ir-protocol implemenation now uses ir-interface (common-ir-command-type / ir-transmit-buffer)
+
+Known-Bugs:
+
+    -
+
+-----------------------------------------------------------
+
 Version:	6.04
 
 Date: 		13.11.2021
