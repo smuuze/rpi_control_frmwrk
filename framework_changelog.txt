@@ -4,7 +4,7 @@ FRAMEKWORK - CHANGELOG
 
 Version:	6.05
 
-Date: 		< NOT RELEASED >
+Date: 		2022 / 07 / 02
 Author:		Sebastian Lesse
 
 New-Features:
@@ -16,6 +16,8 @@ New-Features:
     -   Initializing GPIO-pins can be deactivated by makefile (if driver does support it)
     -   New driver adapter added - Linux-GPIO
     -   de-initialization on program end
+    -   New IR-protocol NEC
+    -   NEW IR-commands tween-light LED-lamp
 
 Bugfixes:
 
