@@ -6,8 +6,8 @@ DEFS 		+= -D__unittest__
 
 ifeq ($(PLATTFORM), MACOS)
 
-	LDFLAGS = -Wl
-	LD_EXTRA_FLAGS += -Wl
+	LDFLAGS = 
+	LD_EXTRA_FLAGS +=
 
 else
 
