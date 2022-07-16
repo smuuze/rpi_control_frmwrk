@@ -383,7 +383,7 @@ THREAD_INTERFACE_EXIT_STATUS thread_print_trace_object_run(void) {
 	}
 	
 	DEBUG_PASS("thread_print_trace_object_run() - THREAD FINISHED");
-    return 120;
+    return 0;
 }
 
 void thread_print_trace_object_terminate(void) {
