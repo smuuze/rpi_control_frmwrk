@@ -28,9 +28,10 @@ repo_last_commit_frmwrk:
 repo_check_modifications_frmwrk:
 	$(VERBOSE) $(GIT) $(GIT_FRMWRK_PATH) $(GIT_STATUS) $(GREP) Changes
 
-save_frmwrk_revision: repo_check_modifications_frmwrk
+save_frmwrk_revision:
 	$(VERBOSE) $(ECHO_NO_N) "FRMWRK_REV := " > framework_revision
 	$(VERBOSE) $(GIT) $(GIT_FRMWRK_PATH) $(GIT_LOG) $(GREP) commit $(AWK) '/(commit)/ {print $$2}' >> framework_revision
+	$(VERBOSE) $(GIT) $(GIT_FRMWRK_PATH) $(GIT_LOG) $(GREP) commit $(AWK) '/(commit)/ {print $$2}'
 
 show_frmwrk_revision:
 	$(VERBOSE) $(ECHO) $(FRMWRK_REV)
