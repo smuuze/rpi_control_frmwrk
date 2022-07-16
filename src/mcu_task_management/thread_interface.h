@@ -1,21 +1,74 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	thread_interface.h
- * \brief
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    thread_interface.h
+ * @author  Sebastian Lesse
+ * @date    2022 / 07 / 16
+ * @brief   Create thread objects using the posix thread extension
+ * 
+ *          Usage:
+ * 
+ *          1. CREATE CALLBACK FUNCTIONS
+ * 
+ *              void thread_print_trace_object_run(void) {
+ *                  ...
+ *              }
+ * 
+ *              void thread_print_trace_object_init(void) {
+ *                  ...
+ *              }
+ * 
+ *              void MY_THREAD_OBJECT_terminate(void) {
+ *                  ...
+ *              }
+ * 
+ *          2. CREATE THREAD OBJECT
+ *
+ *              // somewhere outside of a function
+ *              THREAD_INTERFACE_BUILD_THREAD(
+ *                  MY_THREAD_OBJECT,
+ *                  THREAD_PRIORITY_MIDDLE,
+ *                  MY_THREAD_OBJECT_init,
+ *                  MY_THREAD_OBJECT_run,
+ *                  MY_THREAD_OBJECT_terminate
+ *              )
+ * 
+ *          3. INITIALIZE THREAD OBJECT
+ * 
+ *              MY_THREAD_OBJECT_init();
+ * 
+ *          4. START THREAD
+ * 
+ *              MY_THREAD_OBJECT_start();
+ * 
+ *          5. TERMINATE THREAD
+ * 
+ *              MY_THREAD_OBJECT_terminate();
+ * 
  */
- 
-#ifndef _THREAD_INTERFACE_H_
-#define _THREAD_INTERFACE_H_
 
-// ------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
+
+#ifndef _H_thread_interface_
+#define _H_thread_interface_
+
+// --------------------------------------------------------------------------------
 
 #include "config.h"
 
-// ------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #include "pthread.h"
 
@@ -23,19 +76,23 @@
 #error THREADS_ARE_NOT_AVAILABLE
 #endif
 
-// ------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 typedef enum {
-	THREAD_PRIORITY_HIGH = 0x01,
-	THREAD_PRIORITY_MIDDLE,
-	THREAD_PRIORITY_LOW
+    THREAD_PRIORITY_HIGH = 0x01,
+    THREAD_PRIORITY_MIDDLE,
+    THREAD_PRIORITY_LOW
 } THREAD_INTERFACE_PRITORITY;
 
-/*!
- *
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief 
+ * 
  */
 typedef pthread_t THREAD_INTERFACE_ID;
 
@@ -44,62 +101,107 @@ typedef pthread_t THREAD_INTERFACE_ID;
  * E.g. connecting to signals
  * 
  */
-typedef void (*THREAD_INTERFACE_INIT_CALLBACK)		(void);
+typedef void (*THREAD_INTERFACE_INIT_CALLBACK) (void);
 
 /**
  * @brief This method is used to run the thread.
  * 
  */
-typedef void* (*THREAD_INTERFACE_RUN_FUNCTION_CALLBACK)		(void* arguments);
+typedef void* (*THREAD_INTERFACE_RUN_FUNCTION_CALLBACK) (void* p_thread_id);
 
 /**
  * @brief This method is used to terminate the thread,
  * by updating its internal status.
  * 
  */
-typedef void (*THREAD_INTERFACE_TERMINATE_CALLBACK)		(void);
+typedef void (*THREAD_INTERFACE_TERMINATE_CALLBACK) (void);
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 typedef struct {
-	THREAD_INTERFACE_ID id;
-	THREAD_INTERFACE_PRITORITY priority;
-	THREAD_INTERFACE_INIT_CALLBACK init;
-	THREAD_INTERFACE_RUN_FUNCTION_CALLBACK run;
-	THREAD_INTERFACE_TERMINATE_CALLBACK terminate;
+
+    /**
+     * @brief Identification of this thread
+     * Is set by the posix thread extension on calling start()
+     * 
+     */
+    THREAD_INTERFACE_ID id;
+
+    /**
+     * @brief Priority at which this thread will run
+     * 
+     */
+    THREAD_INTERFACE_PRITORITY priority;
+
+    /**
+     * @brief Callback that is executed on initializing the thread
+     * Should not be NULL.
+     * 
+     */
+    THREAD_INTERFACE_INIT_CALLBACK init;
+
+    /**
+     * @brief Callback to the runtime function of this thread
+     * Must not be NULL
+     * 
+     */
+    THREAD_INTERFACE_RUN_FUNCTION_CALLBACK run;
+
+    /**
+     * @brief Callback that is executed on terminating the thead object
+     * Can be NULL.
+     * 
+     */
+    THREAD_INTERFACE_TERMINATE_CALLBACK terminate;
+
 } THREAD_INTERFACE_TYPE;
 
-// ------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
-#define THREAD_INTERFACE_BUILD_THREAD(name, prio, p_init, p_run, p_terminate)				\
-	static THREAD_INTERFACE_TYPE __##name##_thread_obj = {						\
-		.id = 0,										\
-		.priority = THREAD_PRIORITY_LOW,							\
-		.init = NULL,										\
-		.run = NULL,										\
-		.terminate = NULL,									\
-	};												\
-													\
-	void name##_init(void) {									\
-		thread_interface_build(&__##name##_thread_obj, prio, &p_init, &p_run, &p_terminate);	\
-		thread_interface_init(&__##name##_thread_obj);						\
-	}												\
-													\
-	u8 name##_start(void) {										\
-		return thread_interface_create_thread(&__##name##_thread_obj);				\
-	}												\
-													\
-	void name##_terminate(void) {									\
-		thread_interface_terminate(&__##name##_thread_obj);					\
-	}
+#define THREAD_INTERFACE_BUILD_THREAD(name, prio, p_init, p_run, p_terminate)                   \
+    static THREAD_INTERFACE_TYPE __##name##_thread_obj = {                                      \
+        .id = 0,                                                                                \
+        .priority = THREAD_PRIORITY_LOW,                                                        \
+        .init = NULL,                                                                           \
+        .run = NULL,                                                                            \
+        .terminate = NULL,                                                                      \
+    };                                                                                          \
+                                                                                                \
+    void* __##name##_run(void* p_thread_id) {                                                   \
+        (void) p_thread_id;                                                                     \
+        if ( p_run != NULL ) {                                                                  \
+            p_run();                                                                            \
+            pthread_exit(NULL);                                                                 \
+        }                                                                                       \
+    }                                                                                           \
+                                                                                                \
+    void name##_init(void) {                                                                    \
+        thread_interface_build(                                                                 \
+            &__##name##_thread_obj,                                                             \
+            prio,                                                                               \
+            &p_init,                                                                            \
+            &__##name##_run,                                                                    \
+            &p_terminate                                                                        \
+        );                                                                                      \
+        thread_interface_init(&__##name##_thread_obj);                                          \
+    }                                                                                           \
+                                                                                                \
+    u8 name##_start(void) {                                                                     \
+        return thread_interface_create_thread(&__##name##_thread_obj);                          \
+    }                                                                                           \
+                                                                                                \
+    void name##_terminate(void) {                                                               \
+        thread_interface_terminate(&__##name##_thread_obj);                                     \
+    }
 
-#define THREAD_INTERFACE_INCLUDE_THREAD(name)								\
-	void name##_init(void);										\
-	u8 name##_start(void);										\
-	void name##_terminate(void);
+#define THREAD_INTERFACE_INCLUDE_THREAD(name)       \
+    void name##_init(void);                         \
+    u8 name##_start(void);                          \
+    void name##_terminate(void);
 
-// ------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 /**
  * @brief builds the thread. The given methods are set to the method pointer of the thread-object
@@ -111,10 +213,10 @@ typedef struct {
  * @param terminate 
  */
 void thread_interface_build(THREAD_INTERFACE_TYPE* p_thread,
-				THREAD_INTERFACE_PRITORITY priority,
-				THREAD_INTERFACE_INIT_CALLBACK init,
-				THREAD_INTERFACE_RUN_FUNCTION_CALLBACK run,
-				THREAD_INTERFACE_TERMINATE_CALLBACK terminate);
+                THREAD_INTERFACE_PRITORITY priority,
+                THREAD_INTERFACE_INIT_CALLBACK init,
+                THREAD_INTERFACE_RUN_FUNCTION_CALLBACK run,
+                THREAD_INTERFACE_TERMINATE_CALLBACK terminate);
 
 /**
  * @brief initializes the thread by calling the init() method.
@@ -139,6 +241,8 @@ u8 thread_interface_create_thread(THREAD_INTERFACE_TYPE* p_thread);
  */
 void thread_interface_terminate(THREAD_INTERFACE_TYPE* p_thread);
 
-// ------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
-#endif // _THREAD_INTERFACE_H_
+#endif // _H_thread_interface_
+
+// --------------------------------------------------------------------------------
