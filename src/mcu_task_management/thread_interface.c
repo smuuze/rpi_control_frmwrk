@@ -32,9 +32,12 @@
 
 // ------------------------------------------------------------------------------
 
-void thread_interface_build(THREAD_INTERFACE_TYPE* p_thread,
-	THREAD_INTERFACE_PRITORITY prio, THREAD_INTERFACE_INIT_CALLBACK p_init,
-	THREAD_INTERFACE_RUN_FUNCTION_CALLBACK p_run, THREAD_INTERFACE_TERMINATE_CALLBACK p_terminate) {
+void thread_interface_build(
+    THREAD_INTERFACE_TYPE* p_thread,
+	THREAD_INTERFACE_PRITORITY prio,
+    THREAD_INTERFACE_INIT_CALLBACK p_init,
+	THREAD_INTERFACE_RUN_FUNCTION_CALLBACK p_run,
+    THREAD_INTERFACE_TERMINATE_CALLBACK p_terminate) {
 
 	DEBUG_PASS("thread_interface_build()");
 
