@@ -11,6 +11,8 @@ New-Features:
 
     -   Thread-Interface now supports exit-status of thread after it has been terminated
 
+    -   Unittest script can now be run on raspberry pi plattform
+
 Bugfixes:
 
     -   Thread interface - avoid NULL-POINTER exception on terminating threads
