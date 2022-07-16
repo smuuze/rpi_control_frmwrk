@@ -9,7 +9,7 @@ Author:		Sebastian Lesse
 
 New-Features:
 
-    -   
+    -   Thread-Interface now supports exit-status of thread after it has been terminated
 
 Bugfixes:
 
