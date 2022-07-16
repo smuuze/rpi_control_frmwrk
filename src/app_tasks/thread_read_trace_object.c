@@ -157,7 +157,7 @@ void thread_read_trace_object_init(void) {
 	DEBUG_PASS("thread_read_trace_object_init()");
 }
 
-void* thread_read_trace_object_run(void* p_arg) {
+void thread_read_trace_object_run(void) {
 
 	DEBUG_PASS("thread_read_trace_object_run() - Thread started");
 
@@ -190,8 +190,6 @@ void* thread_read_trace_object_run(void* p_arg) {
 
 		RAW_TRACE_OBJECT_QEUE_mutex_release();
 	}
-
-	return NULL;
 }
 
 void thread_read_trace_object_terminate(void) {
@@ -207,4 +205,12 @@ void thread_read_trace_object_set_com_driver(TRX_DRIVER_INTERFACE* p_driver) {
 
 // --------------------------------------------------------------------------------
 
-THREAD_INTERFACE_BUILD_THREAD(READ_TRACE_OBJECT_THREAD, THREAD_PRIORITY_MIDDLE, thread_read_trace_object_init, thread_read_trace_object_run, thread_read_trace_object_terminate)
+THREAD_INTERFACE_BUILD_THREAD(
+    READ_TRACE_OBJECT_THREAD,
+    THREAD_PRIORITY_MIDDLE,
+    thread_read_trace_object_init,
+    thread_read_trace_object_run,
+    thread_read_trace_object_terminate
+)
+
+// --------------------------------------------------------------------------------
