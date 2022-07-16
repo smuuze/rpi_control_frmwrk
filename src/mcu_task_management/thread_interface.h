@@ -52,7 +52,9 @@
  * 
  *          4. START THREAD
  * 
- *              MY_THREAD_OBJECT_start();
+ *              if (MY_THREAD_OBJECT_start()) {
+ *                  // everything is fine
+ *              }
  * 
  *          5. TERMINATE THREAD
  * 
@@ -184,12 +186,11 @@ typedef struct {
         .terminate = NULL,                                                                      \
     };                                                                                          \
                                                                                                 \
-    void* __##name##_run(void* p_thread_id) {                                                   \
+    static void* __##name##_run(void* p_thread_id) {                                            \
         (void) p_thread_id;                                                                     \
-        if ( p_run != NULL ) {                                                                  \
-            __##name##_thread_obj.exit_status = p_run();                                        \
-        }                                                                                       \
-        pthread_exit(&__##name##_thread_obj.exit_status);                                       \
+        __##name##_thread_obj.exit_status = p_run();                                            \
+        pthread_exit(NULL);                                                                     \
+        return NULL;                                                                            \
     }                                                                                           \
                                                                                                 \
     void name##_init(void) {                                                                    \
