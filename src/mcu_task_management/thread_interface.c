@@ -76,7 +76,7 @@ u8 thread_interface_create_thread(THREAD_INTERFACE_TYPE* p_thread) {
     }
 
     int err = pthread_create(&p_thread->id, NULL, p_thread->run, NULL);
-        if (err != 0) {
+    if (err != 0) {
         DEBUG_TRACE_long(err, "thread_interface_create_thread() - Starting thread has FAILED !!! ---");
         return 0;
     }
