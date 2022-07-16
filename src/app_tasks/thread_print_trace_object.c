@@ -291,7 +291,7 @@ void thread_print_trace_object_init(void) {
 	PRINT_TRACE_OBJECT_CLI_ARGUMENT_PATH_SLOT_connect();
 }
 
-void thread_print_trace_object_run(void) {
+THREAD_INTERFACE_EXIT_STATUS thread_print_trace_object_run(void) {
 
 	DEBUG_PASS("thread_print_trace_object_run() - Thread started");
 
@@ -383,6 +383,7 @@ void thread_print_trace_object_run(void) {
 	}
 	
 	DEBUG_PASS("thread_print_trace_object_run() - THREAD FINISHED");
+    return 120;
 }
 
 void thread_print_trace_object_terminate(void) {
