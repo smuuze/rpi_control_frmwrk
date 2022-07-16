@@ -911,13 +911,17 @@ static void TEST_CASE_terminate(void) {
 		}
 		UNITTEST_TIMER_stop();
 
+	    DEBUG_PASS("Terminating Thread");
 		PRINT_TRACE_OBJECT_THREAD_terminate();
+	    DEBUG_PASS("Terminate done");
 
 		UNITTEST_TIMER_start();
 		while (UNITTEST_TIMER_is_up(1000) == 0) {
 			mcu_task_controller_schedule();
 		}
 		UNITTEST_TIMER_stop();
+
+	    DEBUG_PASS("Done waiting...");
 	}
 	UT_END_TEST_CASE()
 }
