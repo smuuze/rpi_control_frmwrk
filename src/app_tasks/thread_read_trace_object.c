@@ -157,7 +157,7 @@ void thread_read_trace_object_init(void) {
 	DEBUG_PASS("thread_read_trace_object_init()");
 }
 
-void thread_read_trace_object_run(void) {
+THREAD_INTERFACE_EXIT_STATUS thread_read_trace_object_run(void) {
 
 	DEBUG_PASS("thread_read_trace_object_run() - Thread started");
 
@@ -190,6 +190,9 @@ void thread_read_trace_object_run(void) {
 
 		RAW_TRACE_OBJECT_QEUE_mutex_release();
 	}
+	
+	DEBUG_PASS("thread_read_trace_object_run() - THREAD FINISHED");
+    return 0;
 }
 
 void thread_read_trace_object_terminate(void) {
