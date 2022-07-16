@@ -90,7 +90,8 @@ void thread_interface_terminate(THREAD_INTERFACE_TYPE* p_thread) {
 
     if (p_thread->terminate != NULL) {
         p_thread->terminate();
-        pthread_join( p_thread->id, NULL);
+        pthread_join(p_thread->id, NULL);
+        DEBUG_TRACE_long(p_thread->exit_status, "thread_interface_terminate() - Thread finished with: ");
     }
 }
 

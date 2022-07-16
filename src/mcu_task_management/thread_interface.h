@@ -22,8 +22,9 @@
  * 
  *          1. CREATE CALLBACK FUNCTIONS
  * 
- *              void thread_print_trace_object_run(void) {
+ *              THREAD_INTERFACE_EXIT_STATUS thread_print_trace_object_run(void) {
  *                  ...
+ *                  return exit_status;
  *              }
  * 
  *              void thread_print_trace_object_init(void) {
@@ -97,6 +98,13 @@ typedef enum {
 typedef pthread_t THREAD_INTERFACE_ID;
 
 /**
+ * @brief Typedefinition for exit-status of a thread
+ * created by the thread-interface
+ * 
+ */
+typedef uint8_t THREAD_INTERFACE_EXIT_STATUS;
+
+/**
  * @brief This method is used to initialize the thread befor it is started.
  * E.g. connecting to signals
  * 
@@ -128,6 +136,12 @@ typedef struct {
      * 
      */
     THREAD_INTERFACE_ID id;
+
+    /**
+     * @brief Is set by the thread in the moment the thread is terminated
+     * 
+     */
+    THREAD_INTERFACE_EXIT_STATUS exit_status;
 
     /**
      * @brief Priority at which this thread will run
@@ -163,6 +177,7 @@ typedef struct {
 #define THREAD_INTERFACE_BUILD_THREAD(name, prio, p_init, p_run, p_terminate)                   \
     static THREAD_INTERFACE_TYPE __##name##_thread_obj = {                                      \
         .id = 0,                                                                                \
+        .exit_status = 0,                                                                       \
         .priority = THREAD_PRIORITY_LOW,                                                        \
         .init = NULL,                                                                           \
         .run = NULL,                                                                            \
@@ -172,9 +187,9 @@ typedef struct {
     void* __##name##_run(void* p_thread_id) {                                                   \
         (void) p_thread_id;                                                                     \
         if ( p_run != NULL ) {                                                                  \
-            p_run();                                                                            \
-            pthread_exit(NULL);                                                                 \
+            __##name##_thread_obj.exit_status = p_run();                                        \
         }                                                                                       \
+        pthread_exit(&__##name##_thread_obj.exit_status);                                       \
     }                                                                                           \
                                                                                                 \
     void name##_init(void) {                                                                    \
