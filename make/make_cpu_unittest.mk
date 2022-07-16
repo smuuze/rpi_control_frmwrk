@@ -15,3 +15,5 @@ else
 	LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 
 endif
+
+CFLAGS += -pthread
