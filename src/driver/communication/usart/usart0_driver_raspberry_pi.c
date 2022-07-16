@@ -340,7 +340,7 @@ static void usart0_driver_raspberry_pi_init(void) {
 	DEBUG_PASS("usart0_driver_raspberry_pi_init()");
 }
 
-static THREAD_INTERFACE_EXIT_STATUS usart0_driver_raspberry_pi_background_read(void) {s
+static THREAD_INTERFACE_EXIT_STATUS usart0_driver_raspberry_pi_background_read(void) {
 
 	DEBUG_PASS("usart0_driver_raspberry_pi_background_read() - Thread started");
 
