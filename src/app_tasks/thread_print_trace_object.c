@@ -291,9 +291,7 @@ void thread_print_trace_object_init(void) {
 	PRINT_TRACE_OBJECT_CLI_ARGUMENT_PATH_SLOT_connect();
 }
 
-void* thread_print_trace_object_run(void* p_arg) {
-
-	(void) p_arg;
+void thread_print_trace_object_run(void) {
 
 	DEBUG_PASS("thread_print_trace_object_run() - Thread started");
 
@@ -385,8 +383,6 @@ void* thread_print_trace_object_run(void* p_arg) {
 	}
 	
 	DEBUG_PASS("thread_print_trace_object_run() - THREAD FINISHED");
-
-	return NULL;
 }
 
 void thread_print_trace_object_terminate(void) {
@@ -439,4 +435,12 @@ static void print_trace_object_CLI_ARGUMENT_PATH_SLOT_CALLBACK(const void* p_arg
 
 // ------------------------------------------------------------------------------
 
-THREAD_INTERFACE_BUILD_THREAD(PRINT_TRACE_OBJECT_THREAD, THREAD_PRIORITY_MIDDLE, thread_print_trace_object_init, thread_print_trace_object_run, thread_print_trace_object_terminate)
+THREAD_INTERFACE_BUILD_THREAD(
+    PRINT_TRACE_OBJECT_THREAD,
+    THREAD_PRIORITY_MIDDLE,
+    thread_print_trace_object_init,
+    thread_print_trace_object_run,
+    thread_print_trace_object_terminate
+)
+
+// ------------------------------------------------------------------------------
