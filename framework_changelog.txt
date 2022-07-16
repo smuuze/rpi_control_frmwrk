@@ -2,6 +2,29 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
+Version:	6.06
+
+Date: 		< NOT RELEASED>
+Author:		Sebastian Lesse
+
+New-Features:
+
+    -   
+
+Bugfixes:
+
+    -   Thread interface - avoid NULL-POINTER exception on terminating threads
+
+Misc:
+
+    -   SONY ir-protocol implemenation now uses ir-interface (common-ir-command-type / ir-transmit-buffer)
+
+Known-Bugs:
+
+    -
+
+-----------------------------------------------------------
+
 Version:	6.05
 
 Date: 		2022 / 07 / 02
