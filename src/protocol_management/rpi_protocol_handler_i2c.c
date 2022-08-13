@@ -554,6 +554,7 @@ static void rpi_protocol_task_run(void) {
 			RPI_OP_TIMER_start(); // operation_timeout_ms = i_system.time.now_u16();
 
 			// no break;
+            // fall through
 
 		case RPI_STATE_WAIT_FOR_REQUEST_RX : //DEBUG_PASS("rpi_protocol_task_run() - case RPI_STATE_WAIT_FOR_REQUEST_RX");
 
@@ -569,6 +570,7 @@ static void rpi_protocol_task_run(void) {
 
 			RPI_OP_TIMER_start();
 			// no break;
+            // fall through
 
 		case RPI_STATE_RX :
 
@@ -621,6 +623,7 @@ static void rpi_protocol_task_run(void) {
 
 			RPI_OP_TIMER_start();
 			// no break;
+            // fall through
 
 		case RPI_STATE_WAIT_FOR_REQUEST_TX:
 
@@ -636,6 +639,7 @@ static void rpi_protocol_task_run(void) {
 
 			RPI_OP_TIMER_start();
 			// no break;
+            // fall through
 
 	 	case RPI_STATE_TX:
 
