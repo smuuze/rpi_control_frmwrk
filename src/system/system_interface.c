@@ -1,21 +1,44 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * 	@file		system/system_interface.c
- * 	@author		sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    system_interface.c
+ * @author  Sebastian Lesse
+ * @date    2022 / 07 / 26
+ * @brief   Short description of this file
+ * 
  */
 
 #define TRACER_OFF
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
-#include "config.h"  // immer als erstes einbinden!
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
 
-//-----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
+
+#include "config.h"
+
+// --------------------------------------------------------------------------------
 
 #include "tracer.h"
+
+// --------------------------------------------------------------------------------
+
+#include "cpu.h"
 
 //-----------------------------------------------------------------------------
 
@@ -98,7 +121,7 @@ __UNUSED__ static u8 empty_driver_mutex_request(void) {
 }
 
 __UNUSED__ static void empty_driver_mutex_release(u8 m_id) {
-
+    (void) m_id;
 }
 
 __UNUSED__ void empty_driver_set_rx_bytes(u16 num_bytes, u8* p_buffer_from) {
@@ -298,7 +321,9 @@ static TRX_DRIVER_INTERFACE usart1_driver = {
 
 #if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
 
+#ifdef config_I2C_POWER_DOWN_PROTOTYPE
 config_I2C_POWER_DOWN_PROTOTYPE
+#endif // config_I2C_POWER_DOWN_PROTOTYPE
 
 #include "driver/communication/i2c/i2c0_driver.h"
 
@@ -373,6 +398,7 @@ static SYSTEM_EVENT __system_interface_get_event_dummy(void) { return SYS_EVT_NO
 #define config_SYSTEM_INTERFACE_GET_EVENT_CALLBACK	__system_interface_get_event_dummy
 #endif
 
+//-----------------------------------------------------------------------------
 
 #ifndef config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_CALLBACK
 static u8 __system_interface_progmem_get_byte(u8* addr) { (void) addr; return 0;}
@@ -393,6 +419,8 @@ static u32 __system_interface_progmem_get_long(u8* addr) { (void) addr; return 0
 static void __system_interface_progmem_get_N_bytes(u8* addr, u8* p_buffer_to, u8 num_bytes) { (void) addr; (void) p_buffer_to; (void) num_bytes; }
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_CALLBACK	__system_interface_progmem_get_N_bytes
 #endif
+
+//-----------------------------------------------------------------------------
 
 #ifndef config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
 #define config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
@@ -418,6 +446,7 @@ static void __system_interface_progmem_get_N_bytes(u8* addr, u8* p_buffer_to, u8
 #define config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_PROTOTYPE
 #endif
 
+//-----------------------------------------------------------------------------
 
 #ifndef config_INTERFACE_IO_INIT_PIN_PROTOTYPE
 #define config_INTERFACE_IO_INIT_PIN_PROTOTYPE
@@ -435,42 +464,78 @@ static void __system_interface_progmem_get_N_bytes(u8* addr, u8* p_buffer_to, u8
 #define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
 #endif
 
+//-----------------------------------------------------------------------------
 
 #ifndef config_SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK
-void __system_interface_gpio_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr}
+void __system_interface_gpio_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; }
 #define config_SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK __system_interface_gpio_init_pin
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK
-void __system_interface_gpio_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, SYSTEM_INTERFACE_GPIO_DIRECTION direction) { (void) p_pin_descr; (void) direction; }
+void __system_interface_gpio_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) { (void) p_pin_descr; (void) direction; }
 #define config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK __system_interface_gpio_set_direction
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK
-void __system_interface_gpio_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, SYSTEM_INTERFACE_IO_PIN_LEVEL level) { (void) p_pin_descr; (void) level; }
+void __system_interface_gpio_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) { (void) p_pin_descr; (void) level; }
 #define config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK __system_interface_gpio_set_level
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK
-SYSTEM_INTERFACE_IO_PIN_LEVEL __system_interface_gpio_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; return GPIO_LEVEL_HIGH_Z; }
+GPIO_DRIVER_LEVEL __system_interface_gpio_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; return GPIO_LEVEL_HIGH_Z; }
 #define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK __system_interface_gpio_get_level
+#endif
+
+#ifndef config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK
+void __system_interface_gpio_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; }
+#define config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK __system_interface_gpio_toggle_level
 #endif
 
 //-----------------------------------------------------------------------------
 
+#ifdef config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
 config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_ADD_EVENT_PROTOTYPE
+
+#ifdef config_SYSTEM_INTERFACE_GET_EVENT_PROTOTYPE
 config_SYSTEM_INTERFACE_GET_EVENT_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_GET_EVENT_PROTOTYPE
 
+#ifdef config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_PROTOTYPE
 config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_PROTOTYPE
-config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE
-config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_PROTOTYPE
-config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_PROGMEM_GET_BYTE_PROTOTYPE
 
+#ifdef config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE
+config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_PROGMEM_GET_WORD_PROTOTYPE
+
+#ifdef config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_PROTOTYPE
+config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_PROGMEM_GET_LONG_PROTOTYPE
+
+#ifdef config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_PROTOTYPE
+config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_PROGMEM_GET_N_BYTES_PROTOTYPE
+
+#ifdef config_SYSTEM_INTERFACE_IO_INIT_PIN_PROTOTYPE
 config_SYSTEM_INTERFACE_IO_INIT_PIN_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_IO_INIT_PIN_PROTOTYPE
+
+#ifdef config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE
 config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_PROTOTYPE
+
+#ifdef config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_PROTOTYPE
 config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_PROTOTYPE
+
+#ifdef config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_PROTOTYPE
 config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_PROTOTYPE
+
+#ifdef config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
 config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
+#endif // config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_PROTOTYPE
 
 //-----------------------------------------------------------------------------
 
@@ -516,3 +581,5 @@ const SYSTEM_INTERFACE i_system = {
 		&i2c0_driver
 	}
 };
+
+//-----------------------------------------------------------------------------
