@@ -19,8 +19,6 @@
 
 // --------------------------------------------------------------------------------
 
-#include "platine/board_common_config.h"
-#include "system/system_interface.h"
 #include "driver/gpio/gpio_interface.h"
 
 // --------------------------------------------------------------------------------
@@ -41,8 +39,6 @@
 #define GPIO_DRIVER_IS_IDLE_LOW(p_pin_descr)		((p_pin_descr->pin_cfg & GPIO_IDLE_LOW) != 0 ? 1 : 0)
 #define GPIO_DRIVER_IS_IDLE_HIGH(p_pin_descr)		((p_pin_descr->pin_cfg & GPIO_IDLE_HIGH) != 0 ? 1 : 0)
 #define GPIO_DRIVER_PIN_IS_INVERTED(p_pin_descr)	((p_pin_descr->pin_cfg & GPIO_INVERTED) != 0 ? 1 : 0)
-
-#define GPIO_DRIVER_INVERT_LEVEL(level)			level = (level == GPIO_LEVEL_HIGH) ? GPIO_LEVEL_LOW : GPIO_LEVEL_HIGH
 
 #define GPIO_DRIVER_SET_PIN_LEVEL(pin, level)    	switch (level) {								\
 								case GPIO_LEVEL_HIGH   : GPIO_WRITE_PIN(pin, 1); break;			\

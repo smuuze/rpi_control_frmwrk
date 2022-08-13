@@ -3,7 +3,7 @@
 #define _BOARD_RASPBERRYPI_H_
 
 #include "config.h"
-#include "board_common_config.h"
+#include "driver/gpio/gpio_interface.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // PORT A

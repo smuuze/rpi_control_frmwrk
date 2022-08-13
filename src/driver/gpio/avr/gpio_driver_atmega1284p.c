@@ -5,7 +5,6 @@
 #include "config.h"  // immer als erstes einbinden!
 #include "specific.h"
 
-#include "platine/board_common_config.h"
 #include "system/system_interface.h"
 #include "driver/gpio/gpio_interface.h"
 
@@ -20,8 +19,6 @@
 #define SET_PIN_AS_OUTPUT(port, pin)					DDR##port |= (pin)
 
 #define GPIO_DRIVER_IS_OUTPUT(p_pin_descr)				((p_pin_descr->pin_cfg & GPIO_OUTPUT) != 0 ? 1 : 0)
-#define GPIO_DRIVER_IS_IDLE_LOW(p_pin_descr)				((p_pin_descr->pin_cfg & GPIO_IDLE_LOW) != 0 ? 1 : 0)
-#define GPIO_DRIVER_IS_IDLE_HIGH(p_pin_descr)				((p_pin_descr->pin_cfg & GPIO_IDLE_HIGH) != 0 ? 1 : 0)
 #define GPIO_DRIVER_PIN_IS_DEACTIVATED(p_descr)				((p_pin_descr->pin_cfg & GPIO_DEACTIVATE) != 0 ? 1 : 0)
 
 #define GPIO_DRIVER_SET_PIN_DIRECTION(port, pin, direction)		if (direction == GPIO_DIRECTION_INPUT) {		\
@@ -45,8 +42,6 @@
 #define GPIO_DRIVER_TOGGLE_PIN_LEVEL(port, pin)				PORT##port ^= (pin)
 
 #define GPIO_DRIVER_GET_PIN_LEVEL(port, pin)				(PIN##port & pin) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW
-#define GPIO_DRIVER_PIN_IS_INVERTED(p_pin_descr)			((p_pin_descr->pin_cfg & GPIO_INVERTED) != 0 ? 1 : 0)
-#define GPIO_DRIVER_INVERT_LEVEL(level)					level = (level == GPIO_LEVEL_HIGH) ? GPIO_LEVEL_LOW : GPIO_LEVEL_HIGH
 
 #define GPIO_DRIVER_GET_PORT(p_pin_descr)				(p_pin_descr->port_id)
 #define GPIO_DRIVER_GET_PIN(p_pin_descr)				(p_pin_descr->pin_id)

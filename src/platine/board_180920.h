@@ -2,7 +2,7 @@
 #define _BOARD_180920_H_
 
 //#include "config.h"
-#include "platine/board_common_config.h"
+#include "driver/gpio/gpio_interface.h"
 
 #define SYS_CRYSTAL_FREQ		14745600
 #define SYS_CPU_CLK_PRESCALER		2
