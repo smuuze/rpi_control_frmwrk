@@ -1,60 +1,102 @@
 
+#-----------------------------------------------------------------------------
 
-PLATTFORM ?= RASPBERRYPI
+CROSS_COMPILER_PREFIX ?=
+CROSS_COMPILER_SUFFIX ?=
 
-ifeq ($(OS),Windows_NT)
+#-----------------------------------------------------------------------------
 
-	CROSS_COMPILER_PATH   = ../../../../bin/avr/winavr/20100110/bin
-	CROSS_COMPILER_SUFFIX = .exe
-    
-else
+LDFLAGS ?= 
+LD_EXTRA_FLAGS ?=
+CFLAGS ?= 
+LFLAGS ?=
 
-	UNAME_S := $(shell uname -s)
-    
-	ifeq ($(UNAME_S),Linux)
-		CROSS_COMPILER_PATH   = /usr/bin
-	else
-		ifeq ($(UNAME_S),Darwin)
-		
-			CCFLAGS += -D OSX
-			GREP := | /usr/bin/grep
+#-----------------------------------------------------------------------------
 
-			ifeq ($(CROSS_COMPILER_PREFIX),avr-)
-				CROSS_COMPILER_PATH   = /usr/local/bin
-			else
-				CROSS_COMPILER_PATH   = /usr/bin
-			endif
-		endif
-	endif
-    
+ifdef MEMORY_LAYOUT_FILE
+	LFLAGS += -T $(MEMORY_LAYOUT_FILE)
 endif
+
+#-----------------------------------------------------------------------------
+
+ifeq ($(CPU_FAMILY), avr)
+
+	ifeq ($(OS),Windows_NT)
+
+		CROSS_COMPILER_PATH   = ../../../../bin/avr/winavr/20100110/bin
+		AVR_INCLUDE_PATH = $(BASE_PATH)/bin/arv/winavr/20100110/avr/include
+
+	else 
+
+		UNAME_S := $(shell uname -s)
+		CROSS_COMPILER_PREFIX = avr-
+
+		ifeq ($(UNAME_S),Linux)
+			CROSS_COMPILER_PATH = /usr/bin
+			INC_PATH += /usr/lib/avr/include
+		endif
+
+		ifeq ($(UNAME_S),Darwin)
+			CFLAGS += -D OSX
+			CROSS_COMPILER_PATH = /usr/local/bin
+		endif
+
+	endif
+
+endif
+
+#-----------------------------------------------------------------------------
+
+ifeq ($(CPU_FAMILY), arm)
+
+	ifeq ($(OS),Windows_NT)
+
+	else 
+
+		UNAME_S := $(shell uname -s)
+		CROSS_COMPILER_PREFIX = arm-none-eabi-
+
+		ifeq ($(UNAME_S),Linux)
+			CROSS_COMPILER_PATH = /usr/bin
+		endif
+
+		ifeq ($(UNAME_S),Darwin)
+			CFLAGS += -D OSX 
+			CROSS_COMPILER_PATH = /usr/local/bin
+		endif
+
+	endif
+
+endif
+
+#-----------------------------------------------------------------------------
+
+AS      = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)as$(CROSS_COMPILER_SUFFIX)
+CC      = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)gcc$(CROSS_COMPILER_SUFFIX)
+CC_SIZE = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)size$(CROSS_COMPILER_SUFFIX)
+CC_OBJ  = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)objcopy$(CROSS_COMPILER_SUFFIX)
+CC_LD   = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)ld$(CROSS_COMPILER_SUFFIX)
+
+#-----------------------------------------------------------------------------
+
+PLATTFORM ?=
 
 ifeq ($(PLATTFORM), MACOS)
 
 	PLATTFORM_EXTENSION = app
 
-	CC      = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)gcc$(CROSS_COMPILER_SUFFIX)
-	CC_SIZE = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)size$(CROSS_COMPILER_SUFFIX)
-	CC_OBJ  = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)objcopy$(CROSS_COMPILER_SUFFIX)
-	CC_LD   = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)ld$(CROSS_COMPILER_SUFFIX)
-	#CC_DUMP = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)objdump$(CROSS_COMPILER_SUFFIX)
-	#CC_COPY = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)objcopy$(CROSS_COMPILER_SUFFIX)
-
 else
 
 	PLATTFORM_EXTENSION = elf
 
-	CROSS_COMPILER_PREFIX ?=
-	CROSS_COMPILER_SUFFIX ?=
+	LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
+	LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
 
-	CC      = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)gcc$(CROSS_COMPILER_SUFFIX)
-	CC_SIZE = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)size$(CROSS_COMPILER_SUFFIX)
-	CC_OBJ  = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)objcopy$(CROSS_COMPILER_SUFFIX)
-	CC_LD   = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)ld$(CROSS_COMPILER_SUFFIX)
 	CC_DUMP = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)objdump$(CROSS_COMPILER_SUFFIX)
 	CC_COPY = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)objcopy$(CROSS_COMPILER_SUFFIX)
 endif
 
+#-----------------------------------------------------------------------------
 
 RM						:= rm
 MK						:= mkdir -p
@@ -74,11 +116,17 @@ MAKE_SERVICE_START		:= systemctl start
 MAKE_SERVICE_STOP		:= systemctl stop
 MAKE_SERVICE_DISABLE	:= systemctl disable
 
-#MAKE_FILE_RIGHTS	:= find ./$(APP_PATH) -type f -exec chmod ug+=rw {} \;
-#MAKE_FOLDER_RIGHTS	:= find ./$(APP_PATH) -type d -exec chmod ug+rwx {} \;
-
 RM_FLAGS				:= -rf
-VERBOSE 				:= @
 
-GREP					?= | grep
-AWK						?= | awk
+#-----------------------------------------------------------------------------
+
+VERBOSE = @
+
+#-----------------------------------------------------------------------------
+
+GREP ?= | grep
+AWK ?= | awk
+
+#-----------------------------------------------------------------------------
+
+ELF2UF = elf2uf2
