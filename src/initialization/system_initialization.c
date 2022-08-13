@@ -46,6 +46,7 @@
 #include "driver/rtc/rtc_driver_interface.h"
 #include "driver/gpio/gpio_interface.h"
 #include "copro/copro_interface.h"
+#include "system_interface.h"
 
 //-----------------------------------------------------------------------------
 
