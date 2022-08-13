@@ -1,7 +1,35 @@
-#ifndef _TRACER_H_
-#define _TRACER_H_
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    tracer.h
+ * @author  Sebastian Lesse
+ * @date    2022 / 07 / 25
+ * @brief   Interface to the debug tracing functionality
+ * 
+ */
 
-#include "config.h"
+// --------------------------------------------------------------------------------
+
+#ifndef _H_tracer_
+#define _H_tracer_
+
+// --------------------------------------------------------------------------------
+
+#include "cpu.h"
+
+// --------------------------------------------------------------------------------
 
 /*!
  *
@@ -74,6 +102,7 @@ void tracer_trace_char(const char* str, const char* file_name, u16 line_id, cons
  */
 void tracer_enable(u8 enable);
 
+// --------------------------------------------------------------------------------
 
 #define ALWAYS_PASS(str)		tracer_pass(str, __FILE__, __LINE__)
 #define ALWAYS_TRACE_byte(byte, str)	tracer_trace_byte(str, __FILE__, __LINE__, byte)
@@ -81,8 +110,11 @@ void tracer_enable(u8 enable);
 #define ALWAYS_TRACE_long(integer, str)	tracer_trace_long(str, __FILE__, __LINE__, integer)
 #define ALWAYS_TRACE_N(len, p_buf, str)	tracer_trace_n(str, __FILE__, __LINE__, len, (const u8*) p_buf)
 
+// --------------------------------------------------------------------------------
 
-#endif // _TRACER_H_
+#endif // _H_tracer_
+
+// --------------------------------------------------------------------------------
 
 #ifdef TRACER_ENABLED
 #define TRACER_RESTART()	tracer_init();
@@ -110,6 +142,7 @@ void tracer_enable(u8 enable);
 #undef TRACE_N(len, p_buf)
 #endif
 
+// --------------------------------------------------------------------------------
 
 #ifdef DEBUG_PASS
 #undef DEBUG_PASS(str)
@@ -135,6 +168,7 @@ void tracer_enable(u8 enable);
 #undef DEBUG_TRACE_STR(p_string, str)
 #endif
 
+// --------------------------------------------------------------------------------
 
 #if defined TRACER_ON && defined TRACER_ENABLED
 
@@ -185,3 +219,5 @@ void tracer_enable(u8 enable);
 #endif // #if defined TRACER_ON && defined TRACER_ENABLED
 
 #undef TRACER_ON
+
+// --------------------------------------------------------------------------------
