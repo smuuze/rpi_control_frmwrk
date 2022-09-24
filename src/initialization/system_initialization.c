@@ -52,14 +52,14 @@
 
 void system_initialization(void) {
 
+	clock_driver_init();
+	rtc_driver_init();
+
 	#ifdef HAS_DRIVER_GPIO
 	{
 		gpio_driver_init();
 	}
 	#endif
-
-	clock_driver_init();
-	rtc_driver_init();
 
 	#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
 	{
