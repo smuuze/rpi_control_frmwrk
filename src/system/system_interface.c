@@ -467,27 +467,27 @@ static void __system_interface_progmem_get_N_bytes(u8* addr, u8* p_buffer_to, u8
 //-----------------------------------------------------------------------------
 
 #ifndef config_SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK
-void __system_interface_gpio_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; }
+void __system_interface_gpio_init_pin(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; }
 #define config_SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK __system_interface_gpio_init_pin
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK
-void __system_interface_gpio_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) { (void) p_pin_descr; (void) direction; }
+void __system_interface_gpio_set_direction(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) { (void) p_pin_descr; (void) direction; }
 #define config_SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK __system_interface_gpio_set_direction
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK
-void __system_interface_gpio_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) { (void) p_pin_descr; (void) level; }
+void __system_interface_gpio_set_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) { (void) p_pin_descr; (void) level; }
 #define config_SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK __system_interface_gpio_set_level
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK
-GPIO_DRIVER_LEVEL __system_interface_gpio_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; return GPIO_LEVEL_HIGH_Z; }
+GPIO_DRIVER_LEVEL __system_interface_gpio_get_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; return GPIO_LEVEL_HIGH_Z; }
 #define config_SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK __system_interface_gpio_get_level
 #endif
 
 #ifndef config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK
-void __system_interface_gpio_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; }
+void __system_interface_gpio_toggle_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) { (void) p_pin_descr; }
 #define config_SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK __system_interface_gpio_toggle_level
 #endif
 

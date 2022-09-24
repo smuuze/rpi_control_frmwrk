@@ -95,11 +95,11 @@ typedef struct {
 /*!
  *
  */
-typedef void (*SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK)                    (const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
-typedef void (*SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK)                (const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction);
-typedef void (*SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK)                  (const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level);
-typedef void (*SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK)               (const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
-typedef GPIO_DRIVER_LEVEL (*SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK)     (const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+typedef void (*SYSTEM_INTERFACE_IO_INIT_PIN_CALLBACK)                       (GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+typedef void (*SYSTEM_INTERFACE_IO_SET_PIN_DIR_CALLBACK)                    (GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction);
+typedef void (*SYSTEM_INTERFACE_IO_SET_PIN_LEVEL_CALLBACK)                  (GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level);
+typedef void (*SYSTEM_INTERFACE_IO_TOGGLE_PIN_LEVEL_CALLBACK)               (GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+typedef GPIO_DRIVER_LEVEL (*SYSTEM_INTERFACE_IO_GET_PIN_LEVEL_CALLBACK)     (GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 /*!
  *
