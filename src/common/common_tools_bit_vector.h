@@ -92,8 +92,7 @@
         + (u8)_BIT_RETURN(b04, _BIT_04)                         \
         + (u8)_BIT_RETURN(b05, _BIT_05)                         \
         + (u8)_BIT_RETURN(b06, _BIT_06)                         \
-        + (u8)_BIT_RETURN(b07, _BIT_07)                         \
-        + (u8)_BIT_RETURN(b08, _BIT_08)
+        + (u8)_BIT_RETURN(b07, _BIT_07)
 
 /**
  * @brief Creates a bit-vector with a length of 32 bits.
