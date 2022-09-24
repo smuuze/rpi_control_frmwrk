@@ -1,17 +1,36 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	src/driver/clock/clock_driver_raspberrypi.c
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    clock_driver_raspberrypi.c
+ * @author  Sebastian Lesse
+ * @date    2022 / 07 / 26
+ * @brief   Implementation of a clock-driver usable for the Raspberry Pi
+ * 
  */
 
 #define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
-#include "config.h"  // immer als erstes einbinden!
+#ifdef TRACER_ON
+#warning __WARNING__TRACER_ENABLED__WARNING__
+#endif
+
+// --------------------------------------------------------------------------------
+
+#include "config.h"
 
 // --------------------------------------------------------------------------------
 
@@ -19,15 +38,24 @@
 
 // --------------------------------------------------------------------------------
 
+#include "cpu.h"
+
+// --------------------------------------------------------------------------------
+
 #include BOARD_DESCRIPTION_FILE
 
 // --------------------------------------------------------------------------------
 
-#include "driver/rtc/rtc_driver_interface.h"
 #include "driver/clock/clock_driver_interface.h"
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @see driver/clock/clock_driver_interface.h
+ * 
+ */
 void clock_driver_init(void) {
-	DEBUG_PASS("clock_driver_init()");
+    DEBUG_PASS("clock_driver_init()");
 }
+
+// --------------------------------------------------------------------------------
