@@ -105,19 +105,6 @@ endif
 endif
 endif
 
-# -----------------------------------------------------------------------
-
-ifdef CONSOLE_OUTPUT
-CSRCS += $(TIME_MANAGEMENT_INC_PATH)/time_management.c
-endif
-
-# -----------------------------------------------------------------------
-
-TIME_MANAGEMENT_INC_PATH = $(APP_PATH)/time_management
-INC_PATH += $(TIME_MANAGEMENT_INC_PATH)
-
-CSRCS += $(TIME_MANAGEMENT_INC_PATH)/time_management.c
-
 # ---- TASK MANAGEMENT -------------------------------------------------------------------
 
 MCU_TASK_MANAGEMENT_INC_PATH = $(APP_PATH)/mcu_task_management
@@ -240,6 +227,19 @@ ifneq '' '$(findstring IO,$(MANAGEMENT_MODULE_CFG))'
 
 	CSRCS += $(IO_CONTROLLER_INC_PATH)/io_output_controller.c
 	CSRCS += $(IO_CONTROLLER_INC_PATH)/io_input_controller.c
+endif
+
+ifneq '' '$(findstring TIME,$(MANAGEMENT_MODULE_CFG))'
+	TIME_MANAGEMENT_INC_PATH = $(APP_PATH)/time_management
+	INC_PATH += $(TIME_MANAGEMENT_INC_PATH)
+
+	CSRCS += $(TIME_MANAGEMENT_INC_PATH)/time_management.c
+endif
+
+# -----------------------------------------------------------------------
+
+ifdef CONSOLE_OUTPUT
+CSRCS += $(TIME_MANAGEMENT_INC_PATH)/time_management.c
 endif
 
 # ---- COMMAND INTERFACE ------------------------------------------------
