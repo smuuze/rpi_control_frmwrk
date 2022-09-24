@@ -71,6 +71,30 @@ endif
 
 #-----------------------------------------------------------------------------
 
+ifeq ($(CPU_FAMILY), unittest)
+
+	ifeq ($(OS),Windows_NT)
+
+	else 
+
+		UNAME_S := $(shell uname -s)
+		CROSS_COMPILER_PREFIX =
+
+		ifeq ($(UNAME_S),Linux)
+			CROSS_COMPILER_PATH = /usr/bin
+		endif
+
+		ifeq ($(UNAME_S),Darwin)
+			CFLAGS += -D OSX 
+			CROSS_COMPILER_PATH = /usr/bin
+		endif
+
+	endif
+
+endif
+
+#-----------------------------------------------------------------------------
+
 AS      = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)as$(CROSS_COMPILER_SUFFIX)
 CC      = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)gcc$(CROSS_COMPILER_SUFFIX)
 CC_SIZE = $(CROSS_COMPILER_PATH)/$(CROSS_COMPILER_PREFIX)size$(CROSS_COMPILER_SUFFIX)
