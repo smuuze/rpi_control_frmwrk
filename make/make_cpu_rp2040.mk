@@ -13,5 +13,6 @@ CFLAGS += -ffunction-sections -fdata-sections
 CSRCS += $(FRMWRK_PATH)/src/common/cpu/$(CPU_FAMILY)/$(MCU_NAME)/boot2.c
 CSRCS += $(FRMWRK_PATH)/src/common/cpu/$(CPU_FAMILY)/$(MCU_NAME)/crt0.c
 CSRCS += $(FRMWRK_PATH)/src/common/cpu/$(CPU_FAMILY)/$(MCU_NAME)/binary_info.c
+CSRCS += $(FRMWRK_PATH)/src/common/cpu/$(CPU_FAMILY)/$(MCU_NAME)/rp2040_reset.c
 
 #ASRCS += $(FRMWRK_PATH)/src/common/cpu/$(CPU_FAMILY)/$(MCU_NAME)/crt0.S

@@ -48,10 +48,11 @@
 
 #define GPIO_IDLE_HIGH      0x00U
 #define GPIO_IDLE_LOW       0x20U
-#define GPIO_IDLE_HIGH_Z    0x60U
+#define GPIO_IDLE_HIGH_Z    0x40U
+#define GPIO_IDLE_MASK      0x60U
 
-#define GPIO_DRIVER_IS_IDLE_LOW(p_pin_descr)    ((p_pin_descr->pin_cfg & GPIO_IDLE_LOW) != 0U ? 1U : 0U)
-#define GPIO_DRIVER_IS_IDLE_HIGH(p_pin_descr)   ((p_pin_descr->pin_cfg & GPIO_IDLE_HIGH) != 0U ? 1U : 0U)
+#define GPIO_DRIVER_IS_IDLE_LOW(p_pin_descr)    ((p_pin_descr->pin_cfg & GPIO_IDLE_MASK) == GPIO_IDLE_LOW)
+#define GPIO_DRIVER_IS_IDLE_HIGH(p_pin_descr)   ((p_pin_descr->pin_cfg & GPIO_IDLE_MASK) == GPIO_IDLE_HIGH)
 
 //-----------------------------------------------------------------------------
 
@@ -78,7 +79,9 @@
  */
 #define GPIO_INPUT          0x00U
 
-#define GPIO_DRIVER_IS_OUTPUT(p_descr)  ((p_descr->pin_cfg & GPIO_OUTPUT) != 0U)
+#define GPIO_DRIVER_IS_OUTPUT(p_descr)      ((p_descr->pin_cfg & GPIO_OUTPUT) != 0U)
+#define GPIO_DRIVER_SET_OUTPUT(p_descr)     p_descr->pin_cfg |= GPIO_OUTPUT
+#define GPIO_DRIVER_SET_INPUT(p_descr)      p_descr->pin_cfg &= ~GPIO_OUTPUT
 
 //-----------------------------------------------------------------------------
 
@@ -250,7 +253,7 @@ typedef enum {
         (pin_cfg)                                                               \
     };                                                                          \
                                                                                 \
-    const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id = &pin_name;   \
+    GPIO_DRIVER_PIN_DESCRIPTOR* const p_pin_##port_id##_##pin_id = &pin_name;   \
                                                                                 \
     void pin_name##_drive_high(void) {                                          \
         /* OUTPUT_HIGH_LEVEL  */                                                \
@@ -418,12 +421,12 @@ typedef enum {
                                                                                     \
     static GPIO_DRIVER_DIRECTION _##pin_name##_direction = GPIO_DIRECTION_INPUT;    \
     static GPIO_DRIVER_LEVEL _##pin_name##_level = GPIO_LEVEL_HIGH_Z;               \
-    const GPIO_DRIVER_PIN_DESCRIPTOR pin_name = {                                   \
+    GPIO_DRIVER_PIN_DESCRIPTOR pin_name = {                                         \
         port_id,                                                                    \
         pin_id,                                                                     \
         (pin_cfg)                                                                   \
     };                                                                              \
-    const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id = &pin_name;       \
+    GPIO_DRIVER_PIN_DESCRIPTOR* const p_pin_##port_id##_##pin_id = &pin_name;       \
                                                                                     \
     void pin_name##_drive_high(void) {                                              \
         _##pin_name##_direction = GPIO_DIRECTION_OUTPUT;                            \
@@ -479,7 +482,7 @@ typedef enum {
 //-----------------------------------------------------------------------------
 
 #define INCLUDE_GPIO_REFRENCE(port_id, pin_id) \
-	extern const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_##port_id##_##pin_id;
+	extern GPIO_DRIVER_PIN_DESCRIPTOR* const p_pin_##port_id##_##pin_id;
 
 #define GET_GPIO_REFERENCE(port_id, pin_id) \
 	p_pin_##port_id##_##pin_id
@@ -511,7 +514,7 @@ void gpio_driver_deinit(void);
  * 
  * @param p_pin_descr 
  */
-void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+void gpio_driver_init_pin(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 /**
  * @brief 
@@ -519,7 +522,7 @@ void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
  * @param p_pin_descr 
  * @param direction 
  */
-void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction);
+void gpio_driver_set_direction(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction);
 
 /**
  * @brief 
@@ -527,14 +530,14 @@ void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GP
  * @param p_pin_descr 
  * @param level 
  */
-void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level);
+void gpio_driver_set_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level);
 
 /**
  * @brief 
  * 
  * @param p_pin_descr 
  */
-void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+void gpio_driver_toggle_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 /**
  * @brief Get the actual level of the requested gpio-pin.
@@ -545,14 +548,14 @@ void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
  * @param p_pin_descr pin descriptor of the gpio-pin where to read the level from, must not be NULL,
  * @return actual (inverted) level of the requested gpio-pin, or GPIO_LEVEL_HIGH_Z if the given pin is disabled
  */
-GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+GPIO_DRIVER_LEVEL gpio_driver_get_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 /**
  * @brief 
  * 
  * @param p_pin_descr 
  */
-void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
+void gpio_driver_print_pin_state(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 /**
  * @brief Deactivates the GPIO pin given by p_pin_descr. The configuration of this pin
