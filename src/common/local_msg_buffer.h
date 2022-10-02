@@ -51,6 +51,51 @@ typedef struct LOCAL_MSG_BUFFER_DESCR {
 
 // --------------------------------------------------------------------------------
 
+typedef void (*MSG_BUFFER_INIT_CALLBACK)            (void);
+typedef void (*MSG_BUFFER_CLEAR_ALL_CALLBACK)       (void);
+typedef u16  (*MSG_BUFFER_BYTES_AVAILABLE_CALLBACK) (void);
+typedef u16  (*MSG_BUFFER_BYTES_FREE_CALLBACK)      (void);
+
+typedef void (*MSG_BUFFER_ADD_BYTE_CALLBACK)        (u8 byte);
+typedef void (*MSG_BUFFER_ADD_WORD_CALLBACK)        (u16 word);
+typedef void (*MSG_BUFFER_ADD_LONG_CALLBACK)        (u32 integer);
+typedef u16  (*MSG_BUFFER_ADD_N_BYTES_CALLBACK)     (u16 num_bytes, const u8* p_buffer);
+typedef u8   (*MSG_BUFFER_START_WRITE_CALLBACK)     (void);
+typedef void (*MSG_BUFFER_STOP_WRITE_CALLBACK)      (void);
+
+typedef u8   (*MSG_BUFFER_GET_BYTE_CALLBACK)        (void);
+typedef u16  (*MSG_BUFFER_GET_WORD_CALLBACK)        (void);
+typedef u32  (*MSG_BUFFER_GET_LONG_CALLBACK)        (void);
+typedef u16  (*MSG_BUFFER_GET_N_BYTES_CALLBACK)     (u16 num_bytes, u8* p_buffer);
+typedef u8   (*MSG_BUFFER_START_READ_CALLBACK)      (void);
+typedef void (*MSG_BUFFER_STOP_READ_CALLBACK)       (void);
+
+/**
+ * @brief Typedefinition to create a class like structure holding
+ * the functions to control an existing message-buffer
+ * 
+ */
+typedef struct LOCAL_MSG_BUFFER_CLASS_STRUCT {
+    MSG_BUFFER_INIT_CALLBACK                init;
+    MSG_BUFFER_CLEAR_ALL_CALLBACK           clear_all;
+    MSG_BUFFER_BYTES_AVAILABLE_CALLBACK     bytes_available;
+    MSG_BUFFER_BYTES_FREE_CALLBACK          bytes_free;
+    MSG_BUFFER_ADD_BYTE_CALLBACK            add_byte;
+    MSG_BUFFER_ADD_WORD_CALLBACK            add_word;
+    MSG_BUFFER_ADD_LONG_CALLBACK            add_long;
+    MSG_BUFFER_ADD_N_BYTES_CALLBACK         add_n_bytes;
+    MSG_BUFFER_START_WRITE_CALLBACK         start_write;
+    MSG_BUFFER_STOP_WRITE_CALLBACK          stop_write;
+    MSG_BUFFER_GET_BYTE_CALLBACK            get_byte;
+    MSG_BUFFER_GET_WORD_CALLBACK            get_word;
+    MSG_BUFFER_GET_LONG_CALLBACK            get_long;
+    MSG_BUFFER_GET_N_BYTES_CALLBACK         get_n_bytes;
+    MSG_BUFFER_START_READ_CALLBACK          start_read;
+    MSG_BUFFER_STOP_READ_CALLBACK           stop_read;
+} LOCAL_MSG_BUFFER_CLASS;
+
+// --------------------------------------------------------------------------------
+
 #define MSG_BUFFER_STATUS_FLAG_READ_ACTIVE          (1 << 0)
 #define MSG_BUFFER_STATUS_FLAG_WRITE_ACTIVE         (1 << 1)
 
@@ -308,6 +353,53 @@ typedef struct LOCAL_MSG_BUFFER_DESCR {
                                                                     \
     inline u16 name##_size(void) {                                  \
         return size;                                                \
+    }
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Creates a class satructure of an existing message-buffer.
+ * This macro is optional. It creates an instance of the LOCAL_MSG_BUFFER_CLASS
+ * structure using the functions of the message-buffer identified by its name.
+ * The given name must reference an existing message buffer created via the
+ * BUILD_LOCAL_MSG_BUFFER(name) macro.
+ * 
+ * Usage:
+ * 
+ *      1. create instance
+ * 
+ *          BUILD_LOCAL_MSG_BUFFER(MY_MSG_BUFFER)
+ * 
+ *      2. create class
+ * 
+ *          BUILD_LOCAL_MSG_BUFFER_CLASS(MY_MSG_BUFFER)
+ * 
+ *      3. use object
+ * 
+ *          MY_MSG_BUFFER_get_class()->add_byte(new_byte);
+ */
+#define BUILD_LOCAL_MSG_BUFFER_CLASS(name)                          \
+    static const LOCAL_MSG_BUFFER_CLASS __##name##_msg_buffer_class = {   \
+        .init = name##_init,                                        \
+        .clear_all = name##_clear_all,                              \
+        .bytes_available = name##_bytes_available,                  \
+        .bytes_free = name##_bytes_free,                            \
+        .add_byte = name##_add_byte,                                \
+        .add_word = name##_add_word,                                \
+        .add_long = name##_add_long,                                \
+        .add_n_bytes = name##_add_N_bytes,                          \
+        .start_write = name##_start_write,                          \
+        .stop_write = name##_stop_write,                            \
+        .get_byte = name##_get_byte,                                \
+        .get_word = name##_get_word,                                \
+        .get_long = name##_get_long,                                \
+        .get_n_bytes = name##_get_N_bytes,                          \
+        .start_read = name##_start_read,                            \
+        .stop_read = name##_stop_read                               \
+    };                                                              \
+                                                                    \
+    const LOCAL_MSG_BUFFER_CLASS* name##_get_class(void) {          \
+        return &__##name##_msg_buffer_class;                        \
     }
 
 // --------------------------------------------------------------------------------
