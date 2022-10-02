@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -67,8 +67,13 @@
 
 // --------------------------------------------------------------------------------
 
+#ifndef USART0_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER
 #define USART0_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER     __UNSIGNED(8)
+#endif
+
+#ifndef USART0_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER
 #define USART0_DRIVER_MAX_NUM_BYTES_RECEIVE_BUFFER      __UNSIGNED(8)
+#endif
 
 // --------------------------------------------------------------------------------
 
@@ -79,22 +84,27 @@ BUILD_MODULE_STATUS_FAST_VOLATILE(UART0_STATUS_REG, 2)
 
 // --------------------------------------------------------------------------------
 
+#define UART_DRIVER_POWER_ON                    __UNSIGNED(1)
+#define UART_DRIVER_POWER_OFF                   __UNSIGNED(0)
+
+// --------------------------------------------------------------------------------
+
 #define UART_DRIVER_UARTCR_UART_ENABLE          __UNSIGNED(0x00000001)
 #define UART_DRIVER_UARTCR_TX_ENABLE            __UNSIGNED(0x00000100)
 #define UART_DRIVER_UARTCR_RX_ENABLE            __UNSIGNED(0x00000200)
 
 #define UART_DRIVER_UARTLCR_H_PARITY_NONE       __UNSIGNED(0x00000000)
 #define UART_DRIVER_UARTLCR_H_PARITY_EN         __UNSIGNED(0x00000002)
-#define UART_DRIVER_UARTLCR_H_PARITY_EVEN       (__UNSIGNED(0x00000004) | UART_DRIVER_UARTLCR_H_PARITY_EN)
-#define UART_DRIVER_UARTLCR_H_PARITY_ODD        UART_DRIVER_UARTLCR_H_PARITY_EN
+#define UART_DRIVER_UARTLCR_H_PARITY_EVEN      (__UNSIGNED(0x00000004) | UART_DRIVER_UARTLCR_H_PARITY_EN)
+#define UART_DRIVER_UARTLCR_H_PARITY_ODD       (__UNSIGNED(0x00000000) | UART_DRIVER_UARTLCR_H_PARITY_EN)
 #define UART_DRIVER_UARTLCR_H_FIFO_ENABLE       __UNSIGNED(0x00000010)
 
 #define UART_DRIVER_UARTLCR_H_STOPBITS_1        __UNSIGNED(0x00000000)
-#define UART_DRIVER_UARTLCR_H_STOPBITS_2        __UNSIGNED(0x00001000)
+#define UART_DRIVER_UARTLCR_H_STOPBITS_2        __UNSIGNED(0x00000008)
 
-#define UART_DRIVER_UARTLCR_H_DATA_BITS_8       __UNSIGNED(0x01100000)
-#define UART_DRIVER_UARTLCR_H_DATA_BITS_7       __UNSIGNED(0x01000000)
-#define UART_DRIVER_UARTLCR_H_DATA_BITS_6       __UNSIGNED(0x00100000)
+#define UART_DRIVER_UARTLCR_H_DATA_BITS_8       __UNSIGNED(0x00000060)
+#define UART_DRIVER_UARTLCR_H_DATA_BITS_7       __UNSIGNED(0x00000040)
+#define UART_DRIVER_UARTLCR_H_DATA_BITS_6       __UNSIGNED(0x00000020)
 #define UART_DRIVER_UARTLCR_H_DATA_BITS_5       __UNSIGNED(0x00000000)
 
 #define UART_DRIVER_UARTDMACR_TX_DMA_EN         __UNSIGNED(0x00000002)
@@ -114,6 +124,10 @@ BUILD_MODULE_STATUS_FAST_VOLATILE(UART0_STATUS_REG, 2)
 #define UART_DRIVER_UARTIFLS_RX_FIFO_LEVEL_3_4  __UNSIGNED(0x00000018)
 #define UART_DRIVER_UARTIFLS_RX_FIFO_LEVEL_7_8  __UNSIGNED(0x00000020)
 
+#define UART_DRIVER_UARTICR_CLEAR_ALL           __UNSIGNED(2047)
+
+#define UART_DRIVER_UARTMIS_TXMIS               __UNSIGNED(0x00000020)
+
 // --------------------------------------------------------------------------------
 
 /**
@@ -128,6 +142,12 @@ BUILD_MODULE_STATUS_FAST_VOLATILE(UART0_STATUS_REG, 2)
 
 #ifndef RP2040_UART_DRIVER_FIFO_RX_LEVEL
 #define RP2040_UART_DRIVER_FIFO_RX_LEVEL    UART_DRIVER_UARTIFLS_RX_FIFO_LEVEL_1_2
+#endif
+
+// --------------------------------------------------------------------------------
+
+#ifndef MHZ
+#define MHZ(clk)    (clk * 1000000)
 #endif
 
 // --------------------------------------------------------------------------------
@@ -266,6 +286,8 @@ BUILD_LOCAL_MSG_BUFFER(
     USART0_DRIVER_MAX_NUM_BYTES_TRANSMIT_BUFFER
 )
 
+BUILD_LOCAL_MSG_BUFFER_CLASS(USART0_TX_BUFFER)
+
 BUILD_LOCAL_MSG_BUFFER(
     static inline,
     USART0_RX_BUFFER,
@@ -295,30 +317,99 @@ static inline RP2040_UART_REG* uart_driver_get_uart1_reg(void) {
 // --------------------------------------------------------------------------------
 
 /**
+ * @brief Enables/disables the given uart-instance.
+ * 
+ * @param p_uart uart-isntance to power on/off
+ * @param power_on UART_DRIVER_POWER_ON uart will be powered on
+ *                 otherwise uart will be powered off
+ */
+static void uart_driver_power(RP2040_UART_REG* p_uart, u32 power_on) {
+
+    if (power_on == UART_DRIVER_POWER_ON) {
+
+        DEBUG_PASS("uart_driver_power() - POWER ON");
+        p_uart->cr |= ( UART_DRIVER_UARTCR_UART_ENABLE
+                   | UART_DRIVER_UARTCR_TX_ENABLE
+                   | UART_DRIVER_UARTCR_RX_ENABLE);
+
+    } else {
+
+        DEBUG_PASS("uart_driver_power() - POWER OFF");
+        p_uart->cr &= ~( UART_DRIVER_UARTCR_UART_ENABLE
+                   | UART_DRIVER_UARTCR_TX_ENABLE
+                   | UART_DRIVER_UARTCR_RX_ENABLE);
+    }
+}
+
+// --------------------------------------------------------------------------------
+
+/**
  * @brief Configures the given baudrate.
  * 
  * @param p_uart refefernce to the uart-instance where to set the baudrate
- * @param baudrate baudrate to be sued
+ * @param baudrate baudrate to be used
+ * @param clk_peri_freq current frequency of the CLK-PERI in number of MHz
  * @return -1 configuring the baudrate has failed,
  * otherwise baudrate was configured successful.
  */
-static i32 uart_driver_configure_baudrate(RP2040_UART_REG* p_uart, u32 baudrate) {
+static i32 uart_driver_configure_baudrate(RP2040_UART_REG* p_uart, u32 baudrate, u32 clk_peri_freq) {
 
-    if (clock_driver_peripheral_clk_frequency() == 0) {
-        // something went wrong
+    if (clk_peri_freq == 0) {
+        DEBUG_PASS("uart_driver_configure_baudrate() - CLOCK-FREQ IST ZERO - ABORT!");
         return -1;
     }
 
-    u32 baud_rate_div = (8 * clock_driver_peripheral_clk_frequency() / baudrate);
-    u32 baud_ibrd = baud_rate_div >> 7;
-    u32 baud_fbrd;
+    DEBUG_TRACE_long(clk_peri_freq, "uart_driver_configure_baudrate() - CLOCK-FREQ:");
+    DEBUG_TRACE_long(baudrate, "uart_driver_configure_baudrate() - BAUD-RATE:");
+
+    /**
+     * @brief See datasheet ch. 4.2.7.1 "Baud Rate Calculation"
+     * The original equation is:
+     * 
+     *      Baud Rate Divisor = (CLK_PERI * 10^6) / (16 * BAUDRATE)
+     * 
+     * For better handling a fixpoint format is used. the factor is
+     * The fixpoint of the IBRD register is 2^6 = 64. For more precision
+     * 2^7 = 128 is used within the calculation. The modifies the above
+     * equation as follows:
+     * 
+     *      FIX(Baud Rate Divisor) = 128 * (CLK_PERI * 10^6) / (16 * BAUDRATE)
+     *                             =   8 * (CLK_PERI * 10^6) / BAUDRATE
+     * 
+     * E.g.
+     * 
+     *      CLK-PERI = 125.000.000 Hz (125 MHz)
+     *      BAUDRAT  = 115.200 Baud
+     * 
+     *      | Original                          | Fixpoint                                                  |
+     *      |-----------------------------------|-----------------------------------------------------------|
+     *      | baud_rate_div = 125 MHz           | baud_rate_div = 8 * 125 MHz / 115200                      |
+     *      |                 / (16 * 115200)   |               = 8680.56                                   |
+     *      |               = 67.8168           |                                                           |
+     *      |       -> IBRD = 67                |       -> IRBD = baud_rate_div / 128                       |
+     *      |       -> FBRD = 0.8168            |               = baud_rate_div >> 7                        |
+     *      | FIXPOINT:                         |               = 67                                        |
+     *      |     FIX(FBRD) = FBRD * 64 + 0.5   |   > FIX(FBRD) = (baud_rate_div - (IRBD * 128)) / 2        |
+     *      |               = 52                |               = ( (baud_rate_div & 0x7F) + 0.5 * 2 ) / 2  |
+     *      |                                   |               = ( 104 + 1) / 2                            |
+     *      |                                   |               = 52                                        |
+     * 
+     */
+
+    u32 baud_rate_div = (8 * MHZ(clk_peri_freq) / baudrate);
+    u32 baud_ibrd     = baud_rate_div >> 7;             // integer part
+    u32 baud_fbrd     = __UNSIGNED(0);                  // fractional aprt
 
     if (baud_ibrd == __UNSIGNED(0)) {
+
         baud_ibrd = __UNSIGNED(1);
-        baud_fbrd = __UNSIGNED(0);
+        //baud_fbrd = __UNSIGNED(0); // already set
+
     } else if (baud_ibrd >= __UNSIGNED(65535)) {
+
         baud_ibrd = __UNSIGNED(65535);
-        baud_fbrd = __UNSIGNED(0);
+        //baud_fbrd = __UNSIGNED(0); // already set
+
     }  else {
         baud_fbrd = ((baud_rate_div & 0x7f) + 1) / 2;
     }
@@ -327,12 +418,16 @@ static i32 uart_driver_configure_baudrate(RP2040_UART_REG* p_uart, u32 baudrate)
     p_uart->ibrd = baud_ibrd;
     p_uart->fbrd = baud_fbrd;
 
+    DEBUG_TRACE_long(baud_rate_div, "uart_driver_configure_baudrate() - BAUD-DIV:");
+    DEBUG_TRACE_long(baud_ibrd, "uart_driver_configure_baudrate() - BAUD-IBRD:");
+    DEBUG_TRACE_long(baud_fbrd, "uart_driver_configure_baudrate() - BADU-FBRD");
+
     // PL011 needs a (dummy) line control register write to latch in the
     // divisors. We don't want to actually change LCR contents here.
     cpu_atomic_bit_set(&p_uart->lcr_h, __UNSIGNED(0));
 
     // See datasheet
-    return (4 * clock_driver_peripheral_clk_frequency()) / (64 * baud_ibrd + baud_fbrd);
+    return (4 * clk_peri_freq) / (64 * baud_ibrd + baud_fbrd);
 }
 
 // --------------------------------------------------------------------------------
@@ -348,6 +443,16 @@ static void uart_driver_configure(
 ) {
 
     /**
+     * @brief first: check if the peripheral clock was initialized
+     * If not, we does not need to continue.
+     */
+    u32 clk_peri_freq = clock_driver_peripheral_clk_frequency();
+    if (clk_peri_freq == 0) {
+        DEBUG_PASS("uart_driver_configure() - CLOCK-FREQ IST ZERO - ABORT!");
+        return;
+    }
+
+    /**
      * @brief Baudrate to use.
      * By default we use 9600 baud.
      */
@@ -361,21 +466,26 @@ static void uart_driver_configure(
 
         case BAUDRATE_9600:
             // already set
+            DEBUG_PASS("uart_driver_configure() - BAUD - 9600");
             break;
 
         case BAUDRATE_19200:
+            DEBUG_PASS("uart_driver_configure() - BAUD - 19200");
             baudrate = __UNSIGNED(19200);
             break;
 
         case BAUDRATE_38400:
+            DEBUG_PASS("uart_driver_configure() - BAUD - 38400");
             baudrate = __UNSIGNED(38400);
             break;
 
         case BAUDRATE_115200:
+            DEBUG_PASS("uart_driver_configure() - BAUD - 115200");
             baudrate = __UNSIGNED(115200);
             break;
 
         case BAUDRATE_230400:
+            DEBUG_PASS("uart_driver_configure() - BAUD - 230400");
             baudrate = __UNSIGNED(230400);
             break;
     }
@@ -398,14 +508,17 @@ static void uart_driver_configure(
 
         case PARITY_NONE : 
             lcr_h_cfg |= UART_DRIVER_UARTLCR_H_PARITY_NONE;
+            DEBUG_TRACE_long(lcr_h_cfg, "uart_driver_configure() - PARITY - NONE - lcr_h:");
             break;
 
         case PARITY_EVEN:
             lcr_h_cfg |= UART_DRIVER_UARTLCR_H_PARITY_EVEN;
+            DEBUG_TRACE_long(lcr_h_cfg, "uart_driver_configure() - PARITY - EVEN - lcr_h:");
             break;
 
         case PARITY_ODD:
             lcr_h_cfg |= UART_DRIVER_UARTLCR_H_PARITY_ODD;
+            DEBUG_TRACE_long(lcr_h_cfg, "uart_driver_configure() - PARITY - ODD - lcr_h:");
             break;
     }
 
@@ -422,42 +535,50 @@ static void uart_driver_configure(
 
         case DATABITS_8:
             lcr_h_cfg |= UART_DRIVER_UARTLCR_H_DATA_BITS_8;
+            DEBUG_TRACE_long(lcr_h_cfg, "uart_driver_configure() - DATABITS - 8 - lcr_h:");
             break;
 
         case DATABITS_5:
             lcr_h_cfg |= UART_DRIVER_UARTLCR_H_DATA_BITS_5;
+            DEBUG_TRACE_long(lcr_h_cfg, "uart_driver_configure() - DATABITS - 5 - lcr_h:");
             break;
 
         case DATABITS_6:
             lcr_h_cfg |= UART_DRIVER_UARTLCR_H_DATA_BITS_6;
+            DEBUG_TRACE_long(lcr_h_cfg, "uart_driver_configure() - DATABITS - 6 - lcr_h:");
             break;
 
         case DATABITS_7:
             lcr_h_cfg |= UART_DRIVER_UARTLCR_H_DATA_BITS_7;
+            DEBUG_TRACE_long(lcr_h_cfg, "uart_driver_configure() - DATABITS - 7 - lcr_h:");
             break;
     }
 
-    switch (p_cfg->module.usart.databits) {
+    switch (p_cfg->module.usart.stopbits) {
         default:
             // no break;
             // fall through
 
         case STOPBITS_1:
             lcr_h_cfg |= UART_DRIVER_UARTLCR_H_STOPBITS_1;
+            DEBUG_TRACE_long(lcr_h_cfg, "uart_driver_configure() - STOPBITS - 1 - lcr_h:");
             break;
 
         case STOPBITS_2:
-            lcr_h_cfg |= UART_DRIVER_UARTLCR_H_STOPBITS_1;
+            lcr_h_cfg |= UART_DRIVER_UARTLCR_H_STOPBITS_2;
+            DEBUG_TRACE_long(lcr_h_cfg, "uart_driver_configure() - STOPBITS - 2 - lcr_h:");
             break;
     }
 
     // Any LCR writes need to take place before enabling the UART
     // this function must be called before lcr_h is set
-    u32 baud = uart_driver_configure_baudrate(p_uart, baudrate);
+    u32 baud = uart_driver_configure_baudrate(p_uart, baudrate, clk_peri_freq);
+    DEBUG_TRACE_long(baud, "uart_driver_configure() - BAUD-VALUE:");
 
     cpu_atomic_bit_set(&p_uart->lcr_h, lcr_h_cfg);
 
     // set the FIFO threshold levels
+    DEBUG_PASS("uart_driver_configure() - SET FIFO THRESHOLD");
     cpu_atomic_bit_set(
         &p_uart->ifls,
         RP2040_UART_DRIVER_FIFO_TX_LEVEL | RP2040_UART_DRIVER_FIFO_RX_LEVEL
@@ -466,11 +587,10 @@ static void uart_driver_configure(
     // activate IRQs (TX / RX)
 
     // Enable the UART, both TX and RX
-    p_uart->cr = UART_DRIVER_UARTCR_UART_ENABLE
-               | UART_DRIVER_UARTCR_TX_ENABLE
-               | UART_DRIVER_UARTCR_RX_ENABLE;
+    uart_driver_power(p_uart, UART_DRIVER_POWER_ON);
     
     // Enable FIFOs
+    DEBUG_PASS("uart_driver_configure() - ENABLE FIFOs");
     cpu_atomic_bit_set(&p_uart->lcr_h, UART_DRIVER_UARTLCR_H_FIFO_ENABLE);
 
     // Always enable DREQ signals -- no harm in this if DMA is not listening
@@ -517,10 +637,17 @@ static u16 uart_driver_add_bytes_to_fifo(
     for ( ; i < num_bytes; ++i) {
 
         if (!usart_driver_is_ready_for_tx(p_uart_inst)) {
+            DEBUG_TRACE_long(i, "uart_driver_add_bytes_to_fifo() - FIFO FULL - BYTES WRITTEN:");
             break;
         }
 
         p_uart_inst->data = p_buffer_from[i];
+
+        #ifdef UNITTEST_SET_FIFO_DATA_CALLBACK
+        {
+            UNITTEST_SET_FIFO_DATA_CALLBACK
+        }
+        #endif
     }
 
     return i;
@@ -529,9 +656,46 @@ static u16 uart_driver_add_bytes_to_fifo(
 // --------------------------------------------------------------------------------
 
 /**
+ * @brief Copies the bytes of the given message-buffer into the fifo of the given
+ * uart-instance. Only the number of bytes that fit into the fifo are copied.
+ * The remaining bytes will stay inside of the message-buffer
+ * 
+ * @param p_uart_inst instance of the uart where to fill the fifo
+ * @param p_msg_buffer class-object of the message-buffer from where to read the bytes
+ */
+static void uart_driver_copy_buffer_to_fifo(
+    RP2040_UART_REG* p_uart_inst, const LOCAL_MSG_BUFFER_CLASS* p_msg_buffer
+) {
+
+    p_msg_buffer->start_read();
+
+    while (p_msg_buffer->bytes_available()) {
+
+        if (!usart_driver_is_ready_for_tx(p_uart_inst)) {
+            DEBUG_PASS("uart_driver_copy_buffer_to_fifo() - FIFO FULL");
+            break;
+        }
+
+        p_uart_inst->data = p_msg_buffer->get_byte();
+
+        #ifdef UNITTEST_SET_FIFO_DATA_CALLBACK
+        {
+            UNITTEST_SET_FIFO_DATA_CALLBACK
+        }
+        #endif
+    }
+
+    p_msg_buffer->stop_read();
+}
+
+// --------------------------------------------------------------------------------
+
+/**
  * @see usart0_driver.h#usart0_driver_initialize
  */
 void usart0_driver_initialize(void) {
+
+    DEBUG_PASS("usart0_driver_initialize()");
 
     UART0_STATUS_REG_clear_all();
     USART0_TX_BUFFER_clear_all();
@@ -551,20 +715,23 @@ void usart0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg) {
  * @see usart0_driver.h#usart0_driver_power_off
  */
 void usart0_driver_power_off(void) {
-
+    uart_driver_power(
+        uart_driver_get_uart0_reg(),
+        UART_DRIVER_POWER_OFF
+    );
 }
 
 /**
  * @see usart0_driver.h#usart0_driver_bytes_available
  */
-u16 usart0_driver_bytes_available (void) {
+u16 usart0_driver_bytes_available(void) {
     return 0;
 }
 
 /**
  * @see usart0_driver.h#usart0_driver_get_N_bytes
  */
-u16 usart0_driver_get_N_bytes (u16 num_bytes, u8* p_buffer_to) {
+u16 usart0_driver_get_N_bytes(u16 num_bytes, u8* p_buffer_to) {
     return 0;
 }
 
@@ -582,6 +749,8 @@ u16 usart0_driver_set_N_bytes(u16 num_bytes, const u8* const p_buffer_from) {
         &p_buffer_from[0]
     );
 
+    DEBUG_TRACE_long(bytes_written, "usart0_driver_set_N_bytes() - BYTES WRITTEN INTO FIFO:");
+
     /**
      * @brief try to write the remaining bytes into the sw-buffer
      */
@@ -593,7 +762,9 @@ u16 usart0_driver_set_N_bytes(u16 num_bytes, const u8* const p_buffer_from) {
         );
     }
     USART0_TX_BUFFER_stop_write();
-    
+
+    DEBUG_TRACE_long(bytes_written, "usart0_driver_set_N_bytes() - BYTES WRITTEN:");
+
     /**
      * @brief return the number of bytes that have been stored
      * to inform the user if some of them have not.
@@ -703,6 +874,28 @@ void usart0_driver_mutex_release(u8 m_id) {
 void IRQ_20_Handler(void) {
 
     // read the status-reg to find out which IRQ has been fired
+
+    RP2040_UART_REG* p_uart0 = uart_driver_get_uart0_reg();
+    u32 irq_mis = p_uart0->mis;
+    u32 irq_fr  = p_uart0->fr;
+    p_uart0->icr = UART_DRIVER_UARTICR_CLEAR_ALL;
+
+    DEBUG_TRACE_long(irq_mis, "IRQ_20_Handler() - UARTMIS:");
+
+    if (irq_mis & UART_DRIVER_UARTMIS_TXMIS) {
+    
+        DEBUG_TRACE_long(
+            USART0_TX_BUFFER_bytes_available(),
+            "IRQ_20_Handler() - UART_DRIVER_UARTMIS_TXMIS - BYTES-AVAILABLE:"
+        );
+
+        if (USART0_TX_BUFFER_bytes_available()) {
+            uart_driver_copy_buffer_to_fifo(
+                p_uart0,
+                USART0_TX_BUFFER_get_class()
+            );
+        }
+    }
 }
 
 // --------------------------------------------------------------------------------
