@@ -489,9 +489,9 @@ u8 local_msg_buffer_start_read(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr);
 u16 local_msg_buffer_bytes_available(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr);
 
 /**
- * @brief 
+ * @brief Returns the number of bytes that are stilla vailable to add new data.
  * @param p_buffer_descr reference to the message-buffer context to use
- * @return
+ * @return the number of bytes that are available for new data, 0 if no more space is available.
  */
 u16 local_msg_buffer_bytes_free(LOCAL_MSG_BUFFER_DESCR* p_buffer_descr);
 
