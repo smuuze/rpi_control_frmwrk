@@ -25,7 +25,11 @@ MCU = UNITTEST
 
 #-----------------------------------------------------------------------------
 
-CSRCS += unittest_gpio_driver_rp2040.c
+CSRCS += unittest_uart_driver_rp2040.c
+
+#-----------------------------------------------------------------------------
+
+CSRCS += $(APP_PATH)/driver/communication/usart/usart_driver_rp2040.c
 
 #-----------------------------------------------------------------------------
 
@@ -61,7 +65,7 @@ DRIVER_MODULE_CFG =
 DRIVER_MODULE_CFG += GPIO_EMPTY
 #DRIVER_MODULE_CFG += RTC
 #DRIVER_MODULE_CFG += CLK
-DRIVER_MODULE_CFG += USART0
+#DRIVER_MODULE_CFG += USART0
 #DRIVER_MODULE_CFG += I2C0
 #DRIVER_MODULE_CFG += SPI0
 

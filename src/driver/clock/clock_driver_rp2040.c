@@ -94,8 +94,10 @@
 // --------------------------------------------------------------------------------
 
 #ifndef MHZ
-#define MHZ __UNSIGNED(1000000)
+#define MHZ(clk)    (clk * 1000000)
 #endif
+
+// --------------------------------------------------------------------------------
 
 /**
  * @brief PICO_CONFIG: PICO_XOSC_STARTUP_DELAY_MULTIPLIER,
@@ -125,7 +127,7 @@
 #define RP2040_CLOCK_DRIVER_XOSC_CTRL_ENABLE                        (__UNSIGNED(0xfab) << RP2040_CLOCK_DRIVER_XOSC_CTRL_ENABLE_LSB)
 #define RP2040_CLOCK_DRIVER_XOSC_STATUS_STABLE                      __UNSIGNED(0x80000000)
 
-#define RP2040_CLOCK_DRIVER_XOSC_STARTUP_DELAY                      (((((XOSC_MHZ * MHZ) / 1000) + 128) / 256) * RP2040_CLOCK_DRIVER_XOSC_STARTUP_DELAY_MULTIPLIER)
+#define RP2040_CLOCK_DRIVER_XOSC_STARTUP_DELAY                      (((( MHZ(XOSC_MHZ) / 1000) + 128) / 256) * RP2040_CLOCK_DRIVER_XOSC_STARTUP_DELAY_MULTIPLIER)
 
 // --------------------------------------------------------------------------------
 
@@ -658,7 +660,7 @@ static void clock_driver_initalize_pll(RP2040_CLOCK_PLL_REG* p_pll, u32 refdiv, 
 
     // What are we multiplying the reference clock by to get the vco freq
     // (The regs are called div, because you divide the vco output and compare it to the refclk)
-    u32 fbdiv = vco_freq / (ref_mhz * MHZ);
+    u32 fbdiv = vco_freq / MHZ(ref_mhz);
 
     // div1 feeds into div2 so if div1 is 5 and div2 is 2 then you get a divide by 10
     u32 pdiv = (post_div1 << RP2040_CLOCK_DRIVER_PLL_PRIM_POSTDIV1_LSB)
@@ -834,7 +836,7 @@ void clock_driver_init(void) {
     clock_driver_initalize_pll(
         clock_driver_get_sys_pll_reg(),
         1,          // refdiv,
-        1500 * MHZ, // vco_freq,
+        MHZ(1500), // vco_freq,
         6,          // post_div1,
         2           // post_div2
     );
@@ -843,7 +845,7 @@ void clock_driver_init(void) {
     clock_driver_initalize_pll(
         clock_driver_get_usb_pll_reg(),
         1,          // refdiv,
-        1200 * MHZ, // vco_freq,
+        MHZ(1200), // vco_freq,
         5,          // post_div1,
         5           // post_div2
     );
@@ -855,8 +857,8 @@ void clock_driver_init(void) {
         RP2040_CLOCK_DRIVER_SRC_REF,
         RP2040_CLOCK_DRIVER_CLOCKS_CLK_REF_CTRL_SRC_VALUE_XOSC_CLKSRC,
         0, // No aux mux
-        12 * MHZ,
-        12 * MHZ
+        MHZ(12),
+        MHZ(12)
     );
 
     // CLK SYS = PLL SYS (125MHz) / 1 = 125MHz
@@ -864,8 +866,8 @@ void clock_driver_init(void) {
         RP2040_CLOCK_DRIVER_SRC_SYS,
         RP2040_CLOCK_DRIVER_CLOCKS_CLK_SYS_CTRL_SRC_VALUE_CLKSRC_CLK_SYS_AUX,
         RP2040_CLOCK_DRIVER_CLOCKS_CLK_SYS_CTRL_AUXSRC_VALUE_CLKSRC_PLL_SYS,
-        125 * MHZ,
-        125 * MHZ
+        MHZ(125),
+        MHZ(125)
     );
 
     // CLK USB = PLL USB (48MHz) / 1 = 48MHz
@@ -873,8 +875,8 @@ void clock_driver_init(void) {
         RP2040_CLOCK_DRIVER_SRC_USB,
         0, // No GLMUX
         RP2040_CLOCK_DRIVER_CLOCKS_CLK_USB_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB,
-        48 * MHZ,
-        48 * MHZ
+        MHZ(48),
+        MHZ(48)
     );
 
     // CLK ADC = PLL USB (48MHZ) / 1 = 48MHz
@@ -882,8 +884,8 @@ void clock_driver_init(void) {
         RP2040_CLOCK_DRIVER_SRC_ADC,
         0, // No GLMUX
         RP2040_CLOCK_DRIVER_CLOCKS_CLK_ADC_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB,
-        48 * MHZ,
-        48 * MHZ
+        MHZ(48),
+        MHZ(48)
     );
 
     // CLK RTC = PLL USB (48MHz) / 1024 = 46875Hz
@@ -891,7 +893,7 @@ void clock_driver_init(void) {
         RP2040_CLOCK_DRIVER_SRC_RTC,
         0, // No GLMUX
         RP2040_CLOCK_DRIVER_CLOCKS_CLK_RTC_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB,
-        48 * MHZ,
+        MHZ(48),
         46875
     );
 
@@ -901,8 +903,8 @@ void clock_driver_init(void) {
         RP2040_CLOCK_DRIVER_SRC_PERI,
         0,
         RP2040_CLOCK_DRIVER_CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLK_SYS,
-        125 * MHZ,
-        125 * MHZ
+        MHZ(125),
+        MHZ(125)
     );
 }
 
