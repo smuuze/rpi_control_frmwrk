@@ -12,10 +12,6 @@
 
 //-------------------------------------------------------------------------
 
-#define I2C_CLK_LIMIT 225000
-
-//-------------------------------------------------------------------------
-
 #define SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS	0
 
 // --------------------------------------------------------------------------------
@@ -80,6 +76,10 @@ typedef volatile uint32_t io_wo_32;
 
 // --------------------------------------------------------------------------------
 
+#define HAS_DRIVER_USART0           1
+
+// --------------------------------------------------------------------------------
+
 /**
  * @brief Unittest stub. Only performs *p_register |= bit_mask
  * 
@@ -129,13 +129,19 @@ __ALWAYS_INLINE static void cpu_bit_replace(io_rw_32* p_register, u32 bit_mask, 
 
 //-------------------------------------------------------------------------
 
-extern void* ut_get_RP2040_SIO_REG_BASE_ADDRESS(void);
-extern void* ut_get_RP2040_IO_REG_BASE_ADDRESS(void);
-extern void* ut_get_RP2040_PADS_REG_BASE_ADDRESS(void);
+extern void* ut_get_RP2040_UART0_REG_BASE_ADDRESS(void);
+extern void* ut_get_RP2040_UART1_REG_BASE_ADDRESS(void);
 
-#define RP2040_SIO_REG_BASE_ADDRESS      ut_get_RP2040_SIO_REG_BASE_ADDRESS()
-#define RP2040_IO_REG_BASE_ADDRESS       ut_get_RP2040_IO_REG_BASE_ADDRESS()
-#define RP2040_PADS_BASE_ADDRESS        ut_get_RP2040_PADS_REG_BASE_ADDRESS()
+#define RP2040_UART0_REG_BASE_ADDRESS   ut_get_RP2040_UART0_REG_BASE_ADDRESS()
+#define RP2040_UART1_REG_BASE_ADDRESS   ut_get_RP2040_UART1_REG_BASE_ADDRESS()
+
+//-------------------------------------------------------------------------
+
+#define UNITTEST_SET_FIFO_DATA_CALLBACK void ut_set_fifo_data_callback(void);   \
+                                        ut_set_fifo_data_callback();
+
+#define UNITTEST_GET_FIFO_DATA_CALLBACK void ut_get_fifo_data_callback(void);   \
+                                        ut_get_fifo_data_callback();
 
 //-------------------------------------------------------------------------
 
