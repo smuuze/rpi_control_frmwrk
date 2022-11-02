@@ -47,6 +47,7 @@
 #include "driver/gpio/gpio_interface.h"
 #include "copro/copro_interface.h"
 #include "system_interface.h"
+#include "irq/irq_interface.h"
 
 //-----------------------------------------------------------------------------
 
@@ -54,6 +55,7 @@ void system_initialization(void) {
 
 	clock_driver_init();
 	rtc_driver_init();
+    irq_interface_init();
 
 	#ifdef HAS_DRIVER_GPIO
 	{

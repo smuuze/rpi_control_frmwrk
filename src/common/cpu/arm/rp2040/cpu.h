@@ -102,10 +102,38 @@
 #define RP2040_SIO_REG_GPIO_OFFSET  __UNSIGNED(0x04)
 
 /**
+ * @brief Offset of the NVIC IRQ CLEAR PENDING register
+ * of the RP2040
+ */
+#define RP2040_IRQ_CLEAR_PENDING_REG_ADDRESS __UNSIGNED(0xe0000000) + __UNSIGNED(0x0000e280)
+
+/**
+ * @brief Offset of the NVIC IRQ SET ENABLE register
+ * of the RP2040
+ */
+#define RP2040_IRQ_SET_ENABLE_REG_ADDRESS __UNSIGNED(0xe0000000) + __UNSIGNED(0x0000e100)
+
+/**
+ * @brief Offset of the NVIC IRQ SET ENABLE register
+ * of the RP2040
+ */
+#define RP2040_IRQ_CLEAR_ENABLE_REG_ADDRESS __UNSIGNED(0xe0000000) + __UNSIGNED(0x0000e180)
+
+// --------------------------------------------------------------------------------
+
+/**
  * @brief The number of gpio-pins of the RP2040
  * 
  */
 #define RP2040_NUM_GPIO_PINS        30
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Number of IRQs available on the RP2040 MCU
+ * 
+ */
+#define RP2040_NUM_IRQ              26
 
 // --------------------------------------------------------------------------------
 

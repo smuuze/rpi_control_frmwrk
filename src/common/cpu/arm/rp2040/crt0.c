@@ -166,6 +166,7 @@ FAULT_HANDLER void SysTick_Handler(void);
 /**
  * @brief  Prototypes of the peripheral handlers.
  * If these handlers are not defined Default_Handler() is used instead.
+ * @see Datasheet ch 2.3.2 Interrupts on page 60 for the IRQ table
  */
 
 DEFAULT_HANDLER void IRQ_00_Handler(void);
@@ -191,7 +192,7 @@ DEFAULT_HANDLER void IRQ_18_Handler(void);
 DEFAULT_HANDLER void IRQ_19_Handler(void);
 
 DEFAULT_HANDLER void IRQ_20_Handler(void); // UART0-IRQ
-DEFAULT_HANDLER void IRQ_21_Handler(void);
+DEFAULT_HANDLER void IRQ_21_Handler(void); // UART1-IRQ
 DEFAULT_HANDLER void IRQ_22_Handler(void);
 DEFAULT_HANDLER void IRQ_23_Handler(void);
 DEFAULT_HANDLER void IRQ_24_Handler(void);
