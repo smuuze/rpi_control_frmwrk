@@ -1,3 +1,5 @@
+
+
 #ifndef   _config_H_ /* parse include file only once */
 #define   _config_H_
 
@@ -129,11 +131,13 @@ __ALWAYS_INLINE static void cpu_bit_replace(io_rw_32* p_register, u32 bit_mask, 
 
 //-------------------------------------------------------------------------
 
-extern void* ut_get_RP2040_UART0_REG_BASE_ADDRESS(void);
-extern void* ut_get_RP2040_UART1_REG_BASE_ADDRESS(void);
+extern void* ut_get_RP2040_SIO_REG_BASE_ADDRESS(void);
+extern void* ut_get_RP2040_IO_REG_BASE_ADDRESS(void);
+extern void* ut_get_RP2040_PADS_REG_BASE_ADDRESS(void);
 
-#define RP2040_SIO_REG_BASE_ADDRESS      ut_get_RP2040_UART0_REG_BASE_ADDRESS()
-#define RP2040_IO_REG_BASE_ADDRESS       ut_get_RP2040_UART1_REG_BASE_ADDRESS()
+#define RP2040_SIO_REG_BASE_ADDRESS      ut_get_RP2040_SIO_REG_BASE_ADDRESS()
+#define RP2040_IO_REG_BASE_ADDRESS       ut_get_RP2040_IO_REG_BASE_ADDRESS()
+#define RP2040_PADS_BASE_ADDRESS        ut_get_RP2040_PADS_REG_BASE_ADDRESS()
 
 //-------------------------------------------------------------------------
 
