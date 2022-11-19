@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@
 #include "driver/communication/usart/usart0_driver.h"
 #include "local_module_status.h"
 
-#include "irq/irq_interface.h"
+#include "driver/irq/irq_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -112,7 +112,18 @@ BUILD_MODULE_STATUS_FAST_VOLATILE(UART0_STATUS_REG, 2)
 #define UART_DRIVER_UARTDMACR_TX_DMA_EN         __UNSIGNED(0x00000002)
 #define UART_DRIVER_UARTDMACR_RX_DMA_EN         __UNSIGNED(0x00000001)
 
+/**
+ * @brief If this bit is set in the UARTFR (Flags-Register)
+ * the Transmit-Fifo is full. No more data is accepted.
+ * 
+ */
 #define UART_DRIVER_UARTFR_TXFF_BITS            __UNSIGNED(0x00000020)
+
+/**
+ * @brief If this bit is set in the UARTFR (Flags-Register)
+ * there are received data-bytes avaialble
+ * 
+ */
 #define UART_DRIVER_UARTFR_RXFE_BITS            __UNSIGNED(0x00000010)
 
 #define UART_DRIVER_UARTIFLS_TX_FIFO_LEVEL_1_8  __UNSIGNED(0x00000000)
@@ -298,9 +309,9 @@ BUILD_LOCAL_MSG_BUFFER_CLASS(USART0_RX_BUFFER)
 /**
  * @brief Driver internal irq-callback for uart0
  */
-void uart0_irq_callback(void);
+static void uart0_irq_callback(void);
 
-BUILD_IRQ_HANDLER(UART0_IRQ_HANDLER, uart0_irq_callback, IRQ_DISABLED)
+IRQ_BUILD_HANDLER(UART0_IRQ_HANDLER, &uart0_irq_callback, IRQ_NUM_UART0, IRQ_DISABLED)
 
 // --------------------------------------------------------------------------------
 
@@ -327,7 +338,7 @@ static inline RP2040_UART_REG* uart_driver_get_uart1_reg(void) {
 /**
  * @brief Enables/disables the given uart-instance.
  * 
- * @param p_uart uart-isntance to power on/off
+ * @param p_uart uart-instance to power on/off
  * @param power_on UART_DRIVER_POWER_ON uart will be powered on
  *                 otherwise uart will be powered off
  */
@@ -336,9 +347,7 @@ static void uart_driver_power(RP2040_UART_REG* p_uart, u32 power_on) {
     if (power_on == UART_DRIVER_POWER_ON) {
 
         DEBUG_PASS("uart_driver_power() - POWER ON");
-        p_uart->cr |= ( UART_DRIVER_UARTCR_UART_ENABLE
-                   | UART_DRIVER_UARTCR_TX_ENABLE
-                   | UART_DRIVER_UARTCR_RX_ENABLE);
+        p_uart->cr |= UART_DRIVER_UARTCR_UART_ENABLE;
 
     } else {
 
@@ -347,6 +356,32 @@ static void uart_driver_power(RP2040_UART_REG* p_uart, u32 power_on) {
                    | UART_DRIVER_UARTCR_TX_ENABLE
                    | UART_DRIVER_UARTCR_RX_ENABLE);
     }
+}
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Starts the TX of the given uart-instance.
+ * 
+ * @param p_uart uart-instance where to start TX
+ */
+static void uart_driver_start_tx(RP2040_UART_REG* p_uart) {
+
+    // Enable TX
+    p_uart->cr |= UART_DRIVER_UARTCR_TX_ENABLE;
+}
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Starts the RX of the given uart-instance.
+ * 
+ * @param p_uart uart-instance where to start RX
+ */
+static void uart_driver_start_rx(RP2040_UART_REG* p_uart) {
+
+    // Enable RX
+    p_uart->cr |= UART_DRIVER_UARTCR_RX_ENABLE;
 }
 
 // --------------------------------------------------------------------------------
@@ -580,13 +615,15 @@ static void uart_driver_configure(
 
     // Any LCR writes need to take place before enabling the UART
     // this function must be called before lcr_h is set
-    u32 baud = uart_driver_configure_baudrate(p_uart, baudrate, clk_peri_freq);
+    __UNUSED__ u32 baud = uart_driver_configure_baudrate(p_uart, baudrate, clk_peri_freq);
     DEBUG_TRACE_long(baud, "uart_driver_configure() - BAUD-VALUE:");
 
     cpu_atomic_bit_set(&p_uart->lcr_h, lcr_h_cfg);
 
     // Enable the UART, both TX and RX
     uart_driver_power(p_uart, UART_DRIVER_POWER_ON);
+    uart_driver_start_rx(p_uart);
+    uart_driver_start_tx(p_uart);
     
     // Enable FIFOs
     DEBUG_PASS("uart_driver_configure() - ENABLE FIFOs");
@@ -596,17 +633,14 @@ static void uart_driver_configure(
     // RXIM and RTIM are required to check for available rx-data via IRQ.
     // - RX asserts when >=4 characters are in the RX-FIFO
     // - RT asserts when there are >=1 characters and no more have been received for 32 bit periods.
-    p_uart->imsc = UART_DRIVER_UARTMIS_TXIM | UART_DRIVER_UARTMIS_RXIM | UART_DRIVER_UARTMIS_RTIM;
+    p_uart->imsc = UART_DRIVER_UARTMIS_TXIM | UART_DRIVER_UARTMIS_RXIM;
     
     UART0_IRQ_HANDLER_set_enabled(IRQ_ENABLED);
-    irq_set_enabled(UART0_IRQ, IRQ_ENABLED;
+    irq_set_enabled(IRQ_NUM_UART0, IRQ_ENABLED);
 
     // set the FIFO threshold levels
     DEBUG_PASS("uart_driver_configure() - SET FIFO THRESHOLD");
-    cpu_atomic_bit_set(
-        &p_uart->ifls,
-        RP2040_UART_DRIVER_FIFO_TX_LEVEL | RP2040_UART_DRIVER_FIFO_RX_LEVEL
-    );
+    p_uart->ifls = RP2040_UART_DRIVER_FIFO_TX_LEVEL | RP2040_UART_DRIVER_FIFO_RX_LEVEL;
 
     // Always enable DREQ signals -- no harm in this if DMA is not listening
     p_uart->dmacr = UART_DRIVER_UARTDMACR_TX_DMA_EN
@@ -838,7 +872,10 @@ void usart0_driver_initialize(void) {
 
     rp2040_reset_uart0();// blocks until uart0 is resetted
 
-    irq_add_handler(UART0_IRQ, &UART0_IRQ_HANDLER);
+    if (UART0_IRQ_HANDLER_init() != IRQ_INTERFACE_OK) {
+        DEBUG_PASS("usart0_driver_initialize() - INIT UART0-IRQ-HANDLER HAS FAILED");
+        return;
+    }
 }
 
 /**
@@ -879,6 +916,7 @@ u16 usart0_driver_get_N_bytes(u16 num_bytes, u8* p_buffer_to) {
  * @see usart0_driver.h#usart0_driver_set_N_bytes
  */
 u16 usart0_driver_set_N_bytes(u16 num_bytes, const u8* const p_buffer_from) {
+
     return uart_driver_set_N_bytes(
         uart_driver_get_uart0_reg(),
         USART0_TX_BUFFER_get_class(),
@@ -898,7 +936,8 @@ u8 usart0_driver_is_ready_for_rx(void) {
  * @see usart0_driver.h#usart0_driver_start_rx
  */
 void usart0_driver_start_rx(u16 num_of_rx_bytes) {
-
+    (void) num_of_rx_bytes;
+    uart_driver_start_rx(uart_driver_get_uart0_reg());
 }
 
 /**
@@ -927,7 +966,7 @@ u8 usart0_driver_is_ready_for_tx (void) {
  * @see usart0_driver.h#usart0_driver_start_tx
  */
 void usart0_driver_start_tx (void) {
-
+    uart_driver_start_tx(uart_driver_get_uart0_reg());
 }
 
 /**
@@ -986,18 +1025,17 @@ void usart0_driver_mutex_release(u8 m_id) {
  * @brief UART0 IRQ Handler
  * 
  */
-void IRQ_20_Handler(void) {
+static void uart0_irq_callback(void) {
 
     // read the status-reg to find out which IRQ has been fired
 
     RP2040_UART_REG* p_uart0 = uart_driver_get_uart0_reg();
     u32 irq_mis = p_uart0->mis;
-    u32 irq_fr  = p_uart0->fr;
     p_uart0->icr = UART_DRIVER_UARTICR_CLEAR_ALL;
 
     DEBUG_TRACE_long(irq_mis, "IRQ_20_Handler() - UARTMIS:");
 
-    if (irq_mis & UART_DRIVER_UARTMIS_TXMIS) {
+    if (irq_mis & UART_DRIVER_UARTMIS_TXIM) {
 
         /**
          * @brief If the FIFOs are enabled and the transmit FIFO is equal to
@@ -1009,7 +1047,7 @@ void IRQ_20_Handler(void) {
     
         DEBUG_TRACE_long(
             USART0_TX_BUFFER_bytes_available(),
-            "IRQ_20_Handler() - UART_DRIVER_UARTMIS_TXMIS - BYTES-AVAILABLE:"
+            "IRQ_20_Handler() - UART_DRIVER_UARTMIS_TXIM - BYTES-AVAILABLE:"
         );
 
         if (USART0_TX_BUFFER_bytes_available()) {
@@ -1020,19 +1058,15 @@ void IRQ_20_Handler(void) {
         }
     }
 
-    if (irq_mis & UART_DRIVER_UARTMIS_RXMIS) {
+    if (uart_driver_is_rx_fifo_empty(p_uart0) != 0) {
 
         /**
-         * @brief If the FIFOs are enabled and the receive FIFO reaches the
-         * programmed trigger level. When this happens, the receive interrupt
-         * is asserted HIGH. The receive interrupt is cleared by reading data
-         * from the receive FIFO until it becomes less than the trigger level,
-         * or by clearing the interrupt.
+         * @brief There is some data in the receive-fifo - Read it
          */
     
         DEBUG_TRACE_long(
             USART0_RX_BUFFER_bytes_free(),
-            "IRQ_20_Handler() - UART_DRIVER_UARTMIS_RXMIS - BYTES-FREE:"
+            "IRQ_20_Handler() - UART_DRIVER_UARTMIS_RXIM - BYTES-FREE:"
         );
 
         if (USART0_RX_BUFFER_bytes_free()) {
@@ -1042,6 +1076,7 @@ void IRQ_20_Handler(void) {
             );
         }
     }
+
 }
 
 // --------------------------------------------------------------------------------
@@ -1050,62 +1085,14 @@ void IRQ_20_Handler(void) {
  * @brief UART1 IRQ Handler
  * 
  */
-void uart0_irq_callback(void) {
+// static void uart1_irq_callback(void) {
 
-    // read the status-reg to find out which IRQ has been fired
+//     // read the status-reg to find out which IRQ has been fired
 
-    RP2040_UART_REG* p_uart = uart_driver_get_uart1_reg();
-    u32 irq_mis = p_uart->mis;
-    u32 irq_fr  = p_uart->fr;
-    p_uart->icr = UART_DRIVER_UARTICR_CLEAR_ALL;
-
-    // DEBUG_TRACE_long(irq_mis, "IRQ_21_Handler() - UARTMIS:");
-
-    // if (irq_mis & UART_DRIVER_UARTMIS_TXMIS) {
-
-    //     /**
-    //      * @brief If the FIFOs are enabled and the transmit FIFO is equal to
-    //      * or lower than the programmed trigger level then the transmit
-    //      * interrupt is asserted HIGH. The transmit interrupt is cleared by
-    //      * writing data to the transmit FIFO until it becomes greater than
-    //      * the trigger level, or by clearing the interrupt.
-    //      */
-    
-    //     DEBUG_TRACE_long(
-    //         USART1_TX_BUFFER_bytes_available(),
-    //         "IRQ_21_Handler() - UART_DRIVER_UARTMIS_TXMIS - BYTES-AVAILABLE:"
-    //     );
-
-    //     if (USART1_TX_BUFFER_bytes_available()) {
-    //         uart_driver_copy_buffer_to_fifo(
-    //             p_uart,
-    //             USART1_TX_BUFFER_get_class()
-    //         );
-    //     }
-    // }
-
-    // if (irq_mis & UART_DRIVER_UARTMIS_RXMIS) {
-
-    //     /**
-    //      * @brief If the FIFOs are enabled and the receive FIFO reaches the
-    //      * programmed trigger level. When this happens, the receive interrupt
-    //      * is asserted HIGH. The receive interrupt is cleared by reading data
-    //      * from the receive FIFO until it becomes less than the trigger level,
-    //      * or by clearing the interrupt.
-    //      */
-    
-    //     DEBUG_TRACE_long(
-    //         USART1_RX_BUFFER_bytes_free(),
-    //         "IRQ_21_Handler() - UART_DRIVER_UARTMIS_RXMIS - BYTES-FREE:"
-    //     );
-
-    //     if (USART1_RX_BUFFER_bytes_free()) {
-    //         uart_driver_copy_fifo_to_buffer(
-    //             p_uart,
-    //             USART1_RX_BUFFER_get_class()
-    //         );
-    //     }
-    // }
-}
+//     RP2040_UART_REG* p_uart = uart_driver_get_uart1_reg();
+//     //u32 irq_mis = p_uart->mis;
+//     //u32 irq_fr  = p_uart->fr;
+//     p_uart->icr = UART_DRIVER_UARTICR_CLEAR_ALL;
+// }
 
 // --------------------------------------------------------------------------------

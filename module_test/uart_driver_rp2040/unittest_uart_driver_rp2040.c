@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -53,6 +53,7 @@ UT_ACTIVATE()
 #include "initialization/initialization.h"
 #include "cfg_driver_interface.h"
 #include "driver/communication/usart/usart0_driver.h"
+#include "driver/irq/irq_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -275,6 +276,44 @@ void ut_set_fifo_data_callback(void) {
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief array holding the root of all irq-handlers
+ */
+static IRQ_INTERFACE_HANDLER* irq_handler_table[26];
+
+/**
+ * @see irg/irq_interface.h#irq_driver_init
+ */
+void irq_driver_init(void) {
+    DEBUG_PASS("irq_driver_init()");
+}
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @see irg/irq_interface.h#irq_add_handler
+ */
+IRQ_INTERFACE_RET_VAL irq_add_handler(u8 irq_num, IRQ_INTERFACE_HANDLER* p_handler) {
+    DEBUG_TRACE_byte(irq_num, "irq_add_handler() - IRQ-handler add - num:");
+    irq_handler_table[irq_num] = p_handler;
+    return IRQ_INTERFACE_OK;
+}
+
+/**
+ * @see irg/irq_interface.h#irq_set_enabled
+ */
+IRQ_INTERFACE_RET_VAL irq_set_enabled(u8 irq_num, u8 is_enabled) {
+    return IRQ_INTERFACE_OK;
+}
+
+void IRQ_20_Handler(void) {
+    if (irq_handler_table[20] != 0) {
+        irq_handler_table[20]->p_callback();
+    }
+}
+
+// --------------------------------------------------------------------------------
+
 void ut_get_fifo_data_callback(void) {
 
     if (UT_GET_TEST_CASE_ID() ==  TEST_CASE_ID_IRQ_RX_VALID_1) {
@@ -464,7 +503,8 @@ static void TEST_CASE_configure_8N1_9600_at_125MHz(void) {
                               + (1 << 0);   // uart enabled
 
         u32 uart0_imsc_match  = (1 << 4)    // RX IRQ Enabled
-                              + (1 << 5);    // TX IRGQ enabled
+                              + (1 << 5)    // TX IRQ enabled
+                              + (1 << 6);   // RX-Timeout IRQ enabled
 
         u32 uart0_ifls_match  = (0 << 0)    // Transmit FIFO becomes <= 1 / 8 full
                               + (0 << 3);   // Receive FIFO becomes >= 1 / 8 full 
@@ -531,7 +571,8 @@ static void TEST_CASE_configure_6O2_115200_at_125MHz(void) {
                               + (1 << 0);   // uart enabled
 
         u32 uart0_imsc_match  = (1 << 4)    // RX IRQ Enabled
-                              + (1 << 5);    // TX IRGQ enabled
+                              + (1 << 5)    // TX IRQ enabled
+                              + (1 << 6);   // RX-Timeout IRQ enabled
 
         u32 uart0_ifls_match  = (0 << 0)    // Transmit FIFO becomes <= 1 / 8 full
                               + (0 << 3);   // Receive FIFO becomes >= 1 / 8 full 
@@ -598,7 +639,8 @@ static void TEST_CASE_configure_5E2_19200_at_100MHz(void) {
                               + (1 << 0);   // uart enabled
 
         u32 uart0_imsc_match  = (1 << 4)    // RX IRQ Enabled
-                              + (1 << 5);    // TX IRGQ enabled
+                              + (1 << 5)    // TX IRQ enabled
+                              + (1 << 6);   // RX-Timeout IRQ enabled
 
         usart0_driver_configure(&trx_cfg);
 
@@ -741,6 +783,10 @@ static void TEST_CASE_rx_irq_1(void) {
 // --------------------------------------------------------------------------------
 
 int main(void) {
+
+    for (u8 i = 0; i < 26; ++i) {
+        irq_handler_table[i] = 0;
+    }
 
     UT_START_TESTBENCH("Welcome the the UNITTEST for RP2040 UART-driver 1.0")
     {
