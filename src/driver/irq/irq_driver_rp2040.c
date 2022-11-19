@@ -21,7 +21,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@
 
 // --------------------------------------------------------------------------------
 
-#include "irq_interface.h"
+#include "driver/irq/irq_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -82,7 +82,7 @@ typedef struct {
 /**
  * @brief array holding the root of all irq-handlers
  */
-static IRQ_HANDLER irq_root[RP2040_NUM_IRQ];
+static IRQ_INTERFACE_HANDLER irq_root[RP2040_NUM_IRQ];
 
 // --------------------------------------------------------------------------------
 
@@ -114,11 +114,11 @@ static RP2040_IRQ_CLEAR_ENABLE_REG* irq_get_clear_enable_reg(void) {
 // --------------------------------------------------------------------------------
 
 /**
- * @see irg/irq_interface.h#irq_interface_init
+ * @see irg/irq_interface.h#irq_driver_init
  */
-void irq_interface_init(void) {
+void irq_driver_init(void) {
     
-    DEBUG_PASS("irq_interface_init()");
+    DEBUG_PASS("irq_driver_init()");
 
     for (u8 i = 0; i < RP2040_NUM_IRQ; i++) {
         irq_root[0]._p_next_handler = 0;
@@ -130,7 +130,7 @@ void irq_interface_init(void) {
 /**
  * @see irg/irq_interface.h#irq_add_handler
  */
-IRQ_INTERFACE_RET_VAL irq_add_handler(u8 irq_num, IRQ_HANDLER* p_handler) {
+IRQ_INTERFACE_RET_VAL irq_add_handler(u8 irq_num, IRQ_INTERFACE_HANDLER* p_handler) {
 
     if (irq_num >= RP2040_NUM_IRQ) {
         DEBUG_TRACE_byte(irq_num, "irq_add_handler() - INVALID irq_num:");
@@ -149,7 +149,7 @@ IRQ_INTERFACE_RET_VAL irq_add_handler(u8 irq_num, IRQ_HANDLER* p_handler) {
 
     DEBUG_TRACE_byte(irq_num, "irq_add_handler() - adding handler to irq-num:");
 
-    IRQ_HANDLER* p_act = irq_root[irq_num]._p_next_handler;
+    IRQ_INTERFACE_HANDLER* p_act = irq_root[irq_num]._p_next_handler;
 
     if (p_act == 0) {
 
@@ -159,7 +159,7 @@ IRQ_INTERFACE_RET_VAL irq_add_handler(u8 irq_num, IRQ_HANDLER* p_handler) {
          */
 
         irq_root[irq_num]._p_next_handler = p_handler;
-        p_handler->id = 0;
+        p_handler->id = 1;
         p_handler->_p_next_handler = 0;
 
         DEBUG_PASS("irq_add_handler() - first handler added");
@@ -218,25 +218,74 @@ IRQ_INTERFACE_RET_VAL irq_set_enabled(u8 irq_num, u8 is_enabled) {
 // --------------------------------------------------------------------------------
 
 /**
+ * @see irg/irq_interface.h#irq_enable_handler
+ */
+IRQ_INTERFACE_RET_VAL irq_enable_handler(
+    u8 irq_num,
+    u8 is_enabled,
+    IRQ_INTERFACE_HANDLER* p_handler
+) {
+
+    if (irq_num >= RP2040_NUM_IRQ) {
+        DEBUG_TRACE_byte(irq_num, "irq_set_enabled() - INVALID irq_num:");
+        return IRQ_INTERFACE_UNKNOWN;
+    }
+
+    if (p_handler == 0) {
+        DEBUG_PASS("irq_add_handler() - p_handler is NULL");
+        return IRQ_INTERFACE_INVALID;
+    }
+
+    DEBUG_TRACE_byte(irq_num, "irq_enable_handler() - irq_num:");
+    DEBUG_TRACE_byte(is_enabled, "irq_enable_handler() - is_enabled:");
+
+    p_handler->is_enabled = is_enabled;
+
+    if (is_enabled == IRQ_DISABLED) {
+
+        /**
+         * @brief Lets check if there is an other IRQ-handler
+         * that is still enabled.
+         */
+
+        IRQ_INTERFACE_HANDLER* p_act = irq_root[irq_num]._p_next_handler;
+
+        while (p_act != 0) {
+
+            if (p_act->is_enabled == IRQ_ENABLED) {
+                is_enabled = IRQ_ENABLED;
+                break;
+            } 
+
+            p_act = p_act->_p_next_handler;
+        }
+    }
+
+    return irq_set_enabled(irq_num, is_enabled);
+}
+
+// --------------------------------------------------------------------------------
+
+/**
  * @brief calls all irq-handler of the given irq.
  * 
  * @param irq_num number of the irq that was raised.
  */
-static void irq_interface_rp2040_execute(u8 irq_num) {
+static void irq_rp2040_execute(u8 irq_num) {
 
     if (irq_root[irq_num].is_enabled == IRQ_DISABLED) {
-        DEBUG_TRACE_byte(irq_num, "irq_interface_rp2040_execute() - IRQ raised but not enabled - irq_num:");
+        DEBUG_TRACE_byte(irq_num, "irq_rp2040_execute() - IRQ raised but not enabled - irq_num:");
         return;
     }
 
-    IRQ_HANDLER* p_act = irq_root[irq_num]._p_next_handler;
+    IRQ_INTERFACE_HANDLER* p_act = irq_root[irq_num]._p_next_handler;
 
     #ifdef TRACER_ENABLED
     {
         if (p_act == 0) {
-            DEBUG_TRACE_byte(irq_num, "irq_interface_rp2040_execute() - NO-HANDLER- irq_num:");
+            DEBUG_TRACE_byte(irq_num, "irq_rp2040_execute() - NO-HANDLER- irq_num:");
         } else {
-            DEBUG_TRACE_byte(irq_num, "irq_interface_rp2040_execute() - EXECUTING - irq_num:");
+            DEBUG_TRACE_byte(irq_num, "irq_rp2040_execute() - EXECUTING - irq_num:");
         }
     }
     #endif // TRACER_ENABLED
@@ -247,14 +296,14 @@ static void irq_interface_rp2040_execute(u8 irq_num) {
 
             if (p_act->is_enabled == IRQ_ENABLED) {
 
-                DEBUG_TRACE_byte(p_act->id, "irq_interface_rp2040_execute() - calling handler-id:");
+                DEBUG_TRACE_byte(p_act->id, "irq_rp2040_execute() - calling handler-id:");
                 p_act->p_callback();
 
             }
             
             #ifdef TRACER_ENABLED
             else {
-                DEBUG_TRACE_byte(p_act->id, "irq_interface_rp2040_execute() - disabeld handler - id:");
+                DEBUG_TRACE_byte(p_act->id, "irq_rp2040_execute() - disabeld handler - id:");
             }
             #endif
 
@@ -262,7 +311,7 @@ static void irq_interface_rp2040_execute(u8 irq_num) {
         
         #ifdef TRACER_ENABLED
         else {
-            DEBUG_TRACE_byte(p_act->id, "irq_interface_rp2040_execute() - NULL-POINTER - id:");
+            DEBUG_TRACE_byte(p_act->id, "irq_rp2040_execute() - NULL-POINTER - id:");
         }
         #endif
 
@@ -277,7 +326,7 @@ static void irq_interface_rp2040_execute(u8 irq_num) {
  */
 void IRQ_00_Handler(void) {
     DEBUG_PASS("IRQ_00_Handler() - TIMER_00");
-    irq_interface_rp2040_execute(0);
+    irq_rp2040_execute(0);
 }
 
 // --------------------------------------------------------------------------------
@@ -287,7 +336,7 @@ void IRQ_00_Handler(void) {
  */
 void IRQ_01_Handler(void) {
     DEBUG_PASS("IRQ_01_Handler() - TIMER_01");
-    irq_interface_rp2040_execute(1);
+    irq_rp2040_execute(1);
 }
 
 // --------------------------------------------------------------------------------
@@ -297,7 +346,7 @@ void IRQ_01_Handler(void) {
  */
 void IRQ_02_Handler(void) {
     DEBUG_PASS("IRQ_02_Handler() - TIMER_02");
-    irq_interface_rp2040_execute(2);
+    irq_rp2040_execute(2);
 }
 
 // --------------------------------------------------------------------------------
@@ -307,7 +356,7 @@ void IRQ_02_Handler(void) {
  */
 void IRQ_03_Handler(void) {
     DEBUG_PASS("IRQ_03_Handler() - TIMER_03");
-    irq_interface_rp2040_execute(3);
+    irq_rp2040_execute(3);
 }
 
 // --------------------------------------------------------------------------------
@@ -317,7 +366,7 @@ void IRQ_03_Handler(void) {
  */
 void IRQ_04_Handler(void) {
     DEBUG_PASS("IRQ_01_Handler() - PWM_WRAP");
-    irq_interface_rp2040_execute(4);
+    irq_rp2040_execute(4);
 }
 
 // --------------------------------------------------------------------------------
@@ -327,7 +376,7 @@ void IRQ_04_Handler(void) {
  */
 void IRQ_05_Handler(void) {
     DEBUG_PASS("IRQ_05_Handler() - USB_CTRL");
-    irq_interface_rp2040_execute(5);
+    irq_rp2040_execute(5);
 }
 
 // --------------------------------------------------------------------------------
@@ -337,7 +386,7 @@ void IRQ_05_Handler(void) {
  */
 void IRQ_06_Handler(void) {
     DEBUG_PASS("IRQ_06_Handler() - XIP");
-    irq_interface_rp2040_execute(6);
+    irq_rp2040_execute(6);
 }
 
 // --------------------------------------------------------------------------------
@@ -347,7 +396,7 @@ void IRQ_06_Handler(void) {
  */
 void IRQ_07_Handler(void) {
     DEBUG_PASS("IRQ_07_Handler() - PIO0_0");
-    irq_interface_rp2040_execute(7);
+    irq_rp2040_execute(7);
 }
 
 // --------------------------------------------------------------------------------
@@ -357,7 +406,7 @@ void IRQ_07_Handler(void) {
  */
 void IRQ_08_Handler(void) {
     DEBUG_PASS("IRQ_08_Handler() - PIO0_1");
-    irq_interface_rp2040_execute(8);
+    irq_rp2040_execute(8);
 }
 
 // --------------------------------------------------------------------------------
@@ -367,7 +416,7 @@ void IRQ_08_Handler(void) {
  */
 void IRQ_09_Handler(void) {
     DEBUG_PASS("IRQ_09_Handler() - PIO1_0");
-    irq_interface_rp2040_execute(9);
+    irq_rp2040_execute(9);
 }
 
 // --------------------------------------------------------------------------------
@@ -377,7 +426,7 @@ void IRQ_09_Handler(void) {
  */
 void IRQ_10_Handler(void) {
     DEBUG_PASS("IRQ_10_Handler() - PIO1_1");
-    irq_interface_rp2040_execute(10);
+    irq_rp2040_execute(10);
 }
 
 // --------------------------------------------------------------------------------
@@ -387,7 +436,7 @@ void IRQ_10_Handler(void) {
  */
 void IRQ_11_Handler(void) {
     DEBUG_PASS("IRQ_11_Handler() - DMA_0");
-    irq_interface_rp2040_execute(11);
+    irq_rp2040_execute(11);
 }
 
 // --------------------------------------------------------------------------------
@@ -397,7 +446,7 @@ void IRQ_11_Handler(void) {
  */
 void IRQ_12_Handler(void) {
     DEBUG_PASS("IRQ_12_Handler() - DMA_1");
-    irq_interface_rp2040_execute(12);
+    irq_rp2040_execute(12);
 }
 
 // --------------------------------------------------------------------------------
@@ -407,7 +456,7 @@ void IRQ_12_Handler(void) {
  */
 void IRQ_13_Handler(void) {
     DEBUG_PASS("IRQ_13_Handler() - IO_BANK0");
-    irq_interface_rp2040_execute(13);
+    irq_rp2040_execute(13);
 }
 
 // --------------------------------------------------------------------------------
@@ -417,7 +466,7 @@ void IRQ_13_Handler(void) {
  */
 void IRQ_14_Handler(void) {
     DEBUG_PASS("IRQ_14_Handler() - IO_QSPI");
-    irq_interface_rp2040_execute(14);
+    irq_rp2040_execute(14);
 }
 
 // --------------------------------------------------------------------------------
@@ -427,7 +476,7 @@ void IRQ_14_Handler(void) {
  */
 void IRQ_15_Handler(void) {
     DEBUG_PASS("IRQ_15_Handler() - SIO_PROC0");
-    irq_interface_rp2040_execute(15);
+    irq_rp2040_execute(15);
 }
 
 // --------------------------------------------------------------------------------
@@ -437,7 +486,7 @@ void IRQ_15_Handler(void) {
  */
 void IRQ_16_Handler(void) {
     DEBUG_PASS("IRQ_16_Handler() - SIO_PROC1");
-    irq_interface_rp2040_execute(16);
+    irq_rp2040_execute(16);
 }
 
 // --------------------------------------------------------------------------------
@@ -447,7 +496,7 @@ void IRQ_16_Handler(void) {
  */
 void IRQ_17_Handler(void) {
     DEBUG_PASS("IRQ_17_Handler() - CLOCKS");
-    irq_interface_rp2040_execute(17);
+    irq_rp2040_execute(17);
 }
 
 // --------------------------------------------------------------------------------
@@ -457,7 +506,7 @@ void IRQ_17_Handler(void) {
  */
 void IRQ_18_Handler(void) {
     DEBUG_PASS("IRQ_18_Handler() - SPI0");
-    irq_interface_rp2040_execute(18);
+    irq_rp2040_execute(18);
 }
 
 // --------------------------------------------------------------------------------
@@ -467,7 +516,7 @@ void IRQ_18_Handler(void) {
  */
 void IRQ_19_Handler(void) {
     DEBUG_PASS("IRQ_19_Handler() - SPI1");
-    irq_interface_rp2040_execute(19);
+    irq_rp2040_execute(19);
 }
 
 // --------------------------------------------------------------------------------
@@ -477,7 +526,7 @@ void IRQ_19_Handler(void) {
  */
 void IRQ_20_Handler(void) {
     DEBUG_PASS("IRQ_20_Handler() - UART_0");
-    irq_interface_rp2040_execute(20);
+    irq_rp2040_execute(20);
 }
 
 // --------------------------------------------------------------------------------
@@ -487,7 +536,7 @@ void IRQ_20_Handler(void) {
  */
 void IRQ_21_Handler(void) {
     DEBUG_PASS("IRQ_21_Handler() - UART_1");
-    irq_interface_rp2040_execute(21);
+    irq_rp2040_execute(21);
 }
 
 // --------------------------------------------------------------------------------
@@ -497,7 +546,7 @@ void IRQ_21_Handler(void) {
  */
 void IRQ_22_Handler(void) {
     DEBUG_PASS("IRQ_22_Handler() - ADC_FIFO");
-    irq_interface_rp2040_execute(22);
+    irq_rp2040_execute(22);
 }
 
 // --------------------------------------------------------------------------------
@@ -507,7 +556,7 @@ void IRQ_22_Handler(void) {
  */
 void IRQ_23_Handler(void) {
     DEBUG_PASS("IRQ_23_Handler() - I2C_0");
-    irq_interface_rp2040_execute(23);
+    irq_rp2040_execute(23);
 }
 
 // --------------------------------------------------------------------------------
@@ -517,7 +566,7 @@ void IRQ_23_Handler(void) {
  */
 void IRQ_24_Handler(void) {
     DEBUG_PASS("IRQ_24_Handler() - I2C_1");
-    irq_interface_rp2040_execute(24);
+    irq_rp2040_execute(24);
 }
 
 // --------------------------------------------------------------------------------
@@ -527,7 +576,7 @@ void IRQ_24_Handler(void) {
  */
 void IRQ_25_Handler(void) {
     DEBUG_PASS("IRQ_25_Handler() - RTC");
-    irq_interface_rp2040_execute(25);
+    irq_rp2040_execute(25);
 }
 
 // --------------------------------------------------------------------------------

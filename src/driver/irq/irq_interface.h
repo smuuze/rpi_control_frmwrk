@@ -71,22 +71,26 @@
  */
 #define IRQ_BUILD_HANDLER(name, callback, irq_num, en_default)  \
                                                                 \
-    static IRQ_HANDLER __IRQ_HANDLER_##name = {                 \
+    static IRQ_INTERFACE_HANDLER __IRQ_HANDLER_##name = {       \
         .id = IRQ_HANDLER_INVALID_ID,                           \
         .is_enabled = en_default,                               \
         .p_callback = callback,                                 \
         ._p_next_handler = 0                                    \
     };                                                          \
                                                                 \
-    static i8 name##_init(void) {                               \
+    static IRQ_INTERFACE_RET_VAL name##_init(void) {            \
         return irq_add_handler(                                 \
             irq_num,                                            \
             &__IRQ_HANDLER_##name                               \
         );                                                      \
     }                                                           \
                                                                 \
-    static void name##_set_enabled(u8 en) {                     \
-        __IRQ_HANDLER_##name.is_enabled = en;                   \
+    static IRQ_INTERFACE_RET_VAL name##_set_enabled(u8 en) {    \
+        return irq_enable_handler(                              \
+            irq_num,                                            \
+            en,                                                 \
+            &__IRQ_HANDLER_##name                               \
+        );                                                      \
     }
 
 // --------------------------------------------------------------------------------
@@ -109,7 +113,7 @@ typedef enum {
  * @brief 
  * 
  */
-typedef void (*IRQ_HANDLER_CALLBACK)    (void);
+typedef void (*IRQ_INTERFACE_HANDLER_CALLBACK)    (void);
 
 // --------------------------------------------------------------------------------
 
@@ -119,7 +123,7 @@ typedef void (*IRQ_HANDLER_CALLBACK)    (void);
  * the irq is raised.
  * 
  */
-typedef struct IRQ_HANDLER_STRUCT {
+typedef struct IRQ_INTERFACE_HANDLER_STRUCT {
 
     /**
      * @brief id of this handler in context of the owning irq
@@ -140,26 +144,26 @@ typedef struct IRQ_HANDLER_STRUCT {
      * in case the irq is raised
      * 
      */
-    IRQ_HANDLER_CALLBACK p_callback;
+    IRQ_INTERFACE_HANDLER_CALLBACK p_callback;
 
     /**
      * @brief next handler to be called
      * after the current handler has finished
      * 
      */
-    struct IRQ_HANDLER_STRUCT* _p_next_handler;
+    struct IRQ_INTERFACE_HANDLER_STRUCT* _p_next_handler;
 
-} IRQ_HANDLER;
+} IRQ_INTERFACE_HANDLER;
 
 // --------------------------------------------------------------------------------
 
 /**
- * @brief Initializes the irq-interface.
+ * @brief Initializes the irq-driver.
  * This function is called on system-startup.
  * Do not call this function while runtime.
  * 
  */
-void irq_interface_init(void);
+void irq_driver_init(void);
 
 // --------------------------------------------------------------------------------
 
@@ -170,12 +174,31 @@ void irq_interface_init(void);
  * @param irq_num number of the irq where to add the handler
  * @param p_handler handler to add to the specified irq
  * @return   IRQ_INTERFACE_OK -  the handler was added successfull
- *           IRQ_INTERFACE_INVALID - p_handleris null
+ *           IRQ_INTERFACE_INVALID - p_handler is null
  *           IRQ_INTERFACE_UNKNOWN -  the is no irq available for the given irq-number
  *           IRQ_INTERFACE_OVERFLOW - no more handler can be added to the irq
  *           IRQ_INTERFACE_OCCUPIED - the hander was already added to an irq
  */
-IRQ_INTERFACE_RET_VAL irq_add_handler(u8 irq_num, IRQ_HANDLER* p_handler);
+IRQ_INTERFACE_RET_VAL irq_add_handler(u8 irq_num, IRQ_INTERFACE_HANDLER* p_handler);
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Enables the given IRQ-handler.
+ * if the IRQ-handler is enabled but the underlying IRQ is disabled,
+ * the underlying IRQ is enabled also. If the IRQ-handler is disabled
+ * and the underlying IRQ is enabled, this function will check if there
+ * is some other handler for the underlying IRQ that is still enabled.
+ * If there is no other handler enabled, the underlying IRQ is disabled also.
+ * 
+ * @param irq_num number of the irq where to add the handler
+ * @param is_enabled 1: enable the IRQ-handler 0: disable the IRQ-handler 
+ * @param p_handler reference to the handler to en- or disable
+ * @return   IRQ_INTERFACE_OK -  the handler was en- or disabled successful
+ *           IRQ_INTERFACE_INVALID - p_handler is null
+ *           IRQ_INTERFACE_UNKNOWN -  the is no irq available for the given irq-number
+ */
+IRQ_INTERFACE_RET_VAL irq_enable_handler(u8 irq_num, u8 is_enabled, IRQ_INTERFACE_HANDLER* p_handler);
 
 // --------------------------------------------------------------------------------
 
