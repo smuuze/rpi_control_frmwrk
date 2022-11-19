@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ UT_ACTIVATE()
 // --------------------------------------------------------------------------------
 
 #include "initialization/initialization.h"
-#include "irq/irq_interface.h"
+#include "driver/irq/irq_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -172,7 +172,7 @@ void UT_IRQ_HANDLER_01_CALLBACK(void) {
     counter_IRQ_HANDLER_01_CALLBACK += 1;
 }
 
-IRQ_BUILD_HANDLER(UT_IRQ_HANDLER_01, UT_IRQ_HANDLER_01_CALLBACK, 20, 0)
+IRQ_BUILD_HANDLER(UT_IRQ_HANDLER_01, &UT_IRQ_HANDLER_01_CALLBACK, 20, 0)
 
 // --------------------------------------------------------------------------------
 
@@ -181,7 +181,7 @@ void UT_IRQ_HANDLER_02_CALLBACK(void) {
     counter_IRQ_HANDLER_02_CALLBACK += 1;
 }
 
-IRQ_BUILD_HANDLER(UT_IRQ_HANDLER_02, UT_IRQ_HANDLER_02_CALLBACK, 20, 0)
+IRQ_BUILD_HANDLER(UT_IRQ_HANDLER_02, &UT_IRQ_HANDLER_02_CALLBACK, 20, 0)
 
 // --------------------------------------------------------------------------------
 
@@ -190,7 +190,7 @@ void UT_IRQ_HANDLER_03_CALLBACK(void) {
     counter_IRQ_HANDLER_03_CALLBACK += 1;
 }
 
-IRQ_BUILD_HANDLER(UT_IRQ_HANDLER_03, UT_IRQ_HANDLER_03_CALLBACK, 20, 0)
+IRQ_BUILD_HANDLER(UT_IRQ_HANDLER_03, &UT_IRQ_HANDLER_03_CALLBACK, 20, 0)
 
 // --------------------------------------------------------------------------------
 
