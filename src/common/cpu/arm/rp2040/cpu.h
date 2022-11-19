@@ -96,7 +96,7 @@
 #define RP2040_SIO_REG_BASE_ADDRESS __UNSIGNED(0xd0000000)
 
 /**
- * @brief Offset of the gpio REGSITERS inside of the SIO STRUCTURE
+ * @brief Offset of the gpio register inside of the SIO STRUCTURE
  * 
  */
 #define RP2040_SIO_REG_GPIO_OFFSET  __UNSIGNED(0x04)
@@ -119,6 +119,12 @@
  */
 #define RP2040_IRQ_CLEAR_ENABLE_REG_ADDRESS __UNSIGNED(0xe0000000) + __UNSIGNED(0x0000e180)
 
+/**
+ * @brief Offset of the Timer Register of the RP2040
+ * 
+ */
+#define RP2040_TIMER_REG_ADDRESS __UNSIGNED(0x40054000)
+
 // --------------------------------------------------------------------------------
 
 /**
@@ -131,6 +137,7 @@
 
 /**
  * @brief Number of IRQs available on the RP2040 MCU
+ * @see Datasheet section 2.3.2 on page 60
  * 
  */
 #define RP2040_NUM_IRQ              26
@@ -146,6 +153,17 @@
  * @brief Basse-address of the uart1 control-register of the RP2040
  */
 #define RP2040_UART1_REG_BASE_ADDRESS       __UNSIGNED(0x40038000)
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Number of the RP2040 IRQs
+ * @see Datasheet section 2.3.2 on page 60
+ * 
+ */
+
+#define IRQ_NUM_TIMER0                      __UNSIGNED(0)
+#define IRQ_NUM_UART0                       __UNSIGNED(20)
 
 // --------------------------------------------------------------------------------
 
