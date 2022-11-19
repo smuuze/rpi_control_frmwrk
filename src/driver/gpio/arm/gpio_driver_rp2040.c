@@ -299,19 +299,22 @@ typedef struct {
  */
 static u8 gpio_driver_get_pin_number(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
-    u8 pin_num = (p_pin_descr->port_id - 1U) * 8U;
+    /**
+     * @brief Realizes a direct access to the gpio-num.
+     */
+    static u8 gpio_num_array[5][9] = {
+        {  0,  1,  2,  3,  4,  5,  6,  7}, // Port A
+        {  8,  9, 10, 11, 12, 13, 14, 15}, // Port B
+        { 16, 17, 18, 19, 20, 21, 22, 23}, // Port C
+        { 24, 25, 26, 27, 28, 29, 30, 31}  // Port D
+    };
 
-    switch (p_pin_descr->pin_id) {
-        default: // no break;
-        case GPIO_PIN_0: pin_num += 0U; break;
-        case GPIO_PIN_1: pin_num += 1U; break;
-        case GPIO_PIN_2: pin_num += 2U; break;
-        case GPIO_PIN_3: pin_num += 3U; break;
-        case GPIO_PIN_4: pin_num += 4U; break;
-        case GPIO_PIN_5: pin_num += 5U; break;
-        case GPIO_PIN_6: pin_num += 6U; break;
-        case GPIO_PIN_7: pin_num += 7U; break;
-    }
+    u8 pin_num = gpio_num_array[p_pin_descr->port_id][p_pin_descr->pin_id];
+
+    // DEBUG_PASS("=====================================================");
+    // DEBUG_TRACE_byte(p_pin_descr->port_id, "gpio_driver_get_pin_number() - GPIO-PORT:"); 
+    // DEBUG_TRACE_byte(p_pin_descr->pin_id, "gpio_driver_get_pin_number() - GPIO-PIN:"); 
+    // DEBUG_TRACE_byte(pin_num, "gpio_driver_get_pin_number() - GPIO-NUM:");
 
     return pin_num;
 }

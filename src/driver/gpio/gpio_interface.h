@@ -114,15 +114,14 @@
  * 
  */
 
-#define GPIO_PIN_0      0x01U
-#define GPIO_PIN_1      0x02U
-#define GPIO_PIN_2      0x04U
-#define GPIO_PIN_3      0x08U
-#define GPIO_PIN_4      0x10U
-#define GPIO_PIN_5      0x20U
-#define GPIO_PIN_6      0x40U
-#define GPIO_PIN_7      0x80U
-#define GPIO_PORT_E     5U
+#define GPIO_PIN_0      0x00U
+#define GPIO_PIN_1      0x01U
+#define GPIO_PIN_2      0x02U
+#define GPIO_PIN_3      0x03U
+#define GPIO_PIN_4      0x04U
+#define GPIO_PIN_5      0x05U
+#define GPIO_PIN_6      0x06U
+#define GPIO_PIN_7      0x07U
 
 //-----------------------------------------------------------------------------
 
@@ -130,11 +129,11 @@
  * @brief Port-IDs
  * 
  */
-#define GPIO_PORT_A     1U
-#define GPIO_PORT_B     2U
-#define GPIO_PORT_C     3U
-#define GPIO_PORT_D     4U
-#define GPIO_PORT_E     5U
+#define GPIO_PORT_A     0x00U
+#define GPIO_PORT_B     0x01U
+#define GPIO_PORT_C     0x02U
+#define GPIO_PORT_D     0x03U
+#define GPIO_PORT_E     0x04U
 
 //-----------------------------------------------------------------------------
 
