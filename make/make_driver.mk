@@ -17,6 +17,11 @@ ifneq '' '$(findstring CLK,$(DRIVER_MODULE_CFG))'
 	CSRCS += $(APP_PATH)/driver/clock/clock_driver_$(MCU_NAME).c
 endif
 
+ifneq '' '$(findstring IRQ,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_IRQ=1
+	CSRCS += $(APP_PATH)/driver/irq/irq_driver_$(MCU_NAME).c
+endif
+
 ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 
 	ifneq '' '$(findstring GPIO_NO_INIT_ON_START,$(DRIVER_MODULE_CFG))'
@@ -112,3 +117,4 @@ ifneq '' '$(findstring TIMER1,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_TIMER0=1
 	CSRCS += $(APP_PATH)/driver/timer/timer1_driver_atmega1284p.c
 endif
+
