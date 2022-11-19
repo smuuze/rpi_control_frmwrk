@@ -10,36 +10,42 @@ printf "========================================================\n\n" #> $log_fi
 printf "Starting UNITTESTS - Time: %s\n\n" $time #>> $log_file
 
 source_dir_list=(
-        cfg_file_parser
-	log_interface
-	#pca9670_driver_test
-	#rpi_protocol_handler_test
-	cli_argument
-	#power_management_test
-	rpi_protocol_host
-	cli_executer
-	math_module
-	print_trace_object
-	signal_slot_interface
-	#gpio_driver_test
-	mqtt_interface
-	qeue_interface
-	#timer
-	ir_remote_sony
-	ir_remote_led_lights
-	msg_executer
-	#timer_test
-	json_parser
-	parse_trace_object
-	rpi_protocol_client
-	read_trace_object
-	power_management
+    cfg_file_parser
+    cli_argument
+    cli_executer
+    cli_handler_gpio
+    cli_remote_control
+    # clock_driver_rp2040
+    gpio_driver_rp2040
+    ir_remote_led_lights
+    ir_remote_sony
+    irq_interface_rp2040
+    json_parser
+    log_interface
+    math_module
+    mqtt_interface
+    msg_executer
+    parse_trace_object
+    power_management
+    print_trace_object
+    qeue_interface
+    read_trace_object
+    rpi_protocol_client
+    rpi_protocol_host
+    signal_slot_interface
+    uart_driver_rp2040
+    #pca9670_driver_test
+    #rpi_protocol_handler_test
+    #power_management_test
+    #gpio_driver_test
+    #timer
+    #timer_test
 )
 
 for i in "${!source_dir_list[@]}"; do
 
         source_dir=${source_dir_list[$i]}
-	time=$(date +"%H:%M:%S")
+    time=$(date +"%H:%M:%S")
 
         printf "\n\n%s\n" "---------------------------------------------------------------" #>> $log_file
         printf " - TIME: $time\n" #>> $log_file
@@ -63,17 +69,17 @@ for i in "${!source_dir_list[@]}"; do
 
         printf "%s\n" " - STARTING UNITTEST:" #>> $log_file
 
-	cd $source_dir
-	if make clean all run; then
-		printf "%s\n" "- SUCCESS";
-	else
-		printf "%s\n" "- FAILED !!!";
-		exit 1;
-	fi
+    cd $source_dir
+    if make clean all run; then
+        printf "%s\n" "- SUCCESS";
+    else
+        printf "%s\n" "- FAILED !!!";
+        exit 1;
+    fi
 
-	printf "%s\n" " - CLEANING UP"
-	make clean
+    printf "%s\n" " - CLEANING UP"
+    make clean
 
-	printf "\n\n"
-	cd ..
+    printf "\n\n"
+    cd ..
 done

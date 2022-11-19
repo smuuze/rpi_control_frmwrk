@@ -78,6 +78,10 @@ typedef volatile uint32_t io_wo_32;
 
 #define HAS_DRIVER_USART0           1
 
+#ifndef IRQ_NUM_UART0
+#define IRQ_NUM_UART0                  20
+#endif
+
 // --------------------------------------------------------------------------------
 
 /**

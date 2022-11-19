@@ -245,6 +245,9 @@ static void TEST_CASE_add_handler_and_execute_01(void) {
 
         // adding a handler does not cause calling it
         UT_CHECK_IS_EQUAL(counter_IRQ_HANDLER_01_CALLBACK, 0);
+        
+        // reset all counters and registers
+        unittest_reset_counter();
 
         // Raise IRQ 20 - the handler is deactivated so it must not be called
         IRQ_20_Handler();

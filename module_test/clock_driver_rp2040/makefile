@@ -1,7 +1,7 @@
 
 #-----------------------------------------------------------------------------
 
-PROJECT = UNITTEST_gpio_driver_rp2040
+PROJECT = UNITTEST_clock_driver_rp2040
 
 BOARD_ID = EMPTY
 
@@ -25,7 +25,7 @@ MCU = UNITTEST
 
 #-----------------------------------------------------------------------------
 
-CSRCS += unittest_gpio_driver_rp2040.c
+CSRCS += unittest_clock_driver_rp2040.c
 
 #-----------------------------------------------------------------------------
 
@@ -58,9 +58,9 @@ EXPANSION_BOARD_CFG =
 #-----------------------------------------------------------------------------
 
 DRIVER_MODULE_CFG =
-DRIVER_MODULE_CFG += GPIO_RP2040
+# DRIVER_MODULE_CFG += GPIO_RP2040
 #DRIVER_MODULE_CFG += RTC
-#DRIVER_MODULE_CFG += CLK
+DRIVER_MODULE_CFG += CLK
 #DRIVER_MODULE_CFG += USART0
 #DRIVER_MODULE_CFG += I2C0
 #DRIVER_MODULE_CFG += SPI0
