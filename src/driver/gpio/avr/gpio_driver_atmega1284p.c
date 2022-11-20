@@ -115,6 +115,113 @@ INCLUDE_GPIO_REFRENCE(GPIO_PORT_D, GPIO_PIN_7)
 // --------------------------------------------------------------------------------
 
 /**
+ * @brief 
+ * 
+ * @param pin 
+ * @return u8 
+ */
+static u8 gpio_driver_atmega1284p_get_pin_number(u8 pin) {
+    static u8 pin_array[] = {
+        0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x020, 0x40
+    };
+
+    return pin_array[pin];
+}
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Sets the level of the given pin at the given port to high.
+ * If the port is unknown, nothing happens.
+ * 
+ * @param port port where to set the high-level
+ * @param pin_num pin where to set the high-level
+ */
+static void gpio_driver_atmega1284p_set_pin_level_high(u8 port, u8 pin_num) {
+    switch (port) {
+        case GPIO_PORT_A : PORTA |= (pin_num); break;
+        case GPIO_PORT_B : PORTB |= (pin_num); break;
+        case GPIO_PORT_C : PORTC |= (pin_num); break;
+        case GPIO_PORT_D : PORTD |= (pin_num); break;
+        default: break;
+    }
+}
+
+/**
+ * @brief Sets the level of the given pin at the given port to low.
+ * If the port is unknown, nothing happens.
+ * 
+ * @param port port where to set the low-level
+ * @param pin_num pin where to set the low-level
+ */
+static void gpio_driver_atmega1284p_set_pin_level_low(u8 port, u8 pin_num) {
+    switch (port) {
+        case GPIO_PORT_A : PORTA &= (unsigned char)~(pin_num); break;
+        case GPIO_PORT_B : PORTB &= (unsigned char)~(pin_num); break;
+        case GPIO_PORT_C : PORTC &= (unsigned char)~(pin_num); break;
+        case GPIO_PORT_D : PORTD &= (unsigned char)~(pin_num); break;
+        default: break;
+    }
+}
+
+/**
+ * @brief Sets the level of the given pin at the given port to high-z.
+ * If the port is unknown, nothing happens.
+ * 
+ * @param port port where to set high-z
+ * @param pin_num pin where to set high-z
+ */
+static inline void gpio_driver_atmega1284p_set_pin_level_high_z(u8 port, u8 pin_num) {
+    switch (port) {
+        case GPIO_PORT_A :  PORTA &= (unsigned char)~(pin);
+                            DDRA  &= (unsigned char)~(pin);
+                            break;
+        case GPIO_PORT_B :  PORTB &= (unsigned char)~(pin);
+                            DDRB  &= (unsigned char)~(pin);
+                            break;
+        case GPIO_PORT_C :  PORTC &= (unsigned char)~(pin);
+                            DDRC  &= (unsigned char)~(pin);
+                            break;
+        case GPIO_PORT_D :  PORTD &= (unsigned char)~(pin);
+                            DDRD  &= (unsigned char)~(pin);
+                            break;
+        default: break;
+    }
+}
+
+/**
+ * @brief Sets the level of the given pin at the given port.
+ * If an unknown level is given, the pin-level will be set to GPIO_LEVEL_HIGH_Z
+ * 
+ * @param port port where to set the new level ( A,B,C,D )
+ * @param pin pin where to set the new level ( 0,1,2,3, ... )
+ * @param level Level to be set (GPIO_LEVEL_HIGH, GPIO_LEVEL_LOW, GPIO_LEVEL_HIGH_Z)
+ */
+static void gpio_driver_atmega1284p_set_pin_level(u8 port, u8 pin, GPIO_DRIVER_LEVEL level) {
+
+    if (level == GPIO_LEVEL_HIGH) {
+        gpio_driver_atmega1284p_set_pin_level_high(
+            port,
+            gpio_driver_atmega1284p_get_pin_number(pin)
+        );
+
+    } else if (level == GPIO_LEVEL_LOW) {
+        gpio_driver_atmega1284p_set_pin_level_low(
+            port,
+            gpio_driver_atmega1284p_get_pin_number(pin)
+        );
+
+    } else {
+        gpio_driver_atmega1284p_set_pin_level_high_z(
+            port,
+            gpio_driver_atmega1284p_get_pin_number(pin)
+        );
+    }
+}
+
+// --------------------------------------------------------------------------------
+
+/**
  * @see gpio_interface.h#gpio_driver_init
  */
 void gpio_driver_init(void) {
@@ -248,23 +355,20 @@ void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_D
     u8 port_id = GPIO_DRIVER_GET_PORT(p_pin_descr);
     u8 pin_num = GPIO_DRIVER_GET_PIN(p_pin_descr);
 
-    TRACE_byte(port_id);  // gpio_driver_set_level() - PORT
-    TRACE_byte(pin_num);  // gpio_driver_set_level() - PIN
-    TRACE_byte(level);  // gpio_driver_set_level() - LEVEL
+    DEBUG_TRACE_byte(p_pin_descr->port_id, "gpio_driver_set_level() - PORT");
+    DEBUG_TRACE_byte(pin_num, "gpio_driver_set_level() - PIN");
+    DEBUG_TRACE_byte(level, "gpio_driver_set_level() - LEVEL");
 
     if (GPIO_DRIVER_PIN_IS_INVERTED(p_pin_descr) != 0) {
-
         GPIO_DRIVER_INVERT_LEVEL(level);
-        TRACE_byte(level);  // gpio_driver_get_level() - LEVEL inverted
+        DEBUG_TRACE_byte(level, "gpio_driver_get_level() - LEVEL inverted");
     }
 
-    switch (port_id) {
-        case GPIO_PORT_A: GPIO_DRIVER_SET_PIN_LEVEL(A, pin_num, level) break;
-        case GPIO_PORT_B: GPIO_DRIVER_SET_PIN_LEVEL(B, pin_num, level) break;
-        case GPIO_PORT_C: GPIO_DRIVER_SET_PIN_LEVEL(C, pin_num, level) break;
-        case GPIO_PORT_D: GPIO_DRIVER_SET_PIN_LEVEL(D, pin_num, level) break;
-        default: break;
-    }
+    gpio_driver_atmega1284p_set_pin_level(
+        p_pin_descr->port_id,
+        p_pin_descr->pin_id,
+        level
+    );
 }
 
 // --------------------------------------------------------------------------------
