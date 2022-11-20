@@ -60,19 +60,6 @@ jobs:
     - name: run unittest
       run: make run
       
-  unittest_clock_driver_rp2040:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/clock_driver_rp2040
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-      
   unittest_gpio_driver_rp2040:
     runs-on: macos-latest
     defaults:
