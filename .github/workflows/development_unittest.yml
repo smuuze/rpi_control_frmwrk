@@ -7,153 +7,19 @@ on:
     branches: [ dev ]
 
 jobs:
-
-  unittest_qeue_unterface:
+  unittest_cfg_file_parser:
     runs-on: macos-latest
     defaults:
       run:
         shell: bash
-        working-directory: module_test/qeue_interface
+        working-directory: module_test/cfg_file_parser
     steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-
-  unittest_log_interface:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/log_interface
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-
-  unittest_message_executer:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/msg_executer
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-
-  unittest_rpi_protocol_client:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/rpi_protocol_client
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-
-  unittest_mqtt_interface:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/mqtt_interface
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-
-  unittest_rpi_protocol_host:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/rpi_protocol_host
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-
-  unittest_json_parser:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/json_parser
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-
-  unittest_math_module:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/math_module
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-
-  unittest_ir_remote_sony:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/ir_remote_sony
-    steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: build unittest
       run: make all
     - name: run unittest
       run: make run
       
-
-  unittest_signal_slot_interface:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/signal_slot_interface
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-      
-
-  unittest_cli_executer:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/cli_executer
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-      
-
   unittest_cli_argument:
     runs-on: macos-latest
     defaults:
@@ -165,42 +31,17 @@ jobs:
     - name: build unittest
       run: make all
     - name: run unittest
-      run: make run
+      run: make run   
       
-  unittest_print_trace_object:
+      
+  unittest_cli_executer:
     runs-on: macos-latest
     defaults:
       run:
         shell: bash
-        working-directory: module_test/print_trace_object
+        working-directory: module_test/cli_executer
     steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-      
-  unittest_parse_trace_object:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/parse_trace_object
-    steps:
-    - uses: actions/checkout@v2
-    - name: build unittest
-      run: make all
-    - name: run unittest
-      run: make run
-      
-  unittest_cfg_file_parser:
-    runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: module_test/cfg_file_parser
-    steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: build unittest
       run: make all
     - name: run unittest
@@ -219,12 +60,25 @@ jobs:
     - name: run unittest
       run: make run
       
-  unittest_power_management:
+  unittest_clock_driver_rp2040:
     runs-on: macos-latest
     defaults:
       run:
         shell: bash
-        working-directory: module_test/power_management
+        working-directory: module_test/clock_driver_rp2040
+    steps:
+    - uses: actions/checkout@v2
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_gpio_driver_rp2040:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/gpio_driver_rp2040
     steps:
     - uses: actions/checkout@v2
     - name: build unittest
@@ -239,8 +93,219 @@ jobs:
         shell: bash
         working-directory: module_test/ir_remote_led_lights
     steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_ir_remote_sony:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/ir_remote_sony
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_irq_driver_rp2040:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/irq_interface_rp2040
+    steps:
     - uses: actions/checkout@v2
     - name: build unittest
       run: make all
     - name: run unittest
       run: make run
+      
+  unittest_json_parser:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/json_parser
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_log_interface:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/log_interface
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_math_module:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/math_module
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_mqtt_interface:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/mqtt_interface
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_message_executer:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/msg_executer
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_parse_trace_object:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/parse_trace_object
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_power_management:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/power_management
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+            
+  unittest_print_trace_object:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/print_trace_object
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+        
+  unittest_queue_unterface:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/qeue_interface
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_read_trace_object:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/read_trace_object
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+      
+  unittest_rpi_protocol_client:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/rpi_protocol_client
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run   
+
+  unittest_rpi_protocol_host:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/rpi_protocol_host
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run  
+ 
+  unittest_signal_slot_interface:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/signal_slot_interface
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+
+  unittest_uart_driver_rp2040:
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: module_test/uart_driver_rp2040
+    steps:
+    - uses: actions/checkout@v3
+    - name: build unittest
+      run: make all
+    - name: run unittest
+      run: make run
+
+
+      
