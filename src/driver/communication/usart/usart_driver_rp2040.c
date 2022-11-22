@@ -82,7 +82,7 @@
 #define LOCAL_USART_STATUS_RX_ACTIVE            __UNSIGNED(0)
 #define LOCAL_USART_STATUS_TX_ACTIVE            __UNSIGNED(1)
 
-BUILD_MODULE_STATUS_FAST_VOLATILE(UART0_STATUS_REG, 2)
+BUILD_MODULE_STATUS_FAST(UART0_STATUS_REG, 2)
 
 // --------------------------------------------------------------------------------
 
