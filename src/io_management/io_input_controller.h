@@ -30,7 +30,7 @@ typedef struct IO_INPUT_DESCRIPTOR_T {
 
 	u8 id;
 
-	const GPIO_DRIVER_PIN_DESCRIPTOR* pin_descriptor;
+	GPIO_DRIVER_PIN_DESCRIPTOR* pin_descriptor;
 	GPIO_DRIVER_LEVEL actual_pin_state;
 
 	u8 down;

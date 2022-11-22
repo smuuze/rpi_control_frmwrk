@@ -29,7 +29,7 @@ typedef struct IO_OUTPUT_DESCRIPTOR {
 
 	u8 id;
 
-	const GPIO_DRIVER_PIN_DESCRIPTOR* pin_descriptor;
+	GPIO_DRIVER_PIN_DESCRIPTOR* pin_descriptor;
 	IO_TYPE type;
 
 	u8 actual_pin_state;
