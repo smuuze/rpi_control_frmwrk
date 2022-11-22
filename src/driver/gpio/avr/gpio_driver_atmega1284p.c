@@ -43,36 +43,7 @@
 
 // --------------------------------------------------------------------------------
 
-// #define SET_PIN_AS_INPUT(port, pin)                    DDR##port &= (unsigned char)~(pin)
-// #define SET_PIN_AS_OUTPUT(port, pin)                    DDR##port |= (pin)
-
-#define GPIO_DRIVER_IS_OUTPUT(p_pin_descr)                ((p_pin_descr->pin_cfg & GPIO_OUTPUT) != 0 ? 1 : 0)
-#define GPIO_DRIVER_PIN_IS_DEACTIVATED(p_descr)                ((p_pin_descr->pin_cfg & GPIO_DEACTIVATE) != 0 ? 1 : 0)
-
-// #define GPIO_DRIVER_SET_PIN_DIRECTION(port, pin, direction)        if (direction == GPIO_DIRECTION_INPUT) {        \
-//                                         SET_PIN_AS_INPUT(port, pin);            \
-//                                                                         } else {                        \
-//                                                                             SET_PIN_AS_OUTPUT(port, pin);            \
-//                                                                         }
-
-// #define SET_PIN_HIGH_LEVEL(port, pin)                               PORT##port |= (pin)
-// #define SET_PIN_LOW_LEVEL(port, pin)                                PORT##port &= (unsigned char)~(pin)
-// #define SET_PIN_HIGH_Z(port, pin)                                  PORT##port &= (unsigned char)~(pin); DDR##port &= (unsigned char)~(pin)
-
-// #define GPIO_DRIVER_SET_PIN_LEVEL(port, pin, level)                if (level == GPIO_LEVEL_HIGH) {                \
-//                                                                             SET_PIN_HIGH_LEVEL(port, pin);            \
-//                                                                         } else if (level == GPIO_LEVEL_LOW) {            \
-//                                                                             SET_PIN_LOW_LEVEL(port, pin);            \
-//                                                                         } else {                        \
-//                                                                             SET_PIN_HIGH_Z(port, pin);            \
-//                                                                         }
-
-// #define GPIO_DRIVER_TOGGLE_PIN_LEVEL(port, pin)                PORT##port ^= (pin)
-
-// #define GPIO_DRIVER_GET_PIN_LEVEL(port, pin)                (PIN##port & pin) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW
-
-// #define GPIO_DRIVER_GET_PORT(p_pin_descr)                (p_pin_descr->port_id)
-// #define GPIO_DRIVER_GET_PIN(p_pin_descr)                (p_pin_descr->pin_id)
+#include "driver/gpio/gpio_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -219,17 +190,17 @@ static inline void gpio_driver_atmega1284p_set_pin_level_low(u8 port, u8 pin_num
  */
 static inline void gpio_driver_atmega1284p_set_pin_level_high_z(u8 port, u8 pin_num) {
     switch (port) {
-        case GPIO_PORT_A :  PORTA &= (unsigned char)~(pin);
-                            DDRA  &= (unsigned char)~(pin);
+        case GPIO_PORT_A :  PORTA &= (unsigned char)~(pin_num);
+                            DDRA  &= (unsigned char)~(pin_num);
                             break;
-        case GPIO_PORT_B :  PORTB &= (unsigned char)~(pin);
-                            DDRB  &= (unsigned char)~(pin);
+        case GPIO_PORT_B :  PORTB &= (unsigned char)~(pin_num);
+                            DDRB  &= (unsigned char)~(pin_num);
                             break;
-        case GPIO_PORT_C :  PORTC &= (unsigned char)~(pin);
-                            DDRC  &= (unsigned char)~(pin);
+        case GPIO_PORT_C :  PORTC &= (unsigned char)~(pin_num);
+                            DDRC  &= (unsigned char)~(pin_num);
                             break;
-        case GPIO_PORT_D :  PORTD &= (unsigned char)~(pin);
-                            DDRD  &= (unsigned char)~(pin);
+        case GPIO_PORT_D :  PORTD &= (unsigned char)~(pin_num);
+                            DDRD  &= (unsigned char)~(pin_num);
                             break;
         default: break;
     }
@@ -291,10 +262,10 @@ static void gpio_driver_atmega1284p_toggle_pin_level(u8 port, u8 pin_num) {
  */
 static u8 gpio_driver_atmega1284p_get_pin_level(u8 port, u8 pin_num) {
     switch (port) {
-        case GPIO_PORT_A : return (PINA & pin) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW;
-        case GPIO_PORT_B : return (PINB & pin) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW;
-        case GPIO_PORT_C : return (PINC & pin) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW;
-        case GPIO_PORT_D : return (PIND & pin) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW;
+        case GPIO_PORT_A : return (PINA & pin_num) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW;
+        case GPIO_PORT_B : return (PINB & pin_num) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW;
+        case GPIO_PORT_C : return (PINC & pin_num) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW;
+        case GPIO_PORT_D : return (PIND & pin_num) != 0 ? GPIO_LEVEL_HIGH : GPIO_LEVEL_LOW;
         default: return GPIO_LEVEL_LOW;
     }
 }
@@ -504,6 +475,15 @@ void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     p_pin_descr->pin_cfg &= ~GPIO_DEACTIVATE;
     gpio_driver_init_pin(p_pin_descr);
 
+}
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @see gpio_interface.h#gpio_driver_print_pin_state
+ */
+void gpio_driver_print_pin_state(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+    (void) p_pin_descr;
 }
 
 // --------------------------------------------------------------------------------
