@@ -220,12 +220,14 @@ static IR_PROTOCOL_GENERATOR_TYPE* p_act_protocol = 0;
  */
 static void ir_remote_task_slot_IR_CMD_RECEIVED(const void* p_arg) {
 
+    const IR_COMMON_COMMAND_TYPE* p_command = (const IR_COMMON_COMMAND_TYPE*) p_arg;
+
     if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_CMD_PENDING)) {
-        DEBUG_PASS("ir_remote_task_slot_IR_CMD_RECEIVED() - Another command is pending");
+        DEBUG_TRACE_byte(p_command->type, "ir_remote_task_slot_IR_CMD_RECEIVED() - Cannot proecess IR-Command");
+        DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_slot_IR_CMD_RECEIVED() - IR-Command still pending");
         return;
     }
 
-    const IR_COMMON_COMMAND_TYPE* p_command = (const IR_COMMON_COMMAND_TYPE*) p_arg;
     ir_command.type = p_command->type;
     ir_command.data_1 = p_command->data_1;
     ir_command.data_2 = p_command->data_2;
@@ -234,7 +236,7 @@ static void ir_remote_task_slot_IR_CMD_RECEIVED(const void* p_arg) {
 
     IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_CMD_PENDING | IR_REMOTE_TASK_STATUS_CMD_RECEIVED);
 
-    DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_slot_IR_CMD_RECEIVED()");
+    DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_slot_IR_CMD_RECEIVED() - ir_command.type");
 }
 
 // --------------------------------------------------------------------------------
@@ -419,6 +421,8 @@ static void ir_remote_task_run(void) {
 
         if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
 
+            DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_run() - Start IR-Command");
+
             IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
 
             p_act_protocol = p_ir_protocol_first;
@@ -433,6 +437,11 @@ static void ir_remote_task_run(void) {
                 }
 
                 p_act_protocol = p_act_protocol->_p_next;
+            }
+                
+            if (is_active == 0) {
+                DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_run() - unknown IR-Protocol");
+                IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED);
             }
 
         } else  if (p_act_protocol != 0 && p_act_protocol->is_busy()) {
@@ -500,7 +509,7 @@ static void ir_remote_task_run(void) {
         IR_CARRIER_OUT_drive_low();
         IR_MOD_OUT_drive_low();
 
-        DEBUG_PASS("ir_remote_task_run() - All operations finished");
+        //DEBUG_PASS("ir_remote_task_run() - All operations finished");
         IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
     }
 }
