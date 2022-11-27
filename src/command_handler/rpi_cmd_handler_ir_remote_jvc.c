@@ -43,7 +43,8 @@ u8 rpi_cmd_handler_ir_remote_jvc(u8 device, u8 command) {
 	DEBUG_PASS("rpi_cmd_handler_ir_remote_jvc()");
 
 	switch (device) {
-		default:		return CMD_ERR_INVALID_ARGUMENT;
+		default:                DEBUG_TRACE_byte(device, "rpi_cmd_handler_ir_remote_jvc() - Unknown device");
+                                return CMD_ERR_INVALID_ARGUMENT;
 		case IR_DEVICE_RADIO : 	return rpi_cmd_ir_jvc_radio(command);
 	}
 }
@@ -57,7 +58,8 @@ static inline u8 rpi_cmd_ir_jvc_radio(u8 cmd) {
 
 	switch (cmd) {
 
-		default:			return CMD_ERR_INVALID_ARGUMENT;
+		default:			    DEBUG_TRACE_byte(cmd, "rpi_cmd_ir_jvc_radio() - Unknown Command:");
+                                return CMD_ERR_INVALID_ARGUMENT;
 
 		case IR_COMMAND_POWER_ON : 	ir_protocol_jvc_cmd_radio_power(&ir_command); break;
 		case IR_COMMAND_POWER_OFF :	ir_protocol_jvc_cmd_radio_power(&ir_command); break;

@@ -73,6 +73,7 @@ u8 rpi_cmd_handler_ir_remote_led_lights(u8 device, u8 command) {
 
     switch (device) {
         default:
+            DEBUG_TRACE_byte(device, "rpi_cmd_handler_ir_remote_led_lights() - Unknown Device:");
             return CMD_ERR_INVALID_ARGUMENT;
 
         case IR_DEVICE_LED_LIGHT_BAUHAUS :
@@ -85,11 +86,13 @@ u8 rpi_cmd_handler_ir_remote_led_lights(u8 device, u8 command) {
 static inline u8 rpi_cmd_ir_led_lights_bauhaus(u8 cmd) {
     
     DEBUG_TRACE_byte(cmd, "rpi_cmd_ir_led_lights_bauhaus() - Command:");
+
     IR_COMMON_COMMAND_TYPE ir_command;
 
     switch (cmd) {
 
-        default: return CMD_ERR_INVALID_ARGUMENT;
+        default:                                DEBUG_TRACE_byte(cmd, "rpi_cmd_handler_ir_remote_led_lights() - Unknown command:");
+                                                return CMD_ERR_INVALID_ARGUMENT;
 
         case IR_COMMAND_POWER_ON :              ir_command_led_lights_bauhaus_cmd_on(&ir_command); break;
         case IR_COMMAND_POWER_OFF :             ir_command_led_lights_bauhaus_cmd_off(&ir_command); break;
@@ -121,6 +124,7 @@ static inline u8 rpi_cmd_ir_led_lights_bauhaus(u8 cmd) {
     ir_command_led_lights_bauhaus_protocol_type(&ir_command);
 
     IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
-
     return CMD_NO_ERR;
 }
+
+// --------------------------------------------------------------------------------
