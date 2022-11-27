@@ -191,6 +191,11 @@ void tracer_enable(u8 enable);
 #define TRACER_ENABLE()			tracer_enable(1)
 #define TRACER_DISABLE()		tracer_enable(0)
 
+#define DEBUG_CODE_BLOCK(code_block)    \
+    do {                                \
+        code_block                      \
+    } while(0)
+
 #else
 
 //#pragma TRACES_NOT_ENABLED
@@ -213,6 +218,8 @@ void tracer_enable(u8 enable);
 
 #define TRACER_ENABLE()			do {} while(0)
 #define TRACER_DISABLE()		do {} while(0)
+
+#define DEBUG_CODE_BLOCK(code_block)    do {} while(0)
 
 #define BUILD_TRACER(name)
 
