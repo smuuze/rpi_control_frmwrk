@@ -64,6 +64,15 @@ void ir_protocol_sony_init(void);
 // --------------------------------------------------------------------------------
 
 /**
+ * @brief Sets the protocol type of the given ir-command to IR_PROTOCOL_TYPE_SONY
+ * 
+ * @param p_command Command where to set the ir-protocol type
+ */
+void ir_command_sony_protocol_type(IR_COMMON_COMMAND_TYPE* p_ir_command);
+
+// --------------------------------------------------------------------------------
+
+/**
  * @brief Sets the Address of the SOny BD900 Blueray Disc-Player.
  * 
  * @param p_command COmmand where the Device-Address ist set

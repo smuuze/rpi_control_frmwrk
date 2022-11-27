@@ -54,6 +54,12 @@
 
 // --------------------------------------------------------------------------------
 
+inline void ir_command_sony_protocol_type(IR_COMMON_COMMAND_TYPE* p_ir_command) {
+        p_ir_command->type = IR_PROTOCOL_TYPE_SONY;
+}
+
+// --------------------------------------------------------------------------------
+
 inline void ir_protocol_sony_address_bdplayer(IR_COMMON_COMMAND_TYPE* p_command) {
 	p_command->data_2   = BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1); // 0b00001011;
 	p_command->data_3 = BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1); // 0b01000111;

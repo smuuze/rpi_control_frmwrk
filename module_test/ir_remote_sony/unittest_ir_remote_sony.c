@@ -190,19 +190,20 @@ void timer0_driver_stop(void) {
 
 // slots callbacksstatic IR_COMMON_COMMAND sony_ir_command;
 
-static void uinittest_slot_IR_CMD_RECEIVED(const void* p_arg) {
+static void unittest_slot_IR_CMD_RECEIVED(const void* p_arg) {
 
-	DEBUG_PASS("uinittest_slot_IR_CMD_RECEIVED()");
+	DEBUG_PASS("unittest_slot_IR_CMD_RECEIVED()");
 
 	counter_SLOT_SONY_IR_CMD_RECEIVED += 1;
 
 	const IR_COMMON_COMMAND_TYPE* p_command = (const IR_COMMON_COMMAND_TYPE*) p_arg;
+    ir_command_received_via_signal.type = p_command->type;
 	ir_command_received_via_signal.data_1  = p_command->data_1;
 	ir_command_received_via_signal.data_2   = p_command->data_2;
 	ir_command_received_via_signal.data_3 = p_command->data_3;
 }
 
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(IR_CMD_RECEIVED_SIGNAL, UT_SONY_IR_CMD_RECEIVED_SLOT, uinittest_slot_IR_CMD_RECEIVED)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(IR_CMD_RECEIVED_SIGNAL, UT_SONY_IR_CMD_RECEIVED_SLOT, unittest_slot_IR_CMD_RECEIVED)
 
 // --------------------------------------------------------------------------------
 
@@ -314,6 +315,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,0,1,0,1,0,0,0));
@@ -324,6 +326,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,1,0,1,1,0,0,0));
@@ -334,6 +337,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,0,0,1,1,0,0,0));
@@ -344,6 +348,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,0,0,1,1,0,0,0));
@@ -354,6 +359,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,0,1,0,0,1,1,0));
@@ -364,6 +370,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,1,0,0,0,1,1,0));
@@ -374,6 +381,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,0,0));
@@ -384,6 +392,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,1,0,0,0,0,1,0));
@@ -394,6 +403,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,0,1,1,0,1,0,0));
@@ -404,6 +414,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,0,0,1,0,1,0,0));
@@ -414,6 +425,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(0,1,1,0,1,0,1,0));
@@ -424,6 +436,7 @@ static void TEST_CASE_ir_device_operation(void) {
 		
 		UT_CHECK_IS_EQUAL(err_code, CMD_NO_ERR);
 		UT_CHECK_IS_EQUAL(counter_SLOT_SONY_IR_CMD_RECEIVED, 1);
+		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_SONY);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, BUILD_BIT_VECTOR_U8(0,0,0,0,1,0,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_3, BUILD_BIT_VECTOR_U8(0,1,0,0,0,1,1,1));
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_1, BUILD_BIT_VECTOR_U8(1,1,1,0,1,0,1,0));
@@ -599,7 +612,6 @@ int main(void) {
 		TEST_CASE_initialization();
 
 		UT_SONY_IR_CMD_RECEIVED_SLOT_connect();
-
 		TEST_CASE_ir_command_build();
 		TEST_CASE_ir_device_operation();
 		TEST_CASE_ir_invalid_device_operation();

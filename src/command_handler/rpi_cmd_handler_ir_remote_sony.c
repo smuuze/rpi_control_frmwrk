@@ -57,11 +57,13 @@
 static inline u8 rpi_cmd_ir_sony_bdplayer(u8 command) {
     
     DEBUG_TRACE_byte(command, "rpi_cmd_ir_sony_bdplayer() - Command:");
+    
     IR_COMMON_COMMAND_TYPE ir_command;
 
     switch (command) {
 
-        default:                                return CMD_ERR_INVALID_ARGUMENT;
+        default:                                DEBUG_TRACE_byte(command, "rpi_cmd_ir_sony_bdplayer() - Unknown command:");
+                                                return CMD_ERR_INVALID_ARGUMENT;
 
         case IR_COMMAND_POWER_ON :              ir_protocol_sony_cmd_bdplayer_power(&ir_command); break;
         case IR_COMMAND_POWER_OFF :             ir_protocol_sony_cmd_bdplayer_power(&ir_command); break;
@@ -85,9 +87,9 @@ static inline u8 rpi_cmd_ir_sony_bdplayer(u8 command) {
     }
 
     ir_protocol_sony_address_bdplayer(&ir_command);
+    ir_command_sony_protocol_type(&ir_command);
 
     IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
-
     return CMD_NO_ERR;
 }
 
@@ -103,6 +105,7 @@ u8 rpi_cmd_handler_ir_remote_sony(u8 device, u8 command) {
     switch (device) {
 
         default:
+            DEBUG_TRACE_byte(device, "rpi_cmd_handler_ir_remote_sony() - Unknown device");
             return CMD_ERR_INVALID_ARGUMENT;
 
         case IR_DEVICE_BLUE_RAY_PLAYER :
