@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="727px" preserveAspectRatio="none" style="width:518px;height:727px;background:#FFFFFF;" version="1.1" viewBox="0 0 518 727" width="518px" zoomAndPan="magnify"><defs/><g><!--MD5=[f0489d53b3290ddc38b0fd0cf4d5ba6f]
+cluster component: rpi_control_frmwrk - structure - LCD-Task--><g id="cluster_component: rpi_control_frmwrk - structure - LCD-Task"><rect fill="none" height="714" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="505" x="7" y="7"/><path d="M419,7 L419,16.4883 L409,26.4883 L7,26.4883 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="402" x="10" y="21.5352">component: rpi_control_frmwrk - structure - LCD-Task</text></g><!--MD5=[9681dc6e01e10c6b4fe06895ae94f592]
+cluster UI--><g id="cluster_UI"><path d="M33.5,213 L49.5,213 A3.75,3.75 0 0 1 52,215.5 L59,235.4883 L485.5,235.4883 A2.5,2.5 0 0 1 488,237.9883 L488,531.5 A2.5,2.5 0 0 1 485.5,534 L33.5,534 A2.5,2.5 0 0 1 31,531.5 L31,215.5 A2.5,2.5 0 0 1 33.5,213 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="59" y1="235.4883" y2="235.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="15" x="35" y="228.5352">UI</text></g><!--MD5=[cae1f897efeef0ee679e88e502e44546]
+cluster LCD_Task--><g id="cluster_LCD_Task"><rect fill="#DDDDDD" height="254" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="409" x="55" y="256"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:1.0;" width="15" x="444" y="261"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:1.0;" width="4" x="442" y="263"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:1.0;" width="4" x="442" y="267"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="71" x="224" y="282.5352">LCD_Task</text></g><!--MD5=[24862688b7912ea88a85823be436e46b]
+cluster MCU-Task-Controller--><g id="cluster_MCU-Task-Controller"><path d="M268.5,583 L428.5,583 A3.75,3.75 0 0 1 431,585.5 L438,605.4883 L485.5,605.4883 A2.5,2.5 0 0 1 488,607.9883 L488,694.5 A2.5,2.5 0 0 1 485.5,697 L268.5,697 A2.5,2.5 0 0 1 266,694.5 L266,585.5 A2.5,2.5 0 0 1 268.5,583 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="266" x2="438" y1="605.4883" y2="605.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="159" x="270" y="598.5352">MCU-Task-Controller</text></g><!--MD5=[54bb6d7a037149ef75f792f06aa0aa50]
+cluster Common--><g id="cluster_Common"><path d="M46.5,50 L112.5,50 A3.75,3.75 0 0 1 115,52.5 L122,72.4883 L203.5,72.4883 A2.5,2.5 0 0 1 206,74.9883 L206,161.5 A2.5,2.5 0 0 1 203.5,164 L46.5,164 A2.5,2.5 0 0 1 44,161.5 L44,52.5 A2.5,2.5 0 0 1 46.5,50 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="44" x2="122" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="65" x="48" y="65.5352">Common</text></g><!--MD5=[61c41a14a0f790ada34cbd71756aea65]
+cluster Driver--><g id="cluster_Driver"><path d="M54.5,583 L99.5,583 A3.75,3.75 0 0 1 102,585.5 L109,605.4883 L203.5,605.4883 A2.5,2.5 0 0 1 206,607.9883 L206,694.5 A2.5,2.5 0 0 1 203.5,697 L54.5,697 A2.5,2.5 0 0 1 52,694.5 L52,585.5 A2.5,2.5 0 0 1 54.5,583 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="52" x2="109" y1="605.4883" y2="605.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="44" x="56" y="598.5352">Driver</text></g><!--MD5=[0c3933294a5584922fd5b97341eb39c8]
+entity fifo--><g id="elem_fifo"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="133" x="303.5" y="291"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="416.5" y="296"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="414.5" y="298"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="414.5" y="302"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="45" x="318.5" y="324.5352">«FIFO»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="93" x="318.5" y="341.0234">Text Line Fifo</text></g><!--MD5=[75ab4b0ac1f75c462f5db4fd1620605d]
+entity slot_line--><g id="elem_slot_line"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="107" x="71.5" y="291"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="158.5" y="296"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="156.5" y="298"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="156.5" y="302"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="49" x="86.5" y="324.5352">«SLOT»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="67" x="86.5" y="341.0234">NEW-LINE</text></g><!--MD5=[2f9f41d9c5ad817105798ee009302b84]
+entity control_task--><g id="elem_control_task"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="316" y="431"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="428" y="436"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="426" y="438"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="426" y="442"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46" x="331" y="464.5352">«Task»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="331" y="481.0234">Control-Task</text></g><!--MD5=[d7a9d39ad06b899856de69d8a0b4d78c]
+entity lcd_driver--><g id="elem_lcd_driver"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="116" x="71" y="431"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="167" y="436"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="165" y="438"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="165" y="442"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="55" x="86" y="464.5352">«Driver»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="76" x="86" y="481.0234">LCD-Driver</text></g><!--MD5=[273985dacfadf938551df6be5ab6c738]
+entity task_controller--><g id="elem_task_controller"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="190" x="282" y="618"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="452" y="623"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="450" y="625"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="450" y="629"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="84" x="297" y="651.5352">«Controller»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="150" x="297" y="668.0234">MCU-Task-Controller</text></g><!--MD5=[9c2095476b4fe227be2bfa51a11a4f31]
+entity signal_slot--><g id="elem_signal_slot"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="130" x="60" y="85"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="170" y="90"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="168" y="92"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="168" y="96"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="90" x="75" y="118.5352">«Signal-Slot»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="79" x="75" y="135.0234">Signal-SLot</text></g><!--MD5=[b17ffb53d0aa0ff4f68e1e240137bc9f]
+entity gpio_driver--><g id="elem_gpio_driver"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="122" x="68" y="618"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="170" y="623"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="168" y="625"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="168" y="629"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="55" x="83" y="651.5352">«Driver»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="82" x="83" y="668.0234">GPIO-Driver</text></g><!--MD5=[f6e7969e0a6476a601012550b918d89b]
+link slot_line to fifo--><g id="link_slot_line_fifo"><path codeLine="31" d="M178.77,322.5 C213.39,322.5 258.84,322.5 296.74,322.5 " fill="none" id="slot_line-to-fifo" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="301.73,322.5,292.73,318.5,296.73,322.5,292.73,326.5,301.73,322.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="88" x="197" y="316.0684">store new line</text></g><!--MD5=[1dc705ca0fa8504a48ea58c0c5e6a93a]
+reverse link fifo to control_task--><g id="link_fifo_control_task"><path codeLine="33" d="M373.24,360.78 C375.14,382.65 377.52,409.97 379.32,430.63 " fill="none" id="fifo-backto-control_task" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="372.82,355.98,369.6055,365.2895,373.2482,360.9616,377.5761,364.6044,372.82,355.98" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="86" x="377" y="397.5684">read next line</text></g><!--MD5=[3549a95106796d5392b2376064dd569d]
+reverse link lcd_driver to control_task--><g id="link_lcd_driver_control_task"><path codeLine="34" d="M193.76,462.5 C231.21,462.5 278.23,462.5 315.9,462.5 " fill="none" id="lcd_driver-backto-control_task" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="188.87,462.5,197.87,466.5,193.87,462.5,197.87,458.5,188.87,462.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="92" x="205.5" y="456.0684">update display</text></g><!--MD5=[f51a9d5e8dca7b1afb255cc8386e7ac5]
+link signal_slot to slot_line--><g id="link_signal_slot_slot_line"><path codeLine="59" d="M125,148.48 C125,184.98 125,245.57 125,284.5 " fill="none" id="signal_slot-to-slot_line" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="125,289.05,129,280.05,125,284.05,121,280.05,125,289.05" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="118" x="126" y="193.5684">SIGNAL(NEW-LINE)</text></g><!--MD5=[788fbadc8fbd6dee11f5abe0cea8237d]
+reverse link control_task to task_controller--><g id="link_control_task_task_controller"><path codeLine="60" d="M380.99,500.69 C380.07,535.08 378.7,585.58 377.83,617.74 " fill="none" id="control_task-backto-task_controller" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="381.12,495.98,376.89,504.8742,380.9915,500.9783,384.8873,505.0798,381.12,495.98" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="63" x="380" y="563.5684">schedules</text></g><!--MD5=[2edffdcee056905c939edc54b38050f8]
+link lcd_driver to gpio_driver--><g id="link_lcd_driver_gpio_driver"><path codeLine="61" d="M129,494.46 C129,526.71 129,577.22 129,611.53 " fill="none" id="lcd_driver-to-gpio_driver" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="129,616.23,133,607.23,129,611.23,125,607.23,129,616.23" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[6e40fcc2f0d15443e31b0f37cdc95e9c]
+@startuml rpi_control_frmwrk_diagram_component_lcd_task
+
+skinparam monochrome true
+'skinparam linetype ortho
+skinparam style strictuml
+
+frame "component: rpi_control_frmwrk - structure - LCD-Task" {
+
+    package "UI" {
+        component LCD_Task #DDDDDD {
+
+            component fifo [
+                <<FIFO>>
+                Text Line Fifo
+            ]
+
+            component slot_line [
+                <<SLOT>>
+                NEW-LINE
+            ]
+
+            component control_task [
+                <<Task>>
+                Control-Task
+            ]
+
+            component lcd_driver [
+                <<Driver>>
+                LCD-Driver
+            ]
+
+            slot_line -right-> fifo : store new line
+
+            control_task -up-> fifo : read next line
+            control_task -left-> lcd_driver : update display
+        }
+    }
+
+    package "MCU-Task-Controller" {
+        component task_controller[
+            <<Controller>>
+            MCU-Task-Controller
+        ]
+    }
+
+    package "Common" {
+        component signal_slot [
+            <<Signal-Slot>>
+            Signal-SLot
+        ]
+    }
+
+    package "Driver" {
+        component gpio_driver [
+            <<Driver>>
+            GPIO-Driver
+        ]
+    }
+
+    signal_slot -down-> slot_line : SIGNAL(NEW-LINE)
+    task_controller -up-> control_task : schedules
+    lcd_driver -down-> gpio_driver
+
+}
+@enduml
+
+@startuml rpi_control_frmwrk_diagram_component_lcd_task
+
+skinparam monochrome true
+skinparam style strictuml
+
+frame "component: rpi_control_frmwrk - structure - LCD-Task" {
+
+    package "UI" {
+        component LCD_Task #DDDDDD {
+
+            component fifo [
+                <<FIFO>>
+                Text Line Fifo
+            ]
+
+            component slot_line [
+                <<SLOT>>
+                NEW-LINE
+            ]
+
+            component control_task [
+                <<Task>>
+                Control-Task
+            ]
+
+            component lcd_driver [
+                <<Driver>>
+                LCD-Driver
+            ]
+
+            slot_line -right-> fifo : store new line
+
+            control_task -up-> fifo : read next line
+            control_task -left-> lcd_driver : update display
+        }
+    }
+
+    package "MCU-Task-Controller" {
+        component task_controller[
+            <<Controller>>
+            MCU-Task-Controller
+        ]
+    }
+
+    package "Common" {
+        component signal_slot [
+            <<Signal-Slot>>
+            Signal-SLot
+        ]
+    }
+
+    package "Driver" {
+        component gpio_driver [
+            <<Driver>>
+            GPIO-Driver
+        ]
+    }
+
+    signal_slot -down-> slot_line : SIGNAL(NEW-LINE)
+    task_controller -up-> control_task : schedules
+    lcd_driver -down-> gpio_driver
+
+}
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

@@ -1,0 +1,47 @@
+@startuml rpi_control_frmwrk_diagram_pacakge_main_structure
+
+skinparam monochrome true
+skinparam linetype ortho
+skinparam style strictuml
+
+frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
+
+    package "Common" {
+        [Signal_Slot]
+        [Module_Status]
+        [Queue]
+        [String_Tools]
+    }
+
+    package "Driver" {
+        [GPIO]
+        [IRQ]
+        [UART]
+        [SPI]
+        [I2C]
+        [CLOCK]
+    }
+
+    package "App-Tasks" {
+
+    }
+
+    package "Protocol" {
+
+    }
+
+    package "Command-Handler" {
+
+    }
+
+    package "Copro" {
+
+    }
+
+    package "Management" {
+
+    }
+
+    package "3rdParty"
+ }
+@enduml

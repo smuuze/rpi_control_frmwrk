@@ -1,0 +1,85 @@
+@startuml rpi_control_frmwrk_diagram_class_ir_interface
+
+skinparam monochrome true
+'skinparam linetype ortho
+'skinparam style strictuml
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+    BackgroundColor<<Foo>> Wheat
+    BorderColor<<Foo>> Tomato
+}
+
+'mainframe class: rpi_control_frmwrk - structure - ir-interface
+
+frame "class: rpi_control_frmwrk - structure - ir-interface" {
+
+    folder "command_handler" {
+        class rpi_cmd_handler_ir_remote {
+
+        }
+    }
+
+    folder "driver" {
+        interface timer_interface {
+
+        }
+        note bottom
+        Used for frequency generation
+        end note
+
+        interface gpio_interface {
+
+        }
+        note bottom
+        Used for modulation
+        end note
+    }
+
+    folder "3rdparty/ir_protocol" {
+        class ir_protocol {
+
+        }
+
+        class ir_commands {
+
+        }
+
+        class ir_protocol_transmit_buffer {
+
+        }
+
+        interface ir_protocol_interface {
+
+        }
+
+        ir_protocol --> ir_protocol_transmit_buffer : <uses>
+    }
+
+    folder "app_task" {
+        class ir_remote_task {
+
+        }
+    }
+
+    folder "common" {
+        class signal_slot {
+
+        }
+    }
+
+    ir_protocol ..|> ir_protocol_interface
+    ir_protocol --> timer_interface : <uses>
+    ir_protocol --> gpio_interface : <uses>
+
+    rpi_cmd_handler_ir_remote -down-> ir_commands : generate ir-command
+    rpi_cmd_handler_ir_remote -down-> signal_slot : send ir-command
+
+    ir_remote_task -up-> ir_protocol_interface : process ir-command
+    ir_remote_task -up-> signal_slot : receive ir-command
+
+}
+
+@enduml
