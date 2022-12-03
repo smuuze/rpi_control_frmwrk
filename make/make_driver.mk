@@ -55,6 +55,12 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 		CSRCS += $(APP_PATH)/driver/gpio/empty/gpio_driver_empty.c
 
 	else
+	ifneq '' '$(findstring GPIO_ATMEGA1284P,$(DRIVER_MODULE_CFG))'
+
+		DEFS += -D HAS_DRIVER_GPIO=1
+		CSRCS += $(APP_PATH)/driver/gpio/avr/gpio_driver_atmega1284p.c
+
+	else
 
 		DEFS += -D HAS_DRIVER_GPIO=1
 		CSRCS += $(APP_PATH)/driver/gpio/$(CPU_FAMILY)/gpio_driver_$(MCU_NAME).c
@@ -63,6 +69,7 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 			LIBS += -l wiringPi
 		endif
 
+	endif
 	endif
 	endif
 	endif
