@@ -37,62 +37,71 @@
 //-----------------------------------------------------------------------------
 
 /**
+ * @brief Signals a new Line to write on the connected LCD
+ * One line per Signal can be send. The supported length of the text-line
+ * depends on the currently used LCD. Characters that does not fit will be discarded.
+ * The new line must end with the termination character '\0'
+ */
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SIGNAL_LCD_LINE)
+
+//-----------------------------------------------------------------------------
+
+/**
  * @brief 
  * 
  */
 void lcd_init(void);
 
 /**
- * @brief 
+ * @brief Enables or disables the LCD at all.
  * 
- */
-void lcd_deinit(void);
-
-/**
- * @brief Writes the given line on the connected LCD.
- * The line is always written at the end of the LCD, the last line.
- * All other lines are shifted up by one line each.
- * It is only possible to write one line per call.
- * If the message is too long, the remaining characters are ignored
- * 
- * @param message the message to write on the LCD
- */
-void lcd_write_line(const char* message);
-
-/**
- * @brief 
- * 
- * @param enabled 
+ * @param enabled 1: the lcd is enabled, 0 the lcd is disabled.
  */
 void lcd_set_enabled(u8 enabled);
 
-/**
- * @brief Get the number of lines of the actual connected LCD
- * 
- * @return number of lines of the LCD
- */
-u8 lcd_line_count(void);
+// /**
+//  * @brief 
+//  * 
+//  */
+// void lcd_deinit(void);
 
-/**
- * @brief Get the number of character per line.
- * 
- * @return Number of characters per line
- */
-u8 lcd_character_count(void);
+// /**
+//  * @brief Writes the given line on the connected LCD.
+//  * The line is always written at the end of the LCD, the last line.
+//  * All other lines are shifted up by one line each.
+//  * It is only possible to write one line per call.
+//  * If the message is too long, the remaining characters are ignored
+//  * 
+//  * @param message the message to write on the LCD
+//  */
+// void lcd_write_line(const char* message);
+
+// /**
+//  * @brief Get the number of lines of the actual connected LCD
+//  * 
+//  * @return number of lines of the LCD
+//  */
+// u8 lcd_line_count(void);
+
+// /**
+//  * @brief Get the number of character per line.
+//  * 
+//  * @return Number of characters per line
+//  */
+// u8 lcd_character_count(void);
 
 //-----------------------------------------------------------------------------
 
 /**
  * @brief Helper macros to use the LCD
  * without being sure that this module is available
- * 
  */
 
 #ifdef LCD_AVAILABLE
 
 #define LCD_INIT(a)         lcd_set_enabled(a)
 #define LCD_PRINT(p_str)    {                               \
-                                lcd_write_line(p_str);      \
+                                SIGNAL_LCD_LINE_send(p_str) \
                             }
 #else
 
