@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @file    ui_lcd_16x2.c
+ * @file    lcd_controller.c
  * @author  Sebastian Lesse
  * @date    2022 / 06 / 05
  * @brief   Short description of this file
@@ -42,9 +42,11 @@
 
 // --------------------------------------------------------------------------------
 
-#include "mcu_task_management/mcu_task_interface.h"
 #include "common/signal_slot_interface.h"
 #include "common/local_module_status.h"
+#include "common/qeue_interface.h"
+
+#include "mcu_task_management/mcu_task_interface.h"
 #include "time_management/time_management.h"
 
 // --------------------------------------------------------------------------------
@@ -115,7 +117,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SIGNAL_LCD_LINE)
  * tas-cycle of the lcd-task. The maximum number of lines that are buffered is defined by
  * LCD_FIFO_DEEP. If the fifo is full, new lines will be discarded.
  */
-static lcd_task_slot_new_line(const void* p_arg);
+static void lcd_task_slot_new_line(const void* p_arg);
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SIGNAL_LCD_LINE, SLOT_LCD_LINE, lcd_task_slot_new_line)
 
 // --------------------------------------------------------------------------------
@@ -142,7 +144,7 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(LCD_TASK_OP_TIMER)
  * was written. This helps the user to read the content before it will be overwritten
  * 
  */
-#define LCD_TASK_STATUS_SECOND_LINE_WRITTEN         (1 << 0)
+#define LCD_CONTROLLER_STATUS_SECOND_LINE_WRITTEN         (1 << 0)
 
 /**
  * @brief If set the LCD is enabled and can be used.
@@ -150,12 +152,12 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(LCD_TASK_OP_TIMER)
  * until it is enabled.
  * 
  */
-#define LCD_TASK_STATUS_IS_ENABLED                  (1 << 1)
+#define LCD_CONTROLLER_STATUS_IS_ENABLED                  (1 << 1)
 
 /**
  * @brief Current status of the LCD-TASK
  */
-BUILD_MODULE_STATUS_U8(LCD_TASK_STATUS)
+BUILD_MODULE_STATUS_U8(LCD_CONTROLLER_STATUS)
 
 // --------------------------------------------------------------------------------
 
@@ -208,7 +210,7 @@ static void lcd_task_init(void);
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_schedule_interval
  */
-static u16lcd_task_get_schedule_interval(void);
+static u16 lcd_task_get_schedule_interval(void);
 
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_state
@@ -233,7 +235,7 @@ static void lcd_task_terminate(void);
 /**
  * @brief structure of the task-implementation of this module
  */
-static MCU_TASK_INTERFACE lcd_task = {
+static MCU_TASK_INTERFACE lcd_controller_task = {
     0,                                  //     identifier,
     0,                                  //     new_run_timeout,
     0,                                  //     last_run_time,
@@ -261,7 +263,7 @@ static LCD_TASK_STATE_TYPE lcd_task_state = LCD_TASK_STATE_INIT;
  * @brief Buffer where the new line is temporarily stored.
  * 
  */
-static u8 lcd_task_new_line_buffer[LCD_NUM_CHARS];
+static char lcd_task_new_line_buffer[LCD_NUM_CHARS];
 
 // --------------------------------------------------------------------------------
 
@@ -373,27 +375,11 @@ void lcd_driver_deinit(void) {
     is_initialized = 0;
 }
 
-/**
- * @brief Moves the whole content of the LCD up by one line.
- * The last line will be cleared.
- */
-void lcd_driver_move_up(void) {
-    memcmpy(&line_buffer[0][0], &line_buffer[1][0], LCD_NUM_CHARS);
-
-    // update first line
-    lcd_driver_select_line(0);
-    lcd_driver_write_line(&line_buffer[0][0], LCD_NUM_CHARS)
-
-    // update second line
-    lcd_driver_select_line(1);
-    lcd_driver_write_line(LCD_TASK_EMPTY_LINE, LCD_NUM_CHARS)
-}
-
 void lcd_driver_write_line(const char* message, u8 length) {
 
     if (is_initialized == 0) {
         DEBUG_PASS("lcd_driver_write_line() - Need to initialize LCD-Interface");
-        lcd_init();
+        return;
     }
 
     DEBUG_TRACE_STR(message, "lcd_driver_write_line() - New Line:");
@@ -403,39 +389,54 @@ void lcd_driver_write_line(const char* message, u8 length) {
 
     /**
      * @brief Shift up the lines that are actual on the LCD
-     * 
      */
     for ( ; line_cnt < LCD_NUM_LINES - 1; line_cnt += 1) {
-        for ( ; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-            line_buffer[line_cnt][char_cnt] = line_buffer[line_cnt + 1][char_cnt];
-        }
+
+        memcpy(
+            &line_buffer[line_cnt][0],
+            &line_buffer[line_cnt + 1][0],
+            LCD_NUM_CHARS
+        );
+
+        // for ( ; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
+        //     line_buffer[line_cnt][char_cnt] = line_buffer[line_cnt + 1][char_cnt];
+        // }
+    }
+
+    if (length > LCD_NUM_CHARS) {
+        length = LCD_NUM_CHARS;
     }
 
     /**
      * @brief Copy the new line into the LCD-Buffer
-     * 
      */
-    for (char_cnt = 0 ; char_cnt < length; char_cnt += 1) {
-        line_buffer[LCD_NUM_LINES - 1][char_cnt] = message[char_cnt];
-    }
+    memcpy(&line_buffer[LCD_NUM_LINES - 1][0], message, length);
+    // for (char_cnt = 0 ; char_cnt < length; char_cnt += 1) {
+    //     line_buffer[LCD_NUM_LINES - 1][char_cnt] = message[char_cnt];
+    // }
         
     /**
-     * @brief FIll the rest of the line with blanks
-     * 
+     * @brief Fill the rest of the line with blanks
      */
-    for ( ; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-        line_buffer[LCD_NUM_LINES - 1][char_cnt] = ' ';
+    if (length < LCD_NUM_CHARS) {
+        memset(
+            &line_buffer[LCD_NUM_LINES - 1][length],
+            ' ',
+            LCD_NUM_CHARS - length
+        );
+        // for ( ; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
+        //     line_buffer[LCD_NUM_LINES - 1][char_cnt] = ' ';
+        // }
     }
 
     DEBUG_PASS("lcd_driver_write_line() - LCD-Content:");
 
     /**
-     * @brief Write the new line at the end of the dispay (the last line)
-     * 
+     * @brief Update the LCD content
      */
     for (line_cnt = 0; line_cnt < LCD_NUM_LINES; line_cnt += 1) {
         
-        lcd_select_line(line_cnt);
+        lcd_driver_select_line(line_cnt);
 
         for (char_cnt = 0 ; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
             lcd_driver_write_char(line_buffer[line_cnt][char_cnt]);
@@ -466,18 +467,17 @@ u8 lcd_driver_character_count(void) {
 /**
  * @see ui/lcd/lcd_interface.h#lcd_init
  */
-void lcd_init(void) {
+void lcd_controller_init(void) {
 
     SIGNAL_LCD_LINE_init();
-    LCD_TASK_STATUS_init();
-    mcu_task_controller_register_task(&cli_executer_task);
+    mcu_task_controller_register_task(&lcd_controller_task);
 }
 
-void lcd_set_enabled(u8 enabled) {
+void lcd_controller_set_enabled(u8 enabled) {
     if (enabled) {
-        LCD_TASK_STATUS_set(LCD_TASK_STATUS_IS_ENABLED);
+        LCD_CONTROLLER_STATUS_set(LCD_CONTROLLER_STATUS_IS_ENABLED);
     } else {
-        LCD_TASK_STATUS_unset(LCD_TASK_STATUS_IS_ENABLED);
+        LCD_CONTROLLER_STATUS_unset(LCD_CONTROLLER_STATUS_IS_ENABLED);
     }
 }
 
@@ -489,10 +489,10 @@ void lcd_set_enabled(u8 enabled) {
  * @return 1 if the new line was loaded,
  *         otherwise 0, because the mutex could not be loadad
  */
-static u8 lcd_task_load_new_line(void) {
+static u8 lcd_controller_load_new_line(void) {
 
     if (LCD_LINE_QUEUE_is_empty()) {
-        return;
+        return 0;
     }
 
     if (LCD_LINE_QUEUE_mutex_get() == 0) {
@@ -501,6 +501,8 @@ static u8 lcd_task_load_new_line(void) {
 
     LCD_LINE_QUEUE_deqeue(&lcd_task_new_line_buffer[0]);
     LCD_LINE_QUEUE_mutex_release();
+
+    return 1;
 }
 
 /**
@@ -508,9 +510,9 @@ static u8 lcd_task_load_new_line(void) {
  * 
  * @return 1 if updating the line has finished, 0 otherwise
  */
-static u8 lcd_task_write_line(void) {
+static u8 lcd_controller_write_line(void) {
 
-    static character_counter = 0;
+    static u8 character_counter = 0;
 
     if (character_counter < lcd_driver_character_count()) {
 
@@ -547,19 +549,19 @@ static u16 lcd_task_get_schedule_interval(void) {
  */
 static MCU_TASK_INTERFACE_TASK_STATE lcd_task_get_state(void) {
 
-    if (LCD_TASK_STATUS_is_set(LCD_TASK_STATUS_IS_ENABLED) == 0) {
-        return MCU_TASK_STATE_SLEEPING;
+    if (LCD_CONTROLLER_STATUS_is_set(LCD_CONTROLLER_STATUS_IS_ENABLED) == 0) {
+        return MCU_TASK_SLEEPING;
     }
 
     if (lcd_task_state != LCD_TASK_STATE_IDLE) {
-        return MCU_TASK_STATE_RUNNING;
+        return MCU_TASK_RUNNING;
     }
 
     if (LCD_LINE_QUEUE_is_empty() == 0) {
-        return MCU_TASK_STATE_RUNNING;
+        return MCU_TASK_RUNNING;
     }
 
-    return MCU_TASK_STATE_SLEEPING;
+    return MCU_TASK_SLEEPING;
 
 }
 
@@ -591,7 +593,12 @@ static void lcd_task_run(void) {
 
         case LCD_TASK_STATE_MOVE_LINE_UP:
 
-            lcd_driver_move_up();
+            /**
+             * @brief This causes the lcd driver to move to whole
+             * content upwards and writing a new (empty) line
+             * at the bottom of the display.
+             */
+            lcd_driver_write_line(LCD_TASK_EMPTY_LINE, LCD_NUM_CHARS);
 
             DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_LOAD_NEXT_LINE");
             lcd_task_state = LCD_TASK_STATE_LOAD_NEXT_LINE;
@@ -600,37 +607,37 @@ static void lcd_task_run(void) {
 
         case LCD_TASK_STATE_LOAD_NEXT_LINE:
 
-            if (lcd_task_load_new_line()) {
+            if (lcd_controller_load_new_line()) {
 
                 LCD_TASK_OP_TIMER_stop();
 
-                DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_PRINT_LINE");
-                lcd_task_state = LCD_TASK_STATE_PRINT_LINE;
+                DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_PRINT_NEW_LINE");
+                lcd_task_state = LCD_TASK_STATE_PRINT_NEW_LINE;
             }
             
             break;
 
-        case LCD_TASK_STATE_PRINT_LINE:
+        case LCD_TASK_STATE_PRINT_NEW_LINE:
 
             if (LCD_TASK_OP_TIMER_is_up(LCD_TASK_CHARACTER_TIMEOUT_MS) == 0) {
                 // enable a smooth update of the new line
                 break;
             }
 
-            if (lcd_task_write_line() == 0) {
+            if (lcd_controller_write_line() == 0) {
 
                 // updating the line not finished
                 // do nothing
 
-            } else if (LCD_TASK_STATUS_is_set(LCD_TASK_STATUS_SECOND_LINE_WRITTEN)) {
+            } else if (LCD_CONTROLLER_STATUS_is_set(LCD_CONTROLLER_STATUS_SECOND_LINE_WRITTEN)) {
 
-                LCD_TASK_STATUS_unset(LCD_TASK_STATUS_SECOND_LINE_WRITTEN);
+                LCD_CONTROLLER_STATUS_unset(LCD_CONTROLLER_STATUS_SECOND_LINE_WRITTEN);
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_WAIT");
                 lcd_task_state = LCD_TASK_STATE_WAIT;
 
             } else {
 
-                LCD_TASK_STATUS_set(LCD_TASK_STATUS_SECOND_LINE_WRITTEN);
+                LCD_CONTROLLER_STATUS_set(LCD_CONTROLLER_STATUS_SECOND_LINE_WRITTEN);
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
                 lcd_task_state = LCD_TASK_STATE_IDLE;
             }
@@ -642,7 +649,7 @@ static void lcd_task_run(void) {
 
             if (LCD_TASK_OP_TIMER_is_up(LCD_TASK_UPDATE_TIMEOUT_MS)) {
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
-                lcd_task_state = LCD_TASK_STATE_IDLE
+                lcd_task_state = LCD_TASK_STATE_IDLE;
             }
 
             break;
@@ -668,7 +675,7 @@ static void lcd_task_terminate(void) {
 /**
  * @see ui_lcd_16x2.c#lcd_task_slot_new_line
  */
-static lcd_task_slot_new_line(const void* p_arg) {
+static void lcd_task_slot_new_line(const void* p_arg) {
 
     if (p_arg == NULL) {
         DEBUG_PASS("lcd_task_slot_new_line() - NULL-POINTER");

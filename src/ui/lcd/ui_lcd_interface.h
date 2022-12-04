@@ -50,14 +50,14 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SIGNAL_LCD_LINE)
  * @brief 
  * 
  */
-void lcd_init(void);
+void lcd_controller_init(void);
 
 /**
  * @brief Enables or disables the LCD at all.
  * 
  * @param enabled 1: the lcd is enabled, 0 the lcd is disabled.
  */
-void lcd_set_enabled(u8 enabled);
+void lcd_controller_set_enabled(u8 enabled);
 
 // /**
 //  * @brief 
@@ -99,7 +99,8 @@ void lcd_set_enabled(u8 enabled);
 
 #ifdef LCD_AVAILABLE
 
-#define LCD_INIT(a)         lcd_set_enabled(a)
+#define LCD_INIT()          lcd_controller_init()
+#define LCD_ENABLE(en)      lcd_controller_set_enabled(en)
 #define LCD_PRINT(p_str)    {                               \
                                 SIGNAL_LCD_LINE_send(p_str) \
                             }
