@@ -64,7 +64,9 @@ typedef struct MODULE_STATUS_U32 {
  */
 #define BUILD_MODULE_STATUS_U8(name)                                            \
                                                                                 \
-   static MODULE_STATUS_U8_TYPE __##name##_module_status;                       \
+    static MODULE_STATUS_U8_TYPE __##name##_module_status = {                   \
+        .data = 0                                                               \
+    };                                                                          \
                                                                                 \
    __UNUSED__ inline static void name##_set(u8 bit_flag) {                      \
        module_status_set_u8(&(__##name##_module_status), bit_flag);             \
@@ -90,7 +92,9 @@ typedef struct MODULE_STATUS_U32 {
  */
 #define BUILD_MODULE_STATUS_U16(name)                                           \
                                                                                 \
-   static MODULE_STATUS_U16_TYPE __##name##_module_status;                      \
+   static MODULE_STATUS_U16_TYPE __##name##_module_status = {                   \
+        .data = 0                                                               \
+    };                                                                          \
                                                                                 \
    __UNUSED__ inline static void name##_set(u16 bit_flag) {                     \
        module_status_set_u16(&(__##name##_module_status), bit_flag);            \
@@ -116,7 +120,9 @@ typedef struct MODULE_STATUS_U32 {
  */
 #define BUILD_MODULE_STATUS_U32(name)                                           \
                                                                                 \
-   static MODULE_STATUS_U32_TYPE __##name##_module_status;                      \
+   static MODULE_STATUS_U32_TYPE __##name##_module_status = {                   \
+        .data = 0                                                               \
+    };                                                                          \
                                                                                 \
    __UNUSED__ inline static void name##_set(u32 bit_flag) {                     \
        module_status_set_u32(&(__##name##_module_status), bit_flag);            \
