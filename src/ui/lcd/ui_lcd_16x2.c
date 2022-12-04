@@ -470,6 +470,9 @@ u8 lcd_driver_character_count(void) {
 void lcd_controller_init(void) {
 
     SIGNAL_LCD_LINE_init();
+    SIGNAL_LCD_LINE_set_timeout(0);
+    SLOT_LCD_LINE_connect();
+
     mcu_task_controller_register_task(&lcd_controller_task);
 }
 
@@ -479,6 +482,14 @@ void lcd_controller_set_enabled(u8 enabled) {
     } else {
         LCD_CONTROLLER_STATUS_unset(LCD_CONTROLLER_STATUS_IS_ENABLED);
     }
+}
+
+u8 lcd_controller_get_line_count(void) {
+    return lcd_driver_line_count();
+}
+
+u8 lcd_controller_get_character_count(void) {
+    return lcd_driver_character_count();
 }
 
 // --------------------------------------------------------------------------------

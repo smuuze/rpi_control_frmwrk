@@ -59,6 +59,20 @@ void lcd_controller_init(void);
  */
 void lcd_controller_set_enabled(u8 enabled);
 
+/**
+ * @brief Number of lines of the available lcd
+ * 
+ * @return Number of lines of the available lcd
+ */
+u8 lcd_controller_get_line_count(void);
+
+/**
+ * @brief Number of characters of a single line of the available lcd
+ * 
+ * @return Number of characters of a single line of the available lcd
+ */
+u8 lcd_controller_get_character_count(void);
+
 // /**
 //  * @brief 
 //  * 
