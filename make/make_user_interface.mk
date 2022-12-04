@@ -14,6 +14,7 @@ endif
 LCD_INTERFACE_PATH = $(USER_INTERFACE_PATH)/lcd
 
 ifneq '' '$(findstring LCD_16X2,$(USER_INTERFACE_CFG))'
+	DEFS += -D LCD_CONTROLLER_AVAILABLE=1
 	CSRCS += $(LCD_INTERFACE_PATH)/ui_lcd_16x2.c
 endif
 

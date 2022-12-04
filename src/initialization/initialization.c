@@ -55,6 +55,7 @@
 #include "ui/command_line/command_line_interface.h"
 #include "ui/cfg_file_parser/cfg_file_parser.h"
 #include "ui/log_interface/log_interface.h"
+#include "ui/lcd/ui_lcd_interface.h"
 
 #include "app_tasks/message_executer_task.h"
 #include "app_tasks/cli_executer_task.h"
@@ -134,6 +135,12 @@ void initialization(void) {
     #ifdef HAS_IR_PROTOCOL_SONY
     {
         ir_protocol_sony_init();
+    }
+    #endif
+
+    #ifdef LCD_CONTROLLER_AVAILABLE
+    {
+        lcd_controller_init();
     }
     #endif
 }
