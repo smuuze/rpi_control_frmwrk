@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -51,17 +51,18 @@ UT_ACTIVATE()
 // --------------------------------------------------------------------------------
 
 #include "initialization/initialization.h"
+#include "time_management/time_management.h"
+#include "mcu_task_management/mcu_task_interface.h"
 
 // --------------------------------------------------------------------------------
 
-#include "common/common_tools_bit_vector.h"
+#include "ui/lcd/ui_lcd_interface.h"
 
 // --------------------------------------------------------------------------------
 
 #define TEST_CASE_ID_INITIALIZATION             0
-#define TEST_CASE_ID_SET_OUTPUT_LOW             1
-#define TEST_CASE_ID_CHANGE_STATES              2
-#define TEST_CASE_ID_TOGGLE_LEVEL               3
+#define TEST_CASE_ID_WRITE_FIRST_LINE           1
+#define TEST_CASE_ID_WRITE_SECOND_LINE          2
 
 // --------------------------------------------------------------------------------
 
@@ -88,13 +89,17 @@ BUILD_GPIO ( LCD_D7,       GPIO_PORT_A,    GPIO_PIN_5,     GPIO_INPUT | GPIO_IDL
 
 // --------------------------------------------------------------------------------
 
+TIME_MGMN_BUILD_STATIC_TIMER_U16(UNITTEST_TIMER)
+
+// --------------------------------------------------------------------------------
+
 // Signals / Slots
 
 // --------------------------------------------------------------------------------
 
 /**
- * @brief Initialize all GPIOS
- * Check if the values taht have been written to the cpu-regsiters match the expected values.
+ * @brief Initializes the lcd controller.
+ * The lcd then will be initialized by set GPIO-Pins
  * 
  */
 static void TEST_CASE_initialization(void) {
@@ -103,6 +108,66 @@ static void TEST_CASE_initialization(void) {
     {
         UT_SET_TEST_CASE_ID(TEST_CASE_ID_INITIALIZATION);
         unittest_reset_counter();
+
+        lcd_controller_init();
+        lcd_controller_set_enabled(LCD_ENABLE);
+
+        UNITTEST_TIMER_start();
+
+        while (UNITTEST_TIMER_is_up(250) == 0) {
+            mcu_task_controller_schedule();
+        }
+
+    }
+    UT_END_TEST_CASE()
+}
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Writing the first line on the LCD.
+ * 
+ */
+static void TEST_CASE_write_first_line(void) {
+
+    UT_START_TEST_CASE("Write First Line")
+    {
+        UT_SET_TEST_CASE_ID(TEST_CASE_ID_WRITE_FIRST_LINE);
+        unittest_reset_counter();
+
+        SIGNAL_LCD_LINE_send("UT LCD LINE ONE");
+
+        UNITTEST_TIMER_start();
+
+        while (UNITTEST_TIMER_is_up(2500) == 0) {
+            mcu_task_controller_schedule();
+        }
+
+    }
+    UT_END_TEST_CASE()
+}
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Writing the first line on the LCD.
+ * 
+ */
+static void TEST_CASE_write_second_line(void) {
+
+    UT_START_TEST_CASE("Write Second Line")
+    {
+        UT_SET_TEST_CASE_ID(TEST_CASE_ID_WRITE_SECOND_LINE);
+        unittest_reset_counter();
+
+        SIGNAL_LCD_LINE_send("UT LCD LINE TWO");
+
+        UNITTEST_TIMER_start();
+
+        while (UNITTEST_TIMER_is_up(2500) == 0) {
+            mcu_task_controller_schedule();
+        }
+
     }
     UT_END_TEST_CASE()
 }
@@ -114,6 +179,8 @@ int main(void) {
     UT_START_TESTBENCH("Welcome the the UNITTEST for LCD-Controller")
     {
         TEST_CASE_initialization();
+        TEST_CASE_write_first_line();
+        TEST_CASE_write_second_line();
     }
     UT_END_TESTBENCH()
 

@@ -89,9 +89,9 @@
 /**
  * @brief Timeout in milliseconds between every character that is new written.
  * This will casue a more smooth update of the LCD content
- * 
+ * -1 to ensure time has passed.
  */
-#define LCD_TASK_CHARACTER_TIMEOUT_MS       100
+#define LCD_TASK_CHARACTER_TIMEOUT_MS       (LCD_TASK_SCHEDULE_INTERVAL_MS - 1)
 
 /**
  * @brief A empty line
@@ -178,13 +178,8 @@ typedef enum {
     LCD_TASK_STATE_IDLE,
 
     /**
-     * @brief Moves the content of the LCD one line up
-     * to add the new line at the bottom
-     */
-    LCD_TASK_STATE_MOVE_LINE_UP,
-
-    /**
-     * @brief Loads the next line from the fifo
+     * @brief Loads the next line from the fifo.
+     * The content of the LCD is shifted up by one line in this state
      */
     LCD_TASK_STATE_LOAD_NEXT_LINE,
 
@@ -267,6 +262,8 @@ static char lcd_task_new_line_buffer[LCD_NUM_CHARS];
 
 // --------------------------------------------------------------------------------
 
+#define LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH         (1 << 0)
+
 /**
  * @brief This buffer is a copy of the current display content.
  * All changes made here are applied to the display.
@@ -281,6 +278,8 @@ static u8 is_initialized = 0;
  * @param pins 
  */
 static void lcd_set_pins(u8 pins) {
+
+    // DEBUG_TRACE_byte(pins, "lcd_set_pins() - pins:");
     
     if (pins & LCD_PIN_RS) LCD_RS_drive_high();  else  LCD_RS_drive_low();
 
@@ -289,10 +288,10 @@ static void lcd_set_pins(u8 pins) {
     if (pins & LCD_PIN_D6) LCD_D6_drive_high();  else  LCD_D6_drive_low();
     if (pins & LCD_PIN_D7) LCD_D7_drive_high();  else  LCD_D7_drive_low();
 
-    usleep(50); // reduce cpu-load
+    usleep(50); // wait for LCD
 
     LCD_EN_drive_high();
-    usleep(50); // reduce cpu-load
+    usleep(50);  // wait for LCD
     LCD_EN_drive_low();
 }
 
@@ -306,11 +305,13 @@ static void lcd_driver_select_line(u8 line_index) {
     switch (line_index) {
         default :
         case 0 : // Line 1
+            DEBUG_PASS("lcd_driver_select_line() - Line 1");
             lcd_set_pins(LCD_PIN_D7 | 0x00);
             lcd_set_pins(0x00);
             break;
 
         case 1 : // Line 2
+            DEBUG_PASS("lcd_driver_select_line() - Line 2");
             lcd_set_pins(LCD_PIN_D7 | LCD_PIN_D6);
             lcd_set_pins(0);
             break;
@@ -324,7 +325,7 @@ void lcd_driver_write_char(char character) {
 
 void lcd_driver_init(void) {
 
-    DEBUG_PASS("lcd_driver_init() - activate");
+    DEBUG_PASS("lcd_driver_init() - Init GPIO");
 
     LCD_RS_activate();    LCD_RS_drive_low();
     LCD_EN_activate();    LCD_EN_drive_low();
@@ -334,9 +335,9 @@ void lcd_driver_init(void) {
     LCD_D6_activate();    LCD_D6_drive_low();
     LCD_D7_activate();    LCD_D7_drive_low();
 
-    DEBUG_PASS("lcd_driver_init() - running init sequence");
-
     // -----------------------------------------------------
+
+    DEBUG_PASS("lcd_driver_init() - Power Up");
 
     usleep(15 * 1000); // wait for LCD controller power-up
 
@@ -347,6 +348,8 @@ void lcd_driver_init(void) {
     lcd_set_pins(LCD_PIN_D5);         usleep(5 * 1000); 
 
     // -----------------------------------------------------
+
+    DEBUG_PASS("lcd_driver_init() - Set Interface");
 
     lcd_set_pins(LCD_PIN_D5);               // switch to 4-Bit interface
     lcd_set_pins(LCD_PIN_D7);               // 2 Lines / 5x8 Font
@@ -362,6 +365,8 @@ void lcd_driver_init(void) {
 
     usleep(2 * 1000);
 
+    DEBUG_PASS("lcd_driver_init() - Clear buffer");
+
     u8 line_cnt = 0;
     for ( ; line_cnt < LCD_NUM_LINES; line_cnt += 1) {
         memset(line_buffer[line_cnt], ' ', LCD_NUM_CHARS);
@@ -375,34 +380,42 @@ void lcd_driver_deinit(void) {
     is_initialized = 0;
 }
 
-void lcd_driver_write_line(const char* message, u8 length) {
+/**
+ * @brief Updates the screen buffer.
+ * The content will be shifted up by one line.
+ * The new line is set at the end.
+ * This function does not update the LCD.
+ * if the message is too long, the characters that does not fit
+ * will be ignored and discarded.
+ * 
+ * @param message string to set as last line
+ * @param length number of characters of message.
+ */
+void lcd_driver_set_line(const char* message, u8 length) {
 
     if (is_initialized == 0) {
-        DEBUG_PASS("lcd_driver_write_line() - Need to initialize LCD-Interface");
+        DEBUG_PASS("lcd_driver_set_line() - Need to initialize LCD-Interface");
         return;
     }
 
-    DEBUG_TRACE_STR(message, "lcd_driver_write_line() - New Line:");
-
-    u8 line_cnt = 0;
-    u8 char_cnt = 0;
+    DEBUG_TRACE_STR(message, "lcd_driver_set_line() - New Line:");
 
     /**
-     * @brief Shift up the lines that are actual on the LCD
+     * @brief Shift up the lines
      */
-    for ( ; line_cnt < LCD_NUM_LINES - 1; line_cnt += 1) {
+    for (u8 line_cnt = 0 ; line_cnt < LCD_NUM_LINES - 1; line_cnt += 1) {
 
         memcpy(
             &line_buffer[line_cnt][0],
             &line_buffer[line_cnt + 1][0],
             LCD_NUM_CHARS
         );
-
-        // for ( ; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-        //     line_buffer[line_cnt][char_cnt] = line_buffer[line_cnt + 1][char_cnt];
-        // }
     }
 
+    /**
+     * @brief Ensure to only copy the maximum number of characters
+     * 
+     */
     if (length > LCD_NUM_CHARS) {
         length = LCD_NUM_CHARS;
     }
@@ -411,9 +424,6 @@ void lcd_driver_write_line(const char* message, u8 length) {
      * @brief Copy the new line into the LCD-Buffer
      */
     memcpy(&line_buffer[LCD_NUM_LINES - 1][0], message, length);
-    // for (char_cnt = 0 ; char_cnt < length; char_cnt += 1) {
-    //     line_buffer[LCD_NUM_LINES - 1][char_cnt] = message[char_cnt];
-    // }
         
     /**
      * @brief Fill the rest of the line with blanks
@@ -424,24 +434,89 @@ void lcd_driver_write_line(const char* message, u8 length) {
             ' ',
             LCD_NUM_CHARS - length
         );
-        // for ( ; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-        //     line_buffer[LCD_NUM_LINES - 1][char_cnt] = ' ';
-        // }
     }
+}
 
-    DEBUG_PASS("lcd_driver_write_line() - LCD-Content:");
+/**
+ * @brief Updates the content of the LCD.
+ * This function will write the current line buffer to the LCD.
+ * 
+ * @param mode 
+ * @return 1 if the content was update, otherwise 0
+ */
+u8 lcd_driver_update_screen(u8 mode) {
 
-    /**
-     * @brief Update the LCD content
-     */
-    for (line_cnt = 0; line_cnt < LCD_NUM_LINES; line_cnt += 1) {
-        
-        lcd_driver_select_line(line_cnt);
+    static u8 state = 0;
+    static u8 char_cnt = 0;
 
-        for (char_cnt = 0 ; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-            lcd_driver_write_char(line_buffer[line_cnt][char_cnt]);
+    if (state == 0) {
+
+        DEBUG_TRACE_STR(line_buffer[0], "lcd_driver_update_screen() - Select Line 1");
+        lcd_driver_select_line(0);
+        char_cnt = 0;
+        state = 1;
+    }
+    
+    if (state == 1) {
+
+        /**
+         * @brief update the content of the first line
+         */
+        for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
+            lcd_driver_write_char(line_buffer[0][char_cnt]);
         }
+
+        // Go on to the second line
+        state = 2;
+    } 
+    
+    if (state == 2) {
+
+        DEBUG_TRACE_STR(line_buffer[1], "lcd_driver_update_screen() - Select Line 2");
+        
+        lcd_driver_select_line(1);
+
+        if (mode & LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) {
+
+            DEBUG_PASS("lcd_driver_update_screen() - Delete content of last line");
+
+            for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
+                lcd_driver_write_char(' ');
+            }
+        }
+
+        char_cnt = 0;
+        state = 3;
     }
+    
+    if (state == 3) {
+
+        /**
+         * @brief update the content of the first line
+         */
+        for (; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
+            lcd_driver_write_char(line_buffer[1][char_cnt]);
+
+            if (mode & LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) {
+
+                DEBUG_CODE_BLOCK (
+                    char t_buffer[LCD_NUM_CHARS + 1];
+                    memset(t_buffer, '\0', LCD_NUM_CHARS + 1);
+                    memcpy(t_buffer, &line_buffer[1][0], char_cnt+1 );
+                    DEBUG_TRACE_STR(t_buffer, "lcd_driver_update_screen() - Content Line 2:");
+                )
+
+                // we need to count up here, because we leve the loop.
+                char_cnt += 1;
+                return 0;
+            }
+        }
+
+        // update finished
+        state = 0;
+    }
+
+    return 1;
 }
 
 /**
@@ -468,6 +543,8 @@ u8 lcd_driver_character_count(void) {
  * @see ui/lcd/lcd_interface.h#lcd_init
  */
 void lcd_controller_init(void) {
+
+    DEBUG_PASS("lcd_controller_init");
 
     SIGNAL_LCD_LINE_init();
     SIGNAL_LCD_LINE_set_timeout(0);
@@ -503,16 +580,21 @@ u8 lcd_controller_get_character_count(void) {
 static u8 lcd_controller_load_new_line(void) {
 
     if (LCD_LINE_QUEUE_is_empty()) {
+        DEBUG_PASS("lcd_controller_load_new_line() - QUEUE is empty");
         return 0;
     }
 
     if (LCD_LINE_QUEUE_mutex_get() == 0) {
+        DEBUG_PASS("lcd_controller_load_new_line() - Get QUEUE-mutex failed");
         return 0;
     }
+
+    DEBUG_PASS("lcd_controller_load_new_line()");
 
     LCD_LINE_QUEUE_deqeue(&lcd_task_new_line_buffer[0]);
     LCD_LINE_QUEUE_mutex_release();
 
+    lcd_driver_set_line(lcd_task_new_line_buffer, LCD_NUM_CHARS);
     return 1;
 }
 
@@ -526,6 +608,8 @@ static u8 lcd_controller_write_line(void) {
     static u8 character_counter = 0;
 
     if (character_counter < lcd_driver_character_count()) {
+
+        // DEBUG_TRACE_byte(character_counter, "lcd_controller_write_line() - Char-Index:");
 
         lcd_driver_write_char(lcd_task_new_line_buffer[character_counter]);
         character_counter += 1;
@@ -545,7 +629,8 @@ static u8 lcd_controller_write_line(void) {
  * 
  */
 static void lcd_task_init(void) {
-
+    DEBUG_PASS("lcd_task_init()");
+    lcd_task_state = LCD_TASK_STATE_INIT;
 }
 
 /**
@@ -598,29 +683,15 @@ static void lcd_task_run(void) {
                 break;
             }
 
-            DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_MOVE_LINE_UP");
-            lcd_task_state = LCD_TASK_STATE_MOVE_LINE_UP;
-            // no break;
-
-        case LCD_TASK_STATE_MOVE_LINE_UP:
-
-            /**
-             * @brief This causes the lcd driver to move to whole
-             * content upwards and writing a new (empty) line
-             * at the bottom of the display.
-             */
-            lcd_driver_write_line(LCD_TASK_EMPTY_LINE, LCD_NUM_CHARS);
-
             DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_LOAD_NEXT_LINE");
             lcd_task_state = LCD_TASK_STATE_LOAD_NEXT_LINE;
-
-            break;
+            // no break;
 
         case LCD_TASK_STATE_LOAD_NEXT_LINE:
 
             if (lcd_controller_load_new_line()) {
 
-                LCD_TASK_OP_TIMER_stop();
+                LCD_TASK_OP_TIMER_start();
 
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_PRINT_NEW_LINE");
                 lcd_task_state = LCD_TASK_STATE_PRINT_NEW_LINE;
@@ -635,7 +706,7 @@ static void lcd_task_run(void) {
                 break;
             }
 
-            if (lcd_controller_write_line() == 0) {
+            if (lcd_driver_update_screen(LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) == 0) {
 
                 // updating the line not finished
                 // do nothing
@@ -703,6 +774,8 @@ static void lcd_task_slot_new_line(const void* p_arg) {
     LCD_LINE_QUEUE_mutex_get();
     LCD_LINE_QUEUE_enqeue(p_new_line);
     LCD_LINE_QUEUE_mutex_release();
+    
+    DEBUG_TRACE_STR(p_new_line, "lcd_task_slot_new_line() - New Line:");
 }
 
 // --------------------------------------------------------------------------------
