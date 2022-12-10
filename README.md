@@ -1,3 +1,7 @@
+
+### Location
+frmwrk /
+
 # Content
 
 # Brief
@@ -8,3 +12,19 @@ The RPi-Control framework contains common modules, drivers and other implementat
 - 
 
 # Main Structure
+
+
+![Main_Structure](uml/img/rpi_control_frmwrk_diagram_pacakge_main_structure.svg)
+
+| Component                                  | Description |
+|--------------------------------------------|-------------|
+| Application                                |             |
+| App-Task                                   |             |
+| Command-Handling                           |             |
+| Driver                                     |             |
+| [kernel](readme/readme_kernel.md#location) |             |
+| Protocol                                   |             |
+
+# Modules
+
+[Signal-Slot](readme/readme_signal_slot.md)
