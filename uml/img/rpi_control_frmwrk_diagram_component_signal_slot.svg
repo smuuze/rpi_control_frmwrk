@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="543px" preserveAspectRatio="none" style="width:634px;height:543px;background:#FFFFFF;" version="1.1" viewBox="0 0 634 543" width="634px" zoomAndPan="magnify"><defs/><g><!--MD5=[4561b2cfbe05c4f69703b0e79bbaf5d6]
+cluster component: rpi_control_frmwrk - structure - Signal-Slot--><g id="cluster_component: rpi_control_frmwrk - structure - Signal-Slot"><rect fill="none" height="530" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="621" x="7" y="7"/><path d="M403,7 L403,17.6094 L393,27.6094 L7,27.6094 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="386" x="10" y="22.5332">component: rpi_control_frmwrk - structure - Signal-Slot</text></g><!--MD5=[54bb6d7a037149ef75f792f06aa0aa50]
+cluster Common--><g id="cluster_Common"><path d="M33.5,201 L95.5,201 A3.75,3.75 0 0 1 98,203.5 L105,224.6094 L601.5,224.6094 A2.5,2.5 0 0 1 604,227.1094 L604,510.5 A2.5,2.5 0 0 1 601.5,513 L33.5,513 A2.5,2.5 0 0 1 31,510.5 L31,203.5 A2.5,2.5 0 0 1 33.5,201 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="105" y1="224.6094" y2="224.6094"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="61" x="35" y="217.5332">Common</text></g><!--MD5=[47868b480ebe122705aa1d0cb7720e3f]
+cluster Signal_Slot--><g id="cluster_Signal_Slot"><rect fill="#DDDDDD" height="244" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="525" x="55" y="245"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:1.0;" width="15" x="560" y="250"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:1.0;" width="4" x="558" y="252"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:1.0;" width="4" x="558" y="256"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="78" x="278.5" y="272.5332">Signal_Slot</text></g><!--MD5=[963da481204926879d14c795c8f52c2c]
+cluster APP-Task--><g id="cluster_APP-Task"><path d="M245.5,51 L310.5,51 A3.75,3.75 0 0 1 313,53.5 L320,74.6094 L374.5,74.6094 A2.5,2.5 0 0 1 377,77.1094 L377,148.5 A2.5,2.5 0 0 1 374.5,151 L245.5,151 A2.5,2.5 0 0 1 243,148.5 L243,53.5 A2.5,2.5 0 0 1 245.5,51 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="243" x2="320" y1="74.6094" y2="74.6094"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="64" x="247" y="67.5332">APP-Task</text></g><!--MD5=[d55a20778385dd69e40b0ad725ef2d5b]
+class Signal_Context--><g id="elem_Signal_Context"><rect codeLine="11" fill="#F1F1F1" height="48" id="Signal_Context" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="127" x="432.5" y="425"/><ellipse cx="447.5" cy="441" fill="#C2C2C2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M450.2656,436.875 Q450.4219,436.6563 450.6094,436.5469 Q450.7969,436.4375 451.0156,436.4375 Q451.3906,436.4375 451.625,436.7031 Q451.8594,436.9531 451.8594,437.5625 L451.8594,439.0156 Q451.8594,439.625 451.625,439.8906 Q451.3906,440.1563 451.0156,440.1563 Q450.6719,440.1563 450.4688,439.9531 Q450.2656,439.7656 450.1563,439.25 Q450.1094,438.8906 449.9219,438.7031 Q449.5938,438.3281 448.9844,438.1094 Q448.375,437.8906 447.75,437.8906 Q446.9844,437.8906 446.3438,438.2188 Q445.7188,438.5469 445.2188,439.2969 Q444.7344,440.0469 444.7344,441.0781 L444.7344,442.1719 Q444.7344,443.4063 445.625,444.2344 Q446.5156,445.0469 448.1094,445.0469 Q449.0469,445.0469 449.7031,444.7969 Q450.0938,444.6406 450.5156,444.2031 Q450.7813,443.9375 450.9219,443.8594 Q451.0781,443.7813 451.2813,443.7813 Q451.6094,443.7813 451.8594,444.0469 Q452.125,444.2969 452.125,444.6406 Q452.125,444.9844 451.7813,445.3906 Q451.2813,445.9688 450.4844,446.2969 Q449.4063,446.75 448.1094,446.75 Q446.5938,446.75 445.3906,446.125 Q444.4063,445.625 443.7188,444.5625 Q443.0313,443.4844 443.0313,442.2031 L443.0313,441.0469 Q443.0313,439.7188 443.6406,438.5781 Q444.2656,437.4219 445.3594,436.8125 Q446.4531,436.1875 447.6875,436.1875 Q448.4219,436.1875 449.0625,436.3594 Q449.7188,436.5156 450.2656,436.875 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="95" x="461.5" y="446.7285">Signal_Context</text><line style="stroke:#181818;stroke-width:0.5;" x1="433.5" x2="558.5" y1="457" y2="457"/><line style="stroke:#181818;stroke-width:0.5;" x1="433.5" x2="558.5" y1="465" y2="465"/></g><!--MD5=[970d6246e18b1337f310b838fc736eb8]
+class Slot_Context--><g id="elem_Slot_Context"><rect codeLine="15" fill="#F1F1F1" height="48" id="Slot_Context" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="112" x="75" y="425"/><ellipse cx="90" cy="441" fill="#C2C2C2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M92.7656,436.875 Q92.9219,436.6563 93.1094,436.5469 Q93.2969,436.4375 93.5156,436.4375 Q93.8906,436.4375 94.125,436.7031 Q94.3594,436.9531 94.3594,437.5625 L94.3594,439.0156 Q94.3594,439.625 94.125,439.8906 Q93.8906,440.1563 93.5156,440.1563 Q93.1719,440.1563 92.9688,439.9531 Q92.7656,439.7656 92.6563,439.25 Q92.6094,438.8906 92.4219,438.7031 Q92.0938,438.3281 91.4844,438.1094 Q90.875,437.8906 90.25,437.8906 Q89.4844,437.8906 88.8438,438.2188 Q88.2188,438.5469 87.7188,439.2969 Q87.2344,440.0469 87.2344,441.0781 L87.2344,442.1719 Q87.2344,443.4063 88.125,444.2344 Q89.0156,445.0469 90.6094,445.0469 Q91.5469,445.0469 92.2031,444.7969 Q92.5938,444.6406 93.0156,444.2031 Q93.2813,443.9375 93.4219,443.8594 Q93.5781,443.7813 93.7813,443.7813 Q94.1094,443.7813 94.3594,444.0469 Q94.625,444.2969 94.625,444.6406 Q94.625,444.9844 94.2813,445.3906 Q93.7813,445.9688 92.9844,446.2969 Q91.9063,446.75 90.6094,446.75 Q89.0938,446.75 87.8906,446.125 Q86.9063,445.625 86.2188,444.5625 Q85.5313,443.4844 85.5313,442.2031 L85.5313,441.0469 Q85.5313,439.7188 86.1406,438.5781 Q86.7656,437.4219 87.8594,436.8125 Q88.9531,436.1875 90.1875,436.1875 Q90.9219,436.1875 91.5625,436.3594 Q92.2188,436.5156 92.7656,436.875 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80" x="104" y="446.7285">Slot_Context</text><line style="stroke:#181818;stroke-width:0.5;" x1="76" x2="186" y1="457" y2="457"/><line style="stroke:#181818;stroke-width:0.5;" x1="76" x2="186" y1="465" y2="465"/></g><!--MD5=[821fc7a7b79ec1425ea7112ff12b288a]
+class Signal_Slot_Interface--><a href="../../src/common/signal_slot_interface.h" target="_top" title="Click: Go to Source" xlink:actuate="onRequest" xlink:href="../../src/common/signal_slot_interface.h" xlink:show="new" xlink:title="Click: Go to Source" xlink:type="simple"><g id="elem_Signal_Slot_Interface"><rect codeLine="19" fill="#F1F1F1" height="83.2188" id="Signal_Slot_Interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="167" x="226.5" y="281"/><ellipse cx="241.5" cy="297" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M242.4531,293.6406 L242.4531,300.2969 L244.1719,300.2969 Q244.7813,300.2969 245.0469,300.5313 Q245.3125,300.7656 245.3125,301.1563 Q245.3125,301.5313 245.0469,301.7656 Q244.7813,302 244.1719,302 L239.0313,302 Q238.4219,302 238.1563,301.7656 Q237.8906,301.5313 237.8906,301.1406 Q237.8906,300.7656 238.1563,300.5313 Q238.4219,300.2969 239.0313,300.2969 L240.75,300.2969 L240.75,293.6406 L239.0313,293.6406 Q238.4219,293.6406 238.1563,293.4063 Q237.8906,293.1719 237.8906,292.7813 Q237.8906,292.4063 238.1563,292.1719 Q238.4219,291.9375 239.0313,291.9375 L244.1719,291.9375 Q244.7813,291.9375 245.0469,292.1719 Q245.3125,292.4063 245.3125,292.7813 Q245.3125,293.1719 245.0469,293.4063 Q244.7813,293.6406 244.1719,293.6406 L242.4531,293.6406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="135" x="255.5" y="302.7285">Signal_Slot_Interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="227.5" x2="392.5" y1="313" y2="313"/><line style="stroke:#181818;stroke-width:0.5;" x1="227.5" x2="392.5" y1="321" y2="321"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="123" x="232.5" y="339.5332">CREATE_SIGNAL()</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="111" x="232.5" y="357.1426">CREATE_SLOT()</text></g></a><!--MD5=[2e7c46e1ee434c75e61279e52d3ed755]
+class Signal_Interface--><g id="elem_Signal_Interface"><rect codeLine="24" fill="#F1F1F1" height="83.2188" id="Signal_Interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="135" x="428.5" y="281"/><ellipse cx="443.5" cy="297" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M444.4531,293.6406 L444.4531,300.2969 L446.1719,300.2969 Q446.7813,300.2969 447.0469,300.5313 Q447.3125,300.7656 447.3125,301.1563 Q447.3125,301.5313 447.0469,301.7656 Q446.7813,302 446.1719,302 L441.0313,302 Q440.4219,302 440.1563,301.7656 Q439.8906,301.5313 439.8906,301.1406 Q439.8906,300.7656 440.1563,300.5313 Q440.4219,300.2969 441.0313,300.2969 L442.75,300.2969 L442.75,293.6406 L441.0313,293.6406 Q440.4219,293.6406 440.1563,293.4063 Q439.8906,293.1719 439.8906,292.7813 Q439.8906,292.4063 440.1563,292.1719 Q440.4219,291.9375 441.0313,291.9375 L446.1719,291.9375 Q446.7813,291.9375 447.0469,292.1719 Q447.3125,292.4063 447.3125,292.7813 Q447.3125,293.1719 447.0469,293.4063 Q446.7813,293.6406 446.1719,293.6406 L444.4531,293.6406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="103" x="457.5" y="302.7285">Signal_Interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="429.5" x2="562.5" y1="313" y2="313"/><line style="stroke:#181818;stroke-width:0.5;" x1="429.5" x2="562.5" y1="321" y2="321"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="28" x="434.5" y="339.5332">init()</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41" x="434.5" y="357.1426">send()</text></g><!--MD5=[cb92fb2af83259b7b72bbe68943e6853]
+class Slot_Interface--><g id="elem_Slot_Interface"><rect codeLine="29" fill="#F1F1F1" height="65.6094" id="Slot_Interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="120" x="71" y="289.5"/><ellipse cx="86" cy="305.5" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M86.9531,302.1406 L86.9531,308.7969 L88.6719,308.7969 Q89.2813,308.7969 89.5469,309.0313 Q89.8125,309.2656 89.8125,309.6563 Q89.8125,310.0313 89.5469,310.2656 Q89.2813,310.5 88.6719,310.5 L83.5313,310.5 Q82.9219,310.5 82.6563,310.2656 Q82.3906,310.0313 82.3906,309.6406 Q82.3906,309.2656 82.6563,309.0313 Q82.9219,308.7969 83.5313,308.7969 L85.25,308.7969 L85.25,302.1406 L83.5313,302.1406 Q82.9219,302.1406 82.6563,301.9063 Q82.3906,301.6719 82.3906,301.2813 Q82.3906,300.9063 82.6563,300.6719 Q82.9219,300.4375 83.5313,300.4375 L88.6719,300.4375 Q89.2813,300.4375 89.5469,300.6719 Q89.8125,300.9063 89.8125,301.2813 Q89.8125,301.6719 89.5469,301.9063 Q89.2813,302.1406 88.6719,302.1406 L86.9531,302.1406 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="88" x="100" y="311.2285">Slot_Interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="72" x2="190" y1="321.5" y2="321.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="72" x2="190" y1="329.5" y2="329.5"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60" x="77" y="348.0332">connect()</text></g><!--MD5=[0b4e4b4980470ea387cc45de9bd14b5b]
+class Application--><g id="elem_Application"><rect codeLine="45" fill="#F1F1F1" height="48" id="Application" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="101" x="259.5" y="87"/><ellipse cx="274.5" cy="103" fill="#C2C2C2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M277.2656,98.875 Q277.4219,98.6563 277.6094,98.5469 Q277.7969,98.4375 278.0156,98.4375 Q278.3906,98.4375 278.625,98.7031 Q278.8594,98.9531 278.8594,99.5625 L278.8594,101.0156 Q278.8594,101.625 278.625,101.8906 Q278.3906,102.1563 278.0156,102.1563 Q277.6719,102.1563 277.4688,101.9531 Q277.2656,101.7656 277.1563,101.25 Q277.1094,100.8906 276.9219,100.7031 Q276.5938,100.3281 275.9844,100.1094 Q275.375,99.8906 274.75,99.8906 Q273.9844,99.8906 273.3438,100.2188 Q272.7188,100.5469 272.2188,101.2969 Q271.7344,102.0469 271.7344,103.0781 L271.7344,104.1719 Q271.7344,105.4063 272.625,106.2344 Q273.5156,107.0469 275.1094,107.0469 Q276.0469,107.0469 276.7031,106.7969 Q277.0938,106.6406 277.5156,106.2031 Q277.7813,105.9375 277.9219,105.8594 Q278.0781,105.7813 278.2813,105.7813 Q278.6094,105.7813 278.8594,106.0469 Q279.125,106.2969 279.125,106.6406 Q279.125,106.9844 278.7813,107.3906 Q278.2813,107.9688 277.4844,108.2969 Q276.4063,108.75 275.1094,108.75 Q273.5938,108.75 272.3906,108.125 Q271.4063,107.625 270.7188,106.5625 Q270.0313,105.4844 270.0313,104.2031 L270.0313,103.0469 Q270.0313,101.7188 270.6406,100.5781 Q271.2656,99.4219 272.3594,98.8125 Q273.4531,98.1875 274.6875,98.1875 Q275.4219,98.1875 276.0625,98.3594 Q276.7188,98.5156 277.2656,98.875 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="69" x="288.5" y="108.7285">Application</text><line style="stroke:#181818;stroke-width:0.5;" x1="260.5" x2="359.5" y1="119" y2="119"/><line style="stroke:#181818;stroke-width:0.5;" x1="260.5" x2="359.5" y1="127" y2="127"/></g><!--MD5=[87f98fa832654e35c9ecbf56693c9025]
+reverse link Signal_Interface to Signal_Context--><g id="link_Signal_Interface_Signal_Context"><path codeLine="33" d="M496,384.34 C496,398.83 496,413.41 496,424.96 " fill="none" id="Signal_Interface-backto-Signal_Context" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="none" points="489,384.27,496,364.27,503,384.27,489,384.27" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[b5ba1a97f94e5613ef4c1b1d5565fe61]
+reverse link Slot_Interface to Slot_Context--><g id="link_Slot_Interface_Slot_Context"><path codeLine="34" d="M131,375.83 C131,392.86 131,410.91 131,424.7 " fill="none" id="Slot_Interface-backto-Slot_Context" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="none" points="124,375.56,131,355.56,138,375.56,124,375.56" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[5d37bac17a3ee00f64658b1f73f2383a]
+reverse link Slot_Context to Slot_Context--><g id="link_Slot_Context_Slot_Context"><path codeLine="35" d="M192.71,438.95 C209.35,439.49 222,442.84 222,449 C222,455.8 206.6,459.18 187.43,459.12 " fill="none" id="Slot_Context-backto-Slot_Context" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="187.43,438.88,196.3719,443.0082,192.4295,438.9514,196.4862,435.009,187.43,438.88" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="76" x="228" y="454.4951">&lt;successor&gt;</text></g><!--MD5=[893d23cec6b78ffdcbc73b810c12c469]
+reverse link Signal_Slot_Interface to Signal_Interface--><g id="link_Signal_Slot_Interface_Signal_Interface"><path codeLine="37" d="M413.68,322.5 C418.58,322.5 423.47,322.5 428.37,322.5 " fill="none" id="Signal_Slot_Interface-backto-Signal_Interface" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="none" points="413.55,329.5,393.55,322.5,413.55,315.5,413.55,329.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[c357f1fcf14b2dd4e6afdb59f85c6a08]
+link Slot_Interface to Signal_Slot_Interface--><g id="link_Slot_Interface_Signal_Slot_Interface"><path codeLine="38" d="M191.13,322.5 C196.19,322.5 201.24,322.5 206.3,322.5 " fill="none" id="Slot_Interface-to-Signal_Slot_Interface" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="none" points="206.42,315.5,226.42,322.5,206.42,329.5,206.42,315.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[6e47f3b94a8cba7fb6e96a5f1c9be347]
+link Application to Signal_Slot_Interface--><g id="link_Application_Signal_Slot_Interface"><path codeLine="50" d="M310,135.22 C310,169 310,232.4 310,275.76 " fill="none" id="Application-to-Signal_Slot_Interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="310,280.95,314,271.95,310,275.95,306,271.95,310,280.95" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="44" x="311" y="181.4951">&lt;uses&gt;</text></g><!--MD5=[cd7c2b6c7066d834e512a7d1acecfff3]
+@startuml rpi_control_frmwrk_diagram_component_signal_slot
+
+skinparam monochrome true
+'skinparam linetype ortho
+' skinparam style strictuml
+
+frame "component: rpi_control_frmwrk - structure - Signal-Slot" {
+
+    package "Common" {
+        component Signal_Slot #DDDDDD {
+
+            class Signal_Context {
+
+            }
+
+            class Slot_Context {
+
+            }
+
+            interface Signal_Slot_Interface {
+                CREATE_SIGNAL()
+                CREATE_SLOT()
+            }
+
+            interface Signal_Interface {
+                init()
+                send()
+            }
+
+            interface Slot_Interface {
+                connect()
+            }
+
+            Signal_Context -up-|> Signal_Interface
+            Slot_Context -up-|> Slot_Interface
+            Slot_Context -left-> Slot_Context : <successor>
+
+            Signal_Slot_Interface <|-right- Signal_Interface
+            Signal_Slot_Interface <|-left- Slot_Interface
+
+            url of Signal_Slot_Interface is [[../../src/common/signal_slot_interface.h {Click: Go to Source}]]
+        }
+    }
+    
+    package "APP-Task" {
+        class Application {
+
+        }
+    }
+
+    Application .down.> Signal_Slot_Interface : <uses>
+
+}
+@enduml
+
+@startuml rpi_control_frmwrk_diagram_component_signal_slot
+
+skinparam monochrome true
+
+frame "component: rpi_control_frmwrk - structure - Signal-Slot" {
+
+    package "Common" {
+        component Signal_Slot #DDDDDD {
+
+            class Signal_Context {
+
+            }
+
+            class Slot_Context {
+
+            }
+
+            interface Signal_Slot_Interface {
+                CREATE_SIGNAL()
+                CREATE_SLOT()
+            }
+
+            interface Signal_Interface {
+                init()
+                send()
+            }
+
+            interface Slot_Interface {
+                connect()
+            }
+
+            Signal_Context -up-|> Signal_Interface
+            Slot_Context -up-|> Slot_Interface
+            Slot_Context -left-> Slot_Context : <successor>
+
+            Signal_Slot_Interface <|-right- Signal_Interface
+            Signal_Slot_Interface <|-left- Slot_Interface
+
+            url of Signal_Slot_Interface is [[../../src/common/signal_slot_interface.h {Click: Go to Source}]]
+        }
+    }
+    
+    package "APP-Task" {
+        class Application {
+
+        }
+    }
+
+    Application .down.> Signal_Slot_Interface : <uses>
+
+}
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK Client VM
+Default Encoding: Cp1252
+Language: de
+Country: DE
+--></g></svg>

@@ -1,0 +1,54 @@
+@startuml rpi_control_frmwrk_diagram_component_signal_slot
+
+skinparam monochrome true
+'skinparam linetype ortho
+' skinparam style strictuml
+
+frame "component: rpi_control_frmwrk - structure - Signal-Slot" {
+
+    package "Common" {
+        component Signal_Slot #DDDDDD {
+
+            class Signal_Context {
+
+            }
+
+            class Slot_Context {
+
+            }
+
+            interface Signal_Slot_Interface {
+                CREATE_SIGNAL()
+                CREATE_SLOT()
+            }
+
+            interface Signal_Interface {
+                init()
+                send()
+            }
+
+            interface Slot_Interface {
+                connect()
+            }
+
+            Signal_Context -up-|> Signal_Interface
+            Slot_Context -up-|> Slot_Interface
+            Slot_Context -left-> Slot_Context : <successor>
+
+            Signal_Slot_Interface <|-right- Signal_Interface
+            Signal_Slot_Interface <|-left- Slot_Interface
+
+            url of Signal_Slot_Interface is [[../../src/common/signal_slot_interface.h {Click: Go to Source}]]
+        }
+    }
+    
+    package "APP-Task" {
+        class Application {
+
+        }
+    }
+
+    Application .down.> Signal_Slot_Interface : <uses>
+
+}
+@enduml

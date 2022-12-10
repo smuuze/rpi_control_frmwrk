@@ -1,47 +1,61 @@
 @startuml rpi_control_frmwrk_diagram_pacakge_main_structure
 
 skinparam monochrome true
-skinparam linetype ortho
-skinparam style strictuml
+'skinparam linetype ortho
+'skinparam style strictuml
 
 frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
 
-    package "Common" {
-        [Signal_Slot]
-        [Module_Status]
-        [Queue]
-        [String_Tools]
+    folder "Projects" {
+        component application [
+            <<component>>
+            Application
+        ]
     }
 
-    package "Driver" {
-        [GPIO]
-        [IRQ]
-        [UART]
-        [SPI]
-        [I2C]
-        [CLOCK]
+    folder "Framework" {
+
+        component kernel [
+            <<component>>
+            Kernel
+        ]
+
+        component app_task [
+            <<component>>
+            App-Task
+        ]
+
+        component driver [
+            <<component>>
+            Driver
+        ]
+
+        component cmd_handling [
+            <<component>>
+            Command-Hanndling
+        ]
+
+        component protocol [
+            <<component>>
+            Protocol
+        ]
+
+        component user_interface [
+            <<component>>
+            User-Interface
+        ]
+
+        kernel -down- app_task
+        kernel -left- cmd_handling
+        kernel -right- protocol
+        kernel -- driver
+        kernel -- user_interface
+
+        url of kernel is [[../readme/readme_kernel.h {Click: Go to}]]
+
     }
 
-    package "App-Tasks" {
+    application --> "Framework"
 
-    }
-
-    package "Protocol" {
-
-    }
-
-    package "Command-Handler" {
-
-    }
-
-    package "Copro" {
-
-    }
-
-    package "Management" {
-
-    }
-
-    package "3rdParty"
- }
+}
 @enduml

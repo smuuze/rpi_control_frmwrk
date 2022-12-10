@@ -43,11 +43,13 @@ frame "component: rpi_control_frmwrk - structure - LCD-Task" {
         ]
     }
 
-    package "Common" {
+    package "Kernel" {
         component signal_slot [
             <<Signal-Slot>>
             Signal-SLot
         ]
+
+        url of signal_slot is [[www.google.de{This is Dog}]]
     }
 
     package "Driver" {
@@ -62,4 +64,5 @@ frame "component: rpi_control_frmwrk - structure - LCD-Task" {
     lcd_driver -down-> gpio_driver
 
 }
+
 @enduml
