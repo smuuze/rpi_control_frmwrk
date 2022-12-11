@@ -344,7 +344,6 @@ void lcd_driver_init(void) {
     lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5);  usleep(4150);
     lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5);  usleep(150);
     lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5);
-    lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5);
 
     // -----------------------------------------------------
 
