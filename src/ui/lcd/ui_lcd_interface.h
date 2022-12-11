@@ -40,6 +40,11 @@
 
 //-----------------------------------------------------------------------------
 
+#define LCD_LINE_ONE        0
+#define LCD_LINE_TWO        1
+
+//-----------------------------------------------------------------------------
+
 /**
  * @brief Signals a new Line to write on the connected LCD
  * One line per Signal can be send. The supported length of the text-line
