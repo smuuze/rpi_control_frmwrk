@@ -341,10 +341,10 @@ void lcd_driver_init(void) {
 
     usleep(15 * 1000); // wait 15 ms for LCD controller power-up
 
-    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  //usleep(4150);
-    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  //usleep(150);
-    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);
-    lcd_set_pins(LCD_PIN_D5); // 4-Bit data-length
+    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  usleep(5 * 1000);
+    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  usleep(100);
+    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  usleep(5 * 1000);
+    lcd_set_pins(LCD_PIN_D5);               usleep(5 * 1000);
 
     // -----------------------------------------------------
 
@@ -368,7 +368,7 @@ void lcd_driver_init(void) {
     lcd_set_pins(0);
     lcd_set_pins(LCD_PIN_D6 | LCD_PIN_D5);
 
-    //usleep(2 * 1000);
+    usleep(2 * 1000);
 
     DEBUG_PASS("lcd_driver_init() - Clear buffer");
 
