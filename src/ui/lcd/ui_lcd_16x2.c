@@ -725,6 +725,10 @@ static void lcd_task_run(void) {
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_WAIT");
                 lcd_task_state = LCD_TASK_STATE_WAIT;
 
+                if (LCD_LINE_QUEUE_is_empty()) {
+                    SIGNAL_LCD_UPDATED_send(NULL);
+                }
+
             } else {
 
                 LCD_CONTROLLER_STATUS_set(LCD_CONTROLLER_STATUS_SECOND_LINE_WRITTEN);
@@ -744,10 +748,6 @@ static void lcd_task_run(void) {
             if (LCD_TASK_OP_TIMER_is_up(LCD_TASK_UPDATE_TIMEOUT_MS)) {
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
                 lcd_task_state = LCD_TASK_STATE_IDLE;
-
-                if (LCD_LINE_QUEUE_is_empty()) {
-                    SIGNAL_LCD_UPDATED_send(NULL);
-                }
             }
 
             break;
