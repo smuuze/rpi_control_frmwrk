@@ -339,31 +339,40 @@ void lcd_driver_init(void) {
 
     DEBUG_PASS("lcd_driver_init() - Power Up");
 
-    usleep(15 * 1000); // wait for LCD controller power-up
+    usleep(15 * 1000); // wait 15 ms for LCD controller power-up
 
-    lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5);     usleep(5 * 1000);
-    lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5);     usleep(100);
-    lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5);     usleep(5 * 1000);
+    lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5);  usleep(4150);
+    lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5);  usleep(150);
+    lcd_set_pins(LCD_PIN_D4 | LCD_PIN_D5); // usleep(5 * 1000);
 
-    lcd_set_pins(LCD_PIN_D5);         usleep(5 * 1000); 
+    // lcd_set_pins(LCD_PIN_D5);               usleep(5 * 1000); 
 
     // -----------------------------------------------------
 
-    DEBUG_PASS("lcd_driver_init() - Set Interface");
+    DEBUG_PASS("lcd_driver_init() - Configure Display");
 
-    lcd_set_pins(LCD_PIN_D5);               // switch to 4-Bit interface
-    lcd_set_pins(LCD_PIN_D7);               // 2 Lines / 5x8 Font
+    // FUNCTION SET - 4-Bit data-length
+    lcd_set_pins(LCD_PIN_D5);
 
-    lcd_set_pins(0);                        // cmd control
-    lcd_set_pins(LCD_PIN_D7 | LCD_PIN_D6);  // enable display
+    // FUNCTION ST - 4-Bit data-length / 2 Lines / 5x8 font
+    lcd_set_pins(LCD_PIN_D5);
+    lcd_set_pins(LCD_PIN_D7); // two lines
 
+    // DISPLAY ON / Cursor off / Blink Cursor off 
     lcd_set_pins(0);
-    lcd_set_pins(LCD_PIN_D4);               // display clear
+    lcd_set_pins(LCD_PIN_D7 | LCD_PIN_D6);
 
-    lcd_set_pins(0);                        // Entry mode set
-    lcd_set_pins(LCD_PIN_D6 | LCD_PIN_D5);  // cursor increment
+    // CLEAR DISPLAY
+    lcd_set_pins(0);
+    lcd_set_pins(LCD_PIN_D4);
 
-    usleep(2 * 1000);
+    usleep(1640);
+
+    // ENTRY MODE ST - Cursor auto increment
+    lcd_set_pins(0);
+    lcd_set_pins(LCD_PIN_D6 | LCD_PIN_D5);
+
+    /usleep(2 * 1000);
 
     DEBUG_PASS("lcd_driver_init() - Clear buffer");
 
