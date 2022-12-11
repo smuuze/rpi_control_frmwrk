@@ -76,6 +76,7 @@ u8 file_is_existing(FILE_INTERFACE* p_file) {
 }
 
 u8 file_is_readable(FILE_INTERFACE* p_file) {
+    (void) p_file;
 	return 1;
 }
 
