@@ -288,11 +288,11 @@ static void lcd_set_pins(u8 pins) {
     if (pins & LCD_PIN_D6) LCD_D6_drive_high();  else  LCD_D6_drive_low();
     if (pins & LCD_PIN_D7) LCD_D7_drive_high();  else  LCD_D7_drive_low();
 
-    usleep(50); // wait for LCD
-
     LCD_EN_drive_high();
     usleep(50);  // wait for LCD
+
     LCD_EN_drive_low();
+    usleep(50); // wait for LCD
 }
 
 /**
@@ -369,6 +369,26 @@ void lcd_driver_init(void) {
     lcd_set_pins(LCD_PIN_D6 | LCD_PIN_D5);
 
     usleep(2 * 1000);
+
+    lcd_driver_write_char('A');
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
 
     DEBUG_PASS("lcd_driver_init() - Clear buffer");
 
