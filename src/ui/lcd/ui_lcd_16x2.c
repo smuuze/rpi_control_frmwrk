@@ -45,6 +45,7 @@
 #include "common/signal_slot_interface.h"
 #include "common/local_module_status.h"
 #include "common/qeue_interface.h"
+#include "common/common_tools_string.h"
 
 #include "mcu_task_management/mcu_task_interface.h"
 #include "time_management/time_management.h"
@@ -373,26 +374,6 @@ void lcd_driver_init(void) {
     lcd_set_pins(0);
     lcd_set_pins(LCD_PIN_D6 | LCD_PIN_D5);
 
-    lcd_driver_write_char('A');
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-
     DEBUG_PASS("lcd_driver_init() - Clear buffer");
 
     u8 line_cnt = 0;
@@ -426,6 +407,7 @@ void lcd_driver_set_line(const char* message, u8 length) {
         return;
     }
 
+    DEBUG_TRACE_byte(length, "lcd_driver_set_line() - Length:");
     DEBUG_TRACE_STR(message, "lcd_driver_set_line() - New Line:");
 
     /**
@@ -627,7 +609,9 @@ static u8 lcd_controller_load_new_line(void) {
     LCD_LINE_QUEUE_deqeue(&lcd_task_new_line_buffer[0]);
     LCD_LINE_QUEUE_mutex_release();
 
-    lcd_driver_set_line(lcd_task_new_line_buffer, LCD_NUM_CHARS);
+    u8 length = common_tools_string_length(&lcd_task_new_line_buffer[0]);
+
+    lcd_driver_set_line(&lcd_task_new_line_buffer[0], length);
     return 1;
 }
 
