@@ -449,87 +449,73 @@ u8 lcd_driver_update_screen(u8 mode) {
     static u8 state = 0;
     static u8 char_cnt = 0;
 
+    if (state == 0) {
+
+        DEBUG_TRACE_STR(line_buffer[0], "lcd_driver_update_screen() - Select Line 1");
         lcd_driver_select_line(LCD_LINE_ONE);
+        char_cnt = 0;
+        state = 1;
+    }
+    
+    if (state == 1) {
+
+        /**
+         * @brief update the content of the first line
+         */
         for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
             lcd_driver_write_char(line_buffer[LCD_LINE_ONE][char_cnt]);
         }
 
+        // Go on to the second line
+        state = 2;
+    } 
+    
+    if (state == 2) {
+
+        DEBUG_TRACE_STR(line_buffer[1], "lcd_driver_update_screen() - Select Line 2");
         lcd_driver_select_line(LCD_LINE_TWO);
-        for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-            lcd_driver_write_char(' ');
+
+        if (mode & LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) {
+
+            DEBUG_PASS("lcd_driver_update_screen() - Delete content of last line");
+
+            for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
+                lcd_driver_write_char(' ');
+            }
+
+            lcd_driver_select_line(LCD_LINE_TWO);
         }
 
-        lcd_driver_select_line(LCD_LINE_TWO);
-        for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
+        char_cnt = 0;
+        state = 3;
+    }
+    
+    if (state == 3) {
+
+        /**
+         * @brief update the content of the second line
+         */
+        for (; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
             lcd_driver_write_char(line_buffer[LCD_LINE_TWO][char_cnt]);
+
+            if (mode & LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) {
+
+                DEBUG_CODE_BLOCK (
+                    char t_buffer[LCD_NUM_CHARS + 1];
+                    memset(t_buffer, '\0', LCD_NUM_CHARS + 1);
+                    memcpy(t_buffer, &line_buffer[LCD_LINE_TWO][0], char_cnt+1 );
+                    DEBUG_TRACE_STR(t_buffer, "lcd_driver_update_screen() - Content Line 2:");
+                )
+
+                // we need to count up here, because we leave the loop.
+                char_cnt += 1;
+                return 0;
+            }
         }
 
-    // if (state == 0) {
-
-    //     DEBUG_TRACE_STR(line_buffer[0], "lcd_driver_update_screen() - Select Line 1");
-    //     lcd_driver_select_line(LCD_LINE_ONE);
-    //     char_cnt = 0;
-    //     state = 1;
-    // }
-    
-    // if (state == 1) {
-
-    //     /**
-    //      * @brief update the content of the first line
-    //      */
-    //     for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-    //         lcd_driver_write_char(line_buffer[LCD_LINE_ONE][char_cnt]);
-    //     }
-
-    //     // Go on to the second line
-    //     state = 2;
-    // } 
-    
-    // if (state == 2) {
-
-    //     DEBUG_TRACE_STR(line_buffer[1], "lcd_driver_update_screen() - Select Line 2");
-        
-    //     lcd_driver_select_line(LCD_LINE_TWO);
-
-    //     if (mode & LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) {
-
-    //         DEBUG_PASS("lcd_driver_update_screen() - Delete content of last line");
-
-    //         for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-    //             lcd_driver_write_char(' ');
-    //         }
-    //     }
-
-    //     char_cnt = 0;
-    //     state = 3;
-    // }
-    
-    // if (state == 3) {
-
-    //     /**
-    //      * @brief update the content of the first line
-    //      */
-    //     for (; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-    //         lcd_driver_write_char(line_buffer[LCD_LINE_TWO][char_cnt]);
-
-    //         if (mode & LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) {
-
-    //             DEBUG_CODE_BLOCK (
-    //                 char t_buffer[LCD_NUM_CHARS + 1];
-    //                 memset(t_buffer, '\0', LCD_NUM_CHARS + 1);
-    //                 memcpy(t_buffer, &line_buffer[LCD_LINE_TWO][0], char_cnt+1 );
-    //                 DEBUG_TRACE_STR(t_buffer, "lcd_driver_update_screen() - Content Line 2:");
-    //             )
-
-    //             // we need to count up here, because we leave the loop.
-    //             char_cnt += 1;
-    //             return 0;
-    //         }
-    //     }
-
-    //     // update finished
-    //     state = 0;
-    // }
+        // update finished
+        state = 0;
+    }
 
     return 1;
 }
