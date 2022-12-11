@@ -8,7 +8,7 @@ CROSS_COMPILER_SUFFIX ?=
 
 LDFLAGS ?= 
 LD_EXTRA_FLAGS ?=
-CFLAGS ?= 
+CFLAGS ?= -Wextra -Wall
 LFLAGS ?=
 
 #-----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ ifeq ($(CPU_FAMILY), avr)
 		endif
 
 		ifeq ($(UNAME_S),Darwin)
-			CFLAGS += -D OSX -Wextra -Wall
+			CFLAGS += -D OSX
 			CROSS_COMPILER_PATH = /usr/local/bin
 		endif
 
@@ -58,10 +58,14 @@ ifeq ($(CPU_FAMILY), arm)
 
 		ifeq ($(UNAME_S),Linux)
 			CROSS_COMPILER_PATH = /usr/bin
+
+			ifeq ($(MCU),RASPBERRY_PI)
+				CROSS_COMPILER_PREFIX = arm-linux-gnueabihf-
+			endif
 		endif
 
 		ifeq ($(UNAME_S),Darwin)
-			CFLAGS += -D OSX -Wextra -Wall
+			CFLAGS += -D OSX
 			CROSS_COMPILER_PATH = /usr/local/bin
 		endif
 
@@ -85,7 +89,7 @@ ifeq ($(CPU_FAMILY), unittest)
 		endif
 
 		ifeq ($(UNAME_S),Darwin)
-			CFLAGS += -D OSX -Wextra -Wall
+			CFLAGS += -D OSX
 			CROSS_COMPILER_PATH = /usr/bin
 		endif
 
