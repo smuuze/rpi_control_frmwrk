@@ -372,7 +372,7 @@ void lcd_driver_init(void) {
     lcd_set_pins(0);
     lcd_set_pins(LCD_PIN_D6 | LCD_PIN_D5);
 
-    /usleep(2 * 1000);
+    //usleep(2 * 1000);
 
     DEBUG_PASS("lcd_driver_init() - Clear buffer");
 
