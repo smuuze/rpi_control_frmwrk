@@ -37,7 +37,7 @@ ifeq ($(CPU_FAMILY), avr)
 		endif
 
 		ifeq ($(UNAME_S),Darwin)
-			CFLAGS += -D OSX
+			CFLAGS += -D OSX -Wextra -Wall
 			CROSS_COMPILER_PATH = /usr/local/bin
 		endif
 
@@ -61,7 +61,7 @@ ifeq ($(CPU_FAMILY), arm)
 		endif
 
 		ifeq ($(UNAME_S),Darwin)
-			CFLAGS += -D OSX 
+			CFLAGS += -D OSX -Wextra -Wall
 			CROSS_COMPILER_PATH = /usr/local/bin
 		endif
 
@@ -85,7 +85,7 @@ ifeq ($(CPU_FAMILY), unittest)
 		endif
 
 		ifeq ($(UNAME_S),Darwin)
-			CFLAGS += -D OSX 
+			CFLAGS += -D OSX -Wextra -Wall
 			CROSS_COMPILER_PATH = /usr/bin
 		endif
 
