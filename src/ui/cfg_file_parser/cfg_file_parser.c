@@ -247,7 +247,8 @@ void cfg_file_parser_task_run(void) {
 		default:
 
 			app_task_state = CFG_FILE_PARSER_TASK_STATE_OPEN_FILE;
-			// no break;
+            // no break;
+            // fall through
 
 		case CFG_FILE_PARSER_TASK_STATE_IDLE :
 
@@ -267,7 +268,8 @@ void cfg_file_parser_task_run(void) {
 			CFG_FILE_PARSER_STATUS_unset(CFG_FILE_PARSER_NEW_CFG_FILE_SET);
 			DEBUG_PASS("cfg_file_parser_task_run() - CFG_FILE_PARSER_TASK_STATE_IDLE > CFG_FILE_PARSER_TASK_STATE_OPEN_FILE");
 			app_task_state = CFG_FILE_PARSER_TASK_STATE_OPEN_FILE;
-			// no break;
+            // no break;
+            // fall through
 
 		case CFG_FILE_PARSER_TASK_STATE_OPEN_FILE :
 
@@ -280,7 +282,8 @@ void cfg_file_parser_task_run(void) {
 			DEBUG_PASS("cfg_file_parser_task_run() - CFG_FILE_PARSER_TASK_STATE_OPEN_FILE > CFG_FILE_PARSER_TASK_STATE_LOAD_CONFIGURATION");
 
 			app_task_state = CFG_FILE_PARSER_TASK_STATE_LOAD_CONFIGURATION;
-			// no break;
+            // no break;
+            // fall through
 
 		case CFG_FILE_PARSER_TASK_STATE_LOAD_CONFIGURATION :
 
