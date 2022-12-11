@@ -603,24 +603,24 @@ static u8 lcd_controller_load_new_line(void) {
  * 
  * @return 1 if updating the line has finished, 0 otherwise
  */
-static u8 lcd_controller_write_line(void) {
+// static u8 lcd_controller_write_line(void) {
 
-    static u8 character_counter = 0;
+//     static u8 character_counter = 0;
 
-    if (character_counter < lcd_driver_character_count()) {
+//     if (character_counter < lcd_driver_character_count()) {
 
-        // DEBUG_TRACE_byte(character_counter, "lcd_controller_write_line() - Char-Index:");
+//         // DEBUG_TRACE_byte(character_counter, "lcd_controller_write_line() - Char-Index:");
 
-        lcd_driver_write_char(lcd_task_new_line_buffer[character_counter]);
-        character_counter += 1;
-        return 0;
+//         lcd_driver_write_char(lcd_task_new_line_buffer[character_counter]);
+//         character_counter += 1;
+//         return 0;
 
-    } else {
+//     } else {
 
-        character_counter = 0;
-        return 1;
-    }
-}
+//         character_counter = 0;
+//         return 1;
+//     }
+// }
 
 // --------------------------------------------------------------------------------
 
