@@ -53,6 +53,14 @@
  */
 SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SIGNAL_LCD_LINE)
 
+/**
+ * @brief The LCD controller will send this signal
+ * after the content of the display has been updated
+ * and there are no new messages available.
+ * This signal does not has any arguments
+ */
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SIGNAL_LCD_UPDATED)
+
 //-----------------------------------------------------------------------------
 
 /**

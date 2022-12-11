@@ -103,12 +103,14 @@
 // --------------------------------------------------------------------------------
 
 /**
- * @brief Signals a new Line to write on the connected LCD
- * One line per Signal can be send. The supported length of the text-line
- * depends on the currently used LCD. Characters that does not fit will be discarded.
- * The new line must end with the termination character '\0'
+ * @see ui_lcd_interface.h#SIGNAL_LCD_LINE
  */
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SIGNAL_LCD_LINE)
+
+/**
+ * @see ui_lcd_interface.h#SIGNAL_LCD_UPDATED
+ */
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SIGNAL_LCD_UPDATED)
 
 // --------------------------------------------------------------------------------
 
@@ -548,6 +550,8 @@ void lcd_controller_init(void) {
     DEBUG_PASS("lcd_controller_init");
 
     SIGNAL_LCD_LINE_init();
+    SIGNAL_LCD_UPDATED_init();
+
     SIGNAL_LCD_LINE_set_timeout(0);
     SLOT_LCD_LINE_connect();
 
@@ -726,6 +730,10 @@ static void lcd_task_run(void) {
                 LCD_CONTROLLER_STATUS_set(LCD_CONTROLLER_STATUS_SECOND_LINE_WRITTEN);
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
                 lcd_task_state = LCD_TASK_STATE_IDLE;
+
+                if (LCD_LINE_QUEUE_is_empty()) {
+                    SIGNAL_LCD_UPDATED_send(NULL);
+                }
             }
 
             LCD_TASK_OP_TIMER_start();
@@ -736,6 +744,10 @@ static void lcd_task_run(void) {
             if (LCD_TASK_OP_TIMER_is_up(LCD_TASK_UPDATE_TIMEOUT_MS)) {
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
                 lcd_task_state = LCD_TASK_STATE_IDLE;
+
+                if (LCD_LINE_QUEUE_is_empty()) {
+                    SIGNAL_LCD_UPDATED_send(NULL);
+                }
             }
 
             break;
