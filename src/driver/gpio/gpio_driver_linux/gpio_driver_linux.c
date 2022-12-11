@@ -106,7 +106,7 @@ static GPIO_DRIVER_RW_CMD gpio_command;
  * @param p_pin_descr gpio descriptor of the gpio pin
  * @return number of the gpio-pin on the actual system referenced by p_pin_descr
  */
-static u8 gpio_driver_get_pin_id(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+static u8 gpio_driver_get_pin_id(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
     u8 pin_num = 0xFF;
 
@@ -216,7 +216,7 @@ void gpio_driver_deinit(void) {
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+void gpio_driver_init_pin(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
     #ifdef TRACER_ON
     {
@@ -262,7 +262,7 @@ void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) {
+void gpio_driver_set_direction(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) {
 
     if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
         return;
@@ -288,7 +288,7 @@ void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GP
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) {
+void gpio_driver_set_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) {
 
     if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
         DEBUG_TRACE_byte(gpio_driver_get_pin_id(p_pin_descr),   "gpio_driver_set_level() - DEACTIVATED - PIN:");
@@ -322,7 +322,7 @@ void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_D
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+void gpio_driver_toggle_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     
     if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
         return;
@@ -347,7 +347,7 @@ void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 // --------------------------------------------------------------------------------
 
-GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+GPIO_DRIVER_LEVEL gpio_driver_get_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     
     if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
         return GPIO_LEVEL_HIGH_Z;
@@ -377,7 +377,7 @@ GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+void gpio_driver_print_pin_state(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     (void) p_pin_descr;
 }
 
