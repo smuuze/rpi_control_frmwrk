@@ -506,7 +506,7 @@ u8 lcd_driver_update_screen(u8 mode) {
                     DEBUG_TRACE_STR(t_buffer, "lcd_driver_update_screen() - Content Line 2:");
                 )
 
-                // we need to count up here, because we leve the loop.
+                // we need to count up here, because we leave the loop.
                 char_cnt += 1;
                 return 0;
             }
@@ -686,6 +686,7 @@ static void lcd_task_run(void) {
             DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_LOAD_NEXT_LINE");
             lcd_task_state = LCD_TASK_STATE_LOAD_NEXT_LINE;
             // no break;
+            // fall through
 
         case LCD_TASK_STATE_LOAD_NEXT_LINE:
 
