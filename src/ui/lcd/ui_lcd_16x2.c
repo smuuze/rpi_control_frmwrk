@@ -230,24 +230,15 @@ static void lcd_task_finish(void);
  */
 static void lcd_task_terminate(void);
 
-/**
- * @brief structure of the task-implementation of this module
- */
-static MCU_TASK_INTERFACE lcd_controller_task = {
-    0,                                  //     identifier,
-    0,                                  //     new_run_timeout,
-    0,                                  //     last_run_time,
-    &lcd_task_init,                     //     init,
-    &lcd_task_get_schedule_interval,    //     get_schedule_interval,
-    &lcd_task_get_state,                //     get_sate,
-    &lcd_task_run,                      //     run,
-    0,                                  //     background_run,
-    0,                                  //     sleep,
-    0,                                  //     wakeup,
-    &lcd_task_finish,                   //     finish,
-    &lcd_task_terminate,                //     terminate,
-    0                                   //     next-task
-};
+TASK_CREATE (
+    LCD_TASK,
+    TASK_PRIORITY_MIDDLE,
+    lcd_task_get_schedule_interval,
+    lcd_task_init,
+    lcd_task_run,
+    lcd_task_get_state,
+    lcd_task_terminate
+)
 
 /**
  * @brief actual state of this task
@@ -555,7 +546,8 @@ void lcd_controller_init(void) {
     SIGNAL_LCD_LINE_set_timeout(0);
     SLOT_LCD_LINE_connect();
 
-    mcu_task_controller_register_task(&lcd_controller_task);
+    LCD_TASK_init();
+    // mcu_task_controller_register_task(&lcd_controller_task);
 }
 
 void lcd_controller_set_enabled(u8 enabled) {
@@ -604,30 +596,6 @@ static u8 lcd_controller_load_new_line(void) {
     lcd_driver_set_line(&lcd_task_new_line_buffer[0], length);
     return 1;
 }
-
-/**
- * @brief Updates the last line with the currently loaded new line.
- * 
- * @return 1 if updating the line has finished, 0 otherwise
- */
-// static u8 lcd_controller_write_line(void) {
-
-//     static u8 character_counter = 0;
-
-//     if (character_counter < lcd_driver_character_count()) {
-
-//         // DEBUG_TRACE_byte(character_counter, "lcd_controller_write_line() - Char-Index:");
-
-//         lcd_driver_write_char(lcd_task_new_line_buffer[character_counter]);
-//         character_counter += 1;
-//         return 0;
-
-//     } else {
-
-//         character_counter = 0;
-//         return 1;
-//     }
-// }
 
 // --------------------------------------------------------------------------------
 
