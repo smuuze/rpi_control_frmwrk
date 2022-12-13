@@ -36,7 +36,7 @@
 /**
  * @brief Creates a new task.
  * 
- * Usager:
+ * Usage:
  * 
  *  1.  declare task callbacks. Implementation is made somewhere else
  * 
