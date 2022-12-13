@@ -1,3 +1,27 @@
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    mcu_task_interface.h
+ * @author  Sebastian Lesse
+ * @date    2022 / 12 / 12
+ * @brief   Interface to create task
+ * 
+ */
+
+// --------------------------------------------------------------------------------
+
 #ifndef _MCU_TASK_INTERFACE_H_
 #define _MCU_TASK_INTERFACE_H_
 
@@ -5,18 +29,123 @@
 
 #include "config.h"
 
+#include "cpu.h"
+
 // --------------------------------------------------------------------------------
 
 /**
- * @brief 
+ * @brief Creates a new task.
  * 
+ * Usager:
+ * 
+ *  1.  declare task callbacks. Implementation is made somewhere else
+ * 
+ *      static void my_task_init(void);
+ *      static u16 my_task_get_schedule_interval(void);
+ *      static MCU_TASK_INTERFACE_TASK_STATE my_task_get_state(void);
+ *      static void my_task_run(void);
+ *      static void my_task_terminate(void);
+ * 
+ *  2.  create task
+ * 
+ *      TASK_CREATE (
+ *          MY_TASK,
+ *          my_task_get_schedule_interval,
+ *          my_task_init,
+ *          my_task_run,
+ *          my_task_get_state,
+ *          my_task_terminate
+ *      )
+ * 
+ *  3.  initialize task
+ * 
+ *      MY_TASK_init();
+ * 
+ * @param name Name of the new task 
+ * @param interval interval at which the tas is scheduled
+ * @param init task initialization callback, is executed if this task is initialized
+ * @param run callback to schedule this task
+ * @param state callback to get the current state of this task, see MCU_TASK_INTERFACE_TASK_STATE
+ * @param terminate callback to terminate the task
+ */
+#define TASK_CREATE(name, priority, interval, init, run, state, terminate )         \
+                                                                                    \
+    static MCU_TASK_INTERFACE __##name##__task_context = {                          \
+        0,                                                                          \
+        0,                                                                          \
+        0,                                                                          \
+        &init,                                                                      \
+        &interval,                                                                  \
+        &state,                                                                     \
+        &run,                                                                       \
+        0,                                                                          \
+        0,                                                                          \
+        0,                                                                          \
+        0,                                                                          \
+        &terminate,                                                                 \
+        0                                                                           \
+    };                                                                              \
+                                                                                    \
+    __UNUSED__ static inline void name##_init(void) {                               \
+        mcu_task_controller_register_task(&__##name##__task_context);               \
+    }                                                                               \
+                                                                                    \
+    __UNUSED__ static inline void name##_run(void) {                                \
+        run();                                                                      \
+    }
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Types of priority a task can have.
  */
 typedef enum {
-	MCU_TASK_UNINITIALIZED = 0xFF,
-	MCU_TASK_SLEEPING = 0,  //!< MCU_TASK_SLEEPING
-	MCU_TASK_IDLE = 1,      //!< MCU_TASK_IDLE
-	MCU_TASK_RUNNING = 2,   //!< MCU_TASK_RUNNING
-	MCU_TASK_TERMINATED = 3//!< MCU_TASK_TERMINATED
+
+    /**
+     * @brief The task has a very high priority and is scheduled befor all other
+     * task with a lower priority. Shall only be used for system relevant task.
+     */
+    TASK_PRIORITY_VERY_HIGH,
+
+    /**
+     * @brief The task has a high priority.
+     * Can be used for task that have a critical timing.
+     */
+    TASK_PRIORITY_HIGH,
+
+    /**
+     * @brief The task has a normal priority.
+     * Cann be used for task that does not have a critical timing
+     */
+    TASK_PRIORITY_MIDDLE,
+
+    /**
+     * @brief The task has a low priority.
+     * Can be used for tasks that are less important than task
+     * with a normal priority.
+     */
+    TASK_PRIORITY_LOW,
+
+    /**
+     * @brief The task has a very low priority.
+     * Can be used for tasks that are not time critical and are
+     * scheduled in a very long interval.
+     * This priority is also apllied to the systems idle task
+     */
+    TASK_PRIORITY_VERY_LOW
+} TASK_INTERFACE_TASK_PRIORITY;
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief
+ */
+typedef enum {
+    MCU_TASK_UNINITIALIZED = 0xFF,
+    MCU_TASK_SLEEPING = 0,  //!< MCU_TASK_SLEEPING
+    MCU_TASK_IDLE = 1,      //!< MCU_TASK_IDLE
+    MCU_TASK_RUNNING = 2,   //!< MCU_TASK_RUNNING
+    MCU_TASK_TERMINATED = 3//!< MCU_TASK_TERMINATED
 } MCU_TASK_INTERFACE_TASK_STATE;
 
 // --------------------------------------------------------------------------------
@@ -40,136 +169,138 @@ typedef void (*MCU_TASK_INTERFACE_TERMINATE_CALLBACK) (void);
  */
 typedef struct MCU_TASK_INTERFACE {
 
-	/**
-	 * @brief 
-	 * 
-	 */
-	u8 identifier;
+    /**
+     * @brief 
+     * 
+     */
+    u8 identifier;
 
-	/**
-	 * @brief This variable is used by the task-controller
-	 * to determine the next execution time of this task
-	 * 
-	 */
-	u16 new_run_timeout;
+    /**
+     * @brief This variable is used by the task-controller
+     * to determine the next execution time of this task
+     * 
+     */
+    u16 new_run_timeout;
 
-	/**
-	 * @brief This variable is used by the task-controller
-	 * to determine the next execution time of this task
-	 * 
-	 */
-	u16 last_run_time;
-		
-	/**
-	 * @brief Callback to initialize a task.
-	 * This function is called immediately after
-	 * a task was registered to the task-controller.
-	 * 
-	 */
-	MCU_TASK_INTERFACE_INIT_CALLBACK init;
+    /**
+     * @brief This variable is used by the task-controller
+     * to determine the next execution time of this task
+     * 
+     */
+    u16 last_run_time;
+        
+    /**
+     * @brief Callback to initialize a task.
+     * This function is called immediately after
+     * a task was registered to the task-controller.
+     * 
+     */
+    MCU_TASK_INTERFACE_INIT_CALLBACK init;
 
-	/**
-	 * @brief Returns the interval in milliseconds at which the task needs to be executed.
-	 * 
-	 * @return number of milliseconds between two following task-executions.
-	 * 
-	 */
-	MCU_TASK_INTERFACE_GET_SCHEDULE_INTERVAL_CALLBACK get_schedule_interval;
+    /**
+     * @brief Returns the interval in milliseconds at which the task needs to be executed.
+     * 
+     * @return number of milliseconds between two following task-executions.
+     * 
+     */
+    MCU_TASK_INTERFACE_GET_SCHEDULE_INTERVAL_CALLBACK get_schedule_interval;
 
-	/**
-	 * @brief Returns the actual task-state. Via this function the task-controller
-	 * decides if a task needs to be executed or not. If the actual state is
-	 * MCU_TASK_SLEEPING the task will not be executed. This function is also used to
-	 * determine if the system is in idle state, this means no task is running, and can
-	 * enter a low-power state
-	 * 
-	 * @return
-	 * 	MCU_TASK_SLEEPING 	The task is in sleep mode and will not be executed
-	 * 				If this state is returned the system can enter the low-power state
-	 * 	MCU_TASK_IDLE 		The task is in sleep mode and will not be executed
-	 * 				If this state is returned the system can enter the low-power state
-	 * 	MCU_TASK_RUNNING	The task is ready to be executed. 
-	 * 				If this state is returned after the task was executed
-	 * 				the system then cannot enter the idle-state.
-	 * 	MCU_TASK_TERMINATED	The task is terminated and cannot executed anymore
-	 * 				If this state is returned the system can enter the low-power state
-	 * 
-	 */
-	MCU_TASK_INTERFACE_GET_STATE_CALLBACK get_sate;
+    /**
+     * @brief Returns the actual task-state. Via this function the task-controller
+     * decides if a task needs to be executed or not. If the actual state is
+     * MCU_TASK_SLEEPING the task will not be executed. This function is also used to
+     * determine if the system is in idle state, this means no task is running, and can
+     * enter a low-power state
+     * 
+     * @return
+     *     MCU_TASK_SLEEPING     The task is in sleep mode and will not be executed
+     *                 If this state is returned the system can enter the low-power state
+     *     MCU_TASK_IDLE         The task is in sleep mode and will not be executed
+     *                 If this state is returned the system can enter the low-power state
+     *     MCU_TASK_RUNNING    The task is ready to be executed. 
+     *                 If this state is returned after the task was executed
+     *                 the system then cannot enter the idle-state.
+     *     MCU_TASK_TERMINATED    The task is terminated and cannot executed anymore
+     *                 If this state is returned the system can enter the low-power state
+     * 
+     */
+    MCU_TASK_INTERFACE_GET_STATE_CALLBACK get_sate;
 
-	/**
-	 * @brief Executes the task. This function is blocking.
-	 * The task decides when it will give back cpu-time.
-	 * A running task cannot be stopped. It can only be interrupted by an HW-IRQ
-	 * 
-	 */
-	MCU_TASK_INTERFACE_RUN_CALLBACK run;
+    /**
+     * @brief Executes the task. This function is blocking.
+     * The task decides when it will give back cpu-time.
+     * A running task cannot be stopped. It can only be interrupted by an HW-IRQ
+     * 
+     */
+    MCU_TASK_INTERFACE_RUN_CALLBACK run;
 
-	/**
-	 * @brief This function is optional for every task.
-	 * A task can be run for a short time in the background.
-	 * This function can be used to update internal status-flags and timers.
-	 * A task is not allowed to execute complex opperations in this function
-	 * 
-	 */
-	MCU_TASK_INTERFACE_BG_RUN_CALLBACK background_run;
+    /**
+     * @brief This function is optional for every task.
+     * A task can be run for a short time in the background.
+     * This function can be used to update internal status-flags and timers.
+     * A task is not allowed to execute complex opperations in this function
+     * 
+     */
+    MCU_TASK_INTERFACE_BG_RUN_CALLBACK background_run;
 
-	/**
-	 * @brief This function is optional for every task
-	 * If the system goes into low-power mode, this functions is called.
-	 * A task may perform special opperations to enter its low-power mode
-	 * E.g. a task needs to set the GPIOs into a low-power state.
-	 * 
-	 */
-	MCU_TASK_INTERFACE_SLEEP_CALLBACK sleep;
+    /**
+     * @brief This function is optional for every task
+     * If the system goes into low-power mode, this functions is called.
+     * A task may perform special opperations to enter its low-power mode
+     * E.g. a task needs to set the GPIOs into a low-power state.
+     * 
+     */
+    MCU_TASK_INTERFACE_SLEEP_CALLBACK sleep;
 
-	/**
-	 * @brief This function is optional for every task.
-	 * If the system is un low-power mode and returns to normal operation
-	 * this function is called.
-	 * 
-	 */
-	MCU_TASK_INTERFACE_WAKEUP_CALLBACK wakeup;
+    /**
+     * @brief This function is optional for every task.
+     * If the system is un low-power mode and returns to normal operation
+     * this function is called.
+     * 
+     */
+    MCU_TASK_INTERFACE_WAKEUP_CALLBACK wakeup;
 
-	/**
-	 * @brief 
-	 * 
-	 */
-	MCU_TASK_INTERFACE_FINISH_CALLBACK finish;
+    /**
+     * @brief 
+     * 
+     */
+    MCU_TASK_INTERFACE_FINISH_CALLBACK finish;
 
-	/**
-	 * @brief This function is optional for every task.
-	 * If this function is called a task must clean
-	 * up itself and give back all allocated resources.
-	 * It then has to enter the MCU_TASK_TERMINATED state.
-	 * The task is not allowed to leave this state.
-	 * 
-	 */
-	MCU_TASK_INTERFACE_TERMINATE_CALLBACK terminate;
+    /**
+     * @brief This function is optional for every task.
+     * If this function is called a task must clean
+     * up itself and give back all allocated resources.
+     * It then has to enter the MCU_TASK_TERMINATED state.
+     * The task is not allowed to leave this state.
+     * 
+     */
+    MCU_TASK_INTERFACE_TERMINATE_CALLBACK terminate;
 
-	/**
-	 * @brief pointer to the next task in the list.
-	 * 
-	 */
-	struct MCU_TASK_INTERFACE* next_task;
+    /**
+     * @brief pointer to the next task in the list.
+     * 
+     */
+    struct MCU_TASK_INTERFACE* next_task;
 
 } MCU_TASK_INTERFACE;
 
 // --------------------------------------------------------------------------------
 
-#define MCU_TASK_SCHEDULE_NO_TIMEOUT		0
+#define MCU_TASK_SCHEDULE_NO_TIMEOUT        0
 
 // --------------------------------------------------------------------------------
 
 /**
- * @brief 
+ * @brief Registers a new task to the system.
+ * The task is added to tha current list of tasks in order of its priority
  * 
- * @param p_mcu_task 
+ * @param p_mcu_task the task to be added 
  */
 void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task);
 
 /**
- * @brief 
+ * @brief Performs a schedule of all currently known tasks.
+ * The task are scheduled in order of their priority
  * 
  */
 void mcu_task_controller_schedule(void);

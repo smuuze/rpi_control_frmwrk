@@ -50,47 +50,40 @@
 
 // --------------------------------------------------------------------------------
 
-static MCU_TASK_INTERFACE mcu_idle_task = {
-
-    0,                     // u8 identifier,
-    0,                     // u16 new_run_timeout,
-    0,                     // u16 last_run_time,
-    &mcu_idle_task_init,             // MCU_TASK_INTERFACE_INIT_CALLBACK            init,
-    &mcu_idle_task_get_schedule_interval,     // MCU_TASK_INTERFACE_GET_SCHEDULE_INTERVAL_CALLBACK    get_schedule_interval,
-    &mcu_idle_task_is_runable,         // CU_TASK_INTERFACE_IS_GET_STATE_CALLBACK        get_sate,
-    &mcu_idle_task_run,             // MCU_TASK_INTERFACE_RUN_CALLBACK            run,
-    &mcu_idle_task_background_run,        // MCU_TASK_INTERFACE_BG_RUN_CALLBACK            background_run,
-    &mcu_idle_task_sleep,             // MCU_TASK_INTERFACE_SLEEP_CALLBACK            sleep,
-    &mcu_idle_task_wakeup,             // MCU_TASK_INTERFACE_WAKEUP_CALLBACK            wakeup,
-    &mcu_idle_task_finish,             // MCU_TASK_INTERFACE_FINISH_CALLBACK            finish,
-    &mcu_idle_task_terminate,         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
-    0                    // next-task
-};
+TASK_CREATE(
+    IDLE_TASK,
+    TASK_PRIORITY_VERY_LOW,
+    mcu_idle_task_get_schedule_interval,
+    mcu_idle_task_init,
+    mcu_idle_task_run,
+    mcu_idle_task_get_state,
+    mcu_idle_task_terminate
+)
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief 
  */
 static MCU_TASK_INTERFACE* _first_task = 0;
 
-/*!
- *
+/**
+ * @brief 
  */
 static MCU_TASK_INTERFACE* _last_task = 0;
 
-/*!
- *
+/**
+ * @brief 
  */
 static u8 _has_task_interval_passed(MCU_TASK_INTERFACE* p_task);
 
-/*!
- *
+/**
+ * @brief 
  */
 static void _update_last_run_time(MCU_TASK_INTERFACE* p_task);
 
-/*!
- *
+/**
+ * @brief 
  */
 static u32 _minimum_taks_schedule_interval = 0xFFFFFFFF;
 
@@ -104,6 +97,8 @@ void mcu_task_controller_init(void) {
     _last_task = 0;
 }
 
+// --------------------------------------------------------------------------------
+
 void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task) {
 
     static u8 new_task_id = 1;
@@ -112,7 +107,9 @@ void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task) {
     p_mcu_task->identifier = new_task_id;
     new_task_id += 1;
 
-    p_mcu_task->init();
+    if (p_mcu_task->init != NULL) {
+        p_mcu_task->init();
+    }
 
     p_mcu_task->last_run_time = i_system.time.now_u16();
     p_mcu_task->new_run_timeout = p_mcu_task->get_schedule_interval();
@@ -130,8 +127,13 @@ void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task) {
         _last_task = p_mcu_task;
     }
 
-    DEBUG_TRACE_byte(_last_task->identifier, "mcu_task_controller_register_task() - new task added");
+    DEBUG_TRACE_byte(
+        _last_task->identifier,
+        "mcu_task_controller_register_task() - new task added"
+    );
 }
+
+// --------------------------------------------------------------------------------
 
 void mcu_task_controller_schedule(void) {
 
@@ -139,7 +141,7 @@ void mcu_task_controller_schedule(void) {
 
     u8 system_is_on_idle = 1;
 
-    //DEBUG_PASS("// mcu_task_controller_schedule() ------------------------------------------------------------------------------------"); 
+    //DEBUG_PASS("// mcu_task_controller_schedule()
 
     while (act_task != 0) {
 
@@ -150,16 +152,16 @@ void mcu_task_controller_schedule(void) {
         _update_last_run_time(act_task);
 
         if (act_task->get_sate() == MCU_TASK_SLEEPING) {
-            //DEBUG_TRACE_byte(act_task->identifier, "mcu_task_controller_schedule() - Task is not runnable xxxxxxxxxxxxxxxx");
+            //DEBUG_TRACE_byte(act_task->identifier, "mcu_task_controller_schedule() - Task is not runnable");
             goto SKIP_TASK_schedule;
         }
 
-        //DEBUG_TRACE_byte(act_task->identifier, "mcu_task_controller_schedule() - Running Task >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        //DEBUG_TRACE_byte(act_task->identifier, "mcu_task_controller_schedule() - Running Task");
 
         //act_task->last_run_time = i_system.time.now_u16();
         act_task->run();
 
-        //DEBUG_PASS("mcu_task_controller_schedule() - Task complete <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        //DEBUG_PASS("mcu_task_controller_schedule() - Task complete");
 
         //SKIP_TASK_schedule :
 
@@ -181,9 +183,11 @@ void mcu_task_controller_schedule(void) {
 
     if (system_is_on_idle != 0) {
         //DEBUG_PASS("mcu_task_controller_schedule() xxxxxxx SYSTEM GOING TO SLEEP xxxxxxxxxx");
-        mcu_idle_task.run();
+        IDLE_TASK_run();
     }
 }
+
+// --------------------------------------------------------------------------------
 
 void mcu_task_controller_sleep(void) {
 
@@ -202,6 +206,8 @@ void mcu_task_controller_sleep(void) {
     }
 }
 
+// --------------------------------------------------------------------------------
+
 void mcu_task_controller_wakeup(void) {
 
     MCU_TASK_INTERFACE* act_task = _first_task;
@@ -218,6 +224,8 @@ void mcu_task_controller_wakeup(void) {
         act_task = act_task->next_task;
     }
 }
+
+// --------------------------------------------------------------------------------
 
 void mcu_task_controller_terminate_all(void) {
 
@@ -236,6 +244,8 @@ void mcu_task_controller_terminate_all(void) {
     }
 }
 
+// --------------------------------------------------------------------------------
+
 void mcu_task_controller_background_run(void) {
 
     MCU_TASK_INTERFACE* act_task = _first_task;
@@ -253,6 +263,7 @@ void mcu_task_controller_background_run(void) {
     }
 }
 
+// --------------------------------------------------------------------------------
 
 static u8 _has_task_interval_passed(MCU_TASK_INTERFACE* p_task) {
 
@@ -267,13 +278,15 @@ static u8 _has_task_interval_passed(MCU_TASK_INTERFACE* p_task) {
     return 1;
 }
 
+// --------------------------------------------------------------------------------
+
 static void _update_last_run_time(MCU_TASK_INTERFACE* p_task) {
 
     if (p_task->get_schedule_interval() == MCU_TASK_SCHEDULE_NO_TIMEOUT) {
         return;
     }
 
-    //DEBUG_PASS("_update_last_run_time() ------------------------------------------------------------------------------------------");"
+    //DEBUG_PASS("_update_last_run_time() 
 
     u16 actual_time_ms = i_system.time.now_u16();
 //    p_task->new_run_timeout = p_task->get_schedule_interval();
