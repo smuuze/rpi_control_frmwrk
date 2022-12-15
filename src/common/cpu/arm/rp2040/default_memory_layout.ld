@@ -21,6 +21,21 @@
     __stack (== StackTop)
 */
 
+/* We do not have a OS available.
+ * This will integrate stubs of missing system functions like:
+ * -_write
+ * - _close
+ * - _fstat
+ * - _isatty
+ * - _lseek
+ * - _read
+ * - _kill
+ * - _getpid'
+ */
+GROUP (
+  libnosys.a
+)
+
 MEMORY
 {
     FLASH(rx) : ORIGIN = 0x10000000, LENGTH = 2048k
