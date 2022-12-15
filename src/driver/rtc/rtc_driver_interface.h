@@ -144,7 +144,7 @@ u32 rtc_timer_elapsed_u32(u32 time_reference);
  * 
  * @param delay_us amount of micro-seconds to pass before this function returns.
  */
-void rtc_timer_usleep(u32 delay_us) {
+void rtc_timer_usleep(u32 delay_us);
 
 // --------------------------------------------------------------------------------
 
