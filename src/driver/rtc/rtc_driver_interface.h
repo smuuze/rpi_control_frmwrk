@@ -138,6 +138,17 @@ u32 rtc_timer_elapsed_u32(u32 time_reference);
 // --------------------------------------------------------------------------------
 
 /**
+ * @brief Delays the program for the given amount of micor-seconds.
+ * This function blocks until the delay time has passed.
+ * Use with care and remind active watchdogs.
+ * 
+ * @param delay_us amount of micro-seconds to pass before this function returns.
+ */
+void rtc_timer_usleep(u32 delay_us) {
+
+// --------------------------------------------------------------------------------
+
+/**
  * @brief backwards compatibility
  * @see rtc_timer_power_off(void)
  */
