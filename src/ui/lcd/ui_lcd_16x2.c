@@ -221,11 +221,6 @@ static MCU_TASK_INTERFACE_TASK_STATE lcd_task_get_state(void);
 static void lcd_task_run(void);
 
 /**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.finish
- */
-static void lcd_task_finish(void);
-
-/**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.terminate
  */
 static void lcd_task_terminate(void);
@@ -283,10 +278,10 @@ static void lcd_set_pins(u8 pins) {
     if (pins & LCD_PIN_D7) LCD_D7_drive_high();  else  LCD_D7_drive_low();
 
     LCD_EN_drive_high();
-    usleep(50);  // wait for LCD
+    rtc_timer_usleep(50);  // wait for LCD
 
     LCD_EN_drive_low();
-    usleep(50); // wait for LCD
+    rtc_timer_usleep(50); // wait for LCD
 }
 
 /**
@@ -337,11 +332,11 @@ void lcd_driver_init(void) {
 
     DEBUG_PASS("lcd_driver_init() - Power Up");
 
-    usleep(15 * 1000); // wait 15 ms for LCD controller power-up
+    rtc_timer_usleep(15 * 1000); // wait 15 ms for LCD controller power-up
 
     // Initialization sequence to activate 4-bit interface
-    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  usleep(5 * 1000);
-    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  usleep(100);
+    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  rtc_timer_usleep(5 * 1000);
+    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  rtc_timer_usleep(100);
     lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);
     lcd_set_pins(LCD_PIN_D5); // 4-Bit interface
 
@@ -361,7 +356,7 @@ void lcd_driver_init(void) {
     lcd_set_pins(0);
     lcd_set_pins(LCD_PIN_D4);
 
-    usleep(1640); // execution time of CLEAR-DISPLAY command
+    rtc_timer_usleep(1640); // execution time of CLEAR-DISPLAY command
 
     // ENTRY MODE SET - Cursor auto increment
     lcd_set_pins(0);
@@ -720,13 +715,6 @@ static void lcd_task_run(void) {
 
             break;
     }
-}
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.finish
- */
-static void lcd_task_finish(void) {
-    
 }
 
 /**
