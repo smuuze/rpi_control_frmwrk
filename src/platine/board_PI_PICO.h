@@ -81,4 +81,15 @@ INCLUDE_GPIO ( GPIO_28 )
 
 // --------------------------------------------------------------------------------
 
+// GPIO Aliases for LCD
+
+INCLUDE_GPIO (LCD_EN )
+INCLUDE_GPIO (LCD_RS )
+INCLUDE_GPIO (LCD_D7 )
+INCLUDE_GPIO (LCD_D6 )
+INCLUDE_GPIO (LCD_D5 )
+INCLUDE_GPIO (LCD_D4 )
+
+// --------------------------------------------------------------------------------
+
 #endif // _BOARD_PI_PICO_H_
