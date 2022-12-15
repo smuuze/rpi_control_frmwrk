@@ -49,6 +49,7 @@
 
 #include "mcu_task_management/mcu_task_interface.h"
 #include "time_management/time_management.h"
+#include "driver/rtc/rtc_driver_interface.h"
 
 // --------------------------------------------------------------------------------
 
