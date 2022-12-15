@@ -271,14 +271,23 @@ u8 rtc_timer_istimeup_u32(u32 time_reference, u32 time_interval) {
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @see driver/rtc/rtc_interface.h#rtc_timer_elapsed_u8
+ */
 u8 rtc_timer_elapsed_u8(u8 time_reference) {
     return rtc_timer_gettime_u8() - time_reference;
 }
 
+/**
+ * @see driver/rtc/rtc_interface.h#rtc_timer_elapsed_u16
+ */
 u16 rtc_timer_elapsed_u16(u16 time_reference) {
     return rtc_timer_gettime_u16() - time_reference;
 }
 
+/**
+ * @see driver/rtc/rtc_interface.h#rtc_timer_usleep
+ */
 u32 rtc_timer_elapsed_u32(u32 time_reference) {
     return rtc_timer_gettime_u32() - time_reference;
 }
@@ -289,6 +298,21 @@ void rtc_ms_tick_handler(void) {
     get_timer_reg()->intr = __UNSIGNED(1);
     get_timer_reg()->alarm[0] += RP2040_RTC_US_TIMER_INCREMENT;
     timestamp_ms += RP2040_RTC_MS_TIMESTAMP_INCREMENT;
+}
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @see driver/rtc/rtc_interface.h#rtc_timer_usleep
+ */
+void rtc_timer_usleep(u32 delay_us) {
+
+    // we only allow 31 bits, otherwise we could have a race in the loop below with
+    // values very close to 2^32
+    uint32_t start = get_timer_reg()->timerawl;
+    while (get_timer_reg()->timerawl - start < delay_us) {
+        // do nothing - just wait
+    }
 }
 
 // --------------------------------------------------------------------------------
