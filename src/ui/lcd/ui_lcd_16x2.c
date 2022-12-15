@@ -329,7 +329,7 @@ void lcd_driver_init(void) {
     LCD_D6_activate();    LCD_D6_drive_low();
     LCD_D7_activate();    LCD_D7_drive_low();
 
-    // -----------------------------------------------------
+// --------------------------------------------------------------------------------
 
     DEBUG_PASS("lcd_driver_init() - Power Up");
 
@@ -341,7 +341,7 @@ void lcd_driver_init(void) {
     lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);
     lcd_set_pins(LCD_PIN_D5); // 4-Bit interface
 
-    // -----------------------------------------------------
+// --------------------------------------------------------------------------------
 
     DEBUG_PASS("lcd_driver_init() - Configure Display");
 
