@@ -15,11 +15,9 @@ source_dir_list=(
     cli_executer
     cli_handler_gpio
     cli_remote_control
-    # clock_driver_rp2040
-    gpio_driver_rp2040
+    gpio_driver_atmega1284p
     ir_remote_led_lights
     ir_remote_sony
-    irq_interface_rp2040
     json_parser
     log_interface
     math_module
@@ -33,7 +31,6 @@ source_dir_list=(
     rpi_protocol_client
     rpi_protocol_host
     signal_slot_interface
-    uart_driver_rp2040
     #pca9670_driver_test
     #rpi_protocol_handler_test
     #power_management_test

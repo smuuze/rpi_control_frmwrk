@@ -1,26 +1,51 @@
 
 DRIVER_INC_PATH = $(APP_PATH)/driver
 
+#-----------------------------------------------------------------------------
+
 INC_PATH += $(DRIVER_INC_PATH)
+
+#-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring RTC,$(DRIVER_MODULE_CFG))'
 
 	DEFS += -D HAS_DRIVER_RTC0=1
-	CSRCS += $(APP_PATH)/driver/rtc/rtc_driver_$(MCU_NAME).c
 
-	ifneq '' '$(findstring raspberrypi,$(MCU_NAME))'
+	ifneq '' '$(findstring rp2040,$(MCU))'
+
+	else
+	ifneq '' '$(findstring UNITTEST,$(MCU))'
+		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_unittest.c
+	else
+	ifneq '' '$(findstring raspberrypi,$(MCU))'
 		LIBS += -l rt
+	endif
+	endif
 	endif
 endif
 
+#-----------------------------------------------------------------------------
+
 ifneq '' '$(findstring CLK,$(DRIVER_MODULE_CFG))'
-	CSRCS += $(APP_PATH)/driver/clock/clock_driver_$(MCU_NAME).c
+
+	ifneq '' '$(findstring rp2040,$(MCU))'
+
+	else
+		CSRCS += $(APP_PATH)/driver/clock/clock_driver_$(MCU_NAME).c
+	endif
 endif
 
 ifneq '' '$(findstring IRQ,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_IRQ=1
-	CSRCS += $(APP_PATH)/driver/irq/irq_driver_$(MCU_NAME).c
+
+	ifneq '' '$(findstring rp2040,$(MCU_NAME))'
+
+	else
+		CSRCS += $(APP_PATH)/driver/irq/irq_driver_$(MCU_NAME).c
+	endif
 endif
+
+#-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 
@@ -43,10 +68,10 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 		LIBS += -l wiringPi
 
 	else
-	ifneq '' '$(findstring GPIO_RP2040,$(DRIVER_MODULE_CFG))'
+	ifneq '' '$(findstring RP2040,$(MCU))'
 
-		DEFS += -D HAS_DRIVER_GPIO=1
-		CSRCS += $(APP_PATH)/driver/gpio/arm/gpio_driver_rp2040.c
+		#DEFS += -D HAS_DRIVER_GPIO=1
+		#CSRCS += $(APP_PATH)/driver/gpio/arm/gpio_driver_rp2040.c
 
 	else
 	ifneq '' '$(findstring GPIO_EMPTY,$(DRIVER_MODULE_CFG))'
@@ -65,7 +90,7 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 		DEFS += -D HAS_DRIVER_GPIO=1
 		CSRCS += $(APP_PATH)/driver/gpio/$(CPU_FAMILY)/gpio_driver_$(MCU_NAME).c
 
-		ifneq '' '$(findstring raspberrypi,$(MCU_NAME))'
+		ifneq '' '$(findstring raspberrypi,$(MCU))'
 			LIBS += -l wiringPi
 		endif
 
@@ -76,16 +101,27 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 	endif
 endif
 
+#-----------------------------------------------------------------------------
+
 ifneq '' '$(findstring I2C0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_I2C0=1
 	CSRCS += $(APP_PATH)/driver/communication/i2c/i2c0_driver_status.c
 	CSRCS += $(APP_PATH)/driver/communication/i2c/i2c0_driver_$(MCU_NAME).c
 endif
 
+#-----------------------------------------------------------------------------
+
 ifneq '' '$(findstring SPI0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_SPI0=1
-	CSRCS += $(APP_PATH)/driver/communication/spi/spi0_driver_$(MCU_NAME).c
+
+	ifneq '' '$(findstring rp2040,$(MCU))'
+
+	else
+		CSRCS += $(APP_PATH)/driver/communication/spi/spi0_driver_$(MCU_NAME).c
+	endif
 endif
+
+#-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_USART0=1
@@ -94,7 +130,7 @@ ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'
 		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_raspberry_pi.c
 	else
 	ifneq '' '$(findstring RP2040,$(MCU))'
-		CSRCS += $(APP_PATH)/driver/communication/usart/usart_driver_$(MCU_NAME).c
+		#CSRCS += $(APP_PATH)/driver/communication/usart/usart_driver_$(MCU_NAME).c
 	else
 	ifneq '' '$(findstring UNITTEST,$(MCU))'
 		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_unittest.c
@@ -105,23 +141,55 @@ ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'
 	endif
 endif
 
+#-----------------------------------------------------------------------------
+
 ifneq '' '$(findstring USART1,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_USART1=1
-	CSRCS += $(APP_PATH)/driver/communication/usart/usart1_driver_atmega1284p.c
+
+	ifneq '' '$(findstring rp2040,$(MCU))'
+
+	else
+		CSRCS += $(APP_PATH)/driver/communication/usart/usart1_driver_atmega1284p.c
+	endif
 endif
+
+#-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring UNITTEST,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_UNITTEST=1
 	CSRCS += $(APP_PATH)/driver/communication/test/communication_driver_test.c
 endif
 
+#-----------------------------------------------------------------------------
+
 ifneq '' '$(findstring TIMER0,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_TIMER0=1
-	CSRCS += $(APP_PATH)/driver/timer/timer0_driver_atmega1284p.c
+
+	ifneq '' '$(findstring rp2040,$(MCU))'
+
+	else
+		CSRCS += $(APP_PATH)/driver/timer/timer0_driver_atmega1284p.c
+	endif
 endif
+
+#-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring TIMER1,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_TIMER0=1
-	CSRCS += $(APP_PATH)/driver/timer/timer1_driver_atmega1284p.c
+
+	ifneq '' '$(findstring rp2040,$(MCU))'
+
+	else
+		CSRCS += $(APP_PATH)/driver/timer/timer1_driver_atmega1284p.c
+	endif
 endif
 
+#-----------------------------------------------------------------------------
+
+# Platform specific driver implementation is loaded
+# via the DRIVER_PATH
+ifdef SOC_PATH
+include $(SOC_PATH)/make/make_driver.mk
+endif
+
+#-----------------------------------------------------------------------------

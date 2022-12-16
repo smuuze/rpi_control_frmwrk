@@ -17,13 +17,18 @@ ifeq ($(MCU), UNITTEST)
 include $(FRMWRK_PATH)/make/make_cpu_unittest.mk
 endif
 
-ifeq ($(MCU), RP2040)
-include $(FRMWRK_PATH)/make/make_cpu_rp2040.mk
-endif
+#-----------------------------------------------------------------------------
+
+# Platform specific driver implementation is loaded
+# via the SOC_PATH
 
 #-----------------------------------------------------------------------------
 
+ifdef SOC_PATH
+include $(SOC_PATH)/make/make_cpu.mk
+else
 INC_PATH 	+= $(FRMWRK_PATH)/src/common/cpu/$(CPU_FAMILY)/$(MCU_NAME)
+endif
 
 #-----------------------------------------------------------------------------
 
