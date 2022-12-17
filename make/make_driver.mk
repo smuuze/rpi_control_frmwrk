@@ -184,6 +184,13 @@ ifneq '' '$(findstring TIMER1,$(DRIVER_MODULE_CFG))'
 	endif
 endif
 
+# --------------------------------------------------------------------------------
+
+ifneq '' '$(findstring LCD_16X2,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_LCD=1
+	CSRCS += $(APP_PATH)/driver/lcd/lcd_driver_HD44780_16x2.c
+endif
+
 #-----------------------------------------------------------------------------
 
 # Platform specific driver implementation is loaded

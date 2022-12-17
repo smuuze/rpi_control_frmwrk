@@ -15,7 +15,9 @@ LCD_INTERFACE_PATH = $(USER_INTERFACE_PATH)/lcd
 
 ifneq '' '$(findstring LCD_16X2,$(USER_INTERFACE_CFG))'
 	DEFS += -D LCD_CONTROLLER_AVAILABLE=1
-	CSRCS += $(LCD_INTERFACE_PATH)/ui_lcd_16x2.c
+	CSRCS += $(LCD_INTERFACE_PATH)/lcd_controller_16x2.c
+
+	DRIVER_MODULE_CFG += LCD_16X2
 endif
 
 # --------------------------------------------------------------------------------

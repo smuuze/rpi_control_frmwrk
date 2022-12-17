@@ -13,17 +13,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @file    ui_lcd_interface.h
+ * @file    lcd_interface.h
  * @author  Sebastian Lesse
  * @date    2022 / 06 / 06
- * @brief   Short description of this file
+ * @brief   Interface to a character based lcd controller
  * 
  */
 
 //-----------------------------------------------------------------------------
 
-#ifndef _H_ui_lcd_interface_
-#define _H_ui_lcd_interface_
+#ifndef _H_lcd_interface_
+#define _H_lcd_interface_
 
 //-----------------------------------------------------------------------------
 
@@ -37,11 +37,6 @@
 
 #define LCD_ENABLE          1
 #define LCD_DISABLE         0
-
-//-----------------------------------------------------------------------------
-
-#define LCD_LINE_ONE        0
-#define LCD_LINE_TWO        1
 
 //-----------------------------------------------------------------------------
 
@@ -64,62 +59,32 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SIGNAL_LCD_UPDATED)
 //-----------------------------------------------------------------------------
 
 /**
- * @brief 
- * 
+ * @brief Initializes the LCD controller.
+ * This function must be called before using the LCD.
+ * It shall only be called once.
  */
-void lcd_controller_init(void);
+void lcd_init(void);
 
 /**
  * @brief Enables or disables the LCD at all.
  * 
  * @param enabled 1: the lcd is enabled, 0 the lcd is disabled.
  */
-void lcd_controller_set_enabled(u8 enabled);
+void lcd_set_enabled(u8 enabled);
 
 /**
  * @brief Number of lines of the available lcd
  * 
  * @return Number of lines of the available lcd
  */
-u8 lcd_controller_get_line_count(void);
+u8 lcd_get_line_count(void);
 
 /**
  * @brief Number of characters of a single line of the available lcd
  * 
  * @return Number of characters of a single line of the available lcd
  */
-u8 lcd_controller_get_character_count(void);
-
-// /**
-//  * @brief 
-//  * 
-//  */
-// void lcd_deinit(void);
-
-// /**
-//  * @brief Writes the given line on the connected LCD.
-//  * The line is always written at the end of the LCD, the last line.
-//  * All other lines are shifted up by one line each.
-//  * It is only possible to write one line per call.
-//  * If the message is too long, the remaining characters are ignored
-//  * 
-//  * @param message the message to write on the LCD
-//  */
-// void lcd_write_line(const char* message);
-
-// /**
-//  * @brief Get the number of lines of the actual connected LCD
-//  * 
-//  * @return number of lines of the LCD
-//  */
-// u8 lcd_line_count(void);
-
-// /**
-//  * @brief Get the number of character per line.
-//  * 
-//  * @return Number of characters per line
-//  */
-// u8 lcd_character_count(void);
+u8 lcd_get_character_count(void);
 
 //-----------------------------------------------------------------------------
 
@@ -144,6 +109,6 @@ u8 lcd_controller_get_character_count(void);
 
 //-----------------------------------------------------------------------------
 
-#endif // _H_ui_lcd_interface_
+#endif // _H_lcd_interface_
 
 //-----------------------------------------------------------------------------

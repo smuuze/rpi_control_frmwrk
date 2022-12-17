@@ -49,23 +49,13 @@
 
 #include "mcu_task_management/mcu_task_interface.h"
 #include "time_management/time_management.h"
-#include "driver/rtc/rtc_driver_interface.h"
 
 // --------------------------------------------------------------------------------
 
-#include "ui/lcd/ui_lcd_interface.h"
+#include "driver/lcd/lcd_driver_interface.h"
+#include "ui/lcd/lcd_interface.h"
 
 // --------------------------------------------------------------------------------
-
-// helping definitions for fast access to pins via function lcd_set_pins()
-#define LCD_PIN_RS                          (1 << 7)
-#define LCD_PIN_D4                          (1 << 0)
-#define LCD_PIN_D5                          (1 << 1)
-#define LCD_PIN_D6                          (1 << 2)
-#define LCD_PIN_D7                          (1 << 3)
-
-#define LCD_NUM_LINES                       2
-#define LCD_NUM_CHARS                       16
 
 /**
  * @brief maximum number of lines taht can be stored into the
@@ -95,11 +85,10 @@
  */
 #define LCD_TASK_CHARACTER_TIMEOUT_MS       (LCD_TASK_SCHEDULE_INTERVAL_MS - 1)
 
-/**
- * @brief A empty line
- * 
- */
-#define LCD_TASK_EMPTY_LINE                 "                "
+// --------------------------------------------------------------------------------
+
+#define LCD_NUM_LINES                       2
+#define LCD_NUM_CHARS                       16
 
 // --------------------------------------------------------------------------------
 
@@ -252,289 +241,12 @@ static char lcd_task_new_line_buffer[LCD_NUM_CHARS];
 
 // --------------------------------------------------------------------------------
 
-#define LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH         (1 << 0)
-
 /**
- * @brief This buffer is a copy of the current display content.
- * All changes made here are applied to the display.
+ * @see lcd_interface.h#lcd_init
  */
-static char line_buffer[LCD_NUM_LINES][LCD_NUM_CHARS + 1];
+void lcd_init(void) {
 
-static u8 is_initialized = 0;
-
-/**
- * @brief 
- * 
- * @param pins 
- */
-static void lcd_set_pins(u8 pins) {
-
-    // DEBUG_TRACE_byte(pins, "lcd_set_pins() - pins:");
-    
-    if (pins & LCD_PIN_RS) LCD_RS_drive_high();  else  LCD_RS_drive_low();
-
-    if (pins & LCD_PIN_D4) LCD_D4_drive_high();  else  LCD_D4_drive_low();
-    if (pins & LCD_PIN_D5) LCD_D5_drive_high();  else  LCD_D5_drive_low();
-    if (pins & LCD_PIN_D6) LCD_D6_drive_high();  else  LCD_D6_drive_low();
-    if (pins & LCD_PIN_D7) LCD_D7_drive_high();  else  LCD_D7_drive_low();
-
-    LCD_EN_drive_high();
-    rtc_timer_usleep(50);  // wait for LCD
-
-    LCD_EN_drive_low();
-    rtc_timer_usleep(50); // wait for LCD
-}
-
-/**
- * @brief 
- * 
- * @param line_index 
- */
-static void lcd_driver_select_line(u8 line_index) {
-
-    switch (line_index) {
-
-        default :
-
-        case LCD_LINE_ONE :
-
-            DEBUG_PASS("lcd_driver_select_line() - Line 1");
-            lcd_set_pins(LCD_PIN_D7);
-            lcd_set_pins(0);
-            break;
-
-        case LCD_LINE_TWO :
-
-            DEBUG_PASS("lcd_driver_select_line() - Line 2");
-            lcd_set_pins(LCD_PIN_D7 | LCD_PIN_D6);
-            lcd_set_pins(0);
-            break;
-    }
-}
-
-void lcd_driver_write_char(char character) {
-    lcd_set_pins(LCD_PIN_RS | (u8)(character >> 4));
-    lcd_set_pins(LCD_PIN_RS | (u8)(character & 0x0F));
-}
-
-void lcd_driver_init(void) {
-
-    DEBUG_PASS("lcd_driver_init() - Init GPIO");
-
-    LCD_RS_activate();    LCD_RS_drive_low();
-    LCD_EN_activate();    LCD_EN_drive_low();
-
-    LCD_D4_activate();    LCD_D4_drive_low();
-    LCD_D5_activate();    LCD_D5_drive_low();
-    LCD_D6_activate();    LCD_D6_drive_low();
-    LCD_D7_activate();    LCD_D7_drive_low();
-
-// --------------------------------------------------------------------------------
-
-    DEBUG_PASS("lcd_driver_init() - Power Up");
-
-    rtc_timer_usleep(15 * 1000); // wait 15 ms for LCD controller power-up
-
-    // Initialization sequence to activate 4-bit interface
-    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  rtc_timer_usleep(5 * 1000);
-    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);  rtc_timer_usleep(100);
-    lcd_set_pins(LCD_PIN_D5 | LCD_PIN_D4);
-    lcd_set_pins(LCD_PIN_D5); // 4-Bit interface
-
-// --------------------------------------------------------------------------------
-
-    DEBUG_PASS("lcd_driver_init() - Configure Display");
-
-    // FUNCTION SET - 2 Lines / 5x8 font
-    lcd_set_pins(LCD_PIN_D5);
-    lcd_set_pins(LCD_PIN_D7); // two lines
-
-    // DISPLAY ON / Cursor off / Blink Cursor off 
-    lcd_set_pins(0);
-    lcd_set_pins(LCD_PIN_D7 | LCD_PIN_D6);
-
-    // CLEAR DISPLAY
-    lcd_set_pins(0);
-    lcd_set_pins(LCD_PIN_D4);
-
-    rtc_timer_usleep(1640); // execution time of CLEAR-DISPLAY command
-
-    // ENTRY MODE SET - Cursor auto increment
-    lcd_set_pins(0);
-    lcd_set_pins(LCD_PIN_D6 | LCD_PIN_D5);
-
-    DEBUG_PASS("lcd_driver_init() - Clear buffer");
-
-    u8 line_cnt = 0;
-    for ( ; line_cnt < LCD_NUM_LINES; line_cnt += 1) {
-        memset(line_buffer[line_cnt], ' ', LCD_NUM_CHARS);
-        line_buffer[line_cnt][LCD_NUM_CHARS] = '\0';
-    }
-
-    is_initialized = 1;
-}
-
-void lcd_driver_deinit(void) {
-    is_initialized = 0;
-}
-
-/**
- * @brief Updates the screen buffer.
- * The content will be shifted up by one line.
- * The new line is set at the end.
- * This function does not update the LCD.
- * if the message is too long, the characters that does not fit
- * will be ignored and discarded.
- * 
- * @param message string to set as last line
- * @param length number of characters of message.
- */
-void lcd_driver_set_line(const char* message, u8 length) {
-
-    if (is_initialized == 0) {
-        DEBUG_PASS("lcd_driver_set_line() - Need to initialize LCD-Interface");
-        return;
-    }
-
-    DEBUG_TRACE_byte(length, "lcd_driver_set_line() - Length:");
-    DEBUG_TRACE_STR(message, "lcd_driver_set_line() - New Line:");
-
-    /**
-     * @brief Shift up the lines
-     */
-    for (u8 line_cnt = 0 ; line_cnt < LCD_NUM_LINES - 1; line_cnt += 1) {
-
-        memcpy(
-            &line_buffer[line_cnt][0],
-            &line_buffer[line_cnt + 1][0],
-            LCD_NUM_CHARS
-        );
-    }
-
-    /**
-     * @brief Ensure to only copy the maximum number of characters
-     * 
-     */
-    if (length > LCD_NUM_CHARS) {
-        length = LCD_NUM_CHARS;
-    }
-
-    /**
-     * @brief Copy the new line into the LCD-Buffer
-     */
-    memset(&line_buffer[LCD_NUM_LINES - 1][0], ' ', LCD_NUM_CHARS);
-    memcpy(&line_buffer[LCD_NUM_LINES - 1][0], message, length);
-}
-
-/**
- * @brief Updates the content of the LCD.
- * This function will write the current line buffer to the LCD.
- * 
- * @param mode 
- * @return 1 if the content was update, otherwise 0
- */
-u8 lcd_driver_update_screen(u8 mode) {
-
-    static u8 state = 0;
-    static u8 char_cnt = 0;
-
-    if (state == 0) {
-
-        DEBUG_TRACE_STR(line_buffer[0], "lcd_driver_update_screen() - Select Line 1");
-        lcd_driver_select_line(LCD_LINE_ONE);
-        char_cnt = 0;
-        state = 1;
-    }
-    
-    if (state == 1) {
-
-        /**
-         * @brief update the content of the first line
-         */
-        for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-            lcd_driver_write_char(line_buffer[LCD_LINE_ONE][char_cnt]);
-        }
-
-        // Go on to the second line
-        state = 2;
-    } 
-    
-    if (state == 2) {
-
-        DEBUG_TRACE_STR(line_buffer[1], "lcd_driver_update_screen() - Select Line 2");
-        lcd_driver_select_line(LCD_LINE_TWO);
-
-        if (mode & LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) {
-
-            DEBUG_PASS("lcd_driver_update_screen() - Delete content of last line");
-
-            for (char_cnt = 0; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-                lcd_driver_write_char(' ');
-            }
-
-            lcd_driver_select_line(LCD_LINE_TWO);
-        }
-
-        char_cnt = 0;
-        state = 3;
-    }
-    
-    if (state == 3) {
-
-        /**
-         * @brief update the content of the second line
-         */
-        for (; char_cnt < LCD_NUM_CHARS; char_cnt += 1) {
-            lcd_driver_write_char(line_buffer[LCD_LINE_TWO][char_cnt]);
-
-            if (mode & LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) {
-
-                DEBUG_CODE_BLOCK (
-                    char t_buffer[LCD_NUM_CHARS + 1];
-                    memset(t_buffer, '\0', LCD_NUM_CHARS + 1);
-                    memcpy(t_buffer, &line_buffer[LCD_LINE_TWO][0], char_cnt+1 );
-                    DEBUG_TRACE_STR(t_buffer, "lcd_driver_update_screen() - Content Line 2:");
-                )
-
-                // we need to count up here, because we leave the loop.
-                char_cnt += 1;
-                return 0;
-            }
-        }
-
-        // update finished
-        state = 0;
-    }
-
-    return 1;
-}
-
-/**
- * @brief Get the number of lines of the current LCD.
- * 
- * @return number of lines of the current LCD.
- */
-u8 lcd_driver_line_count(void) {
-    return LCD_NUM_LINES;
-}
-
-/**
- * @brief Number of characters of a single line.
- * 
- * @return Number of characters of a single line.
- */
-u8 lcd_driver_character_count(void) {
-    return LCD_NUM_CHARS;
-}
-
-// --------------------------------------------------------------------------------
-
-/**
- * @see ui/lcd/lcd_interface.h#lcd_init
- */
-void lcd_controller_init(void) {
-
-    DEBUG_PASS("lcd_controller_init");
+    DEBUG_PASS("lcd_init");
 
     SIGNAL_LCD_LINE_init();
     SIGNAL_LCD_UPDATED_init();
@@ -543,10 +255,12 @@ void lcd_controller_init(void) {
     SLOT_LCD_LINE_connect();
 
     LCD_TASK_init();
-    // mcu_task_controller_register_task(&lcd_controller_task);
 }
 
-void lcd_controller_set_enabled(u8 enabled) {
+/**
+ * @see lcd_interface.h#lcd_set_enabled
+ */
+void lcd_set_enabled(u8 enabled) {
     if (enabled) {
         LCD_CONTROLLER_STATUS_set(LCD_CONTROLLER_STATUS_IS_ENABLED);
     } else {
@@ -554,11 +268,17 @@ void lcd_controller_set_enabled(u8 enabled) {
     }
 }
 
-u8 lcd_controller_get_line_count(void) {
+/**
+ * @see lcd_interface.h#lcd_get_line_count
+ */
+u8 lcd_get_line_count(void) {
     return lcd_driver_line_count();
 }
 
-u8 lcd_controller_get_character_count(void) {
+/**
+ * @see lcd_interface.h#lcd_get_character_count
+ */
+u8 lcd_get_character_count(void) {
     return lcd_driver_character_count();
 }
 
@@ -728,7 +448,7 @@ static void lcd_task_terminate(void) {
 // --------------------------------------------------------------------------------
 
 /**
- * @see ui_lcd_16x2.c#lcd_task_slot_new_line
+ * @see lcd_interface.c#lcd_task_slot_new_line
  */
 static void lcd_task_slot_new_line(const void* p_arg) {
 

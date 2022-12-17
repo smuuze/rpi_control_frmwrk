@@ -248,11 +248,15 @@ ifdef COMMAND_INTERFACE_CFG
 include $(MAKE_PATH)/make_command_interface.mk
 endif
 
-include $(MAKE_PATH)/make_driver.mk
+# ---- USER INTERFACE ---------------------------------------------------
 
 ifdef USER_INTERFACE_CFG
 include $(MAKE_PATH)/make_user_interface.mk
 endif
+
+# -----------------------------------------------------------------------
+
+include $(MAKE_PATH)/make_driver.mk
 
 # -----------------------------------------------------------------------
 

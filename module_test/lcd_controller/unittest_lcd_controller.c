@@ -56,7 +56,7 @@ UT_ACTIVATE()
 
 // --------------------------------------------------------------------------------
 
-#include "ui/lcd/ui_lcd_interface.h"
+#include "ui/lcd/lcd_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -77,6 +77,14 @@ static void unittest_reset_counter(void) {
 // --------------------------------------------------------------------------------
 
 // stubs
+
+u16 common_tools_string_length(const char* p_string) {
+    return strlen(p_string);
+}
+
+void rtc_timer_delay(u16 delay_us) {
+    (void) delay_us;
+}
 
 // --------------------------------------------------------------------------------
 
@@ -109,8 +117,8 @@ static void TEST_CASE_initialization(void) {
         UT_SET_TEST_CASE_ID(TEST_CASE_ID_INITIALIZATION);
         unittest_reset_counter();
 
-        lcd_controller_init();
-        lcd_controller_set_enabled(LCD_ENABLE);
+        lcd_init();
+        lcd_set_enabled(LCD_ENABLE);
 
         UNITTEST_TIMER_start();
 
