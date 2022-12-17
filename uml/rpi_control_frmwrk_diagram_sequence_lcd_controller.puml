@@ -1,0 +1,55 @@
+@startuml rpi_control_frmwrk_diagram_sequence_lcd_controller
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+mainframe sequence: rpi_control_frmwrk - runtime - LCD-Controller
+
+'***************************************************************************
+
+participant ":Application" as application
+participant ":LCD-Task" as lcd_task
+participant ":Line-Slot" as line_slot
+participant ":Line-Buffer" as line_buffer
+participant ":LCD-Driver" as lcd_driver
+
+'***************************************************************************
+
+[-> application : run()
+activate application
+    application -> line_slot : SIGNAL_LCD_LINE(text1)
+    line_slot -> line_buffer : enqueue(text1)
+    application -> line_slot : SIGNAL_LCD_LINE(text2)
+    line_slot -> line_buffer : enqueue(text2)
+deactivate application
+
+...
+
+[-> lcd_task : run()
+activate lcd_task
+    lcd_task -> line_buffer : dequeue(text1)
+    lcd_task -> lcd_driver  : set_line(text1)
+    lcd_task -> lcd_driver  : update_content()
+deactivate lcd_task
+
+...
+
+note left of lcd_task
+    Update timeout (3sec) has passed
+end note
+
+[-> lcd_task : run()
+activate lcd_task
+    lcd_task -> line_buffer : dequeue(text2)
+    lcd_task -> lcd_driver  : set_line(text2)
+    lcd_task -> lcd_driver  : update_content()
+    lcd_task -> application : SIGNAL_LCD_UPDATED()
+deactivate lcd_task
+
+'***************************************************************************
+
+@enduml

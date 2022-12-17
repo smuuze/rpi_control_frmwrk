@@ -23,8 +23,5 @@ The RPi-Control framework contains common modules, drivers and other implementat
 | Command-Handling                           |             |
 | Driver                                     |             |
 | [kernel](readme/readme_kernel.md#location) |             |
+| [modules](readme/readme_modules.md#location) |             |
 | Protocol                                   |             |
-
-# Modules
-
-[Signal-Slot](readme/readme_signal_slot.md)

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="626px" preserveAspectRatio="none" style="width:609px;height:626px;" version="1.1" viewBox="0 0 609 626" width="609px" zoomAndPan="magnify"><defs><filter height="300%" id="frislevp5jcbb" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[54336d9eac344948e1eb12a601bc1667]
+cluster component: rpi_control_frmwrk - structure - LCD-Controller--><rect fill="#FFFFFF" filter="url(#frislevp5jcbb)" height="607" style="stroke:#000000;stroke-width:1.5;" width="590" x="7" y="7"/><path d="M457,7 L457,16.4883 L447,26.4883 L7,26.4883 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="440" x="10" y="21.5352">component: rpi_control_frmwrk - structure - LCD-Controller</text><!--MD5=[7552260fd2021a323855cf929da74f79]
+cluster modules--><polygon fill="#FFFFFF" filter="url(#frislevp5jcbb)" points="31,213,99,213,106,235.4883,573,235.4883,573,590,31,590,31,213" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="106" y1="235.4883" y2="235.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="62" x="35" y="228.5352">modules</text><!--MD5=[a74fa3271cbb2a903d91fa0023890272]
+cluster LCD_Controller--><rect fill="#DDDDDD" filter="url(#frislevp5jcbb)" height="294" style="stroke:#000000;stroke-width:1.5;" width="478" x="63" y="264"/><rect fill="#DDDDDD" height="10" style="stroke:#000000;stroke-width:1.5;" width="15" x="521" y="269"/><rect fill="#DDDDDD" height="2" style="stroke:#000000;stroke-width:1.5;" width="4" x="519" y="271"/><rect fill="#DDDDDD" height="2" style="stroke:#000000;stroke-width:1.5;" width="4" x="519" y="275"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="109" x="247.5" y="290.5352">LCD_Controller</text><!--MD5=[61c41a14a0f790ada34cbd71756aea65]
+cluster Driver--><polygon fill="#FFFFFF" filter="url(#frislevp5jcbb)" points="395,57.5,445,57.5,452,79.9883,573,79.9883,573,156.5,395,156.5,395,57.5" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="395" x2="452" y1="79.9883" y2="79.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="44" x="399" y="73.0352">Driver</text><!--MD5=[963da481204926879d14c795c8f52c2c]
+cluster APP-Task--><polygon fill="#FFFFFF" filter="url(#frislevp5jcbb)" points="221,50,299,50,306,72.4883,371,72.4883,371,164,221,164,221,50" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="221" x2="306" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="72" x="225" y="65.5352">APP-Task</text><!--MD5=[f04600f0575a07dfe97362a654bdaa04]
+cluster kernel--><polygon fill="#FFFFFF" filter="url(#frislevp5jcbb)" points="53,57.5,104,57.5,111,79.9883,197,79.9883,197,156.5,53,156.5,53,57.5" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="53" x2="111" y1="79.9883" y2="79.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="45" x="57" y="73.0352">kernel</text><!--MD5=[a14391741e364d3e7531750d4734058d]
+entity lcd_task--><rect fill="#F8F8F8" filter="url(#frislevp5jcbb)" height="62.9766" style="stroke:#383838;stroke-width:1.5;" width="103" x="87.5" y="319"/><rect fill="#F8F8F8" height="10" style="stroke:#383838;stroke-width:1.5;" width="15" x="170.5" y="324"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="168.5" y="326"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="168.5" y="330"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46" x="102.5" y="352.5352">«Task»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="63" x="102.5" y="369.0234">LCD Task</text><!--MD5=[c05fcadc036a699206cfdfa4a4fdb889]
+entity controller--><rect fill="#F8F8F8" filter="url(#frislevp5jcbb)" height="62.9766" style="stroke:#383838;stroke-width:1.5;" width="124" x="374" y="471"/><rect fill="#F8F8F8" height="10" style="stroke:#383838;stroke-width:1.5;" width="15" x="478" y="476"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="476" y="478"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="476" y="482"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="84" x="389" y="504.5352">«Controller»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="70" x="389" y="521.0234">Controller</text><!--MD5=[29b703551f404bb8f553a0a0a487b8c9]
+entity line_buffer--><rect fill="#F8F8F8" filter="url(#frislevp5jcbb)" height="62.9766" style="stroke:#383838;stroke-width:1.5;" width="113" x="156.5" y="471"/><rect fill="#F8F8F8" height="10" style="stroke:#383838;stroke-width:1.5;" width="15" x="249.5" y="476"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="247.5" y="478"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="247.5" y="482"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="59" x="171.5" y="504.5352">«Queue»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="73" x="171.5" y="521.0234">Line Buffer</text><!--MD5=[e5ab0d4da56fd2786bcb91e59dd71558]
+entity line_slot--><rect fill="#F8F8F8" filter="url(#frislevp5jcbb)" height="62.9766" style="stroke:#383838;stroke-width:1.5;" width="129" x="225.5" y="319"/><rect fill="#F8F8F8" height="10" style="stroke:#383838;stroke-width:1.5;" width="15" x="334.5" y="324"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="332.5" y="326"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="332.5" y="330"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="40" x="240.5" y="352.5352">«Slot»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="89" x="240.5" y="369.0234">LCD Line Slot</text><!--MD5=[e66f258173d1e7ffbdeb14cc432190da]
+class lcd_interface--><rect codeLine="36" fill="#F8F8F8" filter="url(#frislevp5jcbb)" height="86.8652" id="lcd_interface" style="stroke:#383838;stroke-width:1.5;" width="108" x="390" y="307"/><ellipse cx="406.35" cy="323" fill="#B1B1B1" rx="11" ry="11" style="stroke:#383838;stroke-width:1.0;"/><path d="M402.7777,319.2651 L402.7777,317.1069 L410.1571,317.1069 L410.1571,319.2651 L407.6918,319.2651 L407.6918,327.3418 L410.1571,327.3418 L410.1571,329.5 L402.7777,329.5 L402.7777,327.3418 L405.2431,327.3418 L405.2431,319.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="73" x="420.65" y="327.5352">lcd_interface</text><line style="stroke:#383838;stroke-width:1.5;" x1="391" x2="497" y1="339" y2="339"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacing" textLength="96" x="396" y="353.6348">SIGNAL_LCD_LINE</text><line style="stroke:#383838;stroke-width:1.5;" x1="391" x2="497" y1="359.9551" y2="359.9551"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacing" textLength="47" x="396" y="374.5898">lcd_init()</text><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacing" textLength="78" x="396" y="387.5449">lcd_enable(en)</text><!--MD5=[299656c746a4708e4cabf718a3ab2d03]
+class lcd_driver_interface--><rect codeLine="51" fill="#F8F8F8" filter="url(#frislevp5jcbb)" height="48" id="lcd_driver_interface" style="stroke:#383838;stroke-width:1.5;" width="145" x="411.5" y="92.5"/><ellipse cx="426.5" cy="108.5" fill="#B1B1B1" rx="11" ry="11" style="stroke:#383838;stroke-width:1.0;"/><path d="M422.9277,104.7651 L422.9277,102.6069 L430.3071,102.6069 L430.3071,104.7651 L427.8418,104.7651 L427.8418,112.8418 L430.3071,112.8418 L430.3071,115 L422.9277,115 L422.9277,112.8418 L425.3931,112.8418 L425.3931,104.7651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="113" x="440.5" y="113.0352">lcd_driver_interface</text><line style="stroke:#383838;stroke-width:1.5;" x1="412.5" x2="555.5" y1="124.5" y2="124.5"/><line style="stroke:#383838;stroke-width:1.5;" x1="412.5" x2="555.5" y1="132.5" y2="132.5"/><!--MD5=[37c33c71ce9550fe283f62c54b59719b]
+entity application--><rect fill="#F8F8F8" filter="url(#frislevp5jcbb)" height="62.9766" style="stroke:#383838;stroke-width:1.5;" width="118" x="237" y="85"/><rect fill="#F8F8F8" height="10" style="stroke:#383838;stroke-width:1.5;" width="15" x="335" y="90"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="333" y="92"/><rect fill="#F8F8F8" height="2" style="stroke:#383838;stroke-width:1.5;" width="4" x="333" y="96"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46" x="252" y="118.5352">«Task»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="78" x="252" y="135.0234">Application</text><!--MD5=[dd9a97e507cc1d516dfc0b3e9e9c1789]
+class task_interface--><rect codeLine="64" fill="#F8F8F8" filter="url(#frislevp5jcbb)" height="48" id="task_interface" style="stroke:#383838;stroke-width:1.5;" width="112" x="69" y="92.5"/><ellipse cx="84" cy="108.5" fill="#B1B1B1" rx="11" ry="11" style="stroke:#383838;stroke-width:1.0;"/><path d="M80.4277,104.7651 L80.4277,102.6069 L87.8071,102.6069 L87.8071,104.7651 L85.3418,104.7651 L85.3418,112.8418 L87.8071,112.8418 L87.8071,115 L80.4277,115 L80.4277,112.8418 L82.8931,112.8418 L82.8931,104.7651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="80" x="98" y="113.0352">task_interface</text><line style="stroke:#383838;stroke-width:1.5;" x1="70" x2="180" y1="124.5" y2="124.5"/><line style="stroke:#383838;stroke-width:1.5;" x1="70" x2="180" y1="132.5" y2="132.5"/><!--MD5=[e6011d0b4160b4959346d7070e224fe9]
+link lcd_task to line_buffer--><path codeLine="42" d="M154.15,382.22 C166.18,406.58 182.99,440.67 195.57,466.17 " fill="none" id="lcd_task-to-line_buffer" style="stroke:#383838;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#383838" points="197.87,470.82,197.4859,460.9786,195.6626,466.3336,190.3077,464.5104,197.87,470.82" style="stroke:#383838;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="183" y="437.5684">&lt;uses&gt;</text><!--MD5=[89101db458196bbc430b3b1bb4505879]
+link line_slot to line_buffer--><path codeLine="43" d="M274.23,382.22 C261.72,406.58 244.23,440.67 231.14,466.17 " fill="none" id="line_slot-to-line_buffer" style="stroke:#383838;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#383838" points="228.75,470.82,236.4161,464.6369,231.0316,466.3709,229.2976,460.9864,228.75,470.82" style="stroke:#383838;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="252" y="437.5684">&lt;uses&gt;</text><!--MD5=[bf7c8bf0746baafe46cafaffd778f648]
+reverse link lcd_interface to controller--><path codeLine="45" d="M440.66,414.18 C439.61,433.72 438.51,454.4 437.64,470.73 " fill="none" id="lcd_interface-backto-controller" style="stroke:#383838;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="433.67,413.68,441.73,394.08,447.65,414.43,433.67,413.68" style="stroke:#383838;stroke-width:1.0;"/><!--MD5=[51c10d9266588dab839525f610b65ea8]
+reverse link lcd_driver_interface to LCD_Controller--><path codeLine="69" d="M495.24,145.61 C501.62,162.57 509.24,184.74 514,205 C517.6425,220.52 520.6431,237.1525 523.0972,253.41 C523.4039,255.4422 523.7022,257.4685 523.992,259.4861 C524.137,260.4949 524.2798,261.5015 524.4206,262.5055 C524.4558,262.7565 524.4908,263.0073 524.5258,263.258 " fill="none" id="lcd_driver_interface-backto-LCD_Controller" style="stroke:#383838;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#383838" points="493.31,140.53,492.761,150.3635,495.0828,145.2052,500.2412,147.527,493.31,140.53" style="stroke:#383838;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="512" y="193.5684">&lt;uses&gt;</text><!--MD5=[3b126a4c9b59cebf8b8cafdc00504f53]
+link application to lcd_interface--><path codeLine="71" d="M355.07,142.47 C371.7,152.04 388.4,164.48 400,180 C426.45,215.4 437.05,265.24 441.27,301.72 " fill="none" id="application-to-lcd_interface" style="stroke:#383838;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#383838" points="441.85,307,444.8494,297.619,441.3072,302.0295,436.8967,298.4874,441.85,307" style="stroke:#383838;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="411" y="193.5684">&lt;uses&gt;</text><!--MD5=[451ecbb88a9fc0d86ca15ab994f4600b]
+link application to line_slot--><path codeLine="72" d="M286.55,148.04 C283.88,158.11 281.33,169.44 280,180 C274.23,225.81 279.26,279.01 284.04,313.41 " fill="none" id="application-to-line_slot" style="stroke:#383838;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#383838" points="284.8,318.77,287.4985,309.298,284.0989,313.8194,279.5775,310.4198,284.8,318.77" style="stroke:#383838;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="114" x="281" y="193.5684">SIGNAL_LCD_LINE</text><!--MD5=[d26c362f611d97a066c8dcb84ef6337f]
+reverse link task_interface to lcd_task--><path codeLine="74" d="M127.6,160.57 C130.37,206.56 134.7,278.28 137.15,318.85 " fill="none" id="task_interface-backto-lcd_task" style="stroke:#383838;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="120.61,160.98,126.39,140.59,134.59,160.14,120.61,160.98" style="stroke:#383838;stroke-width:1.0;"/><!--MD5=[35953bab18a6b6fdf7a1c13797bf43bc]
+@startuml rpi_control_frmwrk_diagram_component_lcd_controller
+
+'***************************************************************************
+
+skinparam monochrome true
+'skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: rpi_control_frmwrk - structure - LCD-Controller" {
+
+'***************************************************************************
+
+    package "modules" {
+        component LCD_Controller #DDDDDD {
+
+            component lcd_task [
+                <<Task>>
+                LCD Task
+            ]
+
+            component controller [
+                <<Controller>>
+                Controller
+            ]
+
+            component line_buffer [
+                <<Queue>>
+                Line Buffer
+            ]
+
+            component line_slot [
+                <<Slot>>
+                LCD Line Slot
+            ]
+
+            interface lcd_interface {
+                lcd_init()
+                lcd_enable(en)
+                SIGNAL_LCD_LINE
+            }
+
+            lcd_task ..> line_buffer : <uses>
+            line_slot ..> line_buffer : <uses>
+
+            controller .up.|> lcd_interface
+            'controller ..> lcd_task : <uses>
+        }
+    }
+
+    package "Driver" {
+        interface lcd_driver_interface {
+
+        }
+    }
+    
+    package "APP-Task" {
+        component application [
+            <<Task>>
+            Application
+        ]
+    }
+
+    package "kernel" {
+        interface task_interface {
+
+        }
+    }
+
+    LCD_Controller .up.> lcd_driver_interface : <uses>
+
+    application .down.> lcd_interface : <uses>
+    application .down.> line_slot : SIGNAL_LCD_LINE
+
+    lcd_task .up.|> task_interface
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
+
+@startuml rpi_control_frmwrk_diagram_component_lcd_controller
+
+
+skinparam monochrome true
+
+
+frame "component: rpi_control_frmwrk - structure - LCD-Controller" {
+
+
+    package "modules" {
+        component LCD_Controller #DDDDDD {
+
+            component lcd_task [
+                <<Task>>
+                LCD Task
+            ]
+
+            component controller [
+                <<Controller>>
+                Controller
+            ]
+
+            component line_buffer [
+                <<Queue>>
+                Line Buffer
+            ]
+
+            component line_slot [
+                <<Slot>>
+                LCD Line Slot
+            ]
+
+            interface lcd_interface {
+                lcd_init()
+                lcd_enable(en)
+                SIGNAL_LCD_LINE
+            }
+
+            lcd_task ..> line_buffer : <uses>
+            line_slot ..> line_buffer : <uses>
+
+            controller .up.|> lcd_interface
+        }
+    }
+
+    package "Driver" {
+        interface lcd_driver_interface {
+
+        }
+    }
+    
+    package "APP-Task" {
+        component application [
+            <<Task>>
+            Application
+        ]
+    }
+
+    package "kernel" {
+        interface task_interface {
+
+        }
+    }
+
+    LCD_Controller .up.> lcd_driver_interface : <uses>
+
+    application .down.> lcd_interface : <uses>
+    application .down.> line_slot : SIGNAL_LCD_LINE
+
+    lcd_task .up.|> task_interface
+
+
+}
+
+
+@enduml
+
+PlantUML version 1.2021.00(Sun Jan 10 11:25:05 CET 2021)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>
