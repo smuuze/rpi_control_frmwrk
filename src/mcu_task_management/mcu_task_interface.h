@@ -36,7 +36,7 @@
 /**
  * @brief Creates a new task.
  * 
- * Usager:
+ * Usage:
  * 
  *  1.  declare task callbacks. Implementation is made somewhere else
  * 
@@ -213,15 +213,15 @@ typedef struct MCU_TASK_INTERFACE {
      * enter a low-power state
      * 
      * @return
-     *     MCU_TASK_SLEEPING     The task is in sleep mode and will not be executed
-     *                 If this state is returned the system can enter the low-power state
-     *     MCU_TASK_IDLE         The task is in sleep mode and will not be executed
-     *                 If this state is returned the system can enter the low-power state
-     *     MCU_TASK_RUNNING    The task is ready to be executed. 
-     *                 If this state is returned after the task was executed
-     *                 the system then cannot enter the idle-state.
-     *     MCU_TASK_TERMINATED    The task is terminated and cannot executed anymore
-     *                 If this state is returned the system can enter the low-power state
+     *     MCU_TASK_SLEEPING    The task is in sleep mode and will not be executed
+     *                          If this state is returned the system can enter the low-power state
+     *     MCU_TASK_IDLE        The task is in sleep mode and will not be executed
+     *                          If this state is returned the system can enter the low-power state
+     *     MCU_TASK_RUNNING     The task is ready to be executed. 
+     *                          If this state is returned after the task was executed
+     *                          the system then cannot enter the idle-state.
+     *     MCU_TASK_TERMINATED  The task is terminated and cannot executed anymore
+     *                          If this state is returned the system can enter the low-power state
      * 
      */
     MCU_TASK_INTERFACE_GET_STATE_CALLBACK get_sate;
