@@ -1,23 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="496px" preserveAspectRatio="none" style="width:638px;height:496px;background:#FFFFFF;" version="1.1" viewBox="0 0 638 496" width="638px" zoomAndPan="magnify"><defs/><g><!--MD5=[f871206ebededad551d9a6a6efc04174]
-cluster component: Rpi-Control-Frmwrk - Structure - Main Overview--><g id="cluster_component: Rpi-Control-Frmwrk - Structure - Main Overview"><rect fill="none" height="483" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="625" x="7" y="7"/><path d="M439,7 L439,17.6094 L429,27.6094 L7,27.6094 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="422" x="10" y="22.5332">component: Rpi-Control-Frmwrk - Structure - Main Overview</text></g><!--MD5=[dcbcba70efc2f4cf12f0baaeec93d521]
-cluster Projects--><g id="cluster_Projects"><path d="M33.5,51 L92.5,51 A3.75,3.75 0 0 1 95,53.5 L102,74.6094 L186.5,74.6094 A2.5,2.5 0 0 1 189,77.1094 L189,165.5 A2.5,2.5 0 0 1 186.5,168 L33.5,168 A2.5,2.5 0 0 1 31,165.5 L31,53.5 A2.5,2.5 0 0 1 33.5,51 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="102" y1="74.6094" y2="74.6094"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="58" x="35" y="67.5332">Projects</text></g><!--MD5=[a3db38b29c3436960cdd3b658ea5cf84]
-cluster Framework--><g id="cluster_Framework"><path d="M41.5,200 L120.5,200 A3.75,3.75 0 0 1 123,202.5 L130,223.6094 L597.5,223.6094 A2.5,2.5 0 0 1 600,226.1094 L600,455.5 A2.5,2.5 0 0 1 597.5,458 L41.5,458 A2.5,2.5 0 0 1 39,455.5 L39,202.5 A2.5,2.5 0 0 1 41.5,200 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="39" x2="130" y1="223.6094" y2="223.6094"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="78" x="43" y="216.5332">Framework</text></g><!--MD5=[37c33c71ce9550fe283f62c54b59719b]
-entity application--><g id="elem_application"><rect fill="#F1F1F1" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="126" x="47" y="87"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="153" y="92"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="151" y="94"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="151" y="98"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="86" x="62" y="121.5332">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="69" x="62" y="139.1426">Application</text></g><!--MD5=[5427960f0a0d6e728427509f19a12a87]
-entity kernel--><g id="elem_kernel"><rect fill="#F1F1F1" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="126" x="289" y="244"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="395" y="249"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="393" y="251"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="393" y="255"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="86" x="304" y="278.5332">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41" x="304" y="296.1426">Kernel</text></g><!--MD5=[eb7abf0d316273655a4732deae3a44cf]
-entity app_task--><g id="elem_app_task"><rect fill="#F1F1F1" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="126" x="208" y="369"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="314" y="374"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="312" y="376"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="312" y="380"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="86" x="223" y="403.5332">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61" x="223" y="421.1426">App-Task</text></g><!--MD5=[20e8a0d1c10cbe4476c06f9d600054d8]
-entity driver--><g id="elem_driver"><rect fill="#F1F1F1" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="126" x="369" y="369"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="475" y="374"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="473" y="376"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="473" y="380"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="86" x="384" y="403.5332">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="38" x="384" y="421.1426">Driver</text></g><!--MD5=[cbd7eb2979b24c93a41f47ab0bfc3bcc]
-entity cmd_handling--><g id="elem_cmd_handling"><rect fill="#F1F1F1" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="172" x="82" y="244"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="234" y="249"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="232" y="251"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="232" y="255"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="86" x="97" y="278.5332">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="132" x="97" y="296.1426">Command-Hanndling</text></g><!--MD5=[af4a04b08d7e2640decdb0f7e99f09f2]
-entity protocol--><g id="elem_protocol"><rect fill="#F1F1F1" height="65.2188" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="126" x="450" y="244"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="556" y="249"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="554" y="251"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="554" y="255"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="86" x="465" y="278.5332">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="52" x="465" y="296.1426">Protocol</text></g><!--MD5=[cd667f5be4b9fa518284eb2cae54cfc0]
-link kernel to app_task--><g id="link_kernel_app_task"><path codeLine="43" d="M331.14,309.18 C319.05,327.54 303.87,350.59 291.79,368.93 " fill="none" id="kernel-app_task" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[dd9a05a66c4899d45bce721d753b6c85]
-link cmd_handling to kernel--><g id="link_cmd_handling_kernel"><path codeLine="44" d="M254.25,276.5 C265.83,276.5 277.41,276.5 289,276.5 " fill="none" id="cmd_handling-kernel" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[d8d0b0695455c38e8ffb1fc678b69f9b]
-link kernel to protocol--><g id="link_kernel_protocol"><path codeLine="45" d="M415.21,276.5 C426.79,276.5 438.38,276.5 449.97,276.5 " fill="none" id="kernel-protocol" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[22762715660ab4b67dc295e3726c20c1]
-link kernel to driver--><g id="link_kernel_driver"><path codeLine="46" d="M372.6,309.18 C384.55,327.54 399.54,350.59 411.47,368.93 " fill="none" id="kernel-driver" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[afb1d207b70923138571e32e4c0498c4]
-link application to Framework--><g id="link_application_Framework"><path codeLine="50" d="M84.27,152.31 C77.46,162.01 70.71,173.03 66,184 C64.0163,188.6225 62.2344,193.4672 60.6346,198.4125 C60.5346,198.7216 60.4353,199.031 60.3367,199.3409 C60.2875,199.4958 60.2383,199.6508 60.1894,199.8059 " fill="none" id="application-to-Framework" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="60.1894,199.8059,66.712,192.4264,61.6938,195.0376,59.0827,190.0194,60.1894,199.8059" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[7b95bfd8d7e1a77c8fc82073b466e0b9]
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="487px" preserveAspectRatio="none" style="width:668px;height:487px;background:#FFFFFF;" version="1.1" viewBox="0 0 668 487" width="668px" zoomAndPan="magnify"><defs/><g><!--MD5=[f871206ebededad551d9a6a6efc04174]
+cluster component: Rpi-Control-Frmwrk - Structure - Main Overview--><g id="cluster_component: Rpi-Control-Frmwrk - Structure - Main Overview"><rect fill="none" height="474" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="655" x="7" y="7"/><path d="M466,7 L466,16.4883 L456,26.4883 L7,26.4883 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="449" x="10" y="21.5352">component: Rpi-Control-Frmwrk - Structure - Main Overview</text></g><!--MD5=[dcbcba70efc2f4cf12f0baaeec93d521]
+cluster Projects--><g id="cluster_Projects"><path d="M33.5,50 L92.5,50 A3.75,3.75 0 0 1 95,52.5 L102,72.4883 L192.5,72.4883 A2.5,2.5 0 0 1 195,74.9883 L195,161.5 A2.5,2.5 0 0 1 192.5,164 L33.5,164 A2.5,2.5 0 0 1 31,161.5 L31,52.5 A2.5,2.5 0 0 1 33.5,50 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="102" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="58" x="35" y="65.5352">Projects</text></g><!--MD5=[a3db38b29c3436960cdd3b658ea5cf84]
+cluster Framework--><g id="cluster_Framework"><path d="M41.5,196 L122.5,196 A3.75,3.75 0 0 1 125,198.5 L132,218.4883 L627.5,218.4883 A2.5,2.5 0 0 1 630,220.9883 L630,446.5 A2.5,2.5 0 0 1 627.5,449 L41.5,449 A2.5,2.5 0 0 1 39,446.5 L39,198.5 A2.5,2.5 0 0 1 41.5,196 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="39" x2="132" y1="218.4883" y2="218.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="80" x="43" y="211.5352">Framework</text></g><!--MD5=[37c33c71ce9550fe283f62c54b59719b]
+entity application--><g id="elem_application"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="47" y="85"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="159" y="90"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="157" y="92"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="157" y="96"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="62" y="118.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="78" x="62" y="135.0234">Application</text></g><!--MD5=[5427960f0a0d6e728427509f19a12a87]
+entity kernel--><g id="elem_kernel"><a href="../readme/readme_kernel.h" target="_top" title="Click: Go to" xlink:actuate="onRequest" xlink:href="../readme/readme_kernel.h" xlink:show="new" xlink:title="Click: Go to" xlink:type="simple"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="307" y="239"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="419" y="244"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="417" y="246"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="417" y="250"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="322" y="272.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="44" x="322" y="289.0234">Kernel</text></a></g><!--MD5=[eb7abf0d316273655a4732deae3a44cf]
+entity app_task--><g id="elem_app_task"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="140" y="362"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="252" y="367"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="250" y="369"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="250" y="373"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="155" y="395.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68" x="155" y="412.0234">App-Task</text></g><!--MD5=[20e8a0d1c10cbe4476c06f9d600054d8]
+entity driver--><g id="elem_driver"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="307" y="362"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="419" y="367"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="417" y="369"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="417" y="373"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="322" y="395.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="41" x="322" y="412.0234">Driver</text></g><!--MD5=[cbd7eb2979b24c93a41f47ab0bfc3bcc]
+entity cmd_handling--><g id="elem_cmd_handling"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="190" x="82" y="239"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="252" y="244"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="250" y="246"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="250" y="250"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="97" y="272.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="150" x="97" y="289.0234">Command-Hanndling</text></g><!--MD5=[af4a04b08d7e2640decdb0f7e99f09f2]
+entity protocol--><g id="elem_protocol"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="474" y="239"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="586" y="244"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="584" y="246"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="584" y="250"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="489" y="272.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="57" x="489" y="289.0234">Protocol</text></g><!--MD5=[de349fa83d8887ffaec3c9d56872a47b]
+entity modules--><g id="elem_modules"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="474" y="362"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="586" y="367"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="584" y="369"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="584" y="373"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="489" y="395.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="58" x="489" y="412.0234">Modules</text></g><!--MD5=[cd667f5be4b9fa518284eb2cae54cfc0]
+link kernel to app_task--><g id="link_kernel_app_task"><path codeLine="47" d="M330.43,302.35 C305.3,320.55 273.61,343.51 248.5,361.71 " fill="none" id="kernel-app_task" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[dd9a05a66c4899d45bce721d753b6c85]
+link cmd_handling to kernel--><g id="link_cmd_handling_kernel"><path codeLine="48" d="M272.32,270.5 C283.73,270.5 295.13,270.5 306.54,270.5 " fill="none" id="cmd_handling-kernel" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[d8d0b0695455c38e8ffb1fc678b69f9b]
+link kernel to protocol--><g id="link_kernel_protocol"><path codeLine="49" d="M439.21,270.5 C450.76,270.5 462.31,270.5 473.86,270.5 " fill="none" id="kernel-protocol" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[22762715660ab4b67dc295e3726c20c1]
+link kernel to driver--><g id="link_kernel_driver"><path codeLine="50" d="M373,302.35 C373,320.55 373,343.51 373,361.71 " fill="none" id="kernel-driver" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[93cdf4c81126b706c86d0f3ba99cf979]
+link kernel to modules--><g id="link_kernel_modules"><path codeLine="51" d="M415.57,302.35 C440.7,320.55 472.39,343.51 497.5,361.71 " fill="none" id="kernel-modules" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[afb1d207b70923138571e32e4c0498c4]
+link application to Framework--><g id="link_application_Framework"><path codeLine="57" d="M85.73,148.23 C78.37,157.85 71.06,168.88 66,180 C63.9613,184.4825 62.1377,189.1917 60.507,194.007 C60.3032,194.6089 60.1024,195.2125 59.9045,195.8175 " fill="none" id="application-to-Framework" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="59.9045,195.8175,66.5038,188.5066,61.4586,191.0652,58.9,186.02,59.9045,195.8175" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[6e0c98c10bcea5ccbcbac0949f491a8e]
 @startuml rpi_control_frmwrk_diagram_pacakge_main_structure
 
 skinparam monochrome true
 'skinparam linetype ortho
-skinparam style strictuml
+'skinparam style strictuml
 
 frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
 
@@ -27,7 +29,6 @@ frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
             Application
         ]
     }
-
 
     folder "Framework" {
 
@@ -56,10 +57,18 @@ frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
             Protocol
         ]
 
+        component modules [
+            <<component>>
+            Modules
+        ]
+
         kernel -down- app_task
         kernel -left- cmd_handling
         kernel -right- protocol
         kernel - - driver
+        kernel - - modules
+
+        url of kernel is [[../readme/readme_kernel.h {Click: Go to}]]
 
     }
 
@@ -71,7 +80,6 @@ frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
 @startuml rpi_control_frmwrk_diagram_pacakge_main_structure
 
 skinparam monochrome true
-skinparam style strictuml
 
 frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
 
@@ -81,7 +89,6 @@ frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
             Application
         ]
     }
-
 
     folder "Framework" {
 
@@ -110,10 +117,18 @@ frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
             Protocol
         ]
 
+        component modules [
+            <<component>>
+            Modules
+        ]
+
         kernel -down- app_task
         kernel -left- cmd_handling
         kernel -right- protocol
         kernel - - driver
+        kernel - - modules
+
+        url of kernel is [[../readme/readme_kernel.h {Click: Go to}]]
 
     }
 
@@ -125,8 +140,8 @@ frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
 PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
 (GPL source distribution)
 Java Runtime: OpenJDK Runtime Environment
-JVM: OpenJDK Client VM
-Default Encoding: Cp1252
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
 Language: de
 Country: DE
 --></g></svg>

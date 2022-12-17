@@ -13,6 +13,13 @@ frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
         ]
     }
 
+    folder "SOC" {
+        component soc [
+            <<driver>>
+            SOC-Driver
+        ]
+    }
+
     folder "Framework" {
 
         component kernel [
@@ -40,22 +47,23 @@ frame "component: Rpi-Control-Frmwrk - Structure - Main Overview" {
             Protocol
         ]
 
-        component user_interface [
+        component modules [
             <<component>>
-            User-Interface
+            Modules
         ]
 
         kernel -down- app_task
         kernel -left- cmd_handling
         kernel -right- protocol
         kernel -- driver
-        kernel -- user_interface
+        kernel -- modules
 
         url of kernel is [[../readme/readme_kernel.h {Click: Go to}]]
 
     }
 
-    application --> "Framework"
+    application -down-> "Framework"
+    "Framework" -up-> soc
 
 }
 @enduml

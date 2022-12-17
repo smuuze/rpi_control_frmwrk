@@ -1,27 +1,33 @@
 
 ### Location
+
 frmwrk /
 
-# Content
+# RPi Control Framework
 
-# Brief
-The RPi-Control framework contains common modules, drivers and other implementations that are used by the RPi-Control projects. The framework provides a basic operating system to run different task like components and a Signal-Slot mechanism to transfer data from one modul to another.
+## Brief
+
+The RPi-Control Framework contains common modules, drivers and other implementations
+that are used by the RPi-Control projects. The framework provides a basic operating
+system to run different task like components and a Signal-Slot mechanism to transfer
+data from one module to another.
+
+## Features
+
+## Usage
 
 
-# Features
-- 
 
-# Main Structure
-
+## Main Structure
 
 ![Main_Structure](uml/img/rpi_control_frmwrk_diagram_pacakge_main_structure.svg)
 
-| Component                                  | Description |
-|--------------------------------------------|-------------|
-| Application                                |             |
-| App-Task                                   |             |
-| Command-Handling                           |             |
-| Driver                                     |             |
-| [kernel](readme/readme_kernel.md#location) |             |
-| [modules](readme/readme_modules.md#location) |             |
-| Protocol                                   |             |
+| Component                                     | Description |
+|-----------------------------------------------|-------------|
+| Application                                   |             |
+| App-Task                                      |             |
+| Command-Handling                              |             |
+| Driver                                        |             |
+| [kernel](readme/readme_kernel.md#location)    | Contains the basic operating system and all of it's sub-components            |
+| [modules](readme/readme_modules.md#location)  | Sub-Modules realizing special functions, e.g. LCD-Controller, Logger, File-Controller  |
+| Protocol                                      |             |
