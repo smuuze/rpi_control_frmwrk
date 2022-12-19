@@ -30,8 +30,14 @@ UT_ACTIVATE()
 
 // --------------------------------------------------------------------------------
 
+#include "mcu_task_controller.h"
+
+// --------------------------------------------------------------------------------
+
 #include "time_management/time_management.h"
-#include "app_tasks/ir_remote_mcu_task.h"
+
+// --------------------------------------------------------------------------------
+
 #include "power_management/power_management_interface.h"
 #include "power_management/power_module_5V.h"
 
