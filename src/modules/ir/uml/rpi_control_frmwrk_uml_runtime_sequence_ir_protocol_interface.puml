@@ -1,0 +1,112 @@
+@startuml rpi_control_frmwrk_uml_runtime_sequence_ir_protocol_interface
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+mainframe sequence: RPi-Control-Framework - Runtime - IR-Protocol-Interface
+
+'***************************************************************************
+
+participant ":Initialization" as initialization
+participant ":IR CMD Handler" as ir_cmd_handler
+participant ":IR MCU-Task" as ir_mcu_task
+participant ":IR Protocol" as ir_protocol
+participant ":IR Protocol-Interface" as ir_interface
+participant ":IR Transmit-Buffer" as ir_transmit_buffer
+
+participant "Carrier\n:TIMER_INTERFACE_TYPE" as timer_carrier
+participant "Modulator\n:TIMER_INTERFACE_TYPE" as timer_modulator
+
+participant "Modulator\n:GPIO" as gpio_modulator
+
+'***************************************************************************
+
+group initialization
+    initialization -> ir_protocol : init()
+
+    ir_protocol -> ir_interface : register()
+    note right
+        using:
+        - IR_PROTOCOL_GENERATOR_TYPE
+    end note
+
+    ir_interface -> ir_protocol : set_timer()
+    note right
+        using:
+        - TIMER_INTERFACE_TYPE carfier
+        - TIMER_INTERFACE_TYPE modulator
+    end note
+end
+
+group receive command
+    [-> ir_cmd_handler : rpi_cmd_handler_ir_remote()
+    note right
+        prepare ir-command structure, using
+        - device
+        - command
+    end note
+
+    ir_cmd_handler -> ir_mcu_task : SIGNAL(IR_CMD_RECEIVED)
+    note right
+        using:
+        - IR_COMMON_COMMAND_TYPE
+    end note
+end
+
+group prepare command
+    [-> ir_mcu_task : ir_remote_task_run()
+    loop until requested ir-protocol has been found
+        ir_mcu_task -> ir_mcu_task : find ir-protocol
+    end
+
+    ir_mcu_task -> ir_protocol : transmit(CMD)
+    ir_protocol -> ir_transmit_buffer : request()
+
+    loop number of bits to transmit
+        ir_protocol -> ir_transmit_buffer : append_pulse()
+        ir_protocol -> ir_transmit_buffer : append_pause()
+    end
+
+    ir_protocol -> timer_carrier : configure()
+    note left
+        using:
+        - TIMER_CONFIGURATION_TYPE
+    end note
+
+    ir_protocol -> timer_modulator : configure()
+    note left
+        set callback for irq
+        using:
+        - TIMER_CONFIGURATION_TYPE
+    end note
+
+    ir_protocol -> timer_carrier : start()
+    ir_protocol -> timer_modulator : start()
+end
+
+group transmit command
+    loop until bits for transmit are available
+        [-> ir_protocol : irq_callback
+        ir_protocol -> ir_transmit_buffer : get_next()
+
+        alt is pulse
+            ir_protocol -> gpio_modulator : drive_high()
+        else is pause
+            ir_protocol -> gpio_modulator : drive_low()
+        end
+
+        alt transmit buffer has no more data
+            ir_protocol -> timer_carrier : stop()
+            ir_protocol -> timer_modulator : stop()
+            ir_protocol -> ir_transmit_buffer : release()
+        end
+    end
+end 
+
+'***************************************************************************
+
+@enduml
