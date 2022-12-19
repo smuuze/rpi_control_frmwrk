@@ -74,7 +74,7 @@
 
 // --------------------------------------------------------------------------------
 
-#include "3rdparty/ir_protocol/ir_protocol_interface.h"
+#include "modules/ir/ir_protocol_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -184,8 +184,8 @@ static u8 ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_comm
         return 0;
     }
 
-	DEBUG_TRACE_byte(p_command->data_1, "ir_protocol_nec_prepare_transmit_buffer() - Device Address:");
-	DEBUG_TRACE_byte(p_command->data_2, "ir_protocol_nec_prepare_transmit_buffer() - Device Control:");
+    DEBUG_TRACE_byte(p_command->data_1, "ir_protocol_nec_prepare_transmit_buffer() - Device Address:");
+    DEBUG_TRACE_byte(p_command->data_2, "ir_protocol_nec_prepare_transmit_buffer() - Device Control:");
 
     ir_protocol_interface_transmit_buffer_reset();
 
@@ -235,10 +235,10 @@ static u8 ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_comm
             ir_protocol_interface_transmit_buffer_append_pause();
 
             //DEBUG_PASS("ir_protocol_nec_prepare_transmit_buffer() - DATA-BIT 0");
-		}
+        }
 
-		bit_mask = bit_mask >> 1;
-	}
+        bit_mask = bit_mask >> 1;
+    }
 
     i = 0;
     for ( ; i < NEC_IR_PROTOCOL_INTERVAL_STOP_BIT; i++) {
@@ -260,8 +260,8 @@ static u8 ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_comm
  * @param p_timer_modulator interface to the modulation generator
  */
 static void ir_protocol_nec_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator) {
-	p_carrier = p_timer_carrier;
-	p_modulator = p_timer_modulator;
+    p_carrier = p_timer_carrier;
+    p_modulator = p_timer_modulator;
 }
 
 /**
@@ -273,41 +273,41 @@ static void ir_protocol_nec_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIM
  */
 static void ir_protocol_nec_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
 
-	if (transmit_guard != 0) {
+    if (transmit_guard != 0) {
 
-		DEBUG_PASS("ir_protocol_nec_transmit() - Transmit guard is already set !!! ---");
-		return;
-	}
+        DEBUG_PASS("ir_protocol_nec_transmit() - Transmit guard is already set !!! ---");
+        return;
+    }
 
-	transmit_guard = 1;
+    transmit_guard = 1;
 
     DEBUG_PASS("ir_protocol_nec_transmit()");
 
-	p_carrier->stop();
-	p_modulator->stop();
+    p_carrier->stop();
+    p_modulator->stop();
 
-	if (ir_protocol_nec_prepare_transmit_buffer(p_command) == 0) {
+    if (ir_protocol_nec_prepare_transmit_buffer(p_command) == 0) {
         transmit_guard = 0;
         return;
     }
 
-	TIMER_CONFIGURATION_TYPE timer_config;
-	
-	timer_config.frequency = TIMER_FREQUENCY_NONE;
-	timer_config.irq_callback = &ir_protocol_nec_irq_callback;
-	timer_config.mode = TIMER_MODE_TIMER;
-	timer_config.time_interval = TIMER_TIME_INTERVAL_560us;
+    TIMER_CONFIGURATION_TYPE timer_config;
+    
+    timer_config.frequency = TIMER_FREQUENCY_NONE;
+    timer_config.irq_callback = &ir_protocol_nec_irq_callback;
+    timer_config.mode = TIMER_MODE_TIMER;
+    timer_config.time_interval = TIMER_TIME_INTERVAL_560us;
 
-	p_modulator->configure(&timer_config);
-	
-	timer_config.frequency = TIMER_FREQUENCY_37_9kHz;
-	timer_config.irq_callback = 0;
-	timer_config.mode = TIMER_MODE_FREQUENCY;
+    p_modulator->configure(&timer_config);
+    
+    timer_config.frequency = TIMER_FREQUENCY_37_9kHz;
+    timer_config.irq_callback = 0;
+    timer_config.mode = TIMER_MODE_FREQUENCY;
 
-	p_carrier->configure(&timer_config);
-	
-	p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
-	p_modulator->start(TIME_CONFIGURATION_RUN_FOREVER);
+    p_carrier->configure(&timer_config);
+    
+    p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
+    p_modulator->start(TIME_CONFIGURATION_RUN_FOREVER);
 }
 
 /**
@@ -316,7 +316,7 @@ static void ir_protocol_nec_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
  * @return 1 if transmissin is not completed yet, otherwise 0
  */
 static u8 ir_protocol_nec_is_busy(void) {
-	return transmit_guard != 0;
+    return transmit_guard != 0;
 }
 
 // --------------------------------------------------------------------------------

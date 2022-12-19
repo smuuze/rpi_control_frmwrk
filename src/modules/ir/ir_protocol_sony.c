@@ -59,11 +59,11 @@
 
 // --------------------------------------------------------------------------------
 
-#include "3rdparty/ir_protocol/ir_protocol_interface.h"
+#include "modules/ir/ir_protocol_interface.h"
 
 // --------------------------------------------------------------------------------
 
-#include "3rdparty/ir_protocol/ir_protocol_sony.h"
+#include "modules/ir/ir_protocol_sony.h"
 
 // --------------------------------------------------------------------------------
 

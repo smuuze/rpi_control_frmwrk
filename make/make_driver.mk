@@ -19,6 +19,10 @@ ifneq '' '$(findstring RTC,$(DRIVER_MODULE_CFG))'
 	else
 	ifneq '' '$(findstring raspberrypi,$(MCU))'
 		LIBS += -l rt
+	else
+	ifneq '' '$(findstring atmega1284p,$(MCU))'
+		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_atmega1284p.c
+	endif
 	endif
 	endif
 	endif
@@ -38,7 +42,7 @@ endif
 ifneq '' '$(findstring IRQ,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_IRQ=1
 
-	ifneq '' '$(findstring rp2040,$(MCU_NAME))'
+	ifneq '' '$(findstring rp2040,$(MCU))'
 
 	else
 		CSRCS += $(APP_PATH)/driver/irq/irq_driver_$(MCU_NAME).c
@@ -68,7 +72,7 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 		LIBS += -l wiringPi
 
 	else
-	ifneq '' '$(findstring RP2040,$(MCU))'
+	ifneq '' '$(findstring rp2040,$(MCU))'
 
 		#DEFS += -D HAS_DRIVER_GPIO=1
 		#CSRCS += $(APP_PATH)/driver/gpio/arm/gpio_driver_rp2040.c
@@ -80,7 +84,7 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 		CSRCS += $(APP_PATH)/driver/gpio/empty/gpio_driver_empty.c
 
 	else
-	ifneq '' '$(findstring GPIO_ATMEGA1284P,$(DRIVER_MODULE_CFG))'
+	ifneq '' '$(findstring atmega1284p,$(MCU))'
 
 		DEFS += -D HAS_DRIVER_GPIO=1
 		CSRCS += $(APP_PATH)/driver/gpio/avr/gpio_driver_atmega1284p.c
@@ -129,7 +133,7 @@ ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'
 	ifneq '' '$(findstring RASPBERRY_PI,$(MCU))'
 		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_raspberry_pi.c
 	else
-	ifneq '' '$(findstring RP2040,$(MCU))'
+	ifneq '' '$(findstring rp2040,$(MCU))'
 		#CSRCS += $(APP_PATH)/driver/communication/usart/usart_driver_$(MCU_NAME).c
 	else
 	ifneq '' '$(findstring UNITTEST,$(MCU))'

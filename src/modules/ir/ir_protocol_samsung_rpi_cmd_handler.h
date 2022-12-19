@@ -39,9 +39,9 @@
  * 
  * @param device the type of device for which the command is generated.
  * @param command the comamnd to genearate
- * @return 	CMD_NO_ERR if the command was generated ans send.
- * 		CMD_ERR_INVALID_ARGUMENT if the type of the command is unknown or
- * 		if the device is unknown or unsupported
+ * @return  CMD_NO_ERR if the command was generated ans send.
+ *          CMD_ERR_INVALID_ARGUMENT if the type of the command is unknown or
+ *          if the device is unknown or unsupported
  */
 u8 rpi_cmd_handler_ir_remote_samsung(u8 device, u8 command);
 

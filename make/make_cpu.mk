@@ -5,7 +5,7 @@ CFLAGS += -g
 
 #-----------------------------------------------------------------------------
 
-ifeq ($(MCU), ATMEGA1284P)
+ifeq ($(MCU), atmega1284p)
 include $(FRMWRK_PATH)/make/make_cpu_avr_atmega1284p.mk
 endif
 

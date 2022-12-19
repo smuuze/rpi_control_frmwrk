@@ -1,15 +1,8 @@
 
-#-----------------------------------------------------------------------------
-#       Makefile fuer AVR-GCC Projekte
-#-----------------------------------------------------------------------------
-
 include $(MAKE_PATH)/make_cpu.mk
 
 # -----------------------------------------------------------------------
-# Definitions: [-D name[=definition]...] [-U name...]
-# Things that might be added to DEFS:
-#   BOARD             Board used: see $(BRDS_PATH)/board.h
-#   EXT_BOARD         Extension board used (if any): see $(BRDS_PATH)/board.h
+
 DEFS += -D BOARD=$(BOARD)
 DEFS += -D BOARD_ID=$(BOARD_ID)
 
@@ -18,9 +11,10 @@ DEFS += -D VERSION_MINOR=$(VERSION_MINOR)
 
 # -----------------------------------------------------------------------
 
-BASE_PATH	?= ../../rpi_control_frmwrk
-APP_PATH	?= $(BASE_PATH)/src
-MAKE_PATH	?= $(BASE_PATH)/make
+BASE_PATH		?= ../../rpi_control_frmwrk
+FRMWRK_SRC_PATH ?= $(FRMWRK_PATH)/src
+APP_PATH		?= $(BASE_PATH)/src
+MAKE_PATH		?= $(BASE_PATH)/make
 
 # -----------------------------------------------------------------------
 # Include path
@@ -105,7 +99,7 @@ endif
 endif
 endif
 
-# ---- TASK MANAGEMENT -------------------------------------------------------------------
+# ---- TASK MANAGEMENT --------------------------------------------------
 
 MCU_TASK_MANAGEMENT_INC_PATH = $(APP_PATH)/mcu_task_management
 INC_PATH += $(MCU_TASK_MANAGEMENT_INC_PATH)
@@ -141,11 +135,6 @@ DEFS += -D HAS_APP_TASK_TEST_TRACER=1
 CSRCS += $(APP_TASK_INC_PATH)/test_tracer_mcu_task.c
 endif
 
-ifneq '' '$(findstring IR_REMOTE,$(APP_TASK_CFG))'
-DEFS += -D HAS_APP_TASK_IR_REMOTE=1
-CSRCS += $(APP_TASK_INC_PATH)/ir_remote_mcu_task.c
-endif
-
 ifneq '' '$(findstring COPRO_ROUTING,$(APP_TASK_CFG))'
 DEFS += -D HAS_APP_TASK_COPRO_ROUTING=1
 CSRCS += $(APP_TASK_INC_PATH)/copro_routing_mcu_task.c
@@ -176,7 +165,7 @@ DEFS += -D HAS_APP_TASK_THREAD_PRINT_TRACE_OBJECT=1
 CSRCS += $(APP_TASK_INC_PATH)/thread_print_trace_object.c
 endif
 
-# ---- EXPANSION BOARDS -------------------------------------------------------------------
+# ---- EXPANSION BOARDS -------------------------------------------------
 
 EXPANSION_BOARD_PATH = $(APP_PATH)/expansion
 INC_PATH += $(EXPANSION_BOARD_PATH)
@@ -193,31 +182,31 @@ ifneq '' '$(findstring GPIO_PCA9670,$(EXPANSION_BOARD_CFG))'
 	CSRCS += $(EXPANSION_BOARD_PATH)/driver_PCA9670.c
 endif
 
-# ---- COPRO MODULES ----------------------------------------------------------------------
+# ---- COPRO MODULES ----------------------------------------------------
 
 include $(MAKE_PATH)/make_copro.mk
 
-# ---- 3rd PARTY MODULES ------------------------------------------------------------------
+# ---- MODULES ----------------------------------------------------------
 
-include $(MAKE_PATH)/make_third_party.mk
+include $(FRMWRK_SRC_PATH)/modules/make_modules.mk
 
-# ---- SENSOR_UNITS -----------------------------------------------------------------------
+# ---- SENSOR_UNITS -----------------------------------------------------
 
 include $(MAKE_PATH)/make_sensor.mk
 
-# ---- PROTOCOL ---------------------------------------------------------------------------
+# ---- PROTOCOL ---------------------------------------------------------
 
 ifdef PROTOCOL_CFG
 include $(MAKE_PATH)/make_protocol.mk
 endif
 
-# ---- POWER MANAGEMENT -------------------------------------------------------------------
+# ---- POWER MANAGEMENT -------------------------------------------------
 
 ifdef POWER_MANAGEMENT_CFG
 include $(MAKE_PATH)/make_power_management.mk
 endif
 
-# ---- MANAGEMENT MODULES -----------------------------------------------------------------
+# ---- MANAGEMENT MODULES -----------------------------------------------
 	
 ifneq '' '$(findstring IO,$(MANAGEMENT_MODULE_CFG))'
 	DEFS  += -D HAS_MANAGEMENT_MODULE_IO=1
@@ -273,27 +262,30 @@ CSRCS += $(INITIALIZATION_INC_PATH)/system_initialization.c
 CSRCS += $(INITIALIZATION_INC_PATH)/initialization.c
 
 # -----------------------------------------------------------------------
+
 # Library path
 LIB_PATH +=
 
 # -----------------------------------------------------------------------
+
 # Libraries to link with the project
 LIBS +=
 
 # -----------------------------------------------------------------------
+
 # Options to request or suppress warnings: [-fsyntax-only] [-pedantic[-errors]] [-w] [-Wwarning...]
 # For further details, refer to the chapter "GCC Command Options" of the GCC manual.
 WARNINGS += -Wall
 WARNINGS += -Wstrict-prototypes
 
-
 # -----------------------------------------------------------------------
+
 # Options that control optimization: [-O[0|1|2|3|s]]...
 # For further details, refer to the chapter "GCC Command Options" of the GCC manual.
 # OPTIMIZATION  += -O3 -mcall-prologues
 OPTIMIZATION  += -Os
 
-ifeq ($(MCU), ATMEGA1284P)
+ifeq ($(MCU), atmega1284p)
 	OPTIMIZATION += -mcall-prologues
 	OPTIMIZATION += -ffunction-sections
 	OPTIMIZATION += -fshort-enums
@@ -304,6 +296,7 @@ ifeq ($(MCU), ATMEGA1284P)
 endif
 
 # -----------------------------------------------------------------------
+
 # Extra flags to use when preprocessing
 PP_EXTRA_FLAGS +=
 
@@ -318,11 +311,13 @@ AS_EXTRA_FLAGS +=
 #-Wl,--gc-sections
 
 # -----------------------------------------------------------------------
+
 include $(MAKE_PATH)/make_toolchain.mk
 include $(MAKE_PATH)/make_avr_dude.mk
 include $(MAKE_PATH)/make_targets.mk
 include $(MAKE_PATH)/make_git.mk
 
 # -----------------------------------------------------------------------
+
 # Debug-Ausgabe aller Variablen
 #$(foreach var,$(.VARIABLES), $(info $(var) : $(value $(var)) )  )

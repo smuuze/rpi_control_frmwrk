@@ -1,15 +1,29 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	ir_protocol_jvc.h
- * \brief
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    ir_protocol_jvc.h
+ * @author  Sebastian Lesse
+ * @date    2022 / 12 / 19
+ * @brief   Short description of this file
+ * 
  */
 
-#ifndef _IR_PROTOCOL_JVC_H_
-#define _IR_PROTOCOL_JVC_H_
+// --------------------------------------------------------------------------------
+
+#ifndef _H_ir_protocol_jvc_
+#define _H_ir_protocol_jvc_
 
 // --------------------------------------------------------------------------------
 
@@ -21,8 +35,8 @@
  *
  */
 typedef struct {
-	u8 address;
-	u8 control;
+    u8 address;
+    u8 control;
 } JVC_IR_PROTOCOL_COMMAND_TYPE;
 
 // --------------------------------------------------------------------------------
@@ -113,4 +127,4 @@ void ir_protocol_jvc_cmd_radio_sound_mode(JVC_IR_PROTOCOL_COMMAND_TYPE* p_comman
 
 // --------------------------------------------------------------------------------
 
-#endif // _IR_REMOTE_MCU_TASK_H_
+#endif // _H_ir_protocol_jvc_

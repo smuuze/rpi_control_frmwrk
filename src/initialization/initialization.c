@@ -62,8 +62,7 @@
 
 #include "power_management/power_management_interface.h"
 
-#include "3rdparty/ir_protocol/ir_protocol_nec.h"
-#include "3rdparty/ir_protocol/ir_protocol_sony.h"
+#include "modules/ir/ir_protocol_task.h"
 
 //-----------------------------------------------------------------------------
 
@@ -126,21 +125,15 @@ void initialization(void) {
 	}
 	#endif
 
-    #ifdef HAS_IR_PROTOCOL_NEC
-    {
-        ir_protocol_nec_init();
-    }
-    #endif
-
-    #ifdef HAS_IR_PROTOCOL_SONY
-    {
-        ir_protocol_sony_init();
-    }
-    #endif
-
     #ifdef LCD_CONTROLLER_AVAILABLE
     {
         lcd_init();
+    }
+    #endif
+
+    #ifdef IR_PROTOCOL_AVAILABLE
+    {
+        ir_protocol_init();
     }
     #endif
 }

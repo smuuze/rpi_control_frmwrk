@@ -39,32 +39,6 @@ ifneq '' '$(findstring RPI_CMD_SENSOR,$(COMMAND_INTERFACE_CFG))'
 	CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_handler_sensor.c
 endif
 
-ifneq '' '$(findstring RPI_CMD_IR_REMOTE,$(COMMAND_INTERFACE_CFG))'
-
-	DEFS += -D RPI_CMD_HANDLER_IR_REMOTE_AVAILABLE=1
-	CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_command_handler_ir_remote.c
-
-	ifneq '' '$(findstring RPI_CMD_IR_REMOTE_SAMSUNG,$(COMMAND_INTERFACE_CFG))'
-		DEFS += -D RPI_CMD_HANDLER_IR_REMOTE_SAMSUNG_AVAILABLE=1
-		CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_handler_ir_remote_samsung.c
-	endif
-
-	ifneq '' '$(findstring RPI_CMD_IR_REMOTE_JVC,$(COMMAND_INTERFACE_CFG))'
-		DEFS += -D RPI_CMD_HANDLER_IR_REMOTE_JVC_AVAILABLE=1
-		CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_handler_ir_remote_jvc.c
-	endif
-
-	ifneq '' '$(findstring RPI_CMD_IR_REMOTE_SONY,$(COMMAND_INTERFACE_CFG))'
-		DEFS += -D RPI_CMD_HANDLER_IR_REMOTE_SONY_AVAILABLE=1
-		CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_handler_ir_remote_sony.c
-	endif
-
-	ifneq '' '$(findstring RPI_CMD_IR_REMOTE_LED_LIGHTS,$(COMMAND_INTERFACE_CFG))'
-		DEFS += -D RPI_CMD_HANDLER_IR_REMOTE_LED_LIGHTS_AVAILABLE=1
-		CSRCS += $(COMMAND_HANDLER_INC_PATH)/rpi_cmd_handler_ir_remote_led_lights.c
-	endif
-endif
-
 ifneq '' '$(findstring RPI_CMD_ROUTING,$(COMMAND_INTERFACE_CFG))'
 
 	DEFS += -D RPI_CMD_HANDLER_ROUTING_AVAILABLE=1

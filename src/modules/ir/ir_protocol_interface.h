@@ -153,25 +153,25 @@ typedef struct IR_PROTOCOL_GENERATOR {
          * @brief unique id of each ir-protocol
          * 
          */
-	u8 uid;
+    u8 uid;
 
         /**
          * @brief Callback time to set for the ir-protocol-generator
          * 
          */
-	IR_PROTOCOL_INTERFACE_SET_TIMER_CALLBACK set_timer;
+    IR_PROTOCOL_INTERFACE_SET_TIMER_CALLBACK set_timer;
 
         /**
          * @brief Callback time to start transmission of a ir-command
          * 
          */
-	IR_PROTOCOL_INTERFACE_TRANSMIT_CALLBACK transmit;
+    IR_PROTOCOL_INTERFACE_TRANSMIT_CALLBACK transmit;
 
         /**
          * @brief Callback to check if the transmission of a ir-command is still ongoing
          * 
          */
-	IR_PROTOCOL_INTERFACE_SET_TIMERCALLBACK is_busy;
+    IR_PROTOCOL_INTERFACE_SET_TIMERCALLBACK is_busy;
 
         /**
          * @brief Pointer to the next ir-protocol if available.

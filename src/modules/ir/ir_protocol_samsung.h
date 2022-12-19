@@ -33,8 +33,8 @@
  *
  */
 typedef struct {
-	u8 address;
-	u8 control;
+    u8 address;
+    u8 control;
 } SAMSUNG_IR_PROTOCOL_COMMAND_TYPE;
 
 // --------------------------------------------------------------------------------

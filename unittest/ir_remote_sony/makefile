@@ -47,7 +47,14 @@ APP_TASK_CFG =
 #APP_TASK_CFG += COPRO_ROUTING
 #APP_TASK_CFG += LED_MATRIX
 #APP_TASK_CFG += TEST_TRACER
-APP_TASK_CFG += IR_REMOTE
+#APP_TASK_CFG += IR_REMOTE
+
+#-----------------------------------------------------------------------------
+
+MODULES_CFG = 
+MODULES_CFG += IR_PROTOCOL_SONY
+#MODULES_CFG += IR_PROTOCOL_NEC
+#MODULES_CFG += IR_COMMAND_LED_LIGHT
 
 #-----------------------------------------------------------------------------
 
@@ -91,7 +98,7 @@ COMMAND_INTERFACE_CFG =
 #COMMAND_INTERFACE_CFG += RPI_CMD_IO
 #COMMAND_INTERFACE_CFG += RPI_CMD_SENSOR
 #COMMAND_INTERFACE_CFG += RPI_CMD_ROUTING
-COMMAND_INTERFACE_CFG += RPI_CMD_IR_REMOTE_SONY
+#COMMAND_INTERFACE_CFG += RPI_CMD_IR_REMOTE_SONY
 
 #-----------------------------------------------------------------------------
 
@@ -107,11 +114,6 @@ USER_INTERFACE_CFG =
 #USER_INTERFACE_CFG += CONSOLE
 #USER_INTERFACE_CFG += LCD_16X2
 #USER_INTERFACE_CFG += FILE_INTERFACE
-
-#-----------------------------------------------------------------------------
-
-THIRD_PARTY_MODULES =
-THIRD_PARTY_MODULES += IR_PROTOCOL_SONY
 
 #-----------------------------------------------------------------------------
 

@@ -16,7 +16,7 @@
  * @file    ir_remote_mcu_task.c
  * @author  Sebastian Lesse
  * @date    2021 / 12 / 30
- * @see     ir_remote_mcu_task.h
+ * @see     ir_protocol_task.h
  * 
  */
 
@@ -58,7 +58,10 @@
 
 // --------------------------------------------------------------------------------
 
-#include "3rdparty/ir_protocol/ir_protocol_interface.h"
+#include "modules/ir/ir_protocol_interface.h"
+
+#include "modules/ir/ir_protocol_nec.h"
+#include "modules/ir/ir_protocol_sony.h"
 
 // --------------------------------------------------------------------------------
 
@@ -248,7 +251,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(IR_CMD_RECEIVED_SIGNAL, IR_CMD_RECEIVED_SLOT, 
 
 #ifdef HAS_IR_PROTOCOL_SAMSUNG
 
-#include "3rdparty/ir_protocol/ir_protocol_samsung.h"
+#include "modules/ir/ir_protocol_samsung.h"
 
 static SAMSUNG_IR_PROTOCOL_COMMAND_TYPE samsung_ir_command;
 
@@ -276,7 +279,7 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SAMSUNG_IR_CMD_RECEIVED_SIGNAL, SAMSUNG_IR_CMD
 
 #ifdef HAS_IR_PROTOCOL_JVC
 
-#include "3rdparty/ir_protocol/ir_protocol_jvc.h"
+#include "modules/ir/ir_protocol_jvc.h"
 
 static JVC_IR_PROTOCOL_COMMAND_TYPE jvc_ir_command;
 
@@ -303,10 +306,10 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(JVC_IR_CMD_RECEIVED_SIGNAL, JVC_IR_CMD_RECEIVE
 // --------------------------------------------------------------------------------
 
 /**
- * @see  app_task/ir_remote_mcu_task.h#ir_remote_app_task_init
+ * @see  ir_protocol_task.h#ir_protocol_init
  * 
  */
-void ir_remote_app_task_init(void) {
+void ir_protocol_init(void) {
 
     DEBUG_PASS("ir_remote_app_task_init()");
 
@@ -339,6 +342,18 @@ void ir_remote_app_task_init(void) {
         JVC_IR_CMD_RECEIVED_SLOT_connect();
     
         ir_protocol_jvc_set_timer(&timer_carrier, &timer_modulator);
+    }
+    #endif
+
+    #ifdef HAS_IR_PROTOCOL_NEC
+    {
+        ir_protocol_nec_init();
+    }
+    #endif
+
+    #ifdef HAS_IR_PROTOCOL_SONY
+    {
+        ir_protocol_sony_init();
     }
     #endif
 

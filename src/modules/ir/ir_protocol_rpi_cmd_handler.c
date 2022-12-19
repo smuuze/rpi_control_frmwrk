@@ -47,11 +47,11 @@
 
 // --------------------------------------------------------------------------------
 
-#include "command_handler/rpi_command_handler_ir_remote.h"
-#include "command_handler/rpi_cmd_handler_ir_remote_samsung.h"
-#include "command_handler/rpi_cmd_handler_ir_remote_jvc.h"
-#include "command_handler/rpi_cmd_handler_ir_remote_sony.h"
-#include "command_handler/rpi_cmd_handler_ir_remote_led_lights.h"
+#include "modules/ir/ir_protocol_rpi_cmd_handler.h"
+#include "modules/ir/ir_protocol_samsung_rpi_cmd_handler.h"
+#include "modules/ir/ir_protocol_jvc_rpi_cmd_handler.h"
+#include "modules/ir/ir_protocol_sony_rpi_cmd_handler.h"
+#include "modules/ir/ir_protocol_led_lights_rpi_cmd_handler.h"
 
 // --------------------------------------------------------------------------------
 

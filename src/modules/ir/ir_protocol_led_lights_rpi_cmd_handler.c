@@ -43,10 +43,12 @@
 // --------------------------------------------------------------------------------
 
 #include "command_management/command_handler_interface.h"
-#include "command_handler/rpi_command_handler_ir_remote.h"
 
-#include "3rdparty/ir_protocol/ir_protocol_interface.h"
-#include "3rdparty/ir_protocol/ir_command_led_lights.h"
+// --------------------------------------------------------------------------------
+
+#include "modules/ir/ir_protocol_rpi_cmd_handler.h"
+#include "modules/ir/ir_protocol_interface.h"
+#include "modules/ir/ir_protocol_led_lights_commands.h"
 
 // --------------------------------------------------------------------------------
 
