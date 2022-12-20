@@ -53,7 +53,7 @@
 // --------------------------------------------------------------------------------
 
 #include "driver/lcd/lcd_driver_interface.h"
-#include "ui/lcd/lcd_interface.h"
+#include "modules/lcd/lcd_interface.h"
 
 // --------------------------------------------------------------------------------
 

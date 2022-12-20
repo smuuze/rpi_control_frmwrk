@@ -51,6 +51,11 @@ APP_TASK_CFG =
 
 #-----------------------------------------------------------------------------
 
+MODULES_CFG = 
+MODULES_CFG += LCD_16X2
+
+#-----------------------------------------------------------------------------
+
 EXPANSION_BOARD_CFG = 
 #EXPANSION_BOARD_CFG += SENSOR_SHT31_ADS1115
 #EXPANSION_BOARD_CFG += GPIO_PCA9670
@@ -106,7 +111,6 @@ USER_INTERFACE_CFG =
 #USER_INTERFACE_CFG += CLI_ARG_DEVICE
 #USER_INTERFACE_CFG += CLI_ARG_COMMAND
 #USER_INTERFACE_CFG += CONSOLE
-USER_INTERFACE_CFG += LCD_16X2
 #USER_INTERFACE_CFG += FILE_INTERFACE
 
 #-----------------------------------------------------------------------------

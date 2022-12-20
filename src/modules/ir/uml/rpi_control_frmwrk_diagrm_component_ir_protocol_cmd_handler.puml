@@ -1,0 +1,25 @@
+@startuml rpi_control_frmwrk_diagrm_component_ir_protocol_cmd_handler
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: rpi_control_frmwrk - structure - ir-protocol cmd-handling" {
+
+'***************************************************************************
+
+    component NAME [
+        <<component>>
+        Component Name
+    ]
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml

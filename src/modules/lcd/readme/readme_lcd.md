@@ -1,8 +1,8 @@
 
 ### Location
-[frmwrk](../README.md) / [modules](../readme/readme_modules.md) / lcd_controller
+[frmwrk](../../../../README.md) / [modules](../../readme_modules.md) / LCD
 
-# LCD-Controller
+# LCD
 
 ## Brief
 [[TOP](#location)]
@@ -69,10 +69,10 @@ on executing the lcd-task. If all currently buffered lines have been written, th
 ## Structure
 [[TOP](#location)]
 
-![Context](../uml/img/rpi_control_frmwrk_diagram_component_lcd_controller.svg )
+![Context](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_component_lcd_controller.svg )
 
 ## Runtime
 [[TOP](#location)]
 
-![Context](../uml/img/rpi_control_frmwrk_diagram_sequence_lcd_controller.svg )
+![Context](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_sequence_lcd_controller.svg )
 

@@ -55,13 +55,13 @@
 #include "ui/command_line/command_line_interface.h"
 #include "ui/cfg_file_parser/cfg_file_parser.h"
 #include "ui/log_interface/log_interface.h"
-#include "ui/lcd/lcd_interface.h"
 
 #include "app_tasks/message_executer_task.h"
 #include "app_tasks/cli_executer_task.h"
 
 #include "power_management/power_management_interface.h"
 
+#include "modules/lcd/lcd_interface.h"
 #include "modules/ir/ir_protocol_task.h"
 
 //-----------------------------------------------------------------------------
