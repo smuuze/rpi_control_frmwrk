@@ -69,10 +69,10 @@ on executing the lcd-task. If all currently buffered lines have been written, th
 ## Structure
 [[TOP](#location)]
 
-![Context](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_component_lcd_controller.svg )
+![Structure](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_component_lcd_controller.svg )
 
 ## Runtime
 [[TOP](#location)]
 
-![Context](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_sequence_lcd_controller.svg )
+![Runtime](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_sequence_lcd_controller.svg )
 

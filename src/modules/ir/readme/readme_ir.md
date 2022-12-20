@@ -40,10 +40,15 @@ ir_protocol_init();
 ## Structure
 [[TOP](#location)]
 
-![Context](../../../modules/ir/uml/img/rpi_control_frmwrk_diagram_component_ir.svg )
+### IR Protocol
+
+![Structure](../../../modules/ir/uml/img/rpi_control_frmwrk_diagram_component_ir_protocol.svg )
+
+### Command Handling
+
+![Structure](../../../modules/ir/uml/img/rpi_control_frmwrk_diagrm_component_ir_protocol_cmd_handler.svg )
 
 ## Runtime
 [[TOP](#location)]
 
-![Context](../../../modules/ir/uml/img/rpi_control_frmwrk_diagram_sequence_ir.svg )
-
+![Runtime](../../../modules/ir/uml/img/rpi_control_frmwrk_uml_runtime_sequence_ir_protocol_interface.svg )

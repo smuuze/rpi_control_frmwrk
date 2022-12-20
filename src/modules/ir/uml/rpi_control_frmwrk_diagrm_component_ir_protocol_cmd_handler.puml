@@ -3,7 +3,7 @@
 '***************************************************************************
 
 skinparam monochrome true
-skinparam linetype ortho
+'skinparam linetype ortho
 
 '***************************************************************************
 
@@ -11,10 +11,74 @@ frame "component: rpi_control_frmwrk - structure - ir-protocol cmd-handling" {
 
 '***************************************************************************
 
-    component NAME [
-        <<component>>
-        Component Name
-    ]
+    package "modules" {
+        component IR #DDDDDD {
+
+            component rpi_cmd_handler [
+                <<CMD-HANDLER>>
+                IR RPi Cmd Handler
+            ]
+
+            component ir_cmd_handler [
+                <<CMD-Handler>>
+                IR Cmd Handler
+            ]
+
+            component ir_protocol_task [
+                <<Task>>
+                IR-Protocol Task
+            ]
+
+            component ir_commands [
+                <<Command>>
+                IR-Commands
+            ]
+
+            component slot_ir_cmd [
+                <<SLOT>>
+                IR-CMD-RECEIVED
+            ]
+
+            component ir_cmd_queue [
+                <<QUEUE>>
+                IR-CMD-QUEUE
+            ]
+
+            interface ir_protocol_interface {
+
+            }
+
+            component ir_protocol [
+                <<IR-Protocol>>
+                IR-Protocol
+            ]
+            note bottom
+            - SONY
+            - JVC
+            - SAMSUNG
+            - NEC
+            end note
+
+            rpi_cmd_handler .down.> ir_cmd_handler : <uses>
+            ir_cmd_handler --> slot_ir_cmd : SIGNAL_IR_CMD_RECEIVED(ir_cmd)
+            ir_cmd_handler ..> ir_commands : <uses>
+
+            slot_ir_cmd .right.> ir_cmd_queue : <uses>
+            ir_protocol_task .down.> ir_cmd_queue : <uses>
+
+            ir_protocol_task .up.> ir_protocol_interface : <uses>
+            ir_protocol .left.|> ir_protocol_interface
+
+        }
+    }
+
+    package "Driver" {
+        interface cmd_handler_interface {
+
+        }
+    }
+
+    rpi_cmd_handler .up.|> cmd_handler_interface
 
 '***************************************************************************
 
