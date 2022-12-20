@@ -132,30 +132,6 @@ static MCU_TASK_INTERFACE_TASK_STATE ir_remote_task_get_state(void);
 static void ir_remote_task_run(void);
 
 /**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.run
- * 
- */
-static void ir_remote_task_background_run(void);
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.background_run
- * 
- */
-__UNUSED__ static void ir_remote_task_sleep(void);
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.wakeup
- * 
- */
-__UNUSED__ static void ir_remote_task_wakeup(void);
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.finish
- * 
- */
-__UNUSED__ static void ir_remote_task_finish(void);
-
-/**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.terminate
  * 
  */
@@ -163,24 +139,16 @@ __UNUSED__ static void ir_remote_task_terminate(void);
 
 /**
  * @brief Task-interface object that is registered at the mcu task manager
- * 
  */
-static MCU_TASK_INTERFACE ir_remote_task = {
-
-    0,                                      // u8 identifier,
-    0,                                      // u16 new_run_timeout,
-    0,                                      // u16 last_run_time,
-    &ir_remote_task_init,                   // MCU_TASK_INTERFACE_INIT_CALLBACK         init,
-    &ir_remote_task_get_schedule_interval,  // MCU_TASK_INTERFACE_INIT_CALLBACK         get_schedule_interval,
-    &ir_remote_task_get_state,              // MCU_TASK_INTERFACE_GET_STATE_CALLBACK    get_sate,
-    &ir_remote_task_run,                    // MCU_TASK_INTERFACE_RUN_CALLBACK          run,
-    &ir_remote_task_background_run,         // MCU_TASK_INTERFACE_BG_RUN_CALLBACK       background_run,
-    0,                                      // MCU_TASK_INTERFACE_SLEEP_CALLBACK        sleep,
-    0,                                      // MCU_TASK_INTERFACE_WAKEUP_CALLBACK       wakeup,
-    0,                                      // MCU_TASK_INTERFACE_FINISH_CALLBACK       finish,
-    0,                                      // MCU_TASK_INTERFACE_TERMINATE_CALLBACK    terminate,
-    0                                       // next-task
-};
+TASK_CREATE (
+    IR_PROTOCOL_TASK,
+    TASK_PRIORITY_MIDDLE,
+    ir_remote_task_get_schedule_interval,
+    ir_remote_task_init,
+    ir_remote_task_run,
+    ir_remote_task_get_state,
+    ir_remote_task_terminate
+)
 
 // --------------------------------------------------------------------------------
 
@@ -357,7 +325,7 @@ void ir_protocol_init(void) {
     }
     #endif
 
-    mcu_task_controller_register_task(&ir_remote_task);
+    IR_PROTOCOL_TASK_init();
 }
 
 // --------------------------------------------------------------------------------
@@ -527,38 +495,6 @@ static void ir_remote_task_run(void) {
         //DEBUG_PASS("ir_remote_task_run() - All operations finished");
         IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
     }
-}
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.background_run
- * 
- */
-static void ir_remote_task_background_run(void) {
-    // do nothing
-}
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.sleep
- * 
- */
-static void ir_remote_task_sleep(void) {
-    // do nothing
-}
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.wakeup
- * 
- */
-static void ir_remote_task_wakeup(void) {
-    // do nothing
-}
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.finish
- * 
- */
-static void ir_remote_task_finish(void) {
-    // do nothing
 }
 
 /**
