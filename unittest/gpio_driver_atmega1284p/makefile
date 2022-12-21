@@ -29,6 +29,10 @@ CSRCS += unittest_gpio_driver_atmega1284p.c
 
 #-----------------------------------------------------------------------------
 
+CSRCS += $(FRMWRK_PATH)/src/driver/gpio/avr/gpio_driver_atmega1284p.c
+
+#-----------------------------------------------------------------------------
+
 #HOST_INTERFACE_TYPE = SPI
 
 #-----------------------------------------------------------------------------
@@ -58,7 +62,7 @@ EXPANSION_BOARD_CFG =
 #-----------------------------------------------------------------------------
 
 DRIVER_MODULE_CFG =
-DRIVER_MODULE_CFG += GPIO_ATMEGA1284P
+#DRIVER_MODULE_CFG += GPIO_ATMEGA1284P
 DRIVER_MODULE_CFG += RTC
 DRIVER_MODULE_CFG += CLK
 #DRIVER_MODULE_CFG += USART0

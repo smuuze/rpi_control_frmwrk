@@ -11,6 +11,11 @@
 #define BOARD_DESCRIPTION_FILE                          "platine/board_UNITTEST.h"
 #include "platine/board_UNITTEST.h"
 
+//-------------------------------------------------------------------------
+
+// THe initialization routine needs this define to execute gpio init
+#define HAS_DRIVER_GPIO 1
+
 // --------------------------------------------------------------------------------
 
 #define SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS	0
