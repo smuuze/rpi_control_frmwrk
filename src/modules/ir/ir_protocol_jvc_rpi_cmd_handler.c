@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -47,15 +47,21 @@
 
 // --------------------------------------------------------------------------------
 
+#include "modules/ir/ir_protocol_interface.h"
+
+// --------------------------------------------------------------------------------
+
 #include "modules/ir/ir_protocol_rpi_cmd_handler.h"
 #include "modules/ir/ir_protocol_jvc.h"
 
 // --------------------------------------------------------------------------------
 
-SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(JVC_IR_CMD_RECEIVED_SIGNAL)
-
-// --------------------------------------------------------------------------------
-
+/**
+ * @brief 
+ * 
+ * @param command 
+ * @return u8 
+ */
 static inline u8 rpi_cmd_ir_jvc_radio(u8 command);
 
 // --------------------------------------------------------------------------------
@@ -66,7 +72,11 @@ u8 rpi_cmd_handler_ir_remote_jvc(u8 device, u8 command) {
 
     switch (device) {
         default:
-            DEBUG_TRACE_byte(device, "rpi_cmd_handler_ir_remote_jvc() - Unknown device");
+        
+            DEBUG_TRACE_byte(
+                device,
+                "rpi_cmd_handler_ir_remote_jvc() - Unknown device"
+            );
             return CMD_ERR_INVALID_ARGUMENT;
 
         case IR_DEVICE_RADIO :
@@ -79,7 +89,7 @@ u8 rpi_cmd_handler_ir_remote_jvc(u8 device, u8 command) {
 static inline u8 rpi_cmd_ir_jvc_radio(u8 cmd) {
     
     DEBUG_TRACE_byte(cmd, "rpi_cmd_ir_jvc_radio() - Command:");
-    JVC_IR_PROTOCOL_COMMAND_TYPE ir_command;
+    IR_COMMON_COMMAND_TYPE ir_command;
 
     switch (cmd) {
 
@@ -126,11 +136,18 @@ static inline u8 rpi_cmd_ir_jvc_radio(u8 cmd) {
         case IR_COMMAND_SOUND_MODE :
             ir_protocol_jvc_cmd_radio_sound_mode(&ir_command);
             break;
+
+        case IR_COMMAND_MUTE :
+            ir_protocol_jvc_cmd_radio_volume_mute(&ir_command);
+            break;
     }
 
     ir_protocol_jvc_address_radio(&ir_command);
+    ir_command_jvc_protocol_type(&ir_command);
 
-    JVC_IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
+    IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
 
     return CMD_NO_ERR;
 }
+
+// --------------------------------------------------------------------------------

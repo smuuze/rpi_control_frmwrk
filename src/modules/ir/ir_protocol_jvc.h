@@ -31,13 +31,16 @@
 
 // --------------------------------------------------------------------------------
 
-/*
- *
+#include "modules/ir/ir_protocol_interface.h"
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Initialized the JVC ir-protocol.
+ * Registers a new ir-protocol to the ir-protocol-interface
+ * 
  */
-typedef struct {
-    u8 address;
-    u8 control;
-} JVC_IR_PROTOCOL_COMMAND_TYPE;
+void ir_protocol_jvc_init(void);
 
 // --------------------------------------------------------------------------------
 
@@ -49,7 +52,7 @@ void ir_protocol_jvc_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTE
 /*
  *
  */
-void ir_protocol_jvc_transmit(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_transmit(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
@@ -58,72 +61,81 @@ u8 ir_protocol_jvc_is_busy(void);
 
 // --------------------------------------------------------------------------------
 
-/*
- *
+/**
+ * @brief 
+ * 
+ * @param p_ir_command 
  */
-void ir_protocol_jvc_address_tv(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
-
-/*
- *
- */
-void ir_protocol_jvc_address_radio(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_command_jvc_protocol_type(IR_COMMON_COMMAND_TYPE* p_ir_command);
 
 // --------------------------------------------------------------------------------
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_power(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_address_tv(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_volume_up(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_address_radio(IR_COMMON_COMMAND_TYPE* p_command);
+
+// --------------------------------------------------------------------------------
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_volume_down(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_cmd_radio_power(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_volume_mute(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_cmd_radio_volume_up(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_channel_down(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_cmd_radio_volume_down(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_play(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_cmd_radio_volume_mute(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_pause(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_cmd_radio_channel_down(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_stop(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_cmd_radio_play(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_bass_up(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_cmd_radio_pause(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_bass_down(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_cmd_radio_stop(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_jvc_cmd_radio_sound_mode(JVC_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_jvc_cmd_radio_bass_up(IR_COMMON_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_jvc_cmd_radio_bass_down(IR_COMMON_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_jvc_cmd_radio_sound_mode(IR_COMMON_COMMAND_TYPE* p_command);
 
 // --------------------------------------------------------------------------------
 

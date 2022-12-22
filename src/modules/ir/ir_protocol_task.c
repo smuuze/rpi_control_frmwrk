@@ -62,6 +62,7 @@
 
 #include "modules/ir/ir_protocol_nec.h"
 #include "modules/ir/ir_protocol_sony.h"
+#include "modules/ir/ir_protocol_jvc.h"
 
 // --------------------------------------------------------------------------------
 
@@ -245,34 +246,6 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SAMSUNG_IR_CMD_RECEIVED_SIGNAL, SAMSUNG_IR_CMD
 
 // --------------------------------------------------------------------------------
 
-#ifdef HAS_IR_PROTOCOL_JVC
-
-#include "modules/ir/ir_protocol_jvc.h"
-
-static JVC_IR_PROTOCOL_COMMAND_TYPE jvc_ir_command;
-
-static void ir_remote_task_slot_JVC_IR_CMD_RECEIVED(const void* p_arg) {
-
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED)) {
-        return;
-    }
-
-    DEBUG_PASS("ir_remote_task_slot_JVC_IR_CMD_RECEIVED()");
-
-    const JVC_IR_PROTOCOL_COMMAND_TYPE* p_command = (const JVC_IR_PROTOCOL_COMMAND_TYPE*) p_arg;
-    jvc_ir_command.address = p_command->address;
-    jvc_ir_command.control = p_command->control;
-
-    IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
-}
-
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(JVC_IR_CMD_RECEIVED_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(JVC_IR_CMD_RECEIVED_SIGNAL, JVC_IR_CMD_RECEIVED_SLOT, ir_remote_task_slot_JVC_IR_CMD_RECEIVED)
-
-#endif
-
-// --------------------------------------------------------------------------------
-
 /**
  * @see  ir_protocol_task.h#ir_protocol_init
  * 
@@ -305,22 +278,20 @@ void ir_protocol_init(void) {
     #ifdef HAS_IR_PROTOCOL_JVC
     {
         DEBUG_PASS("ir_remote_task_init() - JVC");
-
-        JVC_IR_CMD_RECEIVED_SIGNAL_init();
-        JVC_IR_CMD_RECEIVED_SLOT_connect();
-    
-        ir_protocol_jvc_set_timer(&timer_carrier, &timer_modulator);
+        ir_protocol_jvc_init();
     }
     #endif
 
     #ifdef HAS_IR_PROTOCOL_NEC
     {
+        DEBUG_PASS("ir_remote_task_init() - NEC");
         ir_protocol_nec_init();
     }
     #endif
 
     #ifdef HAS_IR_PROTOCOL_SONY
     {
+        DEBUG_PASS("ir_remote_task_init() - SONY");
         ir_protocol_sony_init();
     }
     #endif
@@ -462,29 +433,29 @@ static void ir_remote_task_run(void) {
     }
     #endif
 
-    #ifdef HAS_IR_PROTOCOL_JVC
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED)) {
+    // #ifdef HAS_IR_PROTOCOL_JVC
+    // if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED)) {
 
-        if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
+    //     if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
 
-            DEBUG_PASS("ir_remote_task_run() - Start Jvc IR-Command");
+    //         DEBUG_PASS("ir_remote_task_run() - Start Jvc IR-Command");
 
-            IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
-            IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_PENDING);
+    //         IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
+    //         IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_PENDING);
 
-            ir_protocol_jvc_transmit(&jvc_ir_command);
-            is_active = 1;
+    //         ir_protocol_jvc_transmit(&jvc_ir_command);
+    //         is_active = 1;
 
-        } else  if (ir_protocol_jvc_is_busy()) {
-            is_active = 1;
+    //     } else  if (ir_protocol_jvc_is_busy()) {
+    //         is_active = 1;
 
-        } else {
+    //     } else {
 
-            DEBUG_PASS("ir_remote_task_run() - Jvc IR-Command finished");
-            IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED);
-        }
-    }
-    #endif
+    //         DEBUG_PASS("ir_remote_task_run() - Jvc IR-Command finished");
+    //         IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED);
+    //     }
+    // }
+    // #endif
 
     if (is_active == 0) {
 
