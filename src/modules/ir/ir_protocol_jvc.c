@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -188,6 +188,8 @@ void ir_protocol_jvc_irq_callback(void) {
 
     } else if (word_transmit_counter < JVC_IR_PROTOCOL_WORD_TRANSMIT_COUNT) {
 
+        // The IR command is repeated for three times
+
         // Word-Cycle Puase
         word_cycle_interval_counter -= 1;
         IR_MOD_OUT_drive_low();
@@ -195,34 +197,40 @@ void ir_protocol_jvc_irq_callback(void) {
         if (word_cycle_interval_counter == 0) {
 
             word_transmit_counter += 1;
-            word_cycle_interval_counter = JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE_SHORT;
+            word_cycle_interval_counter =
+                JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE_SHORT;
 
             data_bit_counter = 0;
             irq_counter = JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PAUSE;
         }    
 
-    } else {
-            
+    } else if (transmit_guard != 0) {
+
         IR_MOD_OUT_drive_low();
 
         p_carrier->stop();
         p_modulator->stop();
 
-        irq_counter = 0;
+        irq_counter = 255;
         transmit_guard = 0;
+
+        DEBUG_PASS("ir_protocol_jvc_irq_callback() - IR Command finished!");
     }
 }
 
 // --------------------------------------------------------------------------------
 
-static void ir_protocol_jvc_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_command) {
+static void ir_protocol_jvc_prepare_transmit_buffer(
+    IR_COMMON_COMMAND_TYPE* p_command
+) {
 
     data_bit_length = 0;
     data_bit_counter = 0;
 
     u8 bit_mask = 0x80;
     u8 byte_index = 0;
-    u8 data_buffer[JVC_IR_PROTOCOL_TRANSMIT_BUFFER_BYTE_COUNT] = JVC_IR_PROTOCOL_CMD_TO_BYTE_ARRAY(p_command);
+    u8 data_buffer[JVC_IR_PROTOCOL_TRANSMIT_BUFFER_BYTE_COUNT] =
+                JVC_IR_PROTOCOL_CMD_TO_BYTE_ARRAY(p_command);
 
     u8 i = 0;
     for ( ; i < JVC_IR_PROTOCOL_TRANSMIT_BUFFER_BIT_COUNT; i++ ) {
@@ -251,7 +259,11 @@ static void ir_protocol_jvc_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_co
         bit_mask = bit_mask >> 1;
     }
 
-    //DEBUG_TRACE_N(data_bit_length, transmit_buffer, "ir_protocol_jvc_prepare_transmit_buffer() - Transmit-Buffer :");
+    // DEBUG_TRACE_N(
+    //     data_bit_length,
+    //     transmit_buffer,
+    //     "ir_protocol_jvc_prepare_transmit_buffer() - Transmit-Buffer :"
+    // );
 }
 
 // --------------------------------------------------------------------------------
@@ -262,7 +274,10 @@ u8 ir_protocol_jvc_is_busy(void) {
 
 // --------------------------------------------------------------------------------
 
-void ir_protocol_jvc_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator) {
+void ir_protocol_jvc_set_timer(
+    TIMER_INTERFACE_TYPE* p_timer_carrier,
+    TIMER_INTERFACE_TYPE* p_timer_modulator
+) {
     p_carrier = p_timer_carrier;
     p_modulator = p_timer_modulator;
 }

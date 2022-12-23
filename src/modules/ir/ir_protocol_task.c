@@ -433,30 +433,6 @@ static void ir_remote_task_run(void) {
     }
     #endif
 
-    // #ifdef HAS_IR_PROTOCOL_JVC
-    // if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED)) {
-
-    //     if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
-
-    //         DEBUG_PASS("ir_remote_task_run() - Start Jvc IR-Command");
-
-    //         IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
-    //         IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_PENDING);
-
-    //         ir_protocol_jvc_transmit(&jvc_ir_command);
-    //         is_active = 1;
-
-    //     } else  if (ir_protocol_jvc_is_busy()) {
-    //         is_active = 1;
-
-    //     } else {
-
-    //         DEBUG_PASS("ir_remote_task_run() - Jvc IR-Command finished");
-    //         IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED);
-    //     }
-    // }
-    // #endif
-
     if (is_active == 0) {
 
         IR_CARRIER_IN_no_pull();
