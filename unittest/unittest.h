@@ -27,15 +27,15 @@
 								u16 address = 0;											\
 								u8 line_size = 16;											\
 								u8 end_of_line = 0;											\
-								u16 array_length = length;										\
+								u16 len = length;										\
 																					\
 								printf("\n\t%04X  |  ", address);									\
 																					\
 								do {													\
 																					\
-									if (array_length != 0) {									\
+									if (len != 0) {									\
 										printf("%02x ", array[buffer_index++]);							\
-										array_length--;										\
+										len--;										\
 									} else {											\
 										printf("__ ");										\
 									}												\
@@ -56,7 +56,7 @@
 																					\
 										printf("\n");										\
 																					\
-										if (array_length != 0) {								\
+										if (len != 0) {								\
 											address += line_size;								\
 											printf("\t%04X  |  ", address);							\
 										} else {										\
