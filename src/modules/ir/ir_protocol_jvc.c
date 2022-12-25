@@ -335,7 +335,7 @@ void ir_protocol_jvc_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
  * Is used for register this implementation to the ir-handler module.
  * 
  */
-static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_sony = {
+static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_jvc = {
         .uid = IR_PROTOCOL_TYPE_JVC,
         .set_timer = &ir_protocol_jvc_set_timer,
         .transmit = &ir_protocol_jvc_transmit,
@@ -351,7 +351,7 @@ static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_sony = {
  */
 void ir_protocol_jvc_init(void) {
         DEBUG_PASS("ir_protocol_jvc_init()");
-        ir_protocol_interface_register_ir_protocol(&ir_protocol_sony);
+        ir_protocol_interface_register_ir_protocol(&ir_protocol_jvc);
 }
 
 // --------------------------------------------------------------------------------
