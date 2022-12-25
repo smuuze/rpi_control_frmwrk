@@ -1,7 +1,7 @@
 
 #-----------------------------------------------------------------------------
 
-PROJECT = UNITTEST_ir_remote_sony
+PROJECT = UNITTEST_ir_remote_jvc
 
 BOARD_ID = UNITTEST
 
