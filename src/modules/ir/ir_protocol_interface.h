@@ -66,10 +66,12 @@
 
 // --------------------------------------------------------------------------------
 
-#define IR_PROTOCOL_TYPE_SAMSUNG        0x01
-#define IR_PROTOCOL_TYPE_JVC            0x02
-#define IR_PROTOCOL_TYPE_SONY           0x03
-#define IR_PROTOCOL_TYPE_NEC            0x04
+#define IR_PROTOCOL_TYPE_SAMSUNG                                                0x01
+#define IR_PROTOCOL_TYPE_JVC                                                    0x02
+#define IR_PROTOCOL_TYPE_SONY                                                   0x03
+#define IR_PROTOCOL_TYPE_NEC                                                    0x04
+
+#define IR_PROTOCOL_TYPE_INVALID                                                0xFF
 
 // --------------------------------------------------------------------------------
 
@@ -79,6 +81,10 @@
 
 #define IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE                           0x01
 #define IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PAUSE                           0x00
+
+// --------------------------------------------------------------------------------
+
+#define IR_COMMON_COMMAND_DATA_INVALID                                          0XFF
 
 // --------------------------------------------------------------------------------
 
