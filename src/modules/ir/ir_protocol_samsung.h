@@ -29,13 +29,11 @@
 
 // --------------------------------------------------------------------------------
 
-/*
- *
+/**
+ * @brief 
+ * 
  */
-typedef struct {
-    u8 address;
-    u8 control;
-} SAMSUNG_IR_PROTOCOL_COMMAND_TYPE;
+void ir_protocol_samsung_init(void);
 
 // --------------------------------------------------------------------------------
 
@@ -47,7 +45,7 @@ void ir_protocol_samsung_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_
 /*
  *
  */
-void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_transmit(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
@@ -56,162 +54,171 @@ u8 ir_protocol_samsung_is_busy(void);
 
 // --------------------------------------------------------------------------------
 
-/*
- *
+/**
+ * @brief 
+ * 
+ * @param p_ir_command 
  */
-void ir_protocol_samsung_address_tv(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_command_samsung_protocol_type(IR_COMMON_COMMAND_TYPE* p_ir_command);
 
 // --------------------------------------------------------------------------------
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_power(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_address_tv(IR_COMMON_COMMAND_TYPE* p_command);
+
+// --------------------------------------------------------------------------------
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_volume_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_power(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_volume_mute(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_volume_up(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_volume_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_volume_mute(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_volume_down(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_down(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_0(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_up(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_1(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_0(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_2(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_1(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_3(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_2(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_4(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_3(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_5(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_4(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_6(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_5(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_7(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_6(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_8(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_7(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_9(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_8(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_enter(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_9(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_exit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_enter(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_return(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_exit(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_arrow_up(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_return(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_arrow_down(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_arrow_up(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_arrow_left(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_arrow_down(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_arrow_right(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_arrow_left(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_play(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_arrow_right(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_pause(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_play(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_stop(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_pause(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_program_guide(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_stop(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_home(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_program_guide(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_channel_list(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_home(IR_COMMON_COMMAND_TYPE* p_command);
 
 /*
  *
  */
-void ir_protocol_samsung_cmd_tv_source(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command);
+void ir_protocol_samsung_cmd_tv_channel_list(IR_COMMON_COMMAND_TYPE* p_command);
+
+/*
+ *
+ */
+void ir_protocol_samsung_cmd_tv_source(IR_COMMON_COMMAND_TYPE* p_command);
 
 // --------------------------------------------------------------------------------
 

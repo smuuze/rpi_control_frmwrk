@@ -1,13 +1,28 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	command_handler/rpi_cmd_hander_ir_remote_samsung.c
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file   ir_protocol_samsun_rpi_cmd_handlerg.c
+ * @author Sebastian Lesse
+ * @date   2022 / 12 / 24
+ * @brief  description
+ * 
  */
 
 #define TRACER_OFF
+
+// --------------------------------------------------------------------------------
 
 #ifdef TRACER_ON
 #warning __WARNING__TRACER_ENABLED__WARNING__
@@ -25,6 +40,10 @@
 
 #include "common/signal_slot_interface.h"
 #include "command_management/command_handler_interface.h"
+
+// --------------------------------------------------------------------------------
+
+#include "modules/ir/ir_protocol_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -69,7 +88,7 @@ u8 rpi_cmd_handler_ir_remote_samsung(u8 device, u8 command) {
 static inline u8 rpi_cmd_ir_samsung_tv(u8 cmd) {
 	
 	DEBUG_TRACE_byte(cmd, "rpi_cmd_ir_samsung_tv() - Command:");
-	SAMSUNG_IR_PROTOCOL_COMMAND_TYPE ir_command;
+	IR_COMMON_COMMAND_TYPE ir_command;
 
 	switch (cmd) {
 
@@ -116,8 +135,9 @@ static inline u8 rpi_cmd_ir_samsung_tv(u8 cmd) {
 	}
 
 	ir_protocol_samsung_address_tv(&ir_command);
+    ir_command_samsung_protocol_type(&ir_command);
 
-	SAMSUNG_IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
+	IR_CMD_RECEIVED_SIGNAL_send((void*) &ir_command);
 
 	return CMD_NO_ERR;
 }

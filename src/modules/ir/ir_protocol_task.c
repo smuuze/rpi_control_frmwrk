@@ -63,6 +63,7 @@
 #include "modules/ir/ir_protocol_nec.h"
 #include "modules/ir/ir_protocol_sony.h"
 #include "modules/ir/ir_protocol_jvc.h"
+#include "modules/ir/ir_protocol_samsung.h"
 
 // --------------------------------------------------------------------------------
 
@@ -218,34 +219,6 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(IR_CMD_RECEIVED_SIGNAL, IR_CMD_RECEIVED_SLOT, 
 
 // --------------------------------------------------------------------------------
 
-#ifdef HAS_IR_PROTOCOL_SAMSUNG
-
-#include "modules/ir/ir_protocol_samsung.h"
-
-static SAMSUNG_IR_PROTOCOL_COMMAND_TYPE samsung_ir_command;
-
-static void ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED(const void* p_arg) {
-
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED)) {
-        return;
-    }
-
-    DEBUG_PASS("ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED()");
-
-    const SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command = (const SAMSUNG_IR_PROTOCOL_COMMAND_TYPE*) p_arg;
-    samsung_ir_command.address = p_command->address;
-    samsung_ir_command.control = p_command->control;
-
-    IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
-}
-
-SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(SAMSUNG_IR_CMD_RECEIVED_SIGNAL)
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(SAMSUNG_IR_CMD_RECEIVED_SIGNAL, SAMSUNG_IR_CMD_RECEIVED_SLOT, ir_remote_task_slot_SAMSUNG_IR_CMD_RECEIVED)
-
-#endif
-
-// --------------------------------------------------------------------------------
-
 /**
  * @see  ir_protocol_task.h#ir_protocol_init
  * 
@@ -263,17 +236,6 @@ void ir_protocol_init(void) {
 
     IR_CMD_RECEIVED_SIGNAL_init();
     IR_CMD_RECEIVED_SLOT_connect();
-    
-    #ifdef HAS_IR_PROTOCOL_SAMSUNG
-    {
-        DEBUG_PASS("ir_remote_task_init() - Samsung");
-
-        SAMSUNG_IR_CMD_RECEIVED_SIGNAL_init();
-        SAMSUNG_IR_CMD_RECEIVED_SLOT_connect();
-    
-        ir_protocol_samsung_set_timer(&timer_carrier, &timer_modulator);
-    }
-    #endif
     
     #ifdef HAS_IR_PROTOCOL_JVC
     {
@@ -293,6 +255,13 @@ void ir_protocol_init(void) {
     {
         DEBUG_PASS("ir_remote_task_init() - SONY");
         ir_protocol_sony_init();
+    }
+    #endif
+
+    #ifdef HAS_IR_PROTOCOL_SAMSUNG
+    {
+        DEBUG_PASS("ir_remote_task_init() - SAMSUNG");
+        ir_protocol_samsung_init();
     }
     #endif
 
@@ -408,30 +377,6 @@ static void ir_remote_task_run(void) {
             p_act_protocol = 0;
         }
     }
-
-    #ifdef HAS_IR_PROTOCOL_SAMSUNG
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED)) {
-
-        if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
-
-            DEBUG_PASS("ir_remote_task_run() - Start Samsung IR-Command");
-
-            IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
-            IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_PENDING);
-
-            ir_protocol_samsung_transmit(&samsung_ir_command);
-            is_active = 1;
-
-        } else  if (ir_protocol_samsung_is_busy()) {
-            is_active = 1;
-
-        } else {
-
-            DEBUG_PASS("ir_remote_task_run() - Samsung IR-Command finished");
-            IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED);
-        }
-    }
-    #endif
 
     if (is_active == 0) {
 

@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -42,6 +42,10 @@
 #include "time_management/time_management.h"
 
 #include "driver/timer/timer_interface.h"
+
+// --------------------------------------------------------------------------------
+
+#include "modules/ir/ir_protocol_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -68,10 +72,10 @@
 #define SAMSUNG_IR_PROTOCOL_MOD_TIME_OFF                0xFFFF
 
 #define SASMUNG_IR_PROTOCOL_CMD_TO_BYTE_ARRAY(p_cmd) {              \
-                                            p_cmd->address,         \
-                                            p_cmd->address,         \
-                                            p_cmd->control,         \
-                                            p_cmd->control ^ 0xFF   \
+                                            p_cmd->data_1,          \
+                                            p_cmd->data_1,          \
+                                            p_cmd->data_2,          \
+                                            p_cmd->data_2 ^ 0xFF    \
                                         }
 
 // --------------------------------------------------------------------------------
@@ -144,21 +148,21 @@ void ir_protocol_samsung_irq_callback(void) {
         irq_counter += 1;
         IR_MOD_OUT_drive_high(); 
 
-    } else {
+    } else if (transmit_guard != 0) {
             
         IR_MOD_OUT_drive_low();
 
         p_carrier->stop();
         p_modulator->stop();
 
-        irq_counter = 0;
+        irq_counter = 255;
         transmit_guard = 0;
     }
 }
 
 // --------------------------------------------------------------------------------
 
-static void ir_protocol_samsung_prepare_transmit_buffer(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
+static void ir_protocol_samsung_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_command) {
 
     data_bit_length = 0;
     data_bit_counter = 0;
@@ -194,7 +198,13 @@ static void ir_protocol_samsung_prepare_transmit_buffer(SAMSUNG_IR_PROTOCOL_COMM
         bit_mask = bit_mask >> 1;
     }
 
-    //DEBUG_TRACE_N(data_bit_length, transmit_buffer, "ir_protocol_samsung_prepare_transmit_buffer() - Transmit-Buffer :");
+    DEBUG_TRACE_byte(data_bit_counter, "ir_protocol_samsung_prepare_transmit_buffer() - Transmit-Buffer length");
+
+    // DEBUG_TRACE_N(
+    //     data_bit_length,
+    //     transmit_buffer,
+    //     "ir_protocol_samsung_prepare_transmit_buffer() - Transmit-Buffer :"
+    // );
 }
 
 // --------------------------------------------------------------------------------
@@ -204,11 +214,12 @@ u8 ir_protocol_samsung_is_busy(void) {
 }
 
 void ir_protocol_samsung_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator) {
+    DEBUG_PASS("ir_protocol_samsung_set_timer()");
     p_carrier = p_timer_carrier;
     p_modulator = p_timer_modulator;
 }
 
-void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
+void ir_protocol_samsung_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
 
     if (transmit_guard != 0) {
 
@@ -221,8 +232,8 @@ void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
     p_carrier->stop();
     p_modulator->stop();
 
-    DEBUG_TRACE_word(p_command->address, "ir_protocol_samsung_transmit() - Device Address:");
-    DEBUG_TRACE_word(p_command->control, "ir_protocol_samsung_transmit() - Device Control:");
+    DEBUG_TRACE_word(p_command->data_1, "ir_protocol_samsung_transmit() - Device Address:");
+    DEBUG_TRACE_word(p_command->data_2, "ir_protocol_samsung_transmit() - Device Control:");
 
     ir_protocol_samsung_prepare_transmit_buffer(p_command);
 
@@ -248,3 +259,32 @@ void ir_protocol_samsung_transmit(SAMSUNG_IR_PROTOCOL_COMMAND_TYPE* p_command) {
     p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
     p_modulator->start(TIME_CONFIGURATION_RUN_FOREVER);
 }
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Interface to this ir-protocol implementation.
+ * Is used for register this implementation to the ir-handler module.
+ * 
+ */
+static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_samsung = {
+        .uid = IR_PROTOCOL_TYPE_SAMSUNG,
+        .set_timer = &ir_protocol_samsung_set_timer,
+        .transmit = &ir_protocol_samsung_transmit,
+        .is_busy = &ir_protocol_samsung_is_busy,
+        ._p_next = 0
+};
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @see 3rdparty/ir_protocol/ir_protocol_sony.h#ir_protocol_samsung
+ * 
+ */
+void ir_protocol_samsung_init(void) {
+        DEBUG_PASS("ir_protocol_samsung_init()");
+        ir_protocol_interface_register_ir_protocol(&ir_protocol_samsung);
+}
+
+// --------------------------------------------------------------------------------
+
