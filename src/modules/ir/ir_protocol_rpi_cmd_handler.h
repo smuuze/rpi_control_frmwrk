@@ -34,11 +34,18 @@
 #define IR_MANUFACTOR_SONY              0x03
 #define IR_MANUFACTOR_LED_LIGHTS        0x04
 
+#define IR_MANUFACTOR_INVALID           0xFF
+
+// --------------------------------------------------------------------------------
+
 #define IR_DEVICE_TV                    0x01
 #define IR_DEVICE_RADIO                 0x02
 #define IR_DEVICE_BLUE_RAY_PLAYER       0x03
-
 #define IR_DEVICE_LED_LIGHT_BAUHAUS     0xF1
+
+#define IR_DEVICE_INVALID               0xFF
+
+// --------------------------------------------------------------------------------
 
 #define IR_COMMAND_POWER_ON             0x01
 #define IR_COMMAND_POWER_OFF            0x02
@@ -113,6 +120,8 @@
 #define IR_COMMAND_LIGHT_EGGPLANT       0x3D
 #define IR_COMMAND_LIGHT_PURPLE         0x3E
 #define IR_COMMAND_LIGHT_PINK           0x3F
+
+#define IR_COMMAND_INVALID              0xFF
 
 // --------------------------------------------------------------------------------
 
