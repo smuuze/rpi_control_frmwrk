@@ -144,6 +144,21 @@
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Inverts every bit of the given vector.
+ * This is a simple invert, not a two’s complement.
+ * 
+ * E.G.
+ * 
+ *      BIT_VECTOR_INVERT_U8(0b00001111) = 0b11110000
+ *      BIT_VECTOR_INVERT_U8(0b00000000) = 0b11111111
+ * 
+ */
+#define BIT_VECTOR_INVERT_U8(u8_vector)                         \
+        (u8_vector ^ 0xFF)
+
+// --------------------------------------------------------------------------------
+
 #endif // _H_common_tools_bit_vector_
 
 // --------------------------------------------------------------------------------
