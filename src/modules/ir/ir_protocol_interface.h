@@ -82,6 +82,9 @@
 #define IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE                           0x01
 #define IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PAUSE                           0x00
 
+#define IR_PROTOCOL_IS_PULSE(value)                                                 \
+    (value == IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE)
+
 // --------------------------------------------------------------------------------
 
 #define IR_COMMON_COMMAND_DATA_INVALID                                          0XFF

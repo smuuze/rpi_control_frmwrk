@@ -110,31 +110,31 @@ static TIMER_INTERFACE_TYPE timer_modulator = {
 // --------------------------------------------------------------------------------
 
 /**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.init
+ * @see  mcu_task_interface.h#MCU_TASK_INTERFACE.init
  * 
  */
 static void ir_remote_task_init(void);
 
 /**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_schedule_interval
+ * @see  mcu_task_interface.h#MCU_TASK_INTERFACE.get_schedule_interval
  * 
  */
 static u16 ir_remote_task_get_schedule_interval(void);
 
 /**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_state
+ * @see mcu_task_interface.h#MCU_TASK_INTERFACE.get_state
  * 
  */
 static MCU_TASK_INTERFACE_TASK_STATE ir_remote_task_get_state(void);
 
 /**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_state
+ * @see  mcu_task_interface.h#MCU_TASK_INTERFACE.get_state
  * 
  */
 static void ir_remote_task_run(void);
 
 /**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.terminate
+ * @see  mcu_task_interface.h#MCU_TASK_INTERFACE.terminate
  * 
  */
 __UNUSED__ static void ir_remote_task_terminate(void);
