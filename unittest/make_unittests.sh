@@ -16,7 +16,9 @@ source_dir_list=(
     cli_handler_gpio
     cli_remote_control
     gpio_driver_atmega1284p
+    ir_remote_jvc
     ir_remote_led_lights
+    ir_remote_samsung
     ir_remote_sony
     json_parser
     log_interface
