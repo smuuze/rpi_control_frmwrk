@@ -20,7 +20,7 @@
 
 //---------- Implementation of Traces -----------------------------------------
 
-#define TRACER_ON
+#define TRACER_OFF
 #include "tracer.h"
 
 //---------- Type Definitions -------------------------------------------------
