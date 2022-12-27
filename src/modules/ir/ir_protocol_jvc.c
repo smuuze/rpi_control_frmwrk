@@ -42,13 +42,6 @@
 
 // --------------------------------------------------------------------------------
 
-#include "mcu_task_management/mcu_task_interface.h"
-#include "time_management/time_management.h"
-
-#include "driver/timer/timer_interface.h"
-
-// --------------------------------------------------------------------------------
-
 #include "modules/ir/ir_protocol_interface.h"
 
 // --------------------------------------------------------------------------------
@@ -83,26 +76,10 @@
 
 // --------------------------------------------------------------------------------
 
-/**
- * @brief interface to the ir-signal carrier
- * Is configured before usage.
- * Will be started to transmit the signal.
- * And is stopped at the end of the transmission
- */
-static TIMER_INTERFACE_TYPE* p_carrier;
-
-/**
- * @brief interface to the ir-signal modaultor
- * Is configured before usage.
- * Will be started to transmit the signal.
- * And is stopped at the end of the transmission
- */
-static TIMER_INTERFACE_TYPE* p_modulator;
-
 /*
  *
  */
-static u8 transmit_guard = 0;
+static u8 transmit_active = 0;
 
 /**
  * @brief The frame needs to be repeated for three times.
@@ -120,72 +97,14 @@ static u8 word_cycle_interval_counter = 0;
 
 // --------------------------------------------------------------------------------
 
-void ir_protocol_jvc_irq_callback(void) {
-
-    if (ir_protocol_interface_transmit_buffer_end() == 0) {
-
-        word_cycle_interval_counter -= 1;
-
-        if (ir_protocol_interface_transmit_buffer_get_next() == IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE) {
-
-            IR_MOD_OUT_drive_high(); 
-
-        } else {
-
-            IR_MOD_OUT_drive_low();
-        }
-
-    } else if (word_transmit_counter < JVC_IR_PROTOCOL_WORD_TRANSMIT_COUNT ) {
-
-        // The IR command is repeated for three times
-        // The first frame was already sent
-        // With a pause between the frames
-
-        // Word-Cycle Pause
-        word_cycle_interval_counter -= 1;
-        IR_MOD_OUT_drive_low();
-
-        if (word_cycle_interval_counter == 0) {
-
-            DEBUG_TRACE_byte(
-                word_transmit_counter,
-                "ir_protocol_jvc_irq_callback() - Repeat Frame"
-            );
-
-            // start the transmit-buffer after the preamble pulse and pause
-            ir_protocol_interface_transmit_buffer_restart(
-                JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PULSE
-                + JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PAUSE
-            );
-
-            word_transmit_counter += 1;
-            word_cycle_interval_counter =
-                JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE_SHORT;
-        }
-
-    } else if (transmit_guard != 0) {
-
-        IR_MOD_OUT_drive_low();
-
-        p_carrier->stop();
-        p_modulator->stop();
-
-        transmit_guard = 0;
-        ir_protocol_interface_transmit_buffer_release();
-
-        DEBUG_PASS("ir_protocol_jvc_irq_callback() - IR Command finished!");
-    }
-}
-
-// --------------------------------------------------------------------------------
-
 /**
  * @brief Appends pulse/pause to the transmit-buffer of the ir-interface depending
  * on the bit-values of bit_vector. For each bit is correct sequence of pulse/pause
  * added to the transmit-buffer using pulse-wide modulation for coding of logical 1/0
  * 
  * @param length number of data-bits to append to the transmit-buffer
- * @param start_bit_mask start-bit mask to skip bits, will be shifted down (>> 1) to extracts the bits of bit_vector
+ * @param start_bit_mask start-bit mask to skip bits, will be shifted down (>> 1)
+ *        to extracts the bits of bit_vector
  * @param bit_vector bits that will be added as pulse/pause to the transmit-buffer
  */
 static void ir_protocol_jvc_prepare_transmit_buffer_fill_buffer(
@@ -221,7 +140,7 @@ static void ir_protocol_jvc_prepare_transmit_buffer_fill_buffer(
 
 // --------------------------------------------------------------------------------
 
-static void ir_protocol_jvc_prepare_transmit_buffer(
+static inline void ir_protocol_jvc_prepare_transmit_buffer(
     IR_COMMON_COMMAND_TYPE* p_command
 ) {
 
@@ -267,36 +186,36 @@ static void ir_protocol_jvc_prepare_transmit_buffer(
 
 // --------------------------------------------------------------------------------
 
-u8 ir_protocol_jvc_is_busy(void) {
-    return transmit_guard != 0;
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_FREQUENCY_CALLBACK
+ */
+static TIMER_CONFIGURAITON_FREQUENCY ir_protocol_jvc_get_frequency(void) {
+    DEBUG_PASS("ir_protocol_jvc_get_frequency() - TIMER_FREQUENCY_37_9kHz");
+    return TIMER_FREQUENCY_37_9kHz;
 }
 
-// --------------------------------------------------------------------------------
-
-void ir_protocol_jvc_set_timer(
-    TIMER_INTERFACE_TYPE* p_timer_carrier,
-    TIMER_INTERFACE_TYPE* p_timer_modulator
-) {
-    p_carrier = p_timer_carrier;
-    p_modulator = p_timer_modulator;
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_MODUALTION_INTERVAL_CALLBACK
+ */
+static TIMER_CONFIGURATION_TIME_INTERVAL ir_protocol_jvc_get_mod_interval(void) {
+    DEBUG_PASS("ir_protocol_jvc_get_mod_interval() - TIMER_TIME_INTERVAL_527us");
+    return TIMER_TIME_INTERVAL_527us;
 }
 
-// --------------------------------------------------------------------------------
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_PREPARE_CALLBACK
+ */
+static void ir_protocol_jvc_transmit_prepare(IR_COMMON_COMMAND_TYPE* p_command) {
 
-void ir_protocol_jvc_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
-
-    if (transmit_guard != 0) {
+    if (transmit_active != 0) {
 
         DEBUG_PASS("ir_protocol_jvc_transmit() - Transmit guard is already set !!! ---");
         return;
     }
 
-    transmit_guard = 1;
+    transmit_active = 1;
 
     word_transmit_counter = 0;
-
-    p_carrier->stop();
-    p_modulator->stop();
 
     DEBUG_TRACE_word(p_command->data_1, "ir_protocol_jvc_transmit() - Device Address:");
     DEBUG_TRACE_word(p_command->data_2, "ir_protocol_jvc_transmit() - Device Control:");
@@ -306,26 +225,79 @@ void ir_protocol_jvc_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
     word_cycle_interval_counter = JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE
                                 + JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PULSE
                                 + JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PAUSE;
+}
 
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_START_CALLBACK
+ */
+static void ir_protocol_jvc_transmit_start(void) {
+    DEBUG_PASS("ir_protocol_jvc_transmit_start()");
+    transmit_active = 1;
     IR_MOD_OUT_drive_low();
+}
 
-    TIMER_CONFIGURATION_TYPE timer_config;
-    
-    timer_config.frequency = TIMER_FREQUENCY_NONE;
-    timer_config.irq_callback = &ir_protocol_jvc_irq_callback;
-    timer_config.mode = TIMER_MODE_TIMER;
-    timer_config.time_interval = TIMER_TIME_INTERVAL_527us;
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_IRQ_CALLBACK
+ */
+static void ir_protocol_jvc_transmit_irq(void) {
 
-    p_modulator->configure(&timer_config);
-    
-    timer_config.frequency = TIMER_FREQUENCY_37_9kHz;
-    timer_config.irq_callback = 0;
-    timer_config.mode = TIMER_MODE_FREQUENCY;
+    if (ir_protocol_interface_transmit_buffer_end() == 0) {
 
-    p_carrier->configure(&timer_config);
-    
-    p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
-    p_modulator->start(TIME_CONFIGURATION_RUN_FOREVER);
+        word_cycle_interval_counter -= 1;
+
+        if (IR_PROTOCOL_IS_PULSE(ir_protocol_interface_transmit_buffer_get_next())) {
+
+            IR_MOD_OUT_drive_high(); 
+
+        } else {
+
+            IR_MOD_OUT_drive_low();
+        }
+
+    } else if (word_transmit_counter < JVC_IR_PROTOCOL_WORD_TRANSMIT_COUNT ) {
+
+        // The IR command is repeated for three times
+        // The first frame was already sent
+        // With a pause between the frames
+
+        // Word-Cycle Pause
+        word_cycle_interval_counter -= 1;
+        IR_MOD_OUT_drive_low();
+
+        if (word_cycle_interval_counter == 0) {
+
+            DEBUG_TRACE_byte(
+                word_transmit_counter,
+                "ir_protocol_jvc_irq_callback() - Repeat Frame"
+            );
+
+            // start the transmit-buffer after the preamble pulse and pause
+            ir_protocol_interface_transmit_buffer_restart(
+                JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PULSE
+                + JVC_IR_PROTOCOL_MOD_TIME_STEP_COUNT_PREAMBLE_PAUSE
+            );
+
+            word_transmit_counter += 1;
+            word_cycle_interval_counter =
+                JVC_IR_PROTOCOLL_MODE_TIME_STEP_WORD_CYCLE_SHORT;
+        }
+
+    } else if (transmit_active != 0) {
+
+        IR_MOD_OUT_drive_low();
+
+        transmit_active = 0;
+        ir_protocol_interface_transmit_buffer_release();
+
+        DEBUG_PASS("ir_protocol_jvc_irq_callback() - IR Command finished!");
+    }
+}
+
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_FINISHED_CALLBACK
+ */
+static u8 ir_protocol_jvc_transmit_finished(void) {
+    return transmit_active == 0;
 }
 
 // --------------------------------------------------------------------------------
@@ -333,25 +305,26 @@ void ir_protocol_jvc_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
 /**
  * @brief Interface to this ir-protocol implementation.
  * Is used for register this implementation to the ir-handler module.
- * 
  */
-static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_jvc = {
-        .uid = IR_PROTOCOL_TYPE_JVC,
-        .set_timer = &ir_protocol_jvc_set_timer,
-        .transmit = &ir_protocol_jvc_transmit,
-        .is_busy = &ir_protocol_jvc_is_busy,
-        ._p_next = 0
-};
+IR_PROTOCOL_CREATE (
+    IR_PROTO_JVC,
+    IR_PROTOCOL_TYPE_JVC,
+    ir_protocol_jvc_get_frequency,
+    ir_protocol_jvc_get_mod_interval,
+    ir_protocol_jvc_transmit_prepare,
+    ir_protocol_jvc_transmit_start,
+    ir_protocol_jvc_transmit_irq,
+    ir_protocol_jvc_transmit_finished
+)
 
 // --------------------------------------------------------------------------------
 
 /**
  * @see 3rdparty/ir_protocol/ir_protocol_sony.h#ir_protocol_jvc_init
- * 
  */
 void ir_protocol_jvc_init(void) {
         DEBUG_PASS("ir_protocol_jvc_init()");
-        ir_protocol_interface_register_ir_protocol(&ir_protocol_jvc);
+        IR_PROTO_JVC_init();
 }
 
 // --------------------------------------------------------------------------------

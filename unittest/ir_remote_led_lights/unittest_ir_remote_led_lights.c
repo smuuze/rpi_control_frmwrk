@@ -587,6 +587,9 @@ static void TEST_CASE_ir_transmit_ir_light_brighter(void) {
 		}
 
 		u8 compare_MOD_ARRAY[] = {
+
+                        // drive low before begin
+                        0x00,
                         
                         // Preamble Pulse - 9000us - 16 x 560us
                          0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01  ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01, 0x01       // Index: 16
@@ -640,14 +643,14 @@ static void TEST_CASE_ir_transmit_ir_light_brighter(void) {
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, 0xA0);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_NEC);
 
-                UT_CHECK_IS_EQUAL(counter_TIMER0_STOP, 2);
-                UT_CHECK_IS_EQUAL(counter_TIMER0_START, 1);
+        UT_CHECK_IS_EQUAL(counter_TIMER0_STOP, 1);
+        UT_CHECK_IS_EQUAL(counter_TIMER0_START, 1);
 
-                UT_CHECK_IS_EQUAL(counter_TIMER1_STOP, 2);
-                UT_CHECK_IS_EQUAL(counter_TIMER1_START, 1);
+        UT_CHECK_IS_EQUAL(counter_TIMER1_STOP, 1);
+        UT_CHECK_IS_EQUAL(counter_TIMER1_START, 1);
 
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_SEQUENCE, expected_array_length);
-		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_LOW, 74); // 74 times a low pin level
+		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_LOW, 75); // 74 times a low pin level
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_HIGH, 49); // 49 times a high pin level
 
 		UT_COMPARE_ARRAY(array_IR_MOD_SEQUENCE, compare_MOD_ARRAY, expected_array_length);
@@ -683,6 +686,9 @@ static void TEST_CASE_ir_transmit_ir_command_LIGHT_GREEN(void) {
 		}
 
 		u8 compare_MOD_ARRAY[] = {
+
+                        // drive low before begin
+                        0x00,
                         
                         // Preamble Pulse - 9000us - 16 x 560us
                          0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01  ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01 ,0x01, 0x01       // Index: 16
@@ -736,14 +742,14 @@ static void TEST_CASE_ir_transmit_ir_command_LIGHT_GREEN(void) {
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.data_2, 0x30);
 		UT_CHECK_IS_EQUAL(ir_command_received_via_signal.type, IR_PROTOCOL_TYPE_NEC);
 
-                UT_CHECK_IS_EQUAL(counter_TIMER0_STOP, 2);
-                UT_CHECK_IS_EQUAL(counter_TIMER0_START, 1);
+        UT_CHECK_IS_EQUAL(counter_TIMER0_STOP, 1);
+        UT_CHECK_IS_EQUAL(counter_TIMER0_START, 1);
 
-                UT_CHECK_IS_EQUAL(counter_TIMER1_STOP, 2);
-                UT_CHECK_IS_EQUAL(counter_TIMER1_START, 1);
+        UT_CHECK_IS_EQUAL(counter_TIMER1_STOP, 1);
+        UT_CHECK_IS_EQUAL(counter_TIMER1_START, 1);
 
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_SEQUENCE, expected_array_length);
-		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_LOW, 74); // 74 times a low pin level
+		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_LOW, 75); // 74 times a low pin level
 		UT_CHECK_IS_EQUAL(counter_IR_MOD_OUT_DRIVE_HIGH, 49); // 49 times a high pin level
 
 		UT_COMPARE_ARRAY(array_IR_MOD_SEQUENCE, compare_MOD_ARRAY, expected_array_length);

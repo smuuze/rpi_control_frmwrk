@@ -38,11 +38,6 @@
 
 // --------------------------------------------------------------------------------
 
-#include "mcu_task_management/mcu_task_interface.h"
-#include "time_management/time_management.h"
-
-#include "driver/timer/timer_interface.h"
-
 #include "common/common_tools_bit_vector.h"
 
 // --------------------------------------------------------------------------------
@@ -78,49 +73,13 @@
 
 // --------------------------------------------------------------------------------
 
-/*
- *
+/**
+ * @brief If is set to 1 the transmission of the current ir-command
+ * is still ongoing. Is set to 0 in ir_protocol_samsung_transmit_irq
+ * after the whole command has finished.
+ * 
  */
-static TIMER_INTERFACE_TYPE* p_carrier;
-
-/*
- *
- */
-static TIMER_INTERFACE_TYPE* p_modulator;
-
-/*
- *
- */
-static u8 transmit_guard = 0;
-
-// --------------------------------------------------------------------------------
-
-void ir_protocol_samsung_irq_callback(void) {
-
-    if (ir_protocol_interface_transmit_buffer_end() == 0) {
-
-        if (IR_PROTOCOL_IS_PULSE(ir_protocol_interface_transmit_buffer_get_next())) {
-
-            IR_MOD_OUT_drive_high(); 
-
-        } else {
-
-            IR_MOD_OUT_drive_low();
-        }
-
-    } else if (transmit_guard != 0) {
-
-        IR_MOD_OUT_drive_low();
-
-        p_carrier->stop();
-        p_modulator->stop();
-
-        transmit_guard = 0;
-        ir_protocol_interface_transmit_buffer_release();
-
-        DEBUG_PASS("ir_protocol_samsung_irq_callback() - IR Command finished!");
-    }
-}
+static u8 transmit_active = 0;
 
 // --------------------------------------------------------------------------------
 
@@ -134,7 +93,7 @@ void ir_protocol_samsung_irq_callback(void) {
  *        to extracts the bits of bit_vector
  * @param bit_vector bits that will be added as pulse/pause to the transmit-buffer
  */
-static void ir_protocol_samsung_prepare_transmit_buffer_fill_buffer(
+static inline void ir_protocol_samsung_prepare_transmit_buffer_fill_buffer(
     u8 length,
     u8 start_bit_mask,
     u8 bit_vector
@@ -172,7 +131,7 @@ static void ir_protocol_samsung_prepare_transmit_buffer_fill_buffer(
  * 
  * @param p_command 
  */
-static void ir_protocol_samsung_prepare_transmit_buffer(
+static inline void ir_protocol_samsung_prepare_transmit_buffer(
     IR_COMMON_COMMAND_TYPE* p_command
 ) {
 
@@ -230,30 +189,27 @@ static void ir_protocol_samsung_prepare_transmit_buffer(
 // --------------------------------------------------------------------------------
 
 /**
- * @see ir_protocol_interface.h#IR_PROTOCOL_GENERATOR_TYPE.is_busy
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_FREQUENCY_CALLBACK
  */
-static u8 ir_protocol_samsung_is_busy(void) {
-    return transmit_guard != 0;
+static TIMER_CONFIGURAITON_FREQUENCY ir_protocol_samsung_get_frequency(void) {
+    DEBUG_PASS("ir_protocol_samsung_get_frequency() - TIMER_FREQUENCY_37_9kHz");
+    return TIMER_FREQUENCY_37_9kHz;
 }
 
 /**
- * @see ir_protocol_interface.h#IR_PROTOCOL_GENERATOR_TYPE.set_timer
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_MODUALTION_INTERVAL_CALLBACK
  */
-static void ir_protocol_samsung_set_timer(
-    TIMER_INTERFACE_TYPE* p_timer_carrier,
-    TIMER_INTERFACE_TYPE* p_timer_modulator
-) {
-    DEBUG_PASS("ir_protocol_samsung_set_timer()");
-    p_carrier = p_timer_carrier;
-    p_modulator = p_timer_modulator;
+static TIMER_CONFIGURATION_TIME_INTERVAL ir_protocol_samsung_get_mod_interval(void) {
+    DEBUG_PASS("ir_protocol_samsung_get_mod_interval() - TIMER_TIME_INTERVAL_560us");
+    return TIMER_TIME_INTERVAL_560us;
 }
 
 /**
  * @see ir_protocol_interface.h#IR_PROTOCOL_GENERATOR_TYPE.transmit
  */
-static void ir_protocol_samsung_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
+static void ir_protocol_samsung_transmit_prepare(IR_COMMON_COMMAND_TYPE* p_command) {
 
-    if (transmit_guard != 0) {
+    if (transmit_active != 0) {
 
         DEBUG_PASS(
             "ir_protocol_samsung_transmit()"
@@ -262,42 +218,54 @@ static void ir_protocol_samsung_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
         return;
     }
 
-    transmit_guard = 1;
+    DEBUG_PASS("ir_protocol_samsung_transmit_prepare()");
 
-    p_carrier->stop();
-    p_modulator->stop();
-
-    DEBUG_TRACE_word
-        (p_command->data_1,
-        "ir_protocol_samsung_transmit() - Device Address:"
-    );
-
-    DEBUG_TRACE_word(
-        p_command->data_2,
-        "ir_protocol_samsung_transmit() - Device Control:"
-    );
+    transmit_active = 1;
 
     ir_protocol_samsung_prepare_transmit_buffer(p_command);
+}
 
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_START_CALLBACK
+ */
+static void ir_protocol_samsung_transmit_start(void) {
+    DEBUG_PASS("ir_protocol_samsung_transmit_start()");
+    transmit_active = 1;
     IR_MOD_OUT_drive_low();
+}
 
-    TIMER_CONFIGURATION_TYPE timer_config;
-    
-    timer_config.frequency = TIMER_FREQUENCY_NONE;
-    timer_config.irq_callback = &ir_protocol_samsung_irq_callback;
-    timer_config.mode = TIMER_MODE_TIMER;
-    timer_config.time_interval = TIMER_TIME_INTERVAL_560us;
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_IRQ_CALLBACK
+ */
+void ir_protocol_samsung_transmit_irq(void) {
 
-    p_modulator->configure(&timer_config);
-    
-    timer_config.frequency = TIMER_FREQUENCY_37_9kHz;
-    timer_config.irq_callback = 0;
-    timer_config.mode = TIMER_MODE_FREQUENCY;
+    if (ir_protocol_interface_transmit_buffer_end() == 0) {
 
-    p_carrier->configure(&timer_config);
-    
-    p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
-    p_modulator->start(TIME_CONFIGURATION_RUN_FOREVER);
+        if (IR_PROTOCOL_IS_PULSE(ir_protocol_interface_transmit_buffer_get_next())) {
+
+            IR_MOD_OUT_drive_high(); 
+
+        } else {
+
+            IR_MOD_OUT_drive_low();
+        }
+
+    } else if (transmit_active != 0) {
+
+        IR_MOD_OUT_drive_low();
+
+        transmit_active = 0;
+        ir_protocol_interface_transmit_buffer_release();
+
+        DEBUG_PASS("ir_protocol_samsung_irq_callback() - IR Command finished!");
+    }
+}
+
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_FINISHED_CALLBACK
+ */
+static u8 ir_protocol_samsung_transmit_finished(void) {
+    return transmit_active == 0;
 }
 
 // --------------------------------------------------------------------------------
@@ -306,13 +274,16 @@ static void ir_protocol_samsung_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
  * @brief Interface to this ir-protocol implementation.
  * Is used for register this implementation to the ir-handler module.
  */
-static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_samsung = {
-        .uid = IR_PROTOCOL_TYPE_SAMSUNG,
-        .set_timer = &ir_protocol_samsung_set_timer,
-        .transmit = &ir_protocol_samsung_transmit,
-        .is_busy = &ir_protocol_samsung_is_busy,
-        ._p_next = 0
-};
+IR_PROTOCOL_CREATE (
+    IR_PROTO_SAMSUNG,
+    IR_PROTOCOL_TYPE_SAMSUNG,
+    ir_protocol_samsung_get_frequency,
+    ir_protocol_samsung_get_mod_interval,
+    ir_protocol_samsung_transmit_prepare,
+    ir_protocol_samsung_transmit_start,
+    ir_protocol_samsung_transmit_irq,
+    ir_protocol_samsung_transmit_finished
+)
 
 // --------------------------------------------------------------------------------
 
@@ -321,7 +292,7 @@ static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_samsung = {
  */
 void ir_protocol_samsung_init(void) {
         DEBUG_PASS("ir_protocol_samsung_init()");
-        ir_protocol_interface_register_ir_protocol(&ir_protocol_samsung);
+        IR_PROTO_SAMSUNG_init();
 }
 
 // --------------------------------------------------------------------------------

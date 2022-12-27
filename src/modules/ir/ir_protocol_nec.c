@@ -67,14 +67,11 @@
 
 // --------------------------------------------------------------------------------
 
-#include "mcu_task_management/mcu_task_interface.h"
-#include "time_management/time_management.h"
-
-#include "driver/timer/timer_interface.h"
+#include "modules/ir/ir_protocol_interface.h"
 
 // --------------------------------------------------------------------------------
 
-#include "modules/ir/ir_protocol_interface.h"
+#include "modules/ir/ir_protocol_nec.h"
 
 // --------------------------------------------------------------------------------
 
@@ -114,58 +111,11 @@
 // --------------------------------------------------------------------------------
 
 /**
- * @brief Pointer to the carrier frequency-generator
- * that is given by ir_protocol_nec_set_timer()
- * 
- */
-static TIMER_INTERFACE_TYPE* p_carrier;
-
-/**
- * @brief Pointer to the modulation frequency-generator
- * that is given by ir_protocol_nec_set_timer()
- * 
- */
-static TIMER_INTERFACE_TYPE* p_modulator;
-
-/**
  * @brief If a transmission is ongoing this variable
  * will be set to 1 to prevent a caller starting a new transmission
  * 
  */
-static u8 transmit_guard = 0;
-
-// --------------------------------------------------------------------------------
-
-/**
- * @brief Is executed everytime the irq of the modulation-timer rises.
- * This will generate the ir-signal by controlling the modulation gpio-pin
- * depending on the actual ir-command inside of the transmit_buffer.
- * 
- */
-static void ir_protocol_nec_irq_callback(void) {
-
-    if (ir_protocol_interface_transmit_buffer_end() == 0) {
-
-        if (ir_protocol_interface_transmit_buffer_get_next() == IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE) {
-
-            IR_MOD_OUT_drive_high(); 
-
-        } else {
-
-            IR_MOD_OUT_drive_low(); 
-        }
-
-    } else if (transmit_guard != 0) {
-
-        p_carrier->stop();
-        p_modulator->stop();
-
-        transmit_guard = 0;
-        ir_protocol_interface_transmit_buffer_release();
-
-        DEBUG_PASS("ir_protocol_nec_irq_callback() - FINISHED");
-    }
-}
+static u8 transmit_active = 0;
 
 // --------------------------------------------------------------------------------
 
@@ -252,71 +202,81 @@ static u8 ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_comm
 // --------------------------------------------------------------------------------
 
 /**
- * @brief Sets the frequency and modulation timer that will be used
- * to transmitt commands. Both timers will be automatically configured
- * by this function to the correct values that are needed for the NEC IR-protocol.
- * 
- * @param p_timer_carrier interface to the frequency geneartor
- * @param p_timer_modulator interface to the modulation generator
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_FREQUENCY_CALLBACK
  */
-static void ir_protocol_nec_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator) {
-    p_carrier = p_timer_carrier;
-    p_modulator = p_timer_modulator;
+static TIMER_CONFIGURAITON_FREQUENCY ir_protocol_nec_get_frequency(void) {
+    DEBUG_PASS("ir_protocol_nec_get_frequency() - TIMER_FREQUENCY_37_9kHz");
+    return TIMER_FREQUENCY_37_9kHz;
 }
 
 /**
- * @brief Starts transmitting the given command.
- * This function prepares the data-bits and starts the transmitting routine.
- * It will not block until the command has been transmitted.
- * 
- * @param p_command valid IR command to transmit
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_MODUALTION_INTERVAL_CALLBACK
  */
-static void ir_protocol_nec_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
+static TIMER_CONFIGURATION_TIME_INTERVAL ir_protocol_nec_get_mod_interval(void) {
+    DEBUG_PASS("ir_protocol_nec_get_mod_interval() - TIMER_TIME_INTERVAL_527us");
+    return TIMER_TIME_INTERVAL_560us;
+}
 
-    if (transmit_guard != 0) {
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_GENERATOR_TYPE.transmit
+ */
+static void ir_protocol_nec_transmit_prepare(IR_COMMON_COMMAND_TYPE* p_command) {
 
-        DEBUG_PASS("ir_protocol_nec_transmit() - Transmit guard is already set !!! ---");
+    if (transmit_active != 0) {
+
+        DEBUG_PASS("ir_protocol_nec_transmit_prepare() - Transmit guard is already set !!! ---");
         return;
     }
 
-    transmit_guard = 1;
+    transmit_active = 1;
 
-    DEBUG_PASS("ir_protocol_nec_transmit()");
-
-    p_carrier->stop();
-    p_modulator->stop();
+    DEBUG_PASS("ir_protocol_nec_transmit_prepare()");
 
     if (ir_protocol_nec_prepare_transmit_buffer(p_command) == 0) {
-        transmit_guard = 0;
+        transmit_active = 0;
         return;
     }
-
-    TIMER_CONFIGURATION_TYPE timer_config;
-    
-    timer_config.frequency = TIMER_FREQUENCY_NONE;
-    timer_config.irq_callback = &ir_protocol_nec_irq_callback;
-    timer_config.mode = TIMER_MODE_TIMER;
-    timer_config.time_interval = TIMER_TIME_INTERVAL_560us;
-
-    p_modulator->configure(&timer_config);
-    
-    timer_config.frequency = TIMER_FREQUENCY_37_9kHz;
-    timer_config.irq_callback = 0;
-    timer_config.mode = TIMER_MODE_FREQUENCY;
-
-    p_carrier->configure(&timer_config);
-    
-    p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
-    p_modulator->start(TIME_CONFIGURATION_RUN_FOREVER);
 }
 
 /**
- * @brief Check if the module is still transmitting the ircommand.
- * 
- * @return 1 if transmissin is not completed yet, otherwise 0
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_START_CALLBACK
  */
-static u8 ir_protocol_nec_is_busy(void) {
-    return transmit_guard != 0;
+static void ir_protocol_nec_transmit_start(void) {
+    DEBUG_PASS("ir_protocol_nec_transmit_start()");
+    transmit_active = 1;
+    IR_MOD_OUT_drive_low();
+}
+
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_IRQ_CALLBACK
+ */
+static void ir_protocol_nec_transmit_irq(void) {
+
+    if (ir_protocol_interface_transmit_buffer_end() == 0) {
+
+        if (IR_PROTOCOL_IS_PULSE(ir_protocol_interface_transmit_buffer_get_next())) {
+
+            IR_MOD_OUT_drive_high(); 
+
+        } else {
+
+            IR_MOD_OUT_drive_low(); 
+        }
+
+    } else if (transmit_active != 0) {
+
+        transmit_active = 0;
+        ir_protocol_interface_transmit_buffer_release();
+
+        DEBUG_PASS("ir_protocol_nec_irq_callback() - FINISHED");
+    }
+}
+
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_FINISHED_CALLBACK
+ */
+static u8 ir_protocol_nec_transmit_finished(void) {
+    return transmit_active == 0;
 }
 
 // --------------------------------------------------------------------------------
@@ -324,23 +284,23 @@ static u8 ir_protocol_nec_is_busy(void) {
 /**
  * @brief Interface to this ir-protocol implementation.
  * Is used for register this implementation to the ir-handler module.
- * 
  */
-static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_nec = {
-
-        .uid = IR_PROTOCOL_TYPE_NEC,
-        .set_timer = &ir_protocol_nec_set_timer,
-        .transmit = &ir_protocol_nec_transmit,
-        .is_busy = &ir_protocol_nec_is_busy,
-        ._p_next = 0
-
-};
+IR_PROTOCOL_CREATE (
+    IR_PROTO_NEC,
+    IR_PROTOCOL_TYPE_NEC,
+    ir_protocol_nec_get_frequency,
+    ir_protocol_nec_get_mod_interval,
+    ir_protocol_nec_transmit_prepare,
+    ir_protocol_nec_transmit_start,
+    ir_protocol_nec_transmit_irq,
+    ir_protocol_nec_transmit_finished
+)
 
 // --------------------------------------------------------------------------------
 
 void ir_protocol_nec_init(void) {
         DEBUG_PASS("ir_protocol_nec_init()");
-        ir_protocol_interface_register_ir_protocol(&ir_protocol_nec);
+        IR_PROTO_NEC_init();
 }
 
 // --------------------------------------------------------------------------------

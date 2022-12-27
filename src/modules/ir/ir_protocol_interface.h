@@ -82,12 +82,45 @@
 #define IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE                           0x01
 #define IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PAUSE                           0x00
 
-#define IR_PROTOCOL_IS_PULSE(value)                                                 \
+#define IR_PROTOCOL_IS_PULSE(value)                                             \
     (value == IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE)
 
 // --------------------------------------------------------------------------------
 
-#define IR_COMMON_COMMAND_DATA_INVALID                                          0XFF
+#define IR_COMMON_COMMAND_DATA_INVALID                                          0xFF
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Creates an object of the IR_PROTOCOL_GENERATOR_TYPE to handle an
+ * implementation of a ir-protocol-implementation.
+ */
+#define IR_PROTOCOL_CREATE(                                                     \
+    name,                                                                       \
+    protocol_type,                                                              \
+    get_frequency_cb,                                                           \
+    get_mod_interval_cb,                                                        \
+    transmit_prepare_cb,                                                        \
+    transmit_start_cb,                                                          \
+    transmit_irq_cb,                                                            \
+    transmit_finished_cb                                                        \
+)                                                                               \
+                                                                                \
+    static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_##name = {                    \
+            .uid = protocol_type,                                               \
+            .get_mod_interval = &get_mod_interval_cb,                           \
+            .get_frequency = &get_frequency_cb,                                 \
+            .transmit_prepare = &transmit_prepare_cb,                           \
+            .transmit_start = &transmit_start_cb,                               \
+            .transmit_irq = &transmit_irq_cb,                                   \
+            .transmit_finished = &transmit_finished_cb,                         \
+            ._p_next = 0                                                        \
+    };                                                                          \
+                                                                                \
+    static inline void name##_init(void) {                                      \
+        ir_protocol_interface_register_ir_protocol(&ir_protocol_##name);        \
+    }
+
 
 // --------------------------------------------------------------------------------
 
@@ -135,22 +168,53 @@ typedef struct IR_COMMON_COMMAND {
 // --------------------------------------------------------------------------------
 
 /**
- * @brief Callback time to set for the ir-protocol-generator
+ * @brief Gets the carrier-frequency of the currently used
+ * ir-protocol implementation.
  * 
+ * @return carrier frequency of the currently used ir-protocol 
  */
-typedef void (*IR_PROTOCOL_INTERFACE_SET_TIMER_CALLBACK) (TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator);
+typedef TIMER_CONFIGURAITON_FREQUENCY (*IR_PROTOCOL_INTERFACE_GET_FREQUENCY_CALLBACK) (void);
 
 /**
- * @brief Callback time to start transmission of a ir-command
+ * @brief Gets the modulation interval of the currently used ir-protocol implementation
  * 
+ * @return modulation interval of the currently used ir-protocol 
  */
-typedef void (*IR_PROTOCOL_INTERFACE_TRANSMIT_CALLBACK) (IR_COMMON_COMMAND_TYPE* p_ir_command);
+typedef TIMER_CONFIGURATION_TIME_INTERVAL (*IR_PROTOCOL_INTERFACE_GET_MODUALTION_INTERVAL_CALLBACK) (void);
 
 /**
- * @brief Callback to check if the transmission of a ir-command is still ongoing
+ * @brief Prepares transmission of the currently used ir-protocol.
+ * Data to transmit is given by p_ir_command. Depending on the currently used
+ * ir-protocol data_1 to data_3 is used for preperation.
+ * 
+ * @param p_ir_command reference to the ir-command that shall be transmitted
+ *                     depending on the current ir-protocol data_1 to data_3 is set.
+ */
+typedef void (*IR_PROTOCOL_INTERFACE_TRANSMIT_PREPARE_CALLBACK) (IR_COMMON_COMMAND_TYPE* p_ir_command);
+
+/**
+ * @brief Sets the ir-protocol to active. After this function was called
+ * IR_PROTOCOL_INTERFACE_TRANSMIT_FINISHED_CALLBACK will return 0.
  * 
  */
-typedef u8 (*IR_PROTOCOL_INTERFACE_SET_TIMERCALLBACK) (void);
+typedef void (*IR_PROTOCOL_INTERFACE_TRANSMIT_START_CALLBACK) (void);
+
+/**
+ * @brief This function is called during the transmission of the ir-command.
+ * The calling interval is equal to the value returned by 
+ * IR_PROTOCOL_INTERFACE_GET_MODUALTION_INTERVAL_CALLBACK.
+ * 
+ */
+typedef void (*IR_PROTOCOL_INTERFACE_TRANSMIT_IRQ_CALLBACK) (void);
+
+/**
+ * @brief Checks if a currently ongoing transmit has finished or not.
+ * 
+ * @return 1: transmission not running (finished or not started), 0 transmission is currently ongoing
+ */
+typedef u8 (*IR_PROTOCOL_INTERFACE_TRANSMIT_FINISHED_CALLBACK) (void);
+
+// --------------------------------------------------------------------------------
 
 /**
  * @brief 
@@ -158,36 +222,48 @@ typedef u8 (*IR_PROTOCOL_INTERFACE_SET_TIMERCALLBACK) (void);
  */
 typedef struct IR_PROTOCOL_GENERATOR {
 
-        /**
-         * @brief unique id of each ir-protocol
-         * 
-         */
+    /**
+     * @brief unique id of each ir-protocol
+     * 
+     */
     u8 uid;
 
-        /**
-         * @brief Callback time to set for the ir-protocol-generator
-         * 
-         */
-    IR_PROTOCOL_INTERFACE_SET_TIMER_CALLBACK set_timer;
+    /**
+     * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_MODUALTION_INTERVAL_CALLBACK
+     */
+    IR_PROTOCOL_INTERFACE_GET_MODUALTION_INTERVAL_CALLBACK get_mod_interval;
 
-        /**
-         * @brief Callback time to start transmission of a ir-command
-         * 
-         */
-    IR_PROTOCOL_INTERFACE_TRANSMIT_CALLBACK transmit;
+    /**
+     * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_FREQUENCY_CALLBACK
+     */
+    IR_PROTOCOL_INTERFACE_GET_FREQUENCY_CALLBACK get_frequency;
 
-        /**
-         * @brief Callback to check if the transmission of a ir-command is still ongoing
-         * 
-         */
-    IR_PROTOCOL_INTERFACE_SET_TIMERCALLBACK is_busy;
+    /**
+     * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_PREPARE_CALLBACK
+     */
+    IR_PROTOCOL_INTERFACE_TRANSMIT_PREPARE_CALLBACK transmit_prepare;
 
-        /**
-         * @brief Pointer to the next ir-protocol if available.
-         * Must be set to 0 if no more ir-protocol is available
-         * 
-         */
-        struct IR_PROTOCOL_GENERATOR* _p_next;
+    /**
+     * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_START_CALLBACK
+     */
+    IR_PROTOCOL_INTERFACE_TRANSMIT_START_CALLBACK transmit_start;
+
+    /**
+     * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_IRQ_CALLBACK
+     */
+    IR_PROTOCOL_INTERFACE_TRANSMIT_IRQ_CALLBACK transmit_irq;
+
+    /**
+     * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_FINISHED_CALLBACK
+     */
+    IR_PROTOCOL_INTERFACE_TRANSMIT_FINISHED_CALLBACK transmit_finished;
+
+    /**
+     * @brief Pointer to the next ir-protocol if available.
+     * Must be set to 0 if no more ir-protocol is available
+     * 
+     */
+    struct IR_PROTOCOL_GENERATOR* _p_next;
 
 } IR_PROTOCOL_GENERATOR_TYPE;
 

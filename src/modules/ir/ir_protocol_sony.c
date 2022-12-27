@@ -50,15 +50,6 @@
 
 // --------------------------------------------------------------------------------
 
-#include "mcu_task_management/mcu_task_interface.h"
-
-// --------------------------------------------------------------------------------
-
-#include "time_management/time_management.h"
-#include "driver/timer/timer_interface.h"
-
-// --------------------------------------------------------------------------------
-
 #include "modules/ir/ir_protocol_interface.h"
 
 // --------------------------------------------------------------------------------
@@ -81,29 +72,11 @@
 // --------------------------------------------------------------------------------
 
 /**
- * @brief interface to the ir-signal carrier
- * Is configured before usage.
- * Will be started to transmit the signal.
- * And is stopped at the end of the transmission
- * 
- */
-static TIMER_INTERFACE_TYPE* p_carrier;
-
-/**
- * @brief interface to the ir-signal modaultor
- * Is configured before usage.
- * Will be started to transmit the signal.
- * And is stopped at the end of the transmission
- * 
- */
-static TIMER_INTERFACE_TYPE* p_modulator;
-
-/**
  * @brief Flag to tell the caller that
  * this ir-protocol is still running
  * 
  */
-static u8 transmit_guard = 0;
+static u8 transmit_active = 0;
 
 /**
  * @brief Counts the number of frames that has already been transmitted
@@ -123,78 +96,6 @@ static u8 turn_off_signal = 0;
  * @brief this counter is used to count the 600us timesteps between two following frames
  */
 static u16 frame_space_counter = 0;
-
-// --------------------------------------------------------------------------------
-
-/**
- * @brief Callback of the modulator-irq
- * will set the IRmodulator-gpio
- * depending on the actual bit-value of the transmit-buffer
- * Will repeat the signal for three times, to meet the SONY ir-protocol
- * specification
- * 
- */
-void ir_protocol_sony_irq_callback(void) {
-
-    if (ir_protocol_interface_transmit_buffer_end() == 0) {
-
-        if (ir_protocol_interface_transmit_buffer_get_next() == IR_PROTOCOL_INTERFACE_TRANSMIT_INTERVAL_PULSE) {
-
-            IR_MOD_OUT_drive_high(); 
-
-        } else {
-
-            IR_MOD_OUT_drive_low(); 
-        }
-
-    } else if (frame_counter < SONY_IR_PROTOCOL_FRAME_MIN_COUNT - 1) {
-
-        // we need to repeat the command for at least three times
-        // SONY_IR_PROTOCOL_FRAME_MIN_COUNT - 1, because the first frame has already been transmitted
-
-        if (turn_off_signal == 0) {
-
-            // if not already happen
-            // we turn off the ir-signal
-            // by setting the modulator-gpio to low
-            // and stop the carrier to safe power
-            // the irq-callback from the modulator will remain active
-
-            DEBUG_PASS("ir_protocol_sony_irq_callback() - TURNOFF");
-            turn_off_signal = 1;
-
-            IR_MOD_OUT_drive_low();
-            p_carrier->stop();
-        }
-
-        frame_space_counter -= 1;
-
-        if (frame_space_counter == 0) {
-
-            p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
-
-            ir_protocol_interface_transmit_buffer_restart(0); // start the buffer from the beginning
-
-            frame_space_counter = SONY_IR_PROTOCOL_FRAME_SPACE_COUNTER_VALUE;
-            frame_counter += 1;
-            turn_off_signal = 0;
-            
-            DEBUG_TRACE_byte(frame_counter, "ir_protocol_sony_irq_callback() - NEXT FRAME");
-        }
-
-    } else if (transmit_guard != 0) {
-
-        IR_MOD_OUT_drive_low();
-
-        p_carrier->stop();
-        p_modulator->stop();
-
-        transmit_guard = 0;
-        ir_protocol_interface_transmit_buffer_release();
-
-        DEBUG_PASS("ir_protocol_nec_irq_callback() - FINISHED");
-    }
-}
 
 // --------------------------------------------------------------------------------
 
@@ -281,42 +182,31 @@ static void ir_protocol_sony_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_c
 // --------------------------------------------------------------------------------
 
 /**
- * @brief Cheks if the actual transmission is done, or not
- * 
- * @return 1 if transimission is still going on, otherwise 0.
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_FREQUENCY_CALLBACK
  */
-static u8 ir_protocol_sony_is_busy(void) {
-    return transmit_guard != 0;
+static TIMER_CONFIGURAITON_FREQUENCY ir_protocol_sony_get_frequency(void) {
+    DEBUG_PASS("ir_protocol_sony_get_frequency() - TIMER_FREQUENCY_40kHz");
+    return TIMER_FREQUENCY_40kHz;
 }
 
 /**
- * @brief Sets the Access-Pointer to the timer control-units.
- * 
- * @param p_timer_carrier Pointer to the Carrier-Timer
- * @param p_timer_modulator Pointer to the Modulator-Timer
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_GET_MODUALTION_INTERVAL_CALLBACK
  */
-static void ir_protocol_sony_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator) {
-    p_carrier = p_timer_carrier;
-    p_modulator = p_timer_modulator;
+static TIMER_CONFIGURATION_TIME_INTERVAL ir_protocol_sony_get_mod_interval(void) {
+    DEBUG_PASS("ir_protocol_sony_get_mod_interval() - TIMER_TIME_INTERVAL_600us");
+    return TIMER_TIME_INTERVAL_600us;
 }
 
 /**
- * @brief Transmits the actual content of command. This is a non-blocking function.
- * @param p_command valid command that is transmitted.
- * @see u8 ir_protocol_sony_is_busy(void) to check acutal transmit status
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_PREPARE_CALLBACK
  */
-static void ir_protocol_sony_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
+static void ir_protocol_sony_transmit_prepare(IR_COMMON_COMMAND_TYPE* p_command) {
 
-    if (transmit_guard != 0) {
+    if (transmit_active != 0) {
 
         DEBUG_PASS("ir_protocol_sony_transmit() - Transmit guard is already set !!! ---");
         return;
     }
-
-    transmit_guard = 1;
-
-    p_carrier->stop();
-    p_modulator->stop();
 
     DEBUG_TRACE_byte(p_command->data_1, "ir_protocol_sony_transmit() - Device Address:");
     DEBUG_TRACE_byte(p_command->data_2, "ir_protocol_sony_transmit() - Device Command:");
@@ -327,26 +217,75 @@ static void ir_protocol_sony_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
     frame_counter = 0;
     turn_off_signal = 0;
     frame_space_counter = SONY_IR_PROTOCOL_FRAME_SPACE_COUNTER_VALUE;
+}
 
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_START_CALLBACK
+ */
+static void ir_protocol_sony_transmit_start(void) {
+    DEBUG_PASS("ir_protocol_sony_transmit_start()");
+    transmit_active = 1;
     IR_MOD_OUT_drive_low();
+}
 
-    TIMER_CONFIGURATION_TYPE timer_config;
-    
-    timer_config.frequency = TIMER_FREQUENCY_NONE;
-    timer_config.irq_callback = &ir_protocol_sony_irq_callback;
-    timer_config.mode = TIMER_MODE_TIMER;
-    timer_config.time_interval = TIMER_TIME_INTERVAL_600us;
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_IRQ_CALLBACK
+ */
+void ir_protocol_sony_transmit_irq(void) {
 
-    p_modulator->configure(&timer_config);
-    
-    timer_config.frequency = TIMER_FREQUENCY_40kHz;
-    timer_config.irq_callback = 0;
-    timer_config.mode = TIMER_MODE_FREQUENCY;
+    if (ir_protocol_interface_transmit_buffer_end() == 0) {
 
-    p_carrier->configure(&timer_config);
-    
-    p_carrier->start(TIME_CONFIGURATION_RUN_FOREVER);
-    p_modulator->start(TIME_CONFIGURATION_RUN_FOREVER);
+        if (IR_PROTOCOL_IS_PULSE(ir_protocol_interface_transmit_buffer_get_next())) {
+
+            IR_MOD_OUT_drive_high(); 
+
+        } else {
+
+            IR_MOD_OUT_drive_low(); 
+        }
+
+    } else if (frame_counter < SONY_IR_PROTOCOL_FRAME_MIN_COUNT - 1) {
+
+        // we need to repeat the command for at least three times
+        // SONY_IR_PROTOCOL_FRAME_MIN_COUNT - 1, because the first frame has already been transmitted
+
+        if (turn_off_signal == 0) {
+
+            DEBUG_PASS("ir_protocol_sony_irq_callback() - TURNOFF");
+            turn_off_signal = 1;
+
+            IR_MOD_OUT_drive_low();
+        }
+
+        frame_space_counter -= 1;
+
+        if (frame_space_counter == 0) {
+
+            ir_protocol_interface_transmit_buffer_restart(0); // start the buffer from the beginning
+
+            frame_space_counter = SONY_IR_PROTOCOL_FRAME_SPACE_COUNTER_VALUE;
+            frame_counter += 1;
+            turn_off_signal = 0;
+            
+            DEBUG_TRACE_byte(frame_counter, "ir_protocol_sony_irq_callback() - NEXT FRAME");
+        }
+
+    } else if (transmit_active != 0) {
+
+        IR_MOD_OUT_drive_low();
+
+        transmit_active = 0;
+        ir_protocol_interface_transmit_buffer_release();
+
+        DEBUG_PASS("ir_protocol_nec_irq_callback() - FINISHED");
+    }
+}
+
+/**
+ * @see ir_protocol_interface.h#IR_PROTOCOL_INTERFACE_TRANSMIT_FINISHED_CALLBACK
+ */
+static u8 ir_protocol_sony_transmit_finished(void) {
+    return transmit_active == 0;
 }
 
 // --------------------------------------------------------------------------------
@@ -354,15 +293,17 @@ static void ir_protocol_sony_transmit(IR_COMMON_COMMAND_TYPE* p_command) {
 /**
  * @brief Interface to this ir-protocol implementation.
  * Is used for register this implementation to the ir-handler module.
- * 
  */
-static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_sony = {
-        .uid = IR_PROTOCOL_TYPE_SONY,
-        .set_timer = &ir_protocol_sony_set_timer,
-        .transmit = &ir_protocol_sony_transmit,
-        .is_busy = &ir_protocol_sony_is_busy,
-        ._p_next = 0
-};
+IR_PROTOCOL_CREATE (
+    IR_PROTO_SONY,
+    IR_PROTOCOL_TYPE_SONY,
+    ir_protocol_sony_get_frequency,
+    ir_protocol_sony_get_mod_interval,
+    ir_protocol_sony_transmit_prepare,
+    ir_protocol_sony_transmit_start,
+    ir_protocol_sony_transmit_irq,
+    ir_protocol_sony_transmit_finished
+)
 
 // --------------------------------------------------------------------------------
 
@@ -372,7 +313,7 @@ static IR_PROTOCOL_GENERATOR_TYPE ir_protocol_sony = {
  */
 void ir_protocol_sony_init(void) {
         DEBUG_PASS("ir_protocol_sony_init()");
-        ir_protocol_interface_register_ir_protocol(&ir_protocol_sony);
+        IR_PROTO_SONY_init();
 }
 
 // --------------------------------------------------------------------------------

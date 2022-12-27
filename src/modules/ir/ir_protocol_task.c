@@ -186,6 +186,18 @@ static IR_PROTOCOL_GENERATOR_TYPE* p_act_protocol = 0;
 // --------------------------------------------------------------------------------
 
 /**
+ * @brief 
+ * 
+ * @param p_ir_protocol 
+ */
+static void ir_remote_task_transmit_ir_command(
+    IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol,
+    IR_COMMON_COMMAND_TYPE* p_ir_command
+);
+
+// --------------------------------------------------------------------------------
+
+/**
  * @brief Slot to receive a new ir-command
  * The ir-command is stored temporarily and will be processed within task-schedule.
  * 
@@ -289,7 +301,7 @@ void ir_protocol_interface_register_ir_protocol(IR_PROTOCOL_GENERATOR_TYPE* p_ir
         p_ir_protocol_last = p_ir_protocol;
     }
 
-    p_ir_protocol_last->set_timer(&timer_carrier, &timer_modulator);
+    // p_ir_protocol_last->set_timer(&timer_carrier, &timer_modulator);
 
     DEBUG_TRACE_byte(p_ir_protocol->uid, "ir_protocol_interface_register_ir_protocol() - new ir-protocol added");
 }
@@ -354,7 +366,8 @@ static void ir_remote_task_run(void) {
 
                 if (p_act_protocol->uid == ir_command.type) {
 
-                    p_act_protocol->transmit(&ir_command);
+                    ir_remote_task_transmit_ir_command(p_act_protocol, &ir_command);
+                    // p_act_protocol->transmit(&ir_command);
                     is_active = 1;
                     break;
                 }
@@ -367,14 +380,18 @@ static void ir_remote_task_run(void) {
                 IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED);
             }
 
-        } else  if (p_act_protocol != 0 && p_act_protocol->is_busy()) {
+        } else  if (p_act_protocol != 0 && p_act_protocol->transmit_finished() == 0) {
             is_active = 1;
 
         } else {
 
             DEBUG_PASS("ir_remote_task_run() - IR-Command finished");
+
             IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
             p_act_protocol = 0;
+
+            timer_carrier.stop();
+            timer_modulator.stop();
         }
     }
 
@@ -395,6 +412,41 @@ static void ir_remote_task_run(void) {
  */
 static void ir_remote_task_terminate(void) {
     // do nothing
+}
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @see ir_protocol_task.c#ir_remote_task_transmit_ir_command
+ */
+static void ir_remote_task_transmit_ir_command(
+    IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol,
+    IR_COMMON_COMMAND_TYPE* p_ir_command
+) {
+
+    DEBUG_PASS("ir_remote_task_transmit_ir_command()");
+
+    p_ir_protocol->transmit_prepare(p_ir_command);
+
+    TIMER_CONFIGURATION_TYPE timer_config;
+    
+    timer_config.frequency = TIMER_FREQUENCY_NONE;
+    timer_config.irq_callback = p_ir_protocol->transmit_irq;
+    timer_config.mode = TIMER_MODE_TIMER;
+    timer_config.time_interval = p_ir_protocol->get_mod_interval();
+
+    timer_modulator.configure(&timer_config);
+    
+    timer_config.frequency = p_ir_protocol->get_frequency();
+    timer_config.irq_callback = 0;
+    timer_config.mode = TIMER_MODE_FREQUENCY;
+
+    timer_carrier.configure(&timer_config);
+    
+    timer_carrier.start(TIME_CONFIGURATION_RUN_FOREVER);
+    timer_modulator.start(TIME_CONFIGURATION_RUN_FOREVER);
+
+    p_ir_protocol->transmit_start();
 }
 
 // --------------------------------------------------------------------------------

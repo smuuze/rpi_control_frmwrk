@@ -44,23 +44,6 @@ void ir_protocol_jvc_init(void);
 
 // --------------------------------------------------------------------------------
 
-/*
- *
- */
-void ir_protocol_jvc_set_timer(TIMER_INTERFACE_TYPE* p_timer_carrier, TIMER_INTERFACE_TYPE* p_timer_modulator);
-
-/*
- *
- */
-void ir_protocol_jvc_transmit(IR_COMMON_COMMAND_TYPE* p_command);
-
-/*
- *
- */
-u8 ir_protocol_jvc_is_busy(void);
-
-// --------------------------------------------------------------------------------
-
 /**
  * @brief 
  * 
