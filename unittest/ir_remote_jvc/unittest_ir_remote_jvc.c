@@ -422,15 +422,11 @@ static void TEST_CASE_ir_cancel_ir_command(void) {
 
         UNITTEST_TIMER_start();
 
-        while (UNITTEST_TIMER_is_up(500) == 0) {
+        while (UNITTEST_TIMER_is_up(1500) == 0) {
             mcu_task_controller_schedule();
 
-            if (counter_TIMER1_START != 0) {
-                if (counter_TIMER1_STOP < 2) {
-                    if (p_irq_callback != NULL) {
-                        p_irq_callback();
-                    }
-                }
+            if (p_irq_callback != NULL) {
+                p_irq_callback();
             }
         }
         

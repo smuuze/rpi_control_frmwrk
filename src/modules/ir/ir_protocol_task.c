@@ -44,6 +44,7 @@
 
 #include "common/signal_slot_interface.h"
 #include "common/local_module_status.h"
+#include "common/qeue_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -72,14 +73,27 @@
 
 // --------------------------------------------------------------------------------
 
-#define IR_REMOTE_TASK_STATUS_TX_ACTIVE             (1 << 0)
-#define IR_REMOTE_TASK_STATUS_CMD_PENDING           (1 << 1)
-#define IR_REMOTE_TASK_STATUS_CMD_RECEIVED          (1 << 2)
-#define IR_REMOTE_TASK_STATUS_SAMSUNG_CMD_RECEIVED  (1 << 3)
-#define IR_REMOTE_TASK_STATUS_JVC_CMD_RECEIVED      (1 << 4)
-#define IR_REMOTE_TASK_STATUS_SONY_CMD_RECEIVED     (1 << 5)
+#define IR_PROTOCOL_TASK_MAX_QUEUE_SIZE             5
 
-BUILD_MODULE_STATUS_U8(IR_REMOTE_TASK_STATUS)
+QEUE_INTERFACE_BUILD_QEUE(
+    IR_COMMAND_QUEUE,
+    IR_COMMON_COMMAND_TYPE,
+    sizeof(IR_COMMON_COMMAND_TYPE),
+    IR_PROTOCOL_TASK_MAX_QUEUE_SIZE
+)
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief 
+ */
+typedef enum {
+    IR_PROTOCOL_TASK_STATE_IDLE,
+    IR_PROTOCOL_TASK_STATE_LOAD_PROTOCOL,
+    IR_PROTOCOL_TASK_STATE_START,
+    IR_PROTOCOL_TASK_STATE_TRANSMIT,
+    IR_PROTOCOL_TASK_STATE_FINISH
+} IR_PROTOCOL_TASK_STATE;
 
 // --------------------------------------------------------------------------------
 
@@ -106,6 +120,11 @@ static TIMER_INTERFACE_TYPE timer_modulator = {
     .start = &timer1_driver_start,
     .stop = &timer1_driver_stop
 };
+
+/**
+ * @brief 
+ */
+static IR_PROTOCOL_TASK_STATE task_state = IR_PROTOCOL_TASK_STATE_IDLE;
 
 // --------------------------------------------------------------------------------
 
@@ -169,19 +188,16 @@ static IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol_last = 0;
 // --------------------------------------------------------------------------------
 
 /**
- * @brief temporarily sotre the new ir-command.
- * The command is processed within the task-schedule
- * 
- */
-static IR_COMMON_COMMAND_TYPE ir_command;
-
-// --------------------------------------------------------------------------------
-
-/**
  * @brief Pointer to the actual active protocol
  * 
  */
 static IR_PROTOCOL_GENERATOR_TYPE* p_act_protocol = 0;
+
+/**
+ * @brief 
+ * 
+ */
+static IR_COMMON_COMMAND_TYPE ir_command;
 
 // --------------------------------------------------------------------------------
 
@@ -190,10 +206,72 @@ static IR_PROTOCOL_GENERATOR_TYPE* p_act_protocol = 0;
  * 
  * @param p_ir_protocol 
  */
-static void ir_remote_task_transmit_ir_command(
+static void ir_remote_task_transmit_start(
+    const IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol,
+    const IR_COMMON_COMMAND_TYPE* p_ir_command
+) {
+
+    DEBUG_PASS("ir_remote_task_transmit_start()");
+
+    p_ir_protocol->transmit_prepare(p_ir_command);
+
+    TIMER_CONFIGURATION_TYPE timer_config;
+    
+    timer_config.frequency = TIMER_FREQUENCY_NONE;
+    timer_config.irq_callback = p_ir_protocol->transmit_irq;
+    timer_config.mode = TIMER_MODE_TIMER;
+    timer_config.time_interval = p_ir_protocol->get_mod_interval();
+
+    timer_modulator.configure(&timer_config);
+    
+    timer_config.frequency = p_ir_protocol->get_frequency();
+    timer_config.irq_callback = 0;
+    timer_config.mode = TIMER_MODE_FREQUENCY;
+
+    timer_carrier.configure(&timer_config);
+    
+    timer_carrier.start(TIME_CONFIGURATION_RUN_FOREVER);
+    timer_modulator.start(TIME_CONFIGURATION_RUN_FOREVER);
+
+    p_ir_protocol->transmit_start();
+}
+
+/**
+ * @brief 
+ * 
+ * @param p_ir_protocol 
+ */
+static void ir_protocol_task_load_protocol(
     IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol,
-    IR_COMMON_COMMAND_TYPE* p_ir_command
-);
+    const IR_COMMON_COMMAND_TYPE* p_ir_command
+) {
+
+    p_act_protocol = p_ir_protocol_first;
+
+    while (p_act_protocol != 0) {
+
+        if (p_act_protocol->uid == p_ir_command->type) {
+            break;
+        }
+
+        p_act_protocol = p_act_protocol->_p_next;
+    }
+}
+
+/**
+ * @brief 
+ */
+static void ir_protocol_task_finish(void) {
+
+    p_act_protocol = 0;
+
+    timer_carrier.stop();
+    timer_modulator.stop();
+    
+    IR_CARRIER_IN_no_pull();
+    IR_CARRIER_OUT_drive_low();
+    IR_MOD_OUT_drive_low();
+}
 
 // --------------------------------------------------------------------------------
 
@@ -207,21 +285,15 @@ static void ir_remote_task_slot_IR_CMD_RECEIVED(const void* p_arg) {
 
     const IR_COMMON_COMMAND_TYPE* p_command = (const IR_COMMON_COMMAND_TYPE*) p_arg;
 
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_CMD_PENDING)) {
-        DEBUG_TRACE_byte(p_command->type, "ir_remote_task_slot_IR_CMD_RECEIVED() - Cannot proecess IR-Command");
-        DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_slot_IR_CMD_RECEIVED() - IR-Command still pending");
+    if (IR_COMMAND_QUEUE_is_full()) {
+        DEBUG_PASS("ir_remote_task_slot_IR_CMD_RECEIVED() - QUEUE IS FULL !!!");
         return;
     }
 
-    ir_command.type = p_command->type;
-    ir_command.data_1 = p_command->data_1;
-    ir_command.data_2 = p_command->data_2;
-    ir_command.data_3 = p_command->data_3;
-    ir_command.data_4 = p_command->data_4;
+    IR_COMMAND_QUEUE_enqeue(p_command);
+    // IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_CMD_PENDING | IR_REMOTE_TASK_STATUS_CMD_RECEIVED);
 
-    IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_CMD_PENDING | IR_REMOTE_TASK_STATUS_CMD_RECEIVED);
-
-    DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_slot_IR_CMD_RECEIVED() - ir_command.type");
+    DEBUG_TRACE_byte(p_command->type, "ir_remote_task_slot_IR_CMD_RECEIVED() - ir_command.type");
 }
 
 // --------------------------------------------------------------------------------
@@ -247,7 +319,10 @@ void ir_protocol_init(void) {
     timer_modulator.init();
 
     IR_CMD_RECEIVED_SIGNAL_init();
+    IR_CMD_RECEIVED_SIGNAL_set_timeout(0);
     IR_CMD_RECEIVED_SLOT_connect();
+
+    IR_COMMAND_QUEUE_init();
     
     #ifdef HAS_IR_PROTOCOL_JVC
     {
@@ -278,13 +353,14 @@ void ir_protocol_init(void) {
     #endif
 
     IR_PROTOCOL_TASK_init();
+    
+    task_state = IR_PROTOCOL_TASK_STATE_IDLE;
 }
 
 // --------------------------------------------------------------------------------
 
 /**
  * @see  app_task/ir_remote_mcu_task.h#ir_protocol_interface_register_ir_protocol
- * 
  */
 void ir_protocol_interface_register_ir_protocol(IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol) {
 
@@ -310,22 +386,24 @@ void ir_protocol_interface_register_ir_protocol(IR_PROTOCOL_GENERATOR_TYPE* p_ir
 
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.init
- * 
  */
 static void ir_remote_task_init(void) {
 
     DEBUG_PASS("ir_remote_task_init()");
-    IR_REMOTE_TASK_STATUS_clear_all();
+    // IR_REMOTE_TASK_STATUS_clear_all();
 }
 
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_schedule_interval
- * 
  */
 static u16 ir_remote_task_get_schedule_interval(void) {
 
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE | IR_REMOTE_TASK_STATUS_CMD_PENDING)) {
+    if (task_state != IR_PROTOCOL_TASK_STATE_IDLE) {
         return 0;
+
+    } else if (IR_COMMAND_QUEUE_is_empty() == 0) {
+        return MCU_TASK_RUNNING;
+
     } else {
         return IR_REMOTE_TASK_RUN_INTERVAL_MS;
     }
@@ -333,11 +411,14 @@ static u16 ir_remote_task_get_schedule_interval(void) {
 
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_state
- * 
  */
 static MCU_TASK_INTERFACE_TASK_STATE ir_remote_task_get_state(void) {
 
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE | IR_REMOTE_TASK_STATUS_CMD_PENDING)) {
+    if (task_state != IR_PROTOCOL_TASK_STATE_IDLE) {
+        return MCU_TASK_RUNNING;
+    }
+
+    if (IR_COMMAND_QUEUE_is_empty() == 0) {
         return MCU_TASK_RUNNING;
     }
     
@@ -346,107 +427,79 @@ static MCU_TASK_INTERFACE_TASK_STATE ir_remote_task_get_state(void) {
 
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.run
- * 
  */
 static void ir_remote_task_run(void) {
 
-    u8 is_active = 0;
+    switch (task_state) {
 
-    if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_CMD_RECEIVED)) {
+        case IR_PROTOCOL_TASK_STATE_IDLE:
 
-        if (IR_REMOTE_TASK_STATUS_is_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE) == 0) {
-
-            DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_run() - Start IR-Command");
-
-            IR_REMOTE_TASK_STATUS_set(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
-
-            p_act_protocol = p_ir_protocol_first;
-
-            while (p_act_protocol != 0) {
-
-                if (p_act_protocol->uid == ir_command.type) {
-
-                    ir_remote_task_transmit_ir_command(p_act_protocol, &ir_command);
-                    // p_act_protocol->transmit(&ir_command);
-                    is_active = 1;
-                    break;
-                }
-
-                p_act_protocol = p_act_protocol->_p_next;
-            }
-                
-            if (is_active == 0) {
-                DEBUG_TRACE_byte(ir_command.type, "ir_remote_task_run() - unknown IR-Protocol");
-                IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED);
+            if (IR_COMMAND_QUEUE_is_empty()) {
+                break;
             }
 
-        } else  if (p_act_protocol != 0 && p_act_protocol->transmit_finished() == 0) {
-            is_active = 1;
+            IR_COMMAND_QUEUE_deqeue(&ir_command);
 
-        } else {
+            DEBUG_PASS("ir_remote_task_run() - IDLE -> LOAD_PROTOCOL");
+            task_state = IR_PROTOCOL_TASK_STATE_LOAD_PROTOCOL;
 
-            DEBUG_PASS("ir_remote_task_run() - IR-Command finished");
+            // no break;
+            // fall trough
 
-            IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_CMD_RECEIVED | IR_REMOTE_TASK_STATUS_CMD_PENDING);
-            p_act_protocol = 0;
+        case IR_PROTOCOL_TASK_STATE_LOAD_PROTOCOL:
+        
+            ir_protocol_task_load_protocol(p_act_protocol, &ir_command);
 
-            timer_carrier.stop();
-            timer_modulator.stop();
-        }
-    }
+            if (p_act_protocol == 0) {
 
-    if (is_active == 0) {
+                DEBUG_TRACE_byte(
+                    ir_command.type,
+                    "ir_remote_task_run() - UNKNOWN PROTOCOL - LOAD_PROTOCOL -> IDLE"
+                );
 
-        IR_CARRIER_IN_no_pull();
-        IR_CARRIER_OUT_drive_low();
-        IR_MOD_OUT_drive_low();
+                task_state = IR_PROTOCOL_TASK_STATE_IDLE;
+                break;
+            }
 
-        //DEBUG_PASS("ir_remote_task_run() - All operations finished");
-        IR_REMOTE_TASK_STATUS_unset(IR_REMOTE_TASK_STATUS_TX_ACTIVE);
+            DEBUG_PASS("ir_remote_task_run() - LOAD_PROTOCOL -> START");
+            task_state = IR_PROTOCOL_TASK_STATE_START;
+            break;
+
+        case IR_PROTOCOL_TASK_STATE_START:
+
+            ir_remote_task_transmit_start(p_act_protocol, &ir_command);
+
+            DEBUG_PASS("ir_remote_task_run() - START -> TRANSMIT");
+            task_state = IR_PROTOCOL_TASK_STATE_TRANSMIT;
+            break;
+
+        case IR_PROTOCOL_TASK_STATE_TRANSMIT:
+
+            if (p_act_protocol->transmit_finished() == 0) {
+                break;
+            }
+
+            DEBUG_PASS("ir_remote_task_run() - TRANSMIT -> FINISH");
+            task_state = IR_PROTOCOL_TASK_STATE_FINISH;
+
+            // no break;
+            // fall through
+
+        case IR_PROTOCOL_TASK_STATE_FINISH:
+        
+            ir_protocol_task_finish();
+
+            DEBUG_PASS("ir_remote_task_run() - FINISH -> IDLE");
+            task_state = IR_PROTOCOL_TASK_STATE_IDLE;
+            break;
     }
 }
 
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.terminate
- * 
  */
 static void ir_remote_task_terminate(void) {
     // do nothing
-}
-
-// --------------------------------------------------------------------------------
-
-/**
- * @see ir_protocol_task.c#ir_remote_task_transmit_ir_command
- */
-static void ir_remote_task_transmit_ir_command(
-    IR_PROTOCOL_GENERATOR_TYPE* p_ir_protocol,
-    IR_COMMON_COMMAND_TYPE* p_ir_command
-) {
-
-    DEBUG_PASS("ir_remote_task_transmit_ir_command()");
-
-    p_ir_protocol->transmit_prepare(p_ir_command);
-
-    TIMER_CONFIGURATION_TYPE timer_config;
-    
-    timer_config.frequency = TIMER_FREQUENCY_NONE;
-    timer_config.irq_callback = p_ir_protocol->transmit_irq;
-    timer_config.mode = TIMER_MODE_TIMER;
-    timer_config.time_interval = p_ir_protocol->get_mod_interval();
-
-    timer_modulator.configure(&timer_config);
-    
-    timer_config.frequency = p_ir_protocol->get_frequency();
-    timer_config.irq_callback = 0;
-    timer_config.mode = TIMER_MODE_FREQUENCY;
-
-    timer_carrier.configure(&timer_config);
-    
-    timer_carrier.start(TIME_CONFIGURATION_RUN_FOREVER);
-    timer_modulator.start(TIME_CONFIGURATION_RUN_FOREVER);
-
-    p_ir_protocol->transmit_start();
 }
 
 // --------------------------------------------------------------------------------

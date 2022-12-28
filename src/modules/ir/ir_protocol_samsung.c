@@ -132,7 +132,7 @@ static inline void ir_protocol_samsung_prepare_transmit_buffer_fill_buffer(
  * @param p_command 
  */
 static inline void ir_protocol_samsung_prepare_transmit_buffer(
-    IR_COMMON_COMMAND_TYPE* p_command
+    const IR_COMMON_COMMAND_TYPE* p_command
 ) {
 
     if (ir_protocol_interface_transmit_buffer_request() == 0) {
@@ -207,7 +207,7 @@ static TIMER_CONFIGURATION_TIME_INTERVAL ir_protocol_samsung_get_mod_interval(vo
 /**
  * @see ir_protocol_interface.h#IR_PROTOCOL_GENERATOR_TYPE.transmit
  */
-static void ir_protocol_samsung_transmit_prepare(IR_COMMON_COMMAND_TYPE* p_command) {
+static void ir_protocol_samsung_transmit_prepare(const IR_COMMON_COMMAND_TYPE* p_command) {
 
     if (transmit_active != 0) {
 

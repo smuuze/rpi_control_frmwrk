@@ -190,7 +190,7 @@ typedef TIMER_CONFIGURATION_TIME_INTERVAL (*IR_PROTOCOL_INTERFACE_GET_MODUALTION
  * @param p_ir_command reference to the ir-command that shall be transmitted
  *                     depending on the current ir-protocol data_1 to data_3 is set.
  */
-typedef void (*IR_PROTOCOL_INTERFACE_TRANSMIT_PREPARE_CALLBACK) (IR_COMMON_COMMAND_TYPE* p_ir_command);
+typedef void (*IR_PROTOCOL_INTERFACE_TRANSMIT_PREPARE_CALLBACK) (const IR_COMMON_COMMAND_TYPE* p_ir_command);
 
 /**
  * @brief Sets the ir-protocol to active. After this function was called

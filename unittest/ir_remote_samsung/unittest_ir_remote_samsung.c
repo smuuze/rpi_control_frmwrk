@@ -8,7 +8,7 @@
  * 
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 #ifdef TRACER_ON
 #warning __WARNING__TRACER_ENABLED__WARNING__
@@ -719,15 +719,11 @@ static void TEST_CASE_ir_cancel_ir_command(void) {
 
         UNITTEST_TIMER_start();
 
-        while (UNITTEST_TIMER_is_up(600) == 0) {
+        while (UNITTEST_TIMER_is_up(5000) == 0) {
             mcu_task_controller_schedule();
 
-            if (counter_TIMER1_START != 0) {
-                if (counter_TIMER1_STOP < 2) {
-                    if (p_irq_callback != NULL) {
-                        p_irq_callback();
-                    }
-                }
+            if (p_irq_callback != NULL) {
+                p_irq_callback();
             }
         }
 
@@ -751,6 +747,7 @@ static void TEST_CASE_ir_transmit_ir_command_power_on(void) {
         while (UNITTEST_TIMER_is_up(600) == 0) {
 
             if (p_irq_callback == 0) {
+                DEBUG_PASS("TEST_CASE_ir_transmit_ir_command_power_on() - p_irq_callback is NULL");
                 break;
             }
 

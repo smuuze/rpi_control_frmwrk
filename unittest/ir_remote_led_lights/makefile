@@ -34,7 +34,7 @@ CSRCS += unittest_ir_remote_led_lights.c
 #-----------------------------------------------------------------------------
 
 COMMON_MODULES =
-#COMMON_MODULES += QEUE
+COMMON_MODULES += QEUE
 #COMMON_MODULES += EXCEPTION
 #COMMON_MODULES += DATETIME
 COMMON_MODULES += STRING

@@ -541,22 +541,15 @@ static void TEST_CASE_ir_invalid_command_argument(void) {
 
 static void TEST_CASE_cancel_ir_command(void) {
 
-        UNITTEST_TIMER_start();
+    UNITTEST_TIMER_start();
 
-        while (UNITTEST_TIMER_is_up(5000) == 0) {
-                mcu_task_controller_schedule();
+    while (UNITTEST_TIMER_is_up(2500) == 0) {
+        mcu_task_controller_schedule();
 
-                if (p_irq_callback == 0) {
-                        break;
-                }
-
-                unittest_pin_was_changed = 0;
-                p_irq_callback();
-                if (unittest_pin_was_changed == 0) {
-                    mcu_task_controller_schedule();
-                    break;
-                }
-	}
+        if (p_irq_callback != 0) {
+            p_irq_callback();
+        }
+    }
 }
 
 static void TEST_CASE_ir_transmit_ir_light_brighter(void) {
@@ -573,16 +566,8 @@ static void TEST_CASE_ir_transmit_ir_light_brighter(void) {
 		while (UNITTEST_TIMER_is_up(1000) == 0) {
             mcu_task_controller_schedule();
 
-            if (p_irq_callback == 0) {
-                break;
-            }
-
-            unittest_pin_was_changed = 0;
-            p_irq_callback();
-
-            if (unittest_pin_was_changed == 0) {
-                mcu_task_controller_schedule();
-                break;
+            if (p_irq_callback != 0) {
+                p_irq_callback();
             }
 		}
 
@@ -669,19 +654,11 @@ static void TEST_CASE_ir_transmit_ir_command_LIGHT_GREEN(void) {
 
 		UNITTEST_TIMER_start();
 
-		while (UNITTEST_TIMER_is_up(250) == 0) {
+		while (UNITTEST_TIMER_is_up(1000) == 0) {
             mcu_task_controller_schedule();
 
-            if (p_irq_callback == 0) {
-                break;
-            }
-
-            unittest_pin_was_changed = 0;
-            p_irq_callback();
-
-            if (unittest_pin_was_changed == 0) {
-                mcu_task_controller_schedule();
-                break;
+            if (p_irq_callback != 0) {
+                p_irq_callback();
             }
 		}
 

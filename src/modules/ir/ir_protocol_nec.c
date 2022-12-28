@@ -127,7 +127,7 @@ static u8 transmit_active = 0;
  * @param p_command valid ir command that will be transmitted
  * @return 1 if the transmit-buffer is ready, otherwise 0
  */
-static u8 ir_protocol_nec_prepare_transmit_buffer(IR_COMMON_COMMAND_TYPE* p_command) {
+static u8 ir_protocol_nec_prepare_transmit_buffer(const IR_COMMON_COMMAND_TYPE* p_command) {
 
     if (ir_protocol_interface_transmit_buffer_request() == 0) {
         DEBUG_PASS("ir_protocol_nec_prepare_transmit_buffer() - Transmit-Buffer is busy!");
@@ -220,7 +220,7 @@ static TIMER_CONFIGURATION_TIME_INTERVAL ir_protocol_nec_get_mod_interval(void) 
 /**
  * @see ir_protocol_interface.h#IR_PROTOCOL_GENERATOR_TYPE.transmit
  */
-static void ir_protocol_nec_transmit_prepare(IR_COMMON_COMMAND_TYPE* p_command) {
+static void ir_protocol_nec_transmit_prepare(const IR_COMMON_COMMAND_TYPE* p_command) {
 
     if (transmit_active != 0) {
 
