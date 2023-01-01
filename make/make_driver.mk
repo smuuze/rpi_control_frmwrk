@@ -17,6 +17,9 @@ ifneq '' '$(findstring RTC,$(DRIVER_MODULE_CFG))'
 	ifneq '' '$(findstring UNITTEST,$(MCU))'
 		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_unittest.c
 	else
+	ifneq '' '$(findstring UNIVERSAL,$(MCU))'
+		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_universal.c
+	else
 	ifneq '' '$(findstring raspberrypi,$(MCU))'
 		LIBS += -l rt
 	else
@@ -26,11 +29,13 @@ ifneq '' '$(findstring RTC,$(DRIVER_MODULE_CFG))'
 	endif
 	endif
 	endif
+	endif
 endif
 
 #-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring CLK,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_CLK=1
 
 	ifneq '' '$(findstring rp2040,$(MCU))'
 

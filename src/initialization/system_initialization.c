@@ -53,7 +53,11 @@
 
 void system_initialization(void) {
 
-	clock_driver_init();
+    #ifdef HAS_DRIVER_CLK
+    {
+        clock_driver_init();
+    }
+    #endif
 
     #ifdef HAS_DRIVER_IRQ
     {
@@ -61,60 +65,60 @@ void system_initialization(void) {
     }
     #endif
 
-	#ifdef HAS_DRIVER_GPIO
-	{
-		gpio_driver_init();
-	}
-	#endif
+    #ifdef HAS_DRIVER_GPIO
+    {
+        gpio_driver_init();
+    }
+    #endif
     
-	rtc_driver_init();
+    rtc_driver_init();
 
-	#if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
-	{
-		//PASS(); // system_initialization() - Initializing SPI0
-		i_system.driver.spi0->initialize();
-	}
-	#endif
+    #if defined HAS_DRIVER_SPI0 && HAS_DRIVER_SPI0 == 1
+    {
+        //PASS(); // system_initialization() - Initializing SPI0
+        i_system.driver.spi0->initialize();
+    }
+    #endif
 
-	#if defined HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
-	{
-		//PASS(); // system_initialization() - Initializing USART0
-		i_system.driver.usart0->initialize();
-	}
-	#endif
+    #if defined HAS_DRIVER_USART0 && HAS_DRIVER_USART0 == 1
+    {
+        //PASS(); // system_initialization() - Initializing USART0
+        i_system.driver.usart0->initialize();
+    }
+    #endif
 
-	#if defined HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
-	{
-		//PASS(); // system_initialization() - Initializing USART0
-		i_system.driver.usart1->initialize();
-	}
-	#endif
+    #if defined HAS_DRIVER_USART1 && HAS_DRIVER_USART1 == 1
+    {
+        //PASS(); // system_initialization() - Initializing USART0
+        i_system.driver.usart1->initialize();
+    }
+    #endif
 
-	#if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
-	{
-		//PASS(); // system_initialization() - Initializing I2C0
-		i_system.driver.i2c0->initialize();
-	}
-	#endif
+    #if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
+    {
+        //PASS(); // system_initialization() - Initializing I2C0
+        i_system.driver.i2c0->initialize();
+    }
+    #endif
 
-	TRACER_RESTART();
+    TRACER_RESTART();
 
-	#ifdef COPRO_INTERFACE_AVAILABLE
-	{
-		copro_interface_initialize();
-	}
-	#endif
+    #ifdef COPRO_INTERFACE_AVAILABLE
+    {
+        copro_interface_initialize();
+    }
+    #endif
 }
 
 //-----------------------------------------------------------------------------
 
 void system_deinitialization(void) {
 
-	#ifdef HAS_DRIVER_GPIO
-	{
-		gpio_driver_deinit();
-	}
-	#endif
+    #ifdef HAS_DRIVER_GPIO
+    {
+        gpio_driver_deinit();
+    }
+    #endif
 
 }
 

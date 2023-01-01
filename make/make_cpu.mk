@@ -17,6 +17,10 @@ ifeq ($(MCU), UNITTEST)
 include $(FRMWRK_PATH)/make/make_cpu_unittest.mk
 endif
 
+ifeq ($(MCU), UNIVERSAL)
+include $(FRMWRK_PATH)/make/make_cpu_universal.mk
+endif
+
 #-----------------------------------------------------------------------------
 
 # Platform specific driver implementation is loaded
