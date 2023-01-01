@@ -3,11 +3,18 @@ include $(MAKE_PATH)/make_cpu.mk
 
 # -----------------------------------------------------------------------
 
+FRMWRK_VERSION_MAJOR = 6
+FRMWRK_VERSION_MINOR = 5
+DEFS += -D FRMWRK_VERSION_STR=\"$(FRMWRK_VERSION_MAJOR).$(FRMWRK_VERSION_MINOR)\"
+
+# -----------------------------------------------------------------------
+
 DEFS += -D BOARD=$(BOARD)
 DEFS += -D BOARD_ID=$(BOARD_ID)
 
 DEFS += -D VERSION_MAJOR=$(VERSION_MAJOR)
 DEFS += -D VERSION_MINOR=$(VERSION_MINOR)
+DEFS += -D VERSION_STR=\"$(VERSION_MAJOR).$(VERSION_MINOR)\"
 
 # -----------------------------------------------------------------------
 
@@ -29,7 +36,9 @@ APP_TASK_LIST	?=
 BOARD_INC_PATH = ${APP_PATH}/platine
 INC_PATH += $(BOARD_INC_PATH)
 
+ifeq '' '$(findstring NONE,$(BOARD_ID))'
 CSRCS += ${BOARD_INC_PATH}/board_${BOARD_ID}.c
+endif
 
 
 INC_PATH += $(APP_PATH)
