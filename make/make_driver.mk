@@ -200,6 +200,13 @@ ifneq '' '$(findstring LCD_16X2,$(DRIVER_MODULE_CFG))'
 	CSRCS += $(APP_PATH)/driver/lcd/lcd_driver_HD44780_16x2.c
 endif
 
+# --------------------------------------------------------------------------------
+
+ifneq '' '$(findstring KEYPAD_3x4,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_KEYPAD_3x4=1
+	CSRCS += $(APP_PATH)/driver/keypad/keypad_driver_3x4.c
+endif
+
 #-----------------------------------------------------------------------------
 
 # Platform specific driver implementation is loaded
