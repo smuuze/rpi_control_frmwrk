@@ -21,6 +21,7 @@ source_dir_list=(
     ir_remote_samsung
     ir_remote_sony
     json_parser
+    keypad_3x4
     log_interface
     math_module
     mqtt_interface

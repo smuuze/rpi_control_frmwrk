@@ -13,63 +13,75 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @file    key_pad_driver_3x4.c
+ * @file    keypad_driver.h
  * @author  Sebastian Lesse
  * @date    2022 / 12 / 18
  * @brief   Short description of this file
  * 
  */
 
-#define TRACER_OFF
-
 // --------------------------------------------------------------------------------
 
-#ifdef TRACER_ON
-#warning __WARNING__TRACER_ENABLED__WARNING__
-#endif
-
-// --------------------------------------------------------------------------------
-
-#include "config.h"
-
-// --------------------------------------------------------------------------------
-
-#include "tracer.h"
-
-// --------------------------------------------------------------------------------
-
-#include "cpu.h"
-
-// --------------------------------------------------------------------------------
-
-#include "driver/key_pad/key_pad_driver.h"
-#include "driver/gpio/gpio_interface.h"
+#ifndef _H_key_pad_driver_
+#define _H_key_pad_driver_
 
 // --------------------------------------------------------------------------------
 
 /**
- * @see key_pad_driver.h#key_pad_driver_init
+ * @brief Structure to get all keys that are currently active.
+ * If a key is pressed the field is set to 1, otherwise it is set to 0.
+ * 
  */
-void key_pad_driver_init(void) {
-
-}
+typedef struct {
+    u8 key_0;
+    u8 key_1;
+    u8 key_2;
+    u8 key_3;
+    u8 key_4;
+    u8 key_5;
+    u8 key_6;
+    u8 key_7;
+    u8 key_8;
+    u8 key_9;
+    u8 key_star;
+    u8 key_raute;
+} KEYPAD_KEYS;
 
 // --------------------------------------------------------------------------------
 
 /**
- * @see key_pad_driver.h#key_pad_driver_is_key_pressed
+ * @brief Initializes the key-pad driver.
+ * 
  */
-u8 key_pad_driver_is_key_pressed(void) {
-    
-}
+void keypad_driver_init(void);
 
 // --------------------------------------------------------------------------------
 
 /**
- * @see key_pad_driver.h#key_pad_driver_get_keys
+ * @brief Checks if any key is pressed.
+ * Is used to get an overview if at least one key
+ * is active right now.
+ * This function does not perform any de-bouncing.
+ * 
+ * @return 1 if at least one key is active, otherwise 0.
  */
-void key_pad_driver_get_keys(KEY_PAD_KEYS* p_keys) {
-    
-}
+u8 keypad_driver_is_key_pressed(void);
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Looks for active keys.
+ * This function performs debouncing.
+ * This function only updates the key-fields of p_keys
+ * if the key is active. Otherwise its value is left unchanged.
+ * This fucntion blocks until all key values are read.
+ * 
+ * @param p_keys 
+ */
+void keypad_driver_get_keys(KEYPAD_KEYS* p_keys);
+
+// --------------------------------------------------------------------------------
+
+#endif // _H_key_pad_driver_
 
 // --------------------------------------------------------------------------------
