@@ -540,6 +540,7 @@ int main(void) {
         TEST_CASE_only_seperator_chars();
         TEST_CASE_missing_level();
         TEST_CASE_missing_direction();
+        TEST_CASE_invalid_pin_1();
 	}
 	UT_END_TESTBENCH()
 

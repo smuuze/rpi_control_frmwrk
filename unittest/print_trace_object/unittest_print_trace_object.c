@@ -359,6 +359,10 @@ void console_write_line(const char* line) {
 	counter_CONSOLE_WRITE_LINE += 1;
 }
 
+u16 file_read_bytes(FILE_INTERFACE* p_file, u16 offset, u8* p_buffer, u16 max_length) {
+    return 0;
+}
+
 // --------------------------------------------------------------------------------
 
 static void TEST_CASE_init(void) {

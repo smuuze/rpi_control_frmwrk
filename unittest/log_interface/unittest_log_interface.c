@@ -214,6 +214,10 @@ u8 file_append_line(FILE_INTERFACE* p_file, const char* new_line) {
 	return 0;
 }
 
+u16 file_read_bytes(FILE_INTERFACE* p_file, u16 offset, u8* p_buffer, u16 max_length) {
+    return 0;
+}
+
 // --------------------------------------------------------------------------------
 
 // slots
