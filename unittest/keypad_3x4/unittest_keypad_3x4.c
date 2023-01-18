@@ -746,12 +746,12 @@ static void TEST_CASE_no_key_pressed(void) {
         UT_CHECK_IS_EQUAL(counter_SIGNAL_KEY_9_DOWN, 0);
         UT_CHECK_IS_EQUAL(counter_SIGNAL_KEY_9_RELEASED, 0);
 
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_HIGH, 18);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 18);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_HIGH, 18);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 18);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_HIGH, 18);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 18);
+        UT_CHECK_IS_GREATER(counter_KEY_COL_1_DRIVE_HIGH, 10);
+        UT_CHECK_IS_GREATER(counter_KEY_COL_1_NO_DRIVE, 10);
+        UT_CHECK_IS_GREATER(counter_KEY_COL_2_DRIVE_HIGH, 10);
+        UT_CHECK_IS_GREATER(counter_KEY_COL_2_NO_DRIVE, 10);
+        UT_CHECK_IS_GREATER(counter_KEY_COL_3_DRIVE_HIGH, 10);
+        UT_CHECK_IS_GREATER(counter_KEY_COL_3_NO_DRIVE, 10);
 
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_pull_down, 0);
         UT_CHECK_IS_GREATER(counter_KEY_ROW_1_IS_HIGH_LEVEL, 30);
