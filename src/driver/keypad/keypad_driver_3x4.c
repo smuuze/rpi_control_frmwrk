@@ -144,7 +144,7 @@ u8 keypad_driver_is_key_pressed(void) {
         ||  KEY_ROW_2_is_high_level()
         ||  KEY_ROW_3_is_high_level()
         ||  KEY_ROW_4_is_high_level();
-    KEY_COL_1_no_drive();
+    KEY_COL_2_no_drive();
 
     if (key_pressed) {
         return 1;
@@ -156,7 +156,7 @@ u8 keypad_driver_is_key_pressed(void) {
         ||  KEY_ROW_2_is_high_level()
         ||  KEY_ROW_3_is_high_level()
         ||  KEY_ROW_4_is_high_level();
-    KEY_COL_1_no_drive();
+    KEY_COL_3_no_drive();
 
     if (key_pressed) {
         return 1;
