@@ -20,8 +20,9 @@ ifneq '' '$(findstring RTC,$(DRIVER_MODULE_CFG))'
 	ifneq '' '$(findstring UNIVERSAL,$(MCU))'
 		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_universal.c
 	else
-	ifneq '' '$(findstring raspberrypi,$(MCU))'
+	ifneq '' '$(findstring RASPBERRY_PI,$(MCU))'
 		LIBS += -l rt
+		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_raspberrypi.c
 	else
 	ifneq '' '$(findstring atmega1284p,$(MCU))'
 		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_atmega1284p.c
