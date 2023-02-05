@@ -25,21 +25,21 @@
 	BUILD_GPIO ( UART_RXD,      GPIO_PORT_B,    GPIO_PIN_1,	GPIO_DEACTIVATE             ) //    DEBUG_RX        GPIO_16
 	BUILD_GPIO ( GPIO17,        GPIO_PORT_B,    GPIO_PIN_2,	GPIO_INPUT                  ) //    REQUEST_CLIENT  GPIO_00
 	BUILD_GPIO ( GPIO18,        GPIO_PORT_B,    GPIO_PIN_3,	GPIO_DEACTIVATE             ) //    DEACTIVATED     GPIO_01     ALT0
-	BUILD_GPIO ( GPIO27,        GPIO_PORT_B,    GPIO_PIN_4,	GPIO_INPUT | GPIO_IDLE_HIGH	) //                    GPIO_02
+	BUILD_GPIO ( GPIO27,        GPIO_PORT_B,    GPIO_PIN_4,	GPIO_INPUT | GPIO_IDLE_HIGH	) //    KEYPAD_COL_3    GPIO_02
 // 	BUILD_GPIO ( GND,           GPIO_PORT_B,    GPIO_PIN_5,	UNUSEABLE                   ) //
-	BUILD_GPIO ( GPIO22,        GPIO_PORT_B,    GPIO_PIN_6,	GPIO_INPUT | GPIO_IDLE_HIGH	) //                    GPIO_03
-	BUILD_GPIO ( GPIO23,        GPIO_PORT_B,    GPIO_PIN_7,	GPIO_INPUT | GPIO_IDLE_HIGH	) //                    GPIO_04
+	BUILD_GPIO ( GPIO22,        GPIO_PORT_B,    GPIO_PIN_6,	GPIO_INPUT | GPIO_IDLE_HIGH	) //    KEYPAD_COL_2    GPIO_03
+	BUILD_GPIO ( GPIO23,        GPIO_PORT_B,    GPIO_PIN_7,	GPIO_INPUT | GPIO_IDLE_HIGH	) //    KEYPAD_COL_1    GPIO_04
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 // PORT C
 //---------     Name,           Port,           Bit,        Pin-Cfg                             SHC             wiring-Pi   HiFi-Berry DAC+
 
 // 	BUILD_GPIO ( 3V3,           GPIO_PORT_C,    GPIO_PIN_0, UNUSEABLE                   ) //
-	BUILD_GPIO ( GPIO24,        GPIO_PORT_C,    GPIO_PIN_1, GPIO_INPUT | GPIO_IDLE_HIGH ) //                    GPIO_05
+	BUILD_GPIO ( GPIO24,        GPIO_PORT_C,    GPIO_PIN_1, GPIO_INPUT | GPIO_IDLE_HIGH ) //    KEYPAD_ROW_1    GPIO_05
 	BUILD_GPIO ( SPI_MOSI,      GPIO_PORT_C,    GPIO_PIN_2, GPIO_DEACTIVATE             ) //    SPI_MOSI        GPIO_12
 // 	BUILD_GPIO ( GND,           GPIO_PORT_C,    GPIO_PIN_3, UNUSEABLE                   ) //
 	BUILD_GPIO ( SPI_MISO,      GPIO_PORT_C,    GPIO_PIN_4, GPIO_DEACTIVATE             ) //    SPI_MISO        GPIO_13
-	BUILD_GPIO ( GPIO25,        GPIO_PORT_C,    GPIO_PIN_5, GPIO_INPUT | GPIO_IDLE_HIGH	) //                    GPIO_06
+	BUILD_GPIO ( GPIO25,        GPIO_PORT_C,    GPIO_PIN_5, GPIO_INPUT | GPIO_IDLE_HIGH	) //    KEYPAD_ROW_2    GPIO_06
 	BUILD_GPIO ( SPI_SCLK,      GPIO_PORT_C,    GPIO_PIN_6, GPIO_DEACTIVATE             ) //    SPI_SCLK        GPIO_14
 	BUILD_GPIO ( SPI_CE0,       GPIO_PORT_C,    GPIO_PIN_7, GPIO_DEACTIVATE             ) //    SPI0_CS         GPIO_10
 
@@ -51,9 +51,9 @@
 	BUILD_GPIO ( SPI_CE1,       GPIO_PORT_D,    GPIO_PIN_1,	GPIO_DEACTIVATE             ) //    SPI_CE1         GPIO_11
 //	BUILD_GPIO ( ID_SD,         GPIO_PORT_D,    GPIO_PIN_2,	UNUSEABLE                   ) //
 //	BUILD_GPIO ( ID_SC,         GPIO_PORT_D,    GPIO_PIN_3,	UNUSEABLE                   ) //
-	BUILD_GPIO ( GPIO05,        GPIO_PORT_D,    GPIO_PIN_4,	GPIO_INPUT | GPIO_IDLE_HIGH	) //                    GPIO_21
+	BUILD_GPIO ( GPIO05,        GPIO_PORT_D,    GPIO_PIN_4,	GPIO_INPUT | GPIO_IDLE_HIGH	) //    KEYPAD_ROW_3    GPIO_21
 // 	BUILD_GPIO ( GND,           GPIO_PORT_D,    GPIO_PIN_5,	UNUSEABLE                   ) /
-	BUILD_GPIO ( GPIO06,        GPIO_PORT_D,    GPIO_PIN_6,	GPIO_INPUT | GPIO_IDLE_HIGH	) //                    GPIO_22
+	BUILD_GPIO ( GPIO06,        GPIO_PORT_D,    GPIO_PIN_6,	GPIO_INPUT | GPIO_IDLE_HIGH	) //    KEYPAD_ROW_4    GPIO_22
 	BUILD_GPIO ( GPIO12,        GPIO_PORT_D,    GPIO_PIN_7,	GPIO_INPUT | GPIO_IDLE_HIGH	) //    LCD_D4          GPIO_26
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -112,5 +112,17 @@
 	GPIO_ALIAS ( 	LCD_D5,	GPIO16 )
 	GPIO_ALIAS ( 	LCD_D6,	GPIO20 )
 	GPIO_ALIAS ( 	LCD_D7,	GPIO21 )
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ALIAS - KEYPAD 3X4
+//---------  		Alias-Name ,	Existing-Name
+
+	GPIO_ALIAS ( 	KEY_COL_1,	GPIO27 )
+	GPIO_ALIAS ( 	KEY_COL_2,	GPIO22 )
+	GPIO_ALIAS ( 	KEY_COL_3,	GPIO23 )
+	GPIO_ALIAS ( 	KEY_ROW_1,	GPIO16 )
+	GPIO_ALIAS ( 	KEY_ROW_2,	GPIO20 )
+	GPIO_ALIAS ( 	KEY_ROW_3,	GPIO21 )
+	GPIO_ALIAS ( 	KEY_ROW_4,	GPIO21 )
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
