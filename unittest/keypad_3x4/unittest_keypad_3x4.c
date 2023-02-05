@@ -288,6 +288,9 @@ void KEY_COL_1_no_drive(void) {
     KEY_COL_1_IS_HIGH = 0;
 }
 
+void KEY_COL_1_activate(void) {
+}
+
 void KEY_COL_2_drive_high(void) {
     counter_KEY_COL_2_DRIVE_HIGH += 1;
     KEY_COL_2_IS_HIGH = 1;
@@ -300,6 +303,9 @@ void KEY_COL_2_drive_high(void) {
 void KEY_COL_2_no_drive(void) {
     counter_KEY_COL_2_NO_DRIVE += 1;
     KEY_COL_2_IS_HIGH = 0;
+}
+
+void KEY_COL_2_activate(void) {
 }
 
 void KEY_COL_3_drive_high(void) {
@@ -316,6 +322,9 @@ void KEY_COL_3_no_drive(void) {
     KEY_COL_3_IS_HIGH = 0;
 }
 
+void KEY_COL_3_activate(void) {
+}
+
 void KEY_ROW_1_pull_down(void) {
     counter_KEY_ROW_1_pull_down += 1;
 }
@@ -326,6 +335,9 @@ u8 KEY_ROW_1_is_high_level(void) {
     return  ( ut_keys_pressed.key_1 && KEY_COL_1_IS_HIGH)
          || ( ut_keys_pressed.key_2 && KEY_COL_2_IS_HIGH)
          || ( ut_keys_pressed.key_3 && KEY_COL_3_IS_HIGH);
+}
+
+void KEY_ROW_1_activate(void) {
 }
 
 void KEY_ROW_2_pull_down(void) {
@@ -340,6 +352,9 @@ u8 KEY_ROW_2_is_high_level(void) {
          || ( ut_keys_pressed.key_6 && KEY_COL_3_IS_HIGH);
 }
 
+void KEY_ROW_2_activate(void) {
+}
+
 void KEY_ROW_3_pull_down(void) {
     counter_KEY_ROW_3_pull_down += 1;
 }
@@ -352,6 +367,9 @@ u8 KEY_ROW_3_is_high_level(void) {
          || ( ut_keys_pressed.key_9 && KEY_COL_3_IS_HIGH);
 }
 
+void KEY_ROW_3_activate(void) {
+}
+
 void KEY_ROW_4_pull_down(void) {
     counter_KEY_ROW_4_pull_down += 1;
 }
@@ -362,6 +380,9 @@ u8 KEY_ROW_4_is_high_level(void) {
     return  ( ut_keys_pressed.key_raute && KEY_COL_1_IS_HIGH)
          || ( ut_keys_pressed.key_0 && KEY_COL_2_IS_HIGH)
          || ( ut_keys_pressed.key_star && KEY_COL_3_IS_HIGH);
+}
+
+void KEY_ROW_4_activate(void) {
 }
 
 // --------------------------------------------------------------------------------

@@ -74,4 +74,16 @@
 	INCLUDE_GPIO ( 	LCD_D6 )
 	INCLUDE_GPIO ( 	LCD_D7 )
 
+//----------------------------------------------------------------------------------------------------------------------------------
+// ALIAS - KEYPAD 3x4
+//---------
+
+	INCLUDE_GPIO ( 	KEY_COL_1 )
+	INCLUDE_GPIO ( 	KEY_COL_2 )
+	INCLUDE_GPIO ( 	KEY_COL_3 )
+	INCLUDE_GPIO ( 	KEY_ROW_1 )
+	INCLUDE_GPIO ( 	KEY_ROW_2 )
+	INCLUDE_GPIO ( 	KEY_ROW_3 )
+	INCLUDE_GPIO ( 	KEY_ROW_4 )
+
 #endif // _BOARD_RASPBERRYPI_H_
