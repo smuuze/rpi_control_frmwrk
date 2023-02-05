@@ -62,6 +62,7 @@
 #include "power_management/power_management_interface.h"
 
 #include "modules/lcd/lcd_interface.h"
+#include "modules/keypad/keypad_interface.h"
 #include "modules/ir/ir_protocol_task.h"
 
 //-----------------------------------------------------------------------------
@@ -128,6 +129,12 @@ void initialization(void) {
     #ifdef LCD_CONTROLLER_AVAILABLE
     {
         lcd_init();
+    }
+    #endif
+
+    #ifdef KEYPAD_3x4_CONTROLLER_AVAILABLE
+    {
+        keypad_init();
     }
     #endif
 
