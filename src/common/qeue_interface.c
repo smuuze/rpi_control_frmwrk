@@ -92,7 +92,7 @@ u8 qeue_interface_enqeue(QEUE_CONTEXT_TYPE* p_qeue_context, const void* p_object
     );
 
     DEBUG_TRACE_byte(
-        p_qeue_context->write_counter
+        p_qeue_context->write_counter,
         "qeue_interface_enqeue() - write-counter: "
     );
 
