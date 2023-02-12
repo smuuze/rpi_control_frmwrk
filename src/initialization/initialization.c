@@ -58,6 +58,7 @@
 
 #include "app_tasks/message_executer_task.h"
 #include "app_tasks/cli_executer_task.h"
+#include "app_tasks/keypad_to_lcd_task.h"
 
 #include "power_management/power_management_interface.h"
 
@@ -143,6 +144,13 @@ void initialization(void) {
         ir_protocol_init();
     }
     #endif
+
+    #ifdef HAS_APP_TASK_KEY_2_LCD
+    {
+        key_2_lcd_init();
+    }
+    #endif
+
 }
 
 //-----------------------------------------------------------------------------

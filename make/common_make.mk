@@ -174,6 +174,11 @@ DEFS += -D HAS_APP_TASK_THREAD_PRINT_TRACE_OBJECT=1
 CSRCS += $(APP_TASK_INC_PATH)/thread_print_trace_object.c
 endif
 
+ifneq '' '$(findstring KEYPAD_2_LCD,$(APP_TASK_CFG))'
+DEFS += -D HAS_APP_TASK_KEY_2_LCD=1
+CSRCS += $(APP_TASK_INC_PATH)/keypad_to_lcd_task.c
+endif
+
 # ---- EXPANSION BOARDS -------------------------------------------------
 
 EXPANSION_BOARD_PATH = $(APP_PATH)/expansion
