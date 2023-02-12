@@ -126,11 +126,10 @@ u8 keypad_driver_is_key_pressed(void) {
      */
 
     KEY_COL_1_drive_high();
-    u8 key_pressed  =
-        KEY_ROW_1_is_high_level()
-        ||  KEY_ROW_2_is_high_level()
-        ||  KEY_ROW_3_is_high_level()
-        ||  KEY_ROW_4_is_high_level();
+    u8 key_pressed  =  KEY_ROW_1_is_high_level()
+                    || KEY_ROW_2_is_high_level()
+                    || KEY_ROW_3_is_high_level()
+                    || KEY_ROW_4_is_high_level();
     KEY_COL_1_no_drive();
 
     if (key_pressed) {
@@ -138,11 +137,10 @@ u8 keypad_driver_is_key_pressed(void) {
     }
 
     KEY_COL_2_drive_high();
-    key_pressed  =
-        KEY_ROW_1_is_high_level()
-        ||  KEY_ROW_2_is_high_level()
-        ||  KEY_ROW_3_is_high_level()
-        ||  KEY_ROW_4_is_high_level();
+    key_pressed  =  KEY_ROW_1_is_high_level()
+                 || KEY_ROW_2_is_high_level()
+                 || KEY_ROW_3_is_high_level()
+                 || KEY_ROW_4_is_high_level();
     KEY_COL_2_no_drive();
 
     if (key_pressed) {
@@ -150,11 +148,10 @@ u8 keypad_driver_is_key_pressed(void) {
     }
 
     KEY_COL_3_drive_high();
-    key_pressed  =
-        KEY_ROW_1_is_high_level()
-        ||  KEY_ROW_2_is_high_level()
-        ||  KEY_ROW_3_is_high_level()
-        ||  KEY_ROW_4_is_high_level();
+    key_pressed  =  KEY_ROW_1_is_high_level()
+                 || KEY_ROW_2_is_high_level()
+                 || KEY_ROW_3_is_high_level()
+                 || KEY_ROW_4_is_high_level();
     KEY_COL_3_no_drive();
 
     if (key_pressed) {
