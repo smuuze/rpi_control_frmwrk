@@ -24,7 +24,32 @@
 
 #include "driver/gpio/gpio_interface.h"
 
-//-----------------------------------------------------------------------------
+// +------------+---------+----------+---------+------------+
+// |  FUNCTION  |  NAME   | PHYSICAL |   NAME  |  FUNCTION  |
+// +------------+---------+----------+---------+------------+
+// |            | GPIO  0 |  1 || 40 | VBS     |            |
+// |            | GPIO  1 |  2 || 39 | VSYS    |            |
+// |            | GND     |  3 || 38 | GND     |            |
+// |            | GPIO  2 |  4 || 37 | 3V3 EN  |            |
+// |            | GPIO  3 |  5 || 36 | 3V3 OUT |            |
+// |            | GPIO  4 |  6 || 35 | ADC REF |            |
+// |            | GPIO  5 |  7 || 34 | GPIO 28 |            |
+// |            | GND     |  8 || 33 | GND     |            |
+// |            | GPIO  6 |  9 || 32 | GPIO 27 |            |
+// |            | GPIO  7 | 10 || 31 | GPIO 26 |            |
+// |            | GPIO  8 | 11 || 30 | RUN     |            |
+// |            | GPIO  9 | 12 || 29 | GPIO 22 | KEY_COL_1  |
+// |            | GND     | 13 || 28 | GND     |            |
+// | LCD_D7     | GPIO 10 | 14 || 27 | GPIO 21 | KEY_COL_2  |
+// | LCD_D6     | GPIO 11 | 15 || 26 | GPIO 20 | KEY_COL_3  |
+// | LCD_D5     | GPIO 12 | 16 || 25 | GPIO 19 | KEY_ROW_1  |
+// | LCD_D4     | GPIO 13 | 17 || 24 | GPIO 18 | KEY_ROW_2  |
+// |            | GND     | 18 || 23 | GND     |            |
+// | LCD_EN     | GPIO 14 | 19 || 22 | GPIO 17 | KEY_ROW_3  |
+// | LCD_RS     | GPIO 15 | 20 || 21 | GPIO 16 | KEY_ROW_4  |
+// +------------+---------+----------+---------+------------+
+// |  FUNCTION  |  NAME   | PHYSICAL |   NAME  |  FUNCTION  |
+// +------------+---------+----------+---------+------------+
 
 /**
  * @brief See section 2.19 GPIO of the datasheet
