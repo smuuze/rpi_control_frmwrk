@@ -59,6 +59,25 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SIGNAL_LCD_UPDATED)
 //-----------------------------------------------------------------------------
 
 /**
+ * @brief 
+ */
+typedef enum {
+    LCD_REFRESH_MODE_SMOOTH,
+    LCD_REFRESH_MODE_DIRECT
+} LCD_REFRESH_MODE;
+
+//-----------------------------------------------------------------------------
+
+/**
+ * @brief 
+ */
+typedef struct {
+    LCD_REFRESH_MODE refresh_mode;
+} LCD_CONFIGUREATION;
+
+//-----------------------------------------------------------------------------
+
+/**
  * @brief Initializes the LCD controller.
  * This function must be called before using the LCD.
  * It shall only be called once.
@@ -85,6 +104,13 @@ u8 lcd_get_line_count(void);
  * @return Number of characters of a single line of the available lcd
  */
 u8 lcd_get_character_count(void);
+
+/**
+ * @brief 
+ * 
+ * @param p_lcd_cfg 
+ */
+void lcd_configure(LCD_CONFIGUREATION* p_lcd_cfg);
 
 //-----------------------------------------------------------------------------
 

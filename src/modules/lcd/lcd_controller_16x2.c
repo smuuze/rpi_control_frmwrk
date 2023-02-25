@@ -234,6 +234,11 @@ static LCD_TASK_STATE_TYPE lcd_task_state = LCD_TASK_STATE_INIT;
 // --------------------------------------------------------------------------------
 
 /**
+ * @brief Holds the current configuration of the lcd-controller.
+ */
+static LCD_CONFIGUREATION lcd_controller_cfg;
+
+/**
  * @brief Buffer where the new line is temporarily stored.
  * 
  */
@@ -247,6 +252,8 @@ static char lcd_task_new_line_buffer[LCD_NUM_CHARS];
 void lcd_init(void) {
 
     DEBUG_PASS("lcd_init");
+
+    lcd_controller_cfg.refresh_mode = LCD_REFRESH_MODE_SMOOTH;
 
     SIGNAL_LCD_LINE_init();
     SIGNAL_LCD_UPDATED_init();
@@ -280,6 +287,13 @@ u8 lcd_get_line_count(void) {
  */
 u8 lcd_get_character_count(void) {
     return lcd_driver_character_count();
+}
+
+/**
+ * @see lcd_interface.h#lcd_configure
+ */
+void lcd_configure(LCD_CONFIGUREATION* p_lcd_cfg) {
+    lcd_controller_cfg.refresh_mode = p_lcd_cfg->refresh_mode;
 }
 
 // --------------------------------------------------------------------------------
@@ -398,7 +412,10 @@ static void lcd_task_run(void) {
                 break;
             }
 
-            if (lcd_driver_update_screen(LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH) == 0) {
+            u8 update_mode = lcd_controller_cfg.refresh_mode == LCD_REFRESH_MODE_SMOOTH ?
+                                LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH : 0;
+
+            if (lcd_driver_update_screen(update_mode) == 0) {
 
                 // updating the line not finished
                 // do nothing
