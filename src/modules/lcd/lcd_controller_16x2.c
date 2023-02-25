@@ -446,7 +446,14 @@ static void lcd_task_run(void) {
 
         case LCD_TASK_STATE_WAIT:
 
-            if (LCD_TASK_OP_TIMER_is_up(LCD_TASK_UPDATE_TIMEOUT_MS)) {
+            if (lcd_controller_cfg.refresh_mode == LCD_REFRESH_MODE_DIRECT) {
+                
+                DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
+                lcd_task_state = LCD_TASK_STATE_IDLE;
+                LCD_TASK_OP_TIMER_stop();
+
+            } else if (LCD_TASK_OP_TIMER_is_up(LCD_TASK_UPDATE_TIMEOUT_MS)) {
+
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
                 lcd_task_state = LCD_TASK_STATE_IDLE;
             }
