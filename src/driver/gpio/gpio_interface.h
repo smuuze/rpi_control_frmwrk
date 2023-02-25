@@ -59,7 +59,6 @@
 /**
  * @brief Tell the GPIO driver to do not use this pin
  * This causes that the pin does not have any functionality at all
- * 
  */
 #define GPIO_DEACTIVATE     0x02U
 
@@ -69,13 +68,11 @@
 
 /**
  * @brief Tell the GPIO driver to use this pin as output
- * 
  */
 #define GPIO_OUTPUT         0x01U
 
 /**
  * @brief Tell the GPIO driver to use this pin as input
- * 
  */
 #define GPIO_INPUT          0x00U
 
@@ -93,7 +90,6 @@
  * 
  * GPIO_FUNCTION_GPIO is optional
  * and is applied if no other function is defined
- * 
  */
 #define GPIO_FUNCTION_GPIO              0x00U
 #define GPIO_FUNCTION_1                 0x04U
@@ -127,7 +123,6 @@
 
 /**
  * @brief Port-IDs
- * 
  */
 #define GPIO_PORT_A     0x00U
 #define GPIO_PORT_B     0x01U
@@ -139,7 +134,6 @@
 
 /**
  * @brief Inverts the level. The inverted level is stored into the given variable
- * 
  */
 #define GPIO_DRIVER_INVERT_LEVEL(level)     level = (level == GPIO_LEVEL_HIGH) ? \
                                                     GPIO_LEVEL_LOW : GPIO_LEVEL_HIGH
@@ -148,7 +142,6 @@
 
 /**
  * @brief Structure to realize a gpio-pin context
- * 
  */
 typedef struct {
 
@@ -198,25 +191,21 @@ typedef struct {
 
 /**
  * @brief levels a gpio-pin can have
- * 
  */
 typedef enum {
 
     /**
      * @brief Pin has a low level (e.g. GND)
-     * 
      */
     GPIO_LEVEL_LOW = 0x00U,
 
     /**
      * @brief pin has a high level ( e.g. VCC)
-     * 
      */
     GPIO_LEVEL_HIGH = 0x01U,
 
     /**
      * @brief pin is high-z
-     * 
      */
     GPIO_LEVEL_HIGH_Z = 0x02U,
 
@@ -224,19 +213,16 @@ typedef enum {
 
 /**
  * @brief Directions a gpio-pin can have
- * 
  */
 typedef enum {
 
     /**
      * @brief pin is a input
-     * 
      */
     GPIO_DIRECTION_INPUT = 0x00U,
 
     /**
      * @brief pin is a output
-     * 
      */
     GPIO_DIRECTION_OUTPUT = 0x01U,
 
@@ -496,7 +482,6 @@ typedef enum {
  * @brief Initializes the gpio-driver.
  * This fucntion must be called before any
  * gpio-pin operation is performed
- * 
  */
 void gpio_driver_init(void);
 
@@ -504,48 +489,68 @@ void gpio_driver_init(void);
  * @brief Deinitializes the gpio-driver.
  * The driver then cannot be used anymore until 
  * gpio_driver_init() is called once again.
- * 
  */
 void gpio_driver_deinit(void);
 
 /**
- * @brief 
+ * @brief Initializes the pin defined by p_pin_descr.
+ * If the pin is deactivated this function does nothing.
  * 
- * @param p_pin_descr 
+ * @param p_pin_descr dcescriptor of the pin to configure, must not be NULL
+ * @see GPIO_DRIVER_PIN_DESCRIPTOR
  */
 void gpio_driver_init_pin(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 /**
- * @brief 
+ * @brief Changes the direction of the gpio-pin defined by p_pin_descr.
  * 
- * @param p_pin_descr 
- * @param direction 
+ * @param p_pin_descr descriptor of the pin where to change the direction
+ * must not be NULL.
+ * @param direction new direction to set on the gpio-pin
+ * @see GPIO_DRIVER_PIN_DESCRIPTOR
+ * @see GPIO_DRIVER_DIRECTION
  */
-void gpio_driver_set_direction(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction);
+void gpio_driver_set_direction(
+    GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr,
+    GPIO_DRIVER_DIRECTION direction
+);
 
 /**
- * @brief 
+ * @brief Changes the current level of the gpio-pin defined by p_pin_descr.
  * 
- * @param p_pin_descr 
- * @param level 
+ * @param p_pin_descr descriptor of the pin where to change the level
+ * must not be NULL.
+ * @param level new level to set on the pin
+ * @see GPIO_DRIVER_PIN_DESCRIPTOR
+ * @see GPIO_DRIVER_LEVEL
  */
-void gpio_driver_set_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level);
+void gpio_driver_set_level(
+    GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr,
+    GPIO_DRIVER_LEVEL level
+);
 
 /**
- * @brief 
+ * @brief Inverts the current level of the gpio-pin defined by p_pin_descr.
+ * If the gpio-pin is set to output, this function does nothing.
  * 
  * @param p_pin_descr 
+ * @see GPIO_DRIVER_PIN_DESCRIPTOR
  */
 void gpio_driver_toggle_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
 /**
  * @brief Get the actual level of the requested gpio-pin.
- * The returned value reflects the actual physical of the requested gpio-pin.
- * If the given gpio-pin is disabled, GPIO_LEVEL_HIGH_Z is returned.
- * If the gpio-pin is configured to be inverted, the level is inverted before returning it.
+ * The returned value reflects the actual physical of the
+ * requested gpio-pin. If the given gpio-pin is disabled,
+ * GPIO_LEVEL_HIGH_Z is returned. If the gpio-pin is
+ * configured to be inverted, the level is inverted
+ * before returning it.
  * 
- * @param p_pin_descr pin descriptor of the gpio-pin where to read the level from, must not be NULL,
- * @return actual (inverted) level of the requested gpio-pin, or GPIO_LEVEL_HIGH_Z if the given pin is disabled
+ * @param p_pin_descr pin descriptor of the gpio-pin
+ * where to read the level from, must not be NULL,
+ * @return actual (inverted) level of the requested gpio-pin,
+ * or GPIO_LEVEL_HIGH_Z if the given pin is disabled
+ * @see GPIO_DRIVER_PIN_DESCRIPTOR
  */
 GPIO_DRIVER_LEVEL gpio_driver_get_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
@@ -553,6 +558,7 @@ GPIO_DRIVER_LEVEL gpio_driver_get_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr)
  * @brief 
  * 
  * @param p_pin_descr 
+ * @see GPIO_DRIVER_PIN_DESCRIPTOR
  */
 void gpio_driver_print_pin_state(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
@@ -561,6 +567,7 @@ void gpio_driver_print_pin_state(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
  * is set to deactivated. The pin then cannot be used at all.
  * 
  * @param p_pin_descr descriptor of the pin to deactivate.
+ * @see GPIO_DRIVER_PIN_DESCRIPTOR
  */
 void gpio_driver_deactivate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
@@ -569,6 +576,7 @@ void gpio_driver_deactivate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
  * is set to activated. The pin then can be used.
  * 
  * @param p_pin_descr descriptor of the pin to be activate
+ * @see GPIO_DRIVER_PIN_DESCRIPTOR
  */
 void gpio_driver_activate(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr);
 
