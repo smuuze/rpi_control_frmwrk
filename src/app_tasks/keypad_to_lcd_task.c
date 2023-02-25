@@ -346,8 +346,8 @@ static MCU_TASK_INTERFACE_TASK_STATE KEYPAD_TO_LCD_task_get_state(void) {
 static void KEYPAD_TO_LCD_TASK_execute(void) {
 
     // one lcd-line per signal call.
-    SIGNAL_LCD_LINE_send(lcd_text);
-    SIGNAL_LCD_LINE_send(lcd_text[16]);
+    SIGNAL_LCD_LINE_send(&lcd_text[0]);
+    SIGNAL_LCD_LINE_send(&lcd_text[16]);
 
     lcd2key_is_active = 0;
 }
