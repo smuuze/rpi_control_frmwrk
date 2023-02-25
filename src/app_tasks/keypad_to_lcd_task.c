@@ -111,7 +111,7 @@ static void key2lcd_key2_pressed_SLOT_CALLBACK(const void* p_argument) {
     lcd_text[KEY2LCD_KEY_2_INDEX] = '2';
     lcd2key_is_active = 1;
 }
-SIGNAL_SLOT_INTERFACE_CREATE_SLOT(KEY_3_PRESSED, KEY2LCD_KEY2_PRESSED_SLOT, key2lcd_key2_pressed_SLOT_CALLBACK)
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(KEY_2_PRESSED, KEY2LCD_KEY2_PRESSED_SLOT, key2lcd_key2_pressed_SLOT_CALLBACK)
 
 /**
  * @brief Callback to handle the KEY_3_PRESSED event in keypad_to_lcd_task
