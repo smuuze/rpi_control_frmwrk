@@ -67,7 +67,7 @@
  * @brief Text that ist shown on the screen
  * Every key has a static position on the LCD.
  */
-static u8 lcd_text[16];
+static u8 lcd_text[32];
 
 /**
  * @brief This variable is set to 1 if a key-signal is received.
