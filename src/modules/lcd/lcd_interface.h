@@ -59,12 +59,32 @@ SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(SIGNAL_LCD_UPDATED)
 //-----------------------------------------------------------------------------
 
 /**
- * @brief 
+ * @brief The lcd content update mode.
  */
 typedef enum {
+
+    /**
+     * @brief Enables a smoother update of the content.
+     * The characters of the last line are written one by one.
+     */
     LCD_REFRESH_MODE_SMOOTH,
+
+    /**
+     * @brief The content of the LCD is updated immediately without pause.
+     * There are always two lines written, if available.
+     */
     LCD_REFRESH_MODE_DIRECT
 } LCD_REFRESH_MODE;
+
+/**
+ * @brief Enables a short pause after the content of the LCD has been updated.
+ * This gives the user the possibility to read the content, befor it is
+ * overwritten.
+ */
+typedef enum {
+    LCD_REFRESH_PAUSE_ON,
+    LCD_REFRESH_PAUSE_OFF
+} LCD_REFRESH_PAUSE;
 
 //-----------------------------------------------------------------------------
 
@@ -73,6 +93,7 @@ typedef enum {
  */
 typedef struct {
     LCD_REFRESH_MODE refresh_mode;
+    LCD_REFRESH_PAUSE refresh_pause;
 } LCD_CONFIGUREATION;
 
 //-----------------------------------------------------------------------------
