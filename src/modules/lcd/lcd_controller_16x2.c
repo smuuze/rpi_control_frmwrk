@@ -135,17 +135,29 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(LCD_TASK_OP_TIMER)
 /**
  * @brief The LCD-task will activate a timeout after every second line that
  * was written. This helps the user to read the content before it will be overwritten
- * 
  */
-#define LCD_CONTROLLER_STATUS_SECOND_LINE_WRITTEN         (1 << 0)
+#define LCD_CONTROLLER_STATUS_SECOND_LINE_WRITTEN       (1 << 0)
 
 /**
  * @brief If set the LCD is enabled and can be used.
  * if not set, the LCD-task is disabled at all and will do nothing
  * until it is enabled.
- * 
  */
-#define LCD_CONTROLLER_STATUS_IS_ENABLED                  (1 << 1)
+#define LCD_CONTROLLER_STATUS_IS_ENABLED                (1 << 1)
+
+/**
+ * @brief If set, the last line of the LCD content will be updated in
+ * a smoother way. The characters are written one by one with a short
+ * pause in between.
+ */
+#define LCD_CONTROLLER_STATUS_SMOOOTH_UPDATE            (1 << 2)
+
+/**
+ * @brief If set, the controller will wait 3 seconds after the content
+ * of the LCD has been update. Before new text is printed on the lcd.
+ * This enables the user to read the content before it will be overwritten
+ */
+#define LCD_CONTROLLER_STATUS_REFRESH_PAUSE             (1 << 3)
 
 /**
  * @brief Current status of the LCD-TASK
@@ -156,7 +168,6 @@ BUILD_MODULE_STATUS_U8(LCD_CONTROLLER_STATUS)
 
 /**
  * @brief Task states that are used by this module
- * 
  */
 typedef enum {
 
@@ -234,11 +245,6 @@ static LCD_TASK_STATE_TYPE lcd_task_state = LCD_TASK_STATE_INIT;
 // --------------------------------------------------------------------------------
 
 /**
- * @brief Holds the current configuration of the lcd-controller.
- */
-static LCD_CONFIGUREATION lcd_controller_cfg;
-
-/**
  * @brief Buffer where the new line is temporarily stored.
  * 
  */
@@ -253,7 +259,8 @@ void lcd_init(void) {
 
     DEBUG_PASS("lcd_init");
 
-    lcd_controller_cfg.refresh_mode = LCD_REFRESH_MODE_SMOOTH;
+    LCD_CONTROLLER_STATUS_set(LCD_CONTROLLER_STATUS_SMOOOTH_UPDATE);
+    LCD_CONTROLLER_STATUS_set(LCD_CONTROLLER_STATUS_REFRESH_PAUSE);
 
     SIGNAL_LCD_LINE_init();
     SIGNAL_LCD_UPDATED_init();
@@ -293,7 +300,18 @@ u8 lcd_get_character_count(void) {
  * @see lcd_interface.h#lcd_configure
  */
 void lcd_configure(LCD_CONFIGUREATION* p_lcd_cfg) {
-    lcd_controller_cfg.refresh_mode = p_lcd_cfg->refresh_mode;
+
+    if (p_lcd_cfg->refresh_mode == LCD_REFRESH_MODE_SMOOTH) {
+        LCD_CONTROLLER_STATUS_set(LCD_CONTROLLER_STATUS_SMOOOTH_UPDATE);
+    } else {
+        LCD_CONTROLLER_STATUS_unset(LCD_CONTROLLER_STATUS_SMOOOTH_UPDATE);
+    }
+
+    if (p_lcd_cfg->refresh_pause == LCD_REFRESH_PAUSE_ON) {
+        LCD_CONTROLLER_STATUS_set(LCD_CONTROLLER_STATUS_REFRESH_PAUSE);
+    } else {
+        LCD_CONTROLLER_STATUS_unset(LCD_CONTROLLER_STATUS_REFRESH_PAUSE);
+    }
 }
 
 // --------------------------------------------------------------------------------
@@ -412,7 +430,7 @@ static void lcd_task_run(void) {
                 break;
             }
 
-            u8 update_mode = lcd_controller_cfg.refresh_mode == LCD_REFRESH_MODE_SMOOTH ?
+            u8 update_mode = LCD_CONTROLLER_STATUS_is_set(LCD_CONTROLLER_STATUS_SMOOOTH_UPDATE) ?
                                 LCD_DRIVER_UPDATE_MODE_LAST_LINE_SMOOTH : 0;
 
             if (lcd_driver_update_screen(update_mode) == 0) {
@@ -446,16 +464,19 @@ static void lcd_task_run(void) {
 
         case LCD_TASK_STATE_WAIT:
 
-            if (lcd_controller_cfg.refresh_mode == LCD_REFRESH_MODE_DIRECT) {
+            if (LCD_CONTROLLER_STATUS_is_set(LCD_CONTROLLER_STATUS_REFRESH_PAUSE)) {
+                
+                if (LCD_TASK_OP_TIMER_is_up(LCD_TASK_UPDATE_TIMEOUT_MS)) {
+
+                    DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
+                    lcd_task_state = LCD_TASK_STATE_IDLE;
+                }
+
+            } else {
                 
                 DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
                 lcd_task_state = LCD_TASK_STATE_IDLE;
                 LCD_TASK_OP_TIMER_stop();
-
-            } else if (LCD_TASK_OP_TIMER_is_up(LCD_TASK_UPDATE_TIMEOUT_MS)) {
-
-                DEBUG_PASS("lcd_task_run() - LCD_TASK_STATE_IDLE");
-                lcd_task_state = LCD_TASK_STATE_IDLE;
             }
 
             break;
