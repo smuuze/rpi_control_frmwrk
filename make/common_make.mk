@@ -179,6 +179,11 @@ DEFS += -D HAS_APP_TASK_KEY_2_LCD=1
 CSRCS += $(APP_TASK_INC_PATH)/keypad_to_lcd_task.c
 endif
 
+ifneq '' '$(findstring LED_BLINKER,$(APP_TASK_CFG))'
+DEFS += -D HAS_APP_TASK_LED_BLINKER=1
+CSRCS += $(APP_TASK_INC_PATH)/led_blinker_task.c
+endif
+
 # ---- EXPANSION BOARDS -------------------------------------------------
 
 EXPANSION_BOARD_PATH = $(APP_PATH)/expansion
