@@ -1,16 +1,29 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	spi0_driver.h
- * \brief
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    spi0_driver.h
+ * @author  Sebastian Lesse
+ * @date    2023 / 03 / 09
+ * @brief   Short description of this file
+ * 
  */
 
-#ifndef _spi0_DRIVER_H_
-#define _spi0_DRIVER_H_
-#endif
+// --------------------------------------------------------------------------------
+
+#ifndef _H_spi0_driver_
+#define _H_spi0_driver_
 
 //---------------------------------------------------------------------------------
 
@@ -18,18 +31,22 @@
 
 //---------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief Basic initialization of the SPI0 device.
+ * The device needs to be configured before it can be used.
  */
 void spi0_driver_initialize(void);
 
-/*
- *
+/**
+ * @brief Configures the SPI0 device with the given parameters.
+ * 
+ * @param p_cfg valid configuration parameters.
  */
 void spi0_driver_configure(TRX_DRIVER_CONFIGURATION* p_cfg);
 
-/*
- *
+/**
+ * @brief 
+ * 
  */
 void spi0_driver_power_off(void);
 
@@ -52,15 +69,17 @@ u16 spi0_driver_get_N_bytes(u16 num_bytes, u8* p_buffer_to);
  */
 u16 spi0_driver_set_N_bytes(u16 num_bytes, const u8* p_buffer_from);
 
-/*!
- *
- * @return
+/**
+ * @brief 
+ * 
+ * @return u8 
  */
 u8 spi0_driver_is_ready_for_tx(void);
 
-/*!
- *
- * @return
+/**
+ * @brief 
+ * 
+ * @return u8 
  */
 u8 spi0_driver_is_ready_for_rx(void);
 
@@ -72,10 +91,11 @@ u8 spi0_driver_is_ready_for_rx(void);
  */
 void spi0_driver_start_rx(u16 num_of_rx_bytes);
 
-/*!
- *
- * @param num_bytes
- * @param timeout_ms
+/**
+ * @brief 
+ * 
+ * @param num_bytes 
+ * @param timeout_ms 
  */
 void spi0_driver_wait_for_rx(u16 num_bytes, u16 timeout_ms);
 
@@ -91,10 +111,11 @@ void spi0_driver_stop_rx(void);
  */
 void spi0_driver_start_tx(void);
 
-/*!
- *
- * @param num_bytes
- * @param timeout_ms
+/**
+ * @brief 
+ * 
+ * @param num_bytes 
+ * @param timeout_ms 
  */
 void spi0_driver_wait_for_tx(u16 num_bytes, u16 timeout_ms);
 
@@ -119,14 +140,22 @@ void spi0_driver_clear_tx_buffer(void);
  */
 void spi0_driver_set_address (u8 addr);
 
-/*!
- *
- * @return
+/**
+ * @brief 
+ * 
+ * @return u8 
  */
 u8 spi0_driver_mutex_request(void);
 
-/*!
- *
- * @param m_id
+/**
+ * @brief 
+ * 
+ * @param m_id 
  */
 void spi0_driver_mutex_release(u8 m_id);
+
+// --------------------------------------------------------------------------------
+
+#endif // _H_spi0_driver_
+
+// --------------------------------------------------------------------------------
