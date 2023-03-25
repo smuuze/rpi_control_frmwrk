@@ -59,6 +59,7 @@
 #include "app_tasks/message_executer_task.h"
 #include "app_tasks/cli_executer_task.h"
 #include "app_tasks/keypad_to_lcd_task.h"
+#include "app_tasks/led_blinker_task.h"
 
 #include "power_management/power_management_interface.h"
 
@@ -142,6 +143,12 @@ void initialization(void) {
     #ifdef IR_PROTOCOL_AVAILABLE
     {
         ir_protocol_init();
+    }
+    #endif
+
+    #ifdef HAS_APP_TASK_LED_BLINKER
+    {
+        led_blinker_init();
     }
     #endif
 
