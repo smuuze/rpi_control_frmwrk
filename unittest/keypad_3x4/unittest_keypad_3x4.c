@@ -81,12 +81,15 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(UNITTEST_TIMER)
 
 static u8 counter_KEY_COL_1_DRIVE_HIGH = 0;
 static u8 counter_KEY_COL_1_NO_DRIVE = 0;
+static u8 counter_KEY_COL_1_DRIVE_LOW = 0;
 
 static u8 counter_KEY_COL_2_DRIVE_HIGH = 0;
 static u8 counter_KEY_COL_2_NO_DRIVE = 0;
+static u8 counter_KEY_COL_2_DRIVE_LOW = 0;
 
 static u8 counter_KEY_COL_3_DRIVE_HIGH = 0;
 static u8 counter_KEY_COL_3_NO_DRIVE = 0;
+static u8 counter_KEY_COL_3_DRIVE_LOW = 0;
 
 static u8 counter_KEY_ROW_1_pull_down = 0;
 static u8 counter_KEY_ROW_1_IS_HIGH_LEVEL = 0;
@@ -228,12 +231,15 @@ static void unittest_reset_counter(void) {
 
     counter_KEY_COL_1_DRIVE_HIGH = 0;
     counter_KEY_COL_1_NO_DRIVE = 0;
+    counter_KEY_COL_1_DRIVE_LOW = 0;
 
     counter_KEY_COL_2_DRIVE_HIGH = 0;
     counter_KEY_COL_2_NO_DRIVE = 0;
+    counter_KEY_COL_2_DRIVE_LOW = 0;
 
     counter_KEY_COL_3_DRIVE_HIGH = 0;
     counter_KEY_COL_3_NO_DRIVE = 0;
+    counter_KEY_COL_3_DRIVE_LOW = 0;
 
     counter_KEY_ROW_1_pull_down = 0;
     counter_KEY_ROW_1_IS_HIGH_LEVEL = 0;
@@ -288,6 +294,11 @@ void KEY_COL_1_no_drive(void) {
     KEY_COL_1_IS_HIGH = 0;
 }
 
+void KEY_COL_1_drive_low(void) {
+    counter_KEY_COL_1_DRIVE_LOW += 1;
+    KEY_COL_1_IS_HIGH = 0;
+}
+
 void KEY_COL_1_activate(void) {
 }
 
@@ -305,6 +316,11 @@ void KEY_COL_2_no_drive(void) {
     KEY_COL_2_IS_HIGH = 0;
 }
 
+void KEY_COL_2_drive_low(void) {
+    counter_KEY_COL_2_DRIVE_LOW += 1;
+    KEY_COL_2_IS_HIGH = 0;
+}
+
 void KEY_COL_2_activate(void) {
 }
 
@@ -319,6 +335,11 @@ void KEY_COL_3_drive_high(void) {
 
 void KEY_COL_3_no_drive(void) {
     counter_KEY_COL_3_NO_DRIVE += 1;
+    KEY_COL_3_IS_HIGH = 0;
+}
+
+void KEY_COL_3_drive_low(void) {
+    counter_KEY_COL_3_DRIVE_LOW += 1;
     KEY_COL_3_IS_HIGH = 0;
 }
 
@@ -410,17 +431,26 @@ static void TEST_CASE_initialization(void) {
         keypad_init();
 
         UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_HIGH, 0);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 1);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_LOW, 1);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_HIGH, 0);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 1);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_LOW, 1);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_HIGH, 0);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 1);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_LOW, 1);
+
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_pull_down, 1);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_IS_HIGH_LEVEL, 0);
+
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_2_pull_down, 1);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_2_IS_HIGH_LEVEL, 0);
+
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_3_pull_down, 1);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_3_IS_HIGH_LEVEL, 0);
+
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_4_pull_down, 1);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_4_IS_HIGH_LEVEL, 0);
 
@@ -484,11 +514,16 @@ static void TEST_CASE_key_pressed_1(void) {
         UT_CHECK_IS_EQUAL(counter_SIGNAL_KEY_9_RELEASED, 0);
 
         UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_LOW, 10);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_HIGH, 9);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 9);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_LOW, 9);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_HIGH, 9);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 9);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_LOW, 9);
 
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_pull_down, 0);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_IS_HIGH_LEVEL, 28);
@@ -558,18 +593,26 @@ static void TEST_CASE_key_pressed_5(void) {
         UT_CHECK_IS_EQUAL(counter_SIGNAL_KEY_9_RELEASED, 0);
 
         UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_LOW, 10);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_LOW, 10);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_HIGH, 9);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 9);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_LOW, 9);
 
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_pull_down, 0);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_IS_HIGH_LEVEL, 29);
+
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_2_pull_down, 0);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_2_IS_HIGH_LEVEL, 29);
+
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_3_pull_down, 0);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_3_IS_HIGH_LEVEL, 28);
+
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_4_pull_down, 0);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_4_IS_HIGH_LEVEL, 28);
 
@@ -632,11 +675,16 @@ static void TEST_CASE_key_pressed_9(void) {
         UT_CHECK_IS_EQUAL(counter_SIGNAL_KEY_9_RELEASED, 1);
 
         UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_LOW, 10);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_LOW, 10);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_LOW, 10);
 
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_pull_down, 0);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_IS_HIGH_LEVEL, 30);
@@ -706,11 +754,16 @@ static void TEST_CASE_key_pressed_0(void) {
         UT_CHECK_IS_EQUAL(counter_SIGNAL_KEY_9_RELEASED, 0);
 
         UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_LOW, 10);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_LOW, 10);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_HIGH, 9);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 9);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_LOW, 9);
 
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_pull_down, 0);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_IS_HIGH_LEVEL, 29);
@@ -768,11 +821,16 @@ static void TEST_CASE_no_key_pressed(void) {
         UT_CHECK_IS_EQUAL(counter_SIGNAL_KEY_9_RELEASED, 0);
 
         UT_CHECK_IS_GREATER(counter_KEY_COL_1_DRIVE_HIGH, 10);
-        UT_CHECK_IS_GREATER(counter_KEY_COL_1_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 0);
+        UT_CHECK_IS_GREATER(counter_KEY_COL_1_DRIVE_LOW, 10);
+
         UT_CHECK_IS_GREATER(counter_KEY_COL_2_DRIVE_HIGH, 10);
-        UT_CHECK_IS_GREATER(counter_KEY_COL_2_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 0);
+        UT_CHECK_IS_GREATER(counter_KEY_COL_2_DRIVE_LOW, 10);
+
         UT_CHECK_IS_GREATER(counter_KEY_COL_3_DRIVE_HIGH, 10);
-        UT_CHECK_IS_GREATER(counter_KEY_COL_3_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 0);
+        UT_CHECK_IS_GREATER(counter_KEY_COL_3_DRIVE_LOW, 10);
 
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_pull_down, 0);
         UT_CHECK_IS_GREATER(counter_KEY_ROW_1_IS_HIGH_LEVEL, 30);
@@ -865,11 +923,16 @@ static void TEST_CASE_key_pressed_0_5_6_9_star(void) {
         UT_CHECK_IS_EQUAL(counter_SIGNAL_KEY_9_RELEASED, 1);
 
         UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_1_DRIVE_LOW, 10);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_HIGH, 10);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 10);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_2_DRIVE_LOW, 10);
+
         UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_HIGH, 9);
-        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 9);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_NO_DRIVE, 0);
+        UT_CHECK_IS_EQUAL(counter_KEY_COL_3_DRIVE_LOW, 9);
 
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_pull_down, 0);
         UT_CHECK_IS_EQUAL(counter_KEY_ROW_1_IS_HIGH_LEVEL, 29);
