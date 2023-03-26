@@ -97,9 +97,9 @@ void keypad_driver_init(void) {
 
     DEBUG_PASS("keypad_driver_init()");
 
-    KEY_COL_1_activate();    KEY_COL_1_no_drive();
-    KEY_COL_2_activate();    KEY_COL_2_no_drive();
-    KEY_COL_3_activate();    KEY_COL_3_no_drive();
+    KEY_COL_1_activate();    KEY_COL_1_drive_low();
+    KEY_COL_2_activate();    KEY_COL_2_drive_low();
+    KEY_COL_3_activate();    KEY_COL_3_drive_low();
     
     KEY_ROW_1_activate();    KEY_ROW_1_pull_down();
     KEY_ROW_2_activate();    KEY_ROW_2_pull_down();
