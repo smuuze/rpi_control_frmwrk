@@ -26,6 +26,10 @@ ifneq '' '$(findstring RTC,$(DRIVER_MODULE_CFG))'
 	else
 	ifneq '' '$(findstring atmega1284p,$(MCU))'
 		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_atmega1284p.c
+	else
+	ifneq '' '$(findstring MACOS,$(MCU))'
+		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_macos.c
+	endif
 	endif
 	endif
 	endif
@@ -145,7 +149,11 @@ ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'
 	ifneq '' '$(findstring UNITTEST,$(MCU))'
 		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_unittest.c
 	else
+	ifneq '' '$(findstring MACOS,$(MCU))'
+		CSRCS += $(APP_PATH)/driver/communication/usart/usart_driver_macos.c
+	else
 		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_atmega1284p.c
+	endif
 	endif
 	endif
 	endif
@@ -194,18 +202,24 @@ ifneq '' '$(findstring TIMER1,$(DRIVER_MODULE_CFG))'
 	endif
 endif
 
-# --------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring LCD_16X2,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_LCD=1
 	CSRCS += $(APP_PATH)/driver/lcd/lcd_driver_HD44780_16x2.c
 endif
 
-# --------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring KEYPAD_3x4,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_KEYPAD_3x4=1
 	CSRCS += $(APP_PATH)/driver/keypad/keypad_driver_3x4.c
+endif
+
+#-----------------------------------------------------------------------------
+
+ifneq '' '$(findstring DEVICE_NAME_SUPPORT,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_DEVICE_NAME_SUPPORT=1
 endif
 
 #-----------------------------------------------------------------------------

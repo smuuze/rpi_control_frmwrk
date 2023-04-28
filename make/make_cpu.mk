@@ -21,6 +21,10 @@ ifeq ($(MCU), UNIVERSAL)
 include $(FRMWRK_PATH)/make/make_cpu_universal.mk
 endif
 
+ifeq ($(MCU), MACOS)
+include $(FRMWRK_PATH)/make/make_cpu_macos.mk
+endif
+
 #-----------------------------------------------------------------------------
 
 # Platform specific driver implementation is loaded
