@@ -1,3 +1,7 @@
+### Section
+
+[Readme](README.md) | Changelog
+
 # Version 1.7.0
 
 Date: ***NOT RELEASED***
