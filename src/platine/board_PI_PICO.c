@@ -73,10 +73,10 @@
 
     BUILD_GPIO ( GPIO_00,       GPIO_PORT_A,    GPIO_PIN_0,     GPIO_FUNCTION_2             ) //    UART0 - TX
     BUILD_GPIO ( GPIO_01,       GPIO_PORT_A,    GPIO_PIN_1,     GPIO_FUNCTION_2             ) //    UART0 - RX
-    BUILD_GPIO ( GPIO_02,       GPIO_PORT_A,    GPIO_PIN_2,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_03,       GPIO_PORT_A,    GPIO_PIN_3,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_04,       GPIO_PORT_A,    GPIO_PIN_4,     GPIO_INPUT | GPIO_IDLE_HIGH ) // 
-    BUILD_GPIO ( GPIO_05,       GPIO_PORT_A,    GPIO_PIN_5,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
+    BUILD_GPIO ( GPIO_02,       GPIO_PORT_A,    GPIO_PIN_2,     GPIO_FUNCTION_1             ) //    SPI0 - SCK
+    BUILD_GPIO ( GPIO_03,       GPIO_PORT_A,    GPIO_PIN_3,     GPIO_FUNCTION_1             ) //    SPI0 - TX
+    BUILD_GPIO ( GPIO_04,       GPIO_PORT_A,    GPIO_PIN_4,     GPIO_FUNCTION_1             ) //    SPI0 - RX
+    BUILD_GPIO ( GPIO_05,       GPIO_PORT_A,    GPIO_PIN_5,     GPIO_FUNCTION_1             ) //    SPI0 - CS
     BUILD_GPIO ( GPIO_06,       GPIO_PORT_A,    GPIO_PIN_6,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
     BUILD_GPIO ( GPIO_07,       GPIO_PORT_A,    GPIO_PIN_7,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
 
