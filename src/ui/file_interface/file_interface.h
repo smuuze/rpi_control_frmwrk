@@ -1,27 +1,37 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	ui/file_interface/file_interface.c
- * \brief
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    file_interface.h
+ * @author  Sebastian Lesse
+ * @date    2022 / 12 / 31
+ * @brief   Short description of this file
+ * 
  */
 
-#ifndef _FILE_INTERFACE_H_
-#define _FILE_INTERFACE_H_
+// --------------------------------------------------------------------------------
 
-// --------------------------------------------------------------------------------------
+#ifndef _H_file_interface_
+#define _H_file_interface_
 
-#include "config.h"
-
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 #ifndef FILE_PATH_MAX_STRING_LENGTH
-#define FILE_PATH_MAX_STRING_LENGTH						256
+#define FILE_PATH_MAX_STRING_LENGTH                                         256
 #endif
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 /**
  * @brief file-context to be used with this file-interface.
@@ -29,14 +39,14 @@
  * 
  */
 typedef struct {
-	char path[FILE_PATH_MAX_STRING_LENGTH];
-	FILE* handle;
-	u32 last_file_pointer;
-	u32 act_file_pointer;
-	u32 timestamp_last_modified;
+    char path[FILE_PATH_MAX_STRING_LENGTH];
+    FILE* handle;
+    u32 last_file_pointer;
+    u32 act_file_pointer;
+    u32 timestamp_last_modified;
 } FILE_INTERFACE;
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 /**
  * @brief Creates a new file-object with the given name.
@@ -45,120 +55,132 @@ typedef struct {
  * 
  *  - Generate the file-object:
  * 
- * 	FILE_INTERFACE_CREATE_FILE(MY_FILE)
+ *     FILE_INTERFACE_CREATE_FILE(MY_FILE)
  * 
  * - set file-path
  * 
- * 	MY_FILE_set_path("/home/my_name/my_file.txt");
+ *     MY_FILE_set_path("/home/my_name/my_file.txt");
  * 
  * - create file:
  * 
- * 	if (MY_FILE_is_existing() == 0) {
- * 		MY_FILE_create();
- * 	}
+ *     if (MY_FILE_is_existing() == 0) {
+ *         MY_FILE_create();
+ *     }
  * 
  * - open file and read line:
  * 
- * 	if (MY_FILE_open() == 0) {
- *		... 
- * 	}
+ *     if (MY_FILE_open() == 0) {
+ *        ... 
+ *     }
  * 
- * 	if (MY_FILE_is_readable() == 0) {
- * 		...
- * 	}
+ *     if (MY_FILE_is_readable() == 0) {
+ *         ...
+ *     }
  * 
- * 	char my_line[255];
- * 	u16 num_characters = MY_FILE_read_next_line(my_line, sizeof(my_line));
+ *     char my_line[255];
+ *     u16 num_characters = MY_FILE_read_next_line(my_line, sizeof(my_line));
  * 
- * 	if (num_characters == 0) {
- * 		...
- * 	}
+ *     if (num_characters == 0) {
+ *         ...
+ *     }
  * 
- * 	MY_FILE_close();
+ *     MY_FILE_close();
  * 
  * - append line at the end of the file
  * 
- * 	char my_new_line[] = "this is a new line\\0";
- * 	if (MY_FILE_append_line(my_new_line) == 0) {
- * 		...
- * 	}
+ *     char my_new_line[] = "this is a new line\\0";
+ *     if (MY_FILE_append_line(my_new_line) == 0) {
+ *         ...
+ *     }
  * 
  */
-#define FILE_INTERFACE_CREATE_FILE(file_name)								\
-													\
-	static FILE_INTERFACE _##file_name##_context = {						\
-		.handle = NULL,										\
-		.last_file_pointer = 0,									\
-		.act_file_pointer = 0,									\
-		.timestamp_last_modified = 0								\
-	};												\
-													\
-	u8 file_name##_open(void) {									\
-		return file_open(&_##file_name##_context);						\
-	}												\
-													\
-	u8 file_name##_is_open(void) {									\
-		return file_is_open(&_##file_name##_context);						\
-	}												\
-													\
-	u8 file_name##_open_path(const char* p_path) {							\
-		file_set_path(&_##file_name##_context, p_path);						\
-		return file_open(&_##file_name##_context);						\
-	}												\
-													\
-	void file_name##_set_path(const char* p_path) {							\
-		file_set_path(&_##file_name##_context, p_path);						\
-	}												\
-													\
-	void file_name##_close(void) {									\
-		file_close(&_##file_name##_context);							\
-	}												\
-													\
-	u8 file_name##_has_changed(void) {								\
-		return file_has_changed(&_##file_name##_context);					\
-	}												\
-													\
-	u8 file_name##_is_existing(void) {								\
-		return file_is_existing(&_##file_name##_context);					\
-	}												\
-													\
-	u8 file_name##_is_readable(void) {								\
-		return file_is_readable(&_##file_name##_context);					\
-	}												\
-													\
-	u32 file_name##_get_size(void) {								\
-		return file_get_size(&_##file_name##_context);						\
-	}												\
-													\
-	u8 file_name##_create(void) {									\
-		return file_create(&_##file_name##_context);						\
-	}												\
-													\
-	u8 file_name##_delete(void) {									\
-		return file_delete(&_##file_name##_context);						\
-	}												\
-													\
-	u8 file_name##_rename(const char* new_name) {							\
-		return file_rename(&_##file_name##_context, new_name);					\
-	}												\
-													\
-	i16 file_name##_read_next_line(char* p_line_to, u16 max_length) {				\
-		return file_read_next_line(&_##file_name##_context, p_line_to, max_length);		\
-	}												\
-													\
-	u16 file_name##_read_line(char* p_line_to, u16 line_number, u16 max_length) {			\
-		return file_read_specific_line(&_##file_name##_context, line_number, p_line_to, max_length);	\
-	}												\
-													\
-	u8 file_name##_append_line(const char* new_line) {						\
-		return file_append_line(&_##file_name##_context, new_line);				\
-	}		\
-													\
-	const char* file_name##_get_path(void) {							\
-		return file_get_path(&_##file_name##_context);						\
-	}												
+#define FILE_INTERFACE_CREATE_FILE(file_name)                                       \
+                                                                                    \
+    static FILE_INTERFACE _##file_name##_context = {                                \
+        .handle = NULL,                                                             \
+        .last_file_pointer = 0,                                                     \
+        .act_file_pointer = 0,                                                      \
+        .timestamp_last_modified = 0                                                \
+    };                                                                              \
+                                                                                    \
+    u8 file_name##_open(void) {                                                     \
+        return file_open(&_##file_name##_context);                                  \
+    }                                                                               \
+                                                                                    \
+    u8 file_name##_is_open(void) {                                                  \
+        return file_is_open(&_##file_name##_context);                               \
+    }                                                                               \
+                                                                                    \
+    u8 file_name##_open_path(const char* p_path) {                                  \
+        file_set_path(&_##file_name##_context, p_path);                             \
+        return file_open(&_##file_name##_context);                                  \
+    }                                                                               \
+                                                                                    \
+    void file_name##_set_path(const char* p_path) {                                 \
+        file_set_path(&_##file_name##_context, p_path);                             \
+    }                                                                               \
+                                                                                    \
+    void file_name##_close(void) {                                                  \
+        file_close(&_##file_name##_context);                                        \
+    }                                                                               \
+                                                                                    \
+    u8 file_name##_has_changed(void) {                                              \
+        return file_has_changed(&_##file_name##_context);                           \
+    }                                                                               \
+                                                                                    \
+    u8 file_name##_is_existing(void) {                                              \
+        return file_is_existing(&_##file_name##_context);                           \
+    }                                                                               \
+                                                                                    \
+    u8 file_name##_is_readable(void) {                                              \
+        return file_is_readable(&_##file_name##_context);                           \
+    }                                                                               \
+                                                                                    \
+    u32 file_name##_get_size(void) {                                                \
+        return file_get_size(&_##file_name##_context);                              \
+    }                                                                               \
+                                                                                    \
+    u8 file_name##_create(void) {                                                   \
+        return file_create(&_##file_name##_context);                                \
+    }                                                                               \
+                                                                                    \
+    u8 file_name##_delete(void) {                                                   \
+        return file_delete(&_##file_name##_context);                                \
+    }                                                                               \
+                                                                                    \
+    u8 file_name##_rename(const char* new_name) {                                   \
+        return file_rename(&_##file_name##_context, new_name);                      \
+    }                                                                               \
+                                                                                    \
+    i16 file_name##_read_next_line(char* p_line_to, u16 max_length) {               \
+        return file_read_next_line(&_##file_name##_context, p_line_to, max_length); \
+    }                                                                               \
+                                                                                    \
+    u16 file_name##_read_line(char* p_line_to, u16 line_number, u16 max_length) {   \
+        return file_read_specific_line(                                             \
+            &_##file_name##_context,                                                \
+            line_number,                                                            \
+            p_line_to,                                                              \
+            max_length);                                                            \
+    }                                                                               \
+                                                                                    \
+    u16 file_name##_read_bytes(u8* p_buffer, u16 offset, u16 max_length) {          \
+        return file_read_bytes(                                                     \
+            &_##file_name##_context,                                                \
+            offset,                                                                 \
+            p_buffer,                                                               \
+            max_length);                                                            \
+    }                                                                               \
+                                                                                    \
+    u8 file_name##_append_line(const char* new_line) {                              \
+        return file_append_line(&_##file_name##_context, new_line);                 \
+    }                                                                               \
+                                                                                    \
+    const char* file_name##_get_path(void) {                                        \
+        return file_get_path(&_##file_name##_context);                              \
+    }
 
-// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 
 /**
  * @brief Set the path to the file-context.
@@ -291,8 +313,10 @@ i16 file_read_line(FILE* file_handle, char* p_buffer_to, u16 num_max_bytes);
 i16 file_read_next_line(FILE_INTERFACE* p_file, char* next_line, u16 max_length);
 
 /**
- * @brief Reads the line that is identified by its line number. All other lines of the file are ignored.
- * Reads as much bytes that will fit into the given buffer. The file has to be opened before calling this function.
+ * @brief Reads the line that is identified by its line number.
+ * All other lines of the file are ignored.
+ * Reads as much bytes that will fit into the given buffer.
+ * The file has to be opened before calling this function.
  * 
  * @param p_file file-cotnext with an already opened file
  * @param line_number the line to read from this file
@@ -301,6 +325,20 @@ i16 file_read_next_line(FILE_INTERFACE* p_file, char* next_line, u16 max_length)
  * @return The number of characters that have been read from the file.
  */
 u16 file_read_specific_line(FILE_INTERFACE* p_file, u16 line_number, char* next_line, u16 max_length);
+
+/**
+ * @brief Reads at maximum max_length bytes from the currently opened file. The data is read
+ * as raw bytes and is stored into p_buffer.
+ * If offset is unequal to zero, this amount of bytes will be
+ * skipped from the begin of the file.
+ * 
+ * @param p_file file-cotnext with an already opened file
+ * @param offset number of byts to skip
+ * @param p_buffer destination where to store the bytes into
+ * @param max_length maximum number of bytes that can be stored into p_buffer
+ * @return number of bytes that have been read.
+ */
+u16 file_read_bytes(FILE_INTERFACE* p_file, u16 offset, u8* p_buffer, u16 max_length);
 
 /**
  * @brief Appends a new line at the end of the actual file.
@@ -314,4 +352,8 @@ u16 file_read_specific_line(FILE_INTERFACE* p_file, u16 line_number, char* next_
  */
 u8 file_append_line(FILE_INTERFACE* p_file, const char* new_line);
 
-#endif // _FILE_INTERFACE_H_
+// --------------------------------------------------------------------------------
+
+#endif // _H_file_interface_
+
+// --------------------------------------------------------------------------------

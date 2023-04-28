@@ -63,18 +63,18 @@
  * 
  * @param name Name of the new task 
  * @param interval interval at which the tas is scheduled
- * @param init task initialization callback, is executed if this task is initialized
+ * @param start task initialization callback, is executed if this task is initialized
  * @param run callback to schedule this task
  * @param state callback to get the current state of this task, see MCU_TASK_INTERFACE_TASK_STATE
  * @param terminate callback to terminate the task
  */
-#define TASK_CREATE(name, priority, interval, init, run, state, terminate )         \
+#define TASK_CREATE(name, priority, interval, start, run, state, terminate )        \
                                                                                     \
     static MCU_TASK_INTERFACE __##name##__task_context = {                          \
         0,                                                                          \
         0,                                                                          \
         0,                                                                          \
-        &init,                                                                      \
+        &start,                                                                     \
         &interval,                                                                  \
         &state,                                                                     \
         &run,                                                                       \

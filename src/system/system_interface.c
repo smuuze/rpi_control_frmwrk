@@ -147,7 +147,9 @@ __UNUSED__ u16 empty_driver_get_tx_bytes_num_available(void) {
 
 #include "driver/communication/spi/spi0_driver.h"
 
+#ifdef config_SPI_POWER_DOWN_PROTOTYPE
 config_SPI_POWER_DOWN_PROTOTYPE
+#endif
 
 static TRX_DRIVER_INTERFACE spi0_driver = {
 	SPI,					//	TRX_DRIVER_INTERFACE_TYPE type;

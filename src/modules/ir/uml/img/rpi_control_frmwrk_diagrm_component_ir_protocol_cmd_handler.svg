@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="681px" preserveAspectRatio="none" style="width:716px;height:681px;background:#FFFFFF;" version="1.1" viewBox="0 0 716 681" width="716px" zoomAndPan="magnify"><defs/><g><!--MD5=[143f3421ef2fae6effa04305fe16344b]
+cluster component: rpi_control_frmwrk - structure - ir-protocol cmd-handling--><g id="cluster_component: rpi_control_frmwrk - structure - ir-protocol cmd-handling"><rect fill="none" height="668" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="703" x="7" y="7"/><path d="M533,7 L533,16.4883 L523,26.4883 L7,26.4883 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="516" x="10" y="21.5352">component: rpi_control_frmwrk - structure - ir-protocol cmd-handling</text></g><!--MD5=[7552260fd2021a323855cf929da74f79]
+cluster modules--><g id="cluster_modules"><path d="M33.5,182 L96.5,182 A3.75,3.75 0 0 1 99,184.5 L106,204.4883 L683.5,204.4883 A2.5,2.5 0 0 1 686,206.9883 L686,648.5 A2.5,2.5 0 0 1 683.5,651 L33.5,651 A2.5,2.5 0 0 1 31,648.5 L31,184.5 A2.5,2.5 0 0 1 33.5,182 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="106" y1="204.4883" y2="204.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="62" x="35" y="197.5352">modules</text></g><!--MD5=[adb29ea9c2ab4ec53e347193d35436c5]
+cluster IR--><g id="cluster_IR"><rect fill="#DDDDDD" height="402" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="607" x="55" y="225"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:1.0;" width="15" x="642" y="230"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:1.0;" width="4" x="640" y="232"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:1.0;" width="4" x="640" y="236"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="15" x="351" y="251.5352">IR</text></g><!--MD5=[61c41a14a0f790ada34cbd71756aea65]
+cluster Driver--><g id="cluster_Driver"><path d="M63.5,50 L108.5,50 A3.75,3.75 0 0 1 111,52.5 L118,72.4883 L278.5,72.4883 A2.5,2.5 0 0 1 281,74.9883 L281,146.5 A2.5,2.5 0 0 1 278.5,149 L63.5,149 A2.5,2.5 0 0 1 61,146.5 L61,52.5 A2.5,2.5 0 0 1 63.5,50 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="61" x2="118" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="44" x="65" y="65.5352">Driver</text></g><!--MD5=[ed5ec524815f4ef3beb135055c1cb3ea]
+entity rpi_cmd_handler--><g id="elem_rpi_cmd_handler"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="172" x="85" y="260"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="237" y="265"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="235" y="267"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="235" y="271"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="118" x="100" y="293.5352">«CMD-HANDLER»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="132" x="100" y="310.0234">IR RPi Cmd Handler</text></g><!--MD5=[2007ec11c8c0749bc89104a4c6eaa944]
+entity ir_cmd_handler--><g id="elem_ir_cmd_handler"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="148" x="97" y="404"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="225" y="409"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="223" y="411"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="223" y="415"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="108" x="112" y="437.5352">«CMD-Handler»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="107" x="112" y="454.0234">IR Cmd Handler</text></g><!--MD5=[91ee16f17274a2f6c2fccf15d7b9aeb5]
+entity ir_protocol_task--><g id="elem_ir_protocol_task"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="154" x="329" y="404"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="463" y="409"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="461" y="411"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="461" y="415"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46" x="344" y="437.5352">«Task»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="114" x="344" y="454.0234">IR-Protocol Task</text></g><!--MD5=[d7cc5719f46f98f1f7526710bd3757c6]
+entity ir_commands--><g id="elem_ir_commands"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="139" x="71.5" y="548"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="190.5" y="553"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="188.5" y="555"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="188.5" y="559"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="85" x="86.5" y="581.5352">«Command»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="99" x="86.5" y="598.0234">IR-Commands</text></g><!--MD5=[5b2af96df7c83750caea75b911d57562]
+entity slot_ir_cmd--><g id="elem_slot_ir_cmd"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="167" x="245.5" y="548"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="392.5" y="553"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="390.5" y="555"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="390.5" y="559"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="49" x="260.5" y="581.5352">«SLOT»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="127" x="260.5" y="598.0234">IR-CMD-RECEIVED</text></g><!--MD5=[232a44991ec034c105e62f7242fac092]
+entity ir_cmd_queue--><g id="elem_ir_cmd_queue"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="148" x="498" y="548"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="626" y="553"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="624" y="555"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="624" y="559"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="61" x="513" y="581.5352">«QUEUE»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="108" x="513" y="598.0234">IR-CMD-QUEUE</text></g><!--MD5=[09e3aabdda226baebd999043036bd8b3]
+class ir_protocol_interface--><g id="elem_ir_protocol_interface"><rect codeLine="46" fill="#F1F1F1" height="48" id="ir_protocol_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="174" x="305" y="267.5"/><ellipse cx="320" cy="283.5" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M316.4277,279.7651 L316.4277,277.6069 L323.8071,277.6069 L323.8071,279.7651 L321.3418,279.7651 L321.3418,287.8418 L323.8071,287.8418 L323.8071,290 L316.4277,290 L316.4277,287.8418 L318.8931,287.8418 L318.8931,279.7651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="142" x="334" y="288.791">ir_protocol_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="306" x2="478" y1="299.5" y2="299.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="306" x2="478" y1="307.5" y2="307.5"/></g><!--MD5=[d83fea62142346a6923ff9a1dba1b2f6]
+entity ir_protocol--><g id="elem_ir_protocol"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="514" y="260"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="626" y="265"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="624" y="267"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="624" y="271"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="529" y="293.5352">«IR-Protocol»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="78" x="529" y="310.0234">IR-Protocol</text></g><g id="elem_GMN13"><path d="M532.5,400 L532.5,471.2422 A0,0 0 0 0 532.5,471.2422 L627.5,471.2422 A0,0 0 0 0 627.5,471.2422 L627.5,410 L617.5,400 L584,400 L580,323.31 L576,400 L532.5,400 A0,0 0 0 0 532.5,400 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><path d="M617.5,400 L617.5,410 L627.5,410 L617.5,400 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="47" x="538.5" y="417.5684">- SONY</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="33" x="538.5" y="432.8789">- JVC</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="74" x="538.5" y="448.1895">- SAMSUNG</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="38" x="538.5" y="463.5">- NEC</text></g><!--MD5=[c8ac58bf00c8641b2c4e7f87e27c9263]
+class cmd_handler_interface--><g id="elem_cmd_handler_interface"><rect codeLine="75" fill="#F1F1F1" height="48" id="cmd_handler_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="188" x="77" y="85"/><ellipse cx="92" cy="101" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M88.4277,97.2651 L88.4277,95.1069 L95.8071,95.1069 L95.8071,97.2651 L93.3418,97.2651 L93.3418,105.3418 L95.8071,105.3418 L95.8071,107.5 L88.4277,107.5 L88.4277,105.3418 L90.8931,105.3418 L90.8931,97.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="156" x="106" y="106.291">cmd_handler_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="78" x2="264" y1="117" y2="117"/><line style="stroke:#181818;stroke-width:0.5;" x1="78" x2="264" y1="125" y2="125"/></g><!--MD5=[5f837d37732b28f48535b6759b76b58e]
+link rpi_cmd_handler to ir_cmd_handler--><g id="link_rpi_cmd_handler_ir_cmd_handler"><path codeLine="61" d="M171,323.31 C171,345.08 171,374.37 171,397.42 " fill="none" id="rpi_cmd_handler-to-ir_cmd_handler" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="171,402.23,175,393.23,171,397.23,167,393.23,171,402.23" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="172" y="366.5684">&lt;uses&gt;</text></g><!--MD5=[9a61d9ac0add3ab30be23781308a9cb5]
+link ir_cmd_handler to slot_ir_cmd--><g id="link_ir_cmd_handler_slot_ir_cmd"><path codeLine="62" d="M205.28,467.31 C230.15,489.66 263.82,519.92 289.76,543.23 " fill="none" id="ir_cmd_handler-to-slot_ir_cmd" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="293.39,546.49,289.3762,537.4961,289.6735,543.1452,284.0245,543.4425,293.39,546.49" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="220" x="260" y="514.5684">SIGNAL_IR_CMD_RECEIVED(ir_cmd)</text></g><!--MD5=[5817e93da7cb249697f584fa5fa1c7e7]
+link ir_cmd_handler to ir_commands--><g id="link_ir_cmd_handler_ir_commands"><path codeLine="63" d="M164.49,467.31 C159.89,489.08 153.7,518.37 148.83,541.42 " fill="none" id="ir_cmd_handler-to-ir_commands" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="147.81,546.27,153.5959,538.2998,148.8508,541.3795,145.7711,536.6345,147.81,546.27" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="157" y="514.5684">&lt;uses&gt;</text></g><!--MD5=[c17f67bdffe51faef4433de443ad6833]
+link slot_ir_cmd to ir_cmd_queue--><g id="link_slot_ir_cmd_ir_cmd_queue"><path codeLine="65" d="M412.97,579.5 C438.39,579.5 466.24,579.5 491.43,579.5 " fill="none" id="slot_ir_cmd-to-ir_cmd_queue" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="496.26,579.5,487.26,575.5,491.26,579.5,487.26,583.5,496.26,579.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="430.75" y="573.0684">&lt;uses&gt;</text></g><!--MD5=[4e0a24fec7b3fd2653b9e7a0b90b258f]
+link ir_protocol_task to ir_cmd_queue--><g id="link_ir_protocol_task_ir_cmd_queue"><path codeLine="66" d="M447.11,467.27 C460.66,477.72 475.67,489.64 489,501 C504.77,514.44 521.59,529.92 535.93,543.48 " fill="none" id="ir_protocol_task-to-ir_cmd_queue" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="539.2,546.59,535.4244,537.4936,535.5729,543.1485,529.918,543.297,539.2,546.59" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="508" y="514.5684">&lt;uses&gt;</text></g><!--MD5=[5b61841a559c9a432efd2cd48cc0d900]
+reverse link ir_protocol_interface to ir_protocol_task--><g id="link_ir_protocol_interface_ir_protocol_task"><path codeLine="68" d="M394.95,322.4 C397.3,346.23 400.57,379.46 402.95,403.56 " fill="none" id="ir_protocol_interface-backto-ir_protocol_task" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="394.46,317.45,391.3541,326.7963,394.9462,322.4263,399.3162,326.0184,394.46,317.45" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="400" y="366.5684">&lt;uses&gt;</text></g><!--MD5=[4905488a87443a493f648e5391d9d33a]
+reverse link ir_protocol_interface to ir_protocol--><g id="link_ir_protocol_interface_ir_protocol"><path codeLine="69" d="M500.76,291.5 C505.03,291.5 509.31,291.5 513.58,291.5 " fill="none" id="ir_protocol_interface-backto-ir_protocol" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="500.9,298.5,480.9,291.5,500.9,284.5,500.9,298.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[23fad0ebacbd8e4314ac047a5e59a466]
+reverse link cmd_handler_interface to rpi_cmd_handler--><g id="link_cmd_handler_interface_rpi_cmd_handler"><path codeLine="80" d="M171,154.71 C171,187.3 171,230.65 171,259.5 " fill="none" id="cmd_handler_interface-backto-rpi_cmd_handler" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="164,154.74,171,134.74,178,154.74,164,154.74" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[4371f69ba94bf60014f7a6533717381c]
+@startuml rpi_control_frmwrk_diagrm_component_ir_protocol_cmd_handler
+
+'***************************************************************************
+
+skinparam monochrome true
+'skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: rpi_control_frmwrk - structure - ir-protocol cmd-handling" {
+
+'***************************************************************************
+
+    package "modules" {
+        component IR #DDDDDD {
+
+            component rpi_cmd_handler [
+                <<CMD-HANDLER>>
+                IR RPi Cmd Handler
+            ]
+
+            component ir_cmd_handler [
+                <<CMD-Handler>>
+                IR Cmd Handler
+            ]
+
+            component ir_protocol_task [
+                <<Task>>
+                IR-Protocol Task
+            ]
+
+            component ir_commands [
+                <<Command>>
+                IR-Commands
+            ]
+
+            component slot_ir_cmd [
+                <<SLOT>>
+                IR-CMD-RECEIVED
+            ]
+
+            component ir_cmd_queue [
+                <<QUEUE>>
+                IR-CMD-QUEUE
+            ]
+
+            interface ir_protocol_interface {
+
+            }
+
+            component ir_protocol [
+                <<IR-Protocol>>
+                IR-Protocol
+            ]
+            note bottom
+            - SONY
+            - JVC
+            - SAMSUNG
+            - NEC
+            end note
+
+            rpi_cmd_handler .down.> ir_cmd_handler : <uses>
+            ir_cmd_handler - -> slot_ir_cmd : SIGNAL_IR_CMD_RECEIVED(ir_cmd)
+            ir_cmd_handler ..> ir_commands : <uses>
+
+            slot_ir_cmd .right.> ir_cmd_queue : <uses>
+            ir_protocol_task .down.> ir_cmd_queue : <uses>
+
+            ir_protocol_task .up.> ir_protocol_interface : <uses>
+            ir_protocol .left.|> ir_protocol_interface
+
+        }
+    }
+
+    package "Driver" {
+        interface cmd_handler_interface {
+
+        }
+    }
+
+    rpi_cmd_handler .up.|> cmd_handler_interface
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
+
+@startuml rpi_control_frmwrk_diagrm_component_ir_protocol_cmd_handler
+
+
+skinparam monochrome true
+
+
+frame "component: rpi_control_frmwrk - structure - ir-protocol cmd-handling" {
+
+
+    package "modules" {
+        component IR #DDDDDD {
+
+            component rpi_cmd_handler [
+                <<CMD-HANDLER>>
+                IR RPi Cmd Handler
+            ]
+
+            component ir_cmd_handler [
+                <<CMD-Handler>>
+                IR Cmd Handler
+            ]
+
+            component ir_protocol_task [
+                <<Task>>
+                IR-Protocol Task
+            ]
+
+            component ir_commands [
+                <<Command>>
+                IR-Commands
+            ]
+
+            component slot_ir_cmd [
+                <<SLOT>>
+                IR-CMD-RECEIVED
+            ]
+
+            component ir_cmd_queue [
+                <<QUEUE>>
+                IR-CMD-QUEUE
+            ]
+
+            interface ir_protocol_interface {
+
+            }
+
+            component ir_protocol [
+                <<IR-Protocol>>
+                IR-Protocol
+            ]
+            note bottom
+            - SONY
+            - JVC
+            - SAMSUNG
+            - NEC
+            end note
+
+            rpi_cmd_handler .down.> ir_cmd_handler : <uses>
+            ir_cmd_handler - -> slot_ir_cmd : SIGNAL_IR_CMD_RECEIVED(ir_cmd)
+            ir_cmd_handler ..> ir_commands : <uses>
+
+            slot_ir_cmd .right.> ir_cmd_queue : <uses>
+            ir_protocol_task .down.> ir_cmd_queue : <uses>
+
+            ir_protocol_task .up.> ir_protocol_interface : <uses>
+            ir_protocol .left.|> ir_protocol_interface
+
+        }
+    }
+
+    package "Driver" {
+        interface cmd_handler_interface {
+
+        }
+    }
+
+    rpi_cmd_handler .up.|> cmd_handler_interface
+
+
+}
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

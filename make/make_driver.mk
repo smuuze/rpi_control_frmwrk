@@ -17,8 +17,21 @@ ifneq '' '$(findstring RTC,$(DRIVER_MODULE_CFG))'
 	ifneq '' '$(findstring UNITTEST,$(MCU))'
 		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_unittest.c
 	else
-	ifneq '' '$(findstring raspberrypi,$(MCU))'
+	ifneq '' '$(findstring UNIVERSAL,$(MCU))'
+		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_universal.c
+	else
+	ifneq '' '$(findstring RASPBERRY_PI,$(MCU))'
 		LIBS += -l rt
+		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_raspberrypi.c
+	else
+	ifneq '' '$(findstring atmega1284p,$(MCU))'
+		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_atmega1284p.c
+	else
+	ifneq '' '$(findstring MACOS,$(MCU))'
+		CSRCS += $(FRMWRK_PATH)/src/driver/rtc/rtc_driver_macos.c
+	endif
+	endif
+	endif
 	endif
 	endif
 	endif
@@ -27,6 +40,7 @@ endif
 #-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring CLK,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_CLK=1
 
 	ifneq '' '$(findstring rp2040,$(MCU))'
 
@@ -38,7 +52,7 @@ endif
 ifneq '' '$(findstring IRQ,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_IRQ=1
 
-	ifneq '' '$(findstring rp2040,$(MCU_NAME))'
+	ifneq '' '$(findstring rp2040,$(MCU))'
 
 	else
 		CSRCS += $(APP_PATH)/driver/irq/irq_driver_$(MCU_NAME).c
@@ -68,7 +82,7 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 		LIBS += -l wiringPi
 
 	else
-	ifneq '' '$(findstring RP2040,$(MCU))'
+	ifneq '' '$(findstring rp2040,$(MCU))'
 
 		#DEFS += -D HAS_DRIVER_GPIO=1
 		#CSRCS += $(APP_PATH)/driver/gpio/arm/gpio_driver_rp2040.c
@@ -80,7 +94,7 @@ ifneq '' '$(findstring GPIO,$(DRIVER_MODULE_CFG))'
 		CSRCS += $(APP_PATH)/driver/gpio/empty/gpio_driver_empty.c
 
 	else
-	ifneq '' '$(findstring GPIO_ATMEGA1284P,$(DRIVER_MODULE_CFG))'
+	ifneq '' '$(findstring atmega1284p,$(MCU))'
 
 		DEFS += -D HAS_DRIVER_GPIO=1
 		CSRCS += $(APP_PATH)/driver/gpio/avr/gpio_driver_atmega1284p.c
@@ -129,13 +143,17 @@ ifneq '' '$(findstring USART0,$(DRIVER_MODULE_CFG))'
 	ifneq '' '$(findstring RASPBERRY_PI,$(MCU))'
 		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_raspberry_pi.c
 	else
-	ifneq '' '$(findstring RP2040,$(MCU))'
+	ifneq '' '$(findstring rp2040,$(MCU))'
 		#CSRCS += $(APP_PATH)/driver/communication/usart/usart_driver_$(MCU_NAME).c
 	else
 	ifneq '' '$(findstring UNITTEST,$(MCU))'
 		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_unittest.c
 	else
+	ifneq '' '$(findstring MACOS,$(MCU))'
+		CSRCS += $(APP_PATH)/driver/communication/usart/usart_driver_macos.c
+	else
 		CSRCS += $(APP_PATH)/driver/communication/usart/usart0_driver_atmega1284p.c
+	endif
 	endif
 	endif
 	endif
@@ -184,11 +202,24 @@ ifneq '' '$(findstring TIMER1,$(DRIVER_MODULE_CFG))'
 	endif
 endif
 
-# --------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
 ifneq '' '$(findstring LCD_16X2,$(DRIVER_MODULE_CFG))'
 	DEFS += -D HAS_DRIVER_LCD=1
 	CSRCS += $(APP_PATH)/driver/lcd/lcd_driver_HD44780_16x2.c
+endif
+
+#-----------------------------------------------------------------------------
+
+ifneq '' '$(findstring KEYPAD_3x4,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_KEYPAD_3x4=1
+	CSRCS += $(APP_PATH)/driver/keypad/keypad_driver_3x4.c
+endif
+
+#-----------------------------------------------------------------------------
+
+ifneq '' '$(findstring DEVICE_NAME_SUPPORT,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_DEVICE_NAME_SUPPORT=1
 endif
 
 #-----------------------------------------------------------------------------

@@ -5,7 +5,7 @@ CFLAGS += -g
 
 #-----------------------------------------------------------------------------
 
-ifeq ($(MCU), ATMEGA1284P)
+ifeq ($(MCU), atmega1284p)
 include $(FRMWRK_PATH)/make/make_cpu_avr_atmega1284p.mk
 endif
 
@@ -15,6 +15,14 @@ endif
 
 ifeq ($(MCU), UNITTEST)
 include $(FRMWRK_PATH)/make/make_cpu_unittest.mk
+endif
+
+ifeq ($(MCU), UNIVERSAL)
+include $(FRMWRK_PATH)/make/make_cpu_universal.mk
+endif
+
+ifeq ($(MCU), MACOS)
+include $(FRMWRK_PATH)/make/make_cpu_macos.mk
 endif
 
 #-----------------------------------------------------------------------------

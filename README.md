@@ -29,5 +29,5 @@ data from one module to another.
 | Command-Handling                              |             |
 | Driver                                        |             |
 | [kernel](readme/readme_kernel.md#location)    | Contains the basic operating system and all of it's sub-components            |
-| [modules](readme/readme_modules.md#location)  | Sub-Modules realizing special functions, e.g. LCD-Controller, Logger, File-Controller  |
+| [modules](src/modules/readme_modules.md#location)  | Sub-Modules realizing special functions, e.g. LCD-Controller, Logger, File-Controller  |
 | Protocol                                      |             |

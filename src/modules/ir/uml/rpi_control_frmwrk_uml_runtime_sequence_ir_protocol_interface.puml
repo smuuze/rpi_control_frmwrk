@@ -1,0 +1,61 @@
+@startuml rpi_control_frmwrk_uml_runtime_sequence_ir_protocol_interface
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+mainframe sequence: rpi_control_frmwrk - runtime - IR Protocol
+
+'***************************************************************************
+
+box "IR Protocol" #F0F0F0
+    participant "IR-Protocol Task\n:Task" as ir_protocol_task
+    participant "IR-Protocol\n:IR-Protocol" as ir_protocol
+    participant "IR-CMD Slot\n:Slot" as ir_cmd_slot
+    participant "IR-Cmd-Queue\n:Queue" as ir_cmd_queue
+    participant "Transmit-Buffer\n:Buffer" as ir_transmit_buffer
+end box
+
+participant "Frequency\n:Timer" as frequency
+participant "Modulator\n:Timer" as modulator
+participant "MOD-PIN\n:GPIO" as mod_gpio
+
+'***************************************************************************
+
+[-> ir_cmd_slot : SIGNAL_IR_CMD_RECEIVED(ir_cmd)
+ir_cmd_slot -> ir_cmd_queue : enqueue(ir_cmd)
+
+[-> ir_protocol_task : run()
+ir_protocol_task -> ir_cmd_queue : dequeue(ir_cmd)
+ir_protocol_task -> ir_protocol_task : select_protocol(ir_cmd_type)
+ir_protocol_task -> ir_protocol : transmit(ir_cmd)
+
+ir_protocol -> ir_transmit_buffer : prepare()
+ir_protocol -> frequency : configure()
+ir_protocol -> modulator : configure()
+
+ir_protocol -> mod_gpio : drive_low()
+ir_protocol -> frequency : start()
+ir_protocol -> modulator : start()
+
+loop until command finished
+    [-> ir_protocol : irq_callback()
+
+    note right
+        Callback is executed by IRQ of Modulator-Timer
+    end note
+
+    ir_protocol -> ir_transmit_buffer : get_next()
+    alt is pulse
+        ir_protocol -> mod_gpio : drive_high()
+    else is pause
+        ir_protocol -> mod_gpio : drive_low()
+    end
+end
+
+'***************************************************************************
+
+@enduml

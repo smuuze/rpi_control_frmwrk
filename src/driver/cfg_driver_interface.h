@@ -300,7 +300,7 @@ typedef struct TRX_DRIVER_CONFIGURATION {
 
     } module;
 
-    #if defined __raspberrypi__ || defined __unittest__
+    #if defined HAS_DRIVER_DEVICE_NAME_SUPPORT || defined __unittest__
     DRIVER_CFG_DEVICE_NAME_TYPE device;
     #endif
 

@@ -44,6 +44,10 @@
 
 // --------------------------------------------------------------------------------
 
+#include "string.h"
+
+// --------------------------------------------------------------------------------
+
 #include "driver/rtc/rtc_driver_interface.h"
 #include "driver/lcd/lcd_driver_interface.h"
 
@@ -213,9 +217,7 @@ void lcd_driver_set_line(const char* message, u8 length) {
     DEBUG_TRACE_byte(length, "lcd_driver_set_line() - Length:");
     DEBUG_TRACE_STR(message, "lcd_driver_set_line() - New Line:");
 
-    /**
-     * @brief Shift up the lines
-     */
+    // Shift up the lines
     for (u8 line_cnt = 0 ; line_cnt < LCD_NUM_LINES - 1; line_cnt += 1) {
 
         memcpy(
@@ -225,19 +227,19 @@ void lcd_driver_set_line(const char* message, u8 length) {
         );
     }
 
-    /**
-     * @brief Ensure to only copy the maximum number of characters
-     * 
-     */
+    // Ensure to only copy the maximum number of characters
     if (length > LCD_NUM_CHARS) {
         length = LCD_NUM_CHARS;
     }
 
-    /**
-     * @brief Copy the new line into the LCD-Buffer
-     */
-    memset(&line_buffer[LCD_NUM_LINES - 1][0], ' ', LCD_NUM_CHARS);
+    // Copy the new line into the LCD-Buffer
     memcpy(&line_buffer[LCD_NUM_LINES - 1][0], message, length);
+
+    // if needed set the remaining lcd-characters to white-spaces
+    u8 reaming_length = LCD_NUM_CHARS - length;
+    if (reaming_length != 0 ) {
+        memset(&line_buffer[LCD_NUM_LINES - 1][length], ' ', reaming_length);
+    }
 }
 
 // --------------------------------------------------------------------------------

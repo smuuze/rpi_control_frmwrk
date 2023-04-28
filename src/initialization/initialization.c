@@ -55,15 +55,17 @@
 #include "ui/command_line/command_line_interface.h"
 #include "ui/cfg_file_parser/cfg_file_parser.h"
 #include "ui/log_interface/log_interface.h"
-#include "ui/lcd/lcd_interface.h"
 
 #include "app_tasks/message_executer_task.h"
 #include "app_tasks/cli_executer_task.h"
+#include "app_tasks/keypad_to_lcd_task.h"
+#include "app_tasks/led_blinker_task.h"
 
 #include "power_management/power_management_interface.h"
 
-#include "3rdparty/ir_protocol/ir_protocol_nec.h"
-#include "3rdparty/ir_protocol/ir_protocol_sony.h"
+#include "modules/lcd/lcd_interface.h"
+#include "modules/keypad/keypad_interface.h"
+#include "modules/ir/ir_protocol_task.h"
 
 //-----------------------------------------------------------------------------
 
@@ -126,23 +128,36 @@ void initialization(void) {
 	}
 	#endif
 
-    #ifdef HAS_IR_PROTOCOL_NEC
-    {
-        ir_protocol_nec_init();
-    }
-    #endif
-
-    #ifdef HAS_IR_PROTOCOL_SONY
-    {
-        ir_protocol_sony_init();
-    }
-    #endif
-
     #ifdef LCD_CONTROLLER_AVAILABLE
     {
         lcd_init();
     }
     #endif
+
+    #ifdef KEYPAD_3x4_CONTROLLER_AVAILABLE
+    {
+        keypad_init();
+    }
+    #endif
+
+    #ifdef IR_PROTOCOL_AVAILABLE
+    {
+        ir_protocol_init();
+    }
+    #endif
+
+    #ifdef HAS_APP_TASK_LED_BLINKER
+    {
+        led_blinker_init();
+    }
+    #endif
+
+    #ifdef HAS_APP_TASK_KEY_2_LCD
+    {
+        key_2_lcd_init();
+    }
+    #endif
+
 }
 
 //-----------------------------------------------------------------------------

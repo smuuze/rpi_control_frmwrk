@@ -40,3 +40,13 @@ ifneq '' '$(findstring JSON_PARSER,$(PROTOCOL_CFG))'
 	CSRCS += $(PROTOCOL_PATH)/json/protocol_json_parser.c
 	CSRCS += $(PROTOCOL_PATH)/json/protocol_json_response_parser.c
 endif
+
+#-----------------------------------------------------------------------------
+
+ifneq '' '$(findstring UF2_PARSER,$(PROTOCOL_CFG))'
+
+	DEFS  += -D HAS_UF2_PARSER=1
+	CSRCS += $(PROTOCOL_PATH)/uf2/uf2_parser.c
+endif
+
+#-----------------------------------------------------------------------------
