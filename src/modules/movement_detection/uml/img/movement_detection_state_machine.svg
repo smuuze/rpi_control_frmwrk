@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="308px" preserveAspectRatio="none" style="width:507px;height:308px;background:#FFFFFF;" version="1.1" viewBox="0 0 507 308" width="507px" zoomAndPan="magnify"><defs/><g><ellipse cx="240" cy="16" fill="#222222" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><g id="SETUP"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="166" x="157" y="95"/><line style="stroke:#181818;stroke-width:0.5;" x1="157" x2="323" y1="121.4883" y2="121.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="43" x="218.5" y="113.5352">SETUP</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="146" x="162" y="140.0234">enty / activate sensor</text></g><g id="WAIT"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="142" x="358" y="87"/><line style="stroke:#181818;stroke-width:0.5;" x1="358" x2="500" y1="113.4883" y2="113.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="35" x="411.5" y="105.5352">WAIT</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="363" y="132.0234">do / check sensor</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="363" y="148.5117">exit / start timer</text></g><g id="VERIFY"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="142" x="358" y="241"/><line style="stroke:#181818;stroke-width:0.5;" x1="358" x2="500" y1="267.4883" y2="267.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47" x="405.5" y="259.5352">VERIFY</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="363" y="286.0234">do / check sensor</text></g><g id="SIGNALING"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="149" x="106.5" y="233"/><line style="stroke:#181818;stroke-width:0.5;" x1="106.5" x2="255.5" y1="259.4883" y2="259.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="73" x="144.5" y="251.5352">SIGNALING</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="111" x="111.5" y="278.0234">do / send signal</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129" x="111.5" y="294.5117">exit / start timeout</text></g><g id="PAUSE"><rect fill="#F1F1F1" height="50" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="64" x="7" y="242.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="7" x2="71" y1="268.9883" y2="268.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="44" x="17" y="261.0352">PAUSE</text></g><!--MD5=[8dc3e60f12b37178e62eaf910578e60d]
+link *start to SETUP--><g id="link_*start_SETUP"><path d="M240,26.18 C240,39.99 240,66.78 240,88.29 " fill="none" id="*start-to-SETUP" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="240,93.26,244,84.26,240,88.26,236,84.26,240,93.26" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[a6b65912f52811289e6a8fff08ec5dcd]
+link SETUP to WAIT--><g id="link_SETUP_WAIT"><path d="M323.43,121.5 C332.7,121.5 341.97,121.5 351.24,121.5 " fill="none" id="SETUP-to-WAIT" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="356.14,121.5,347.14,117.5,351.14,121.5,347.14,125.5,356.14,121.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[4519a432183f74df94213f8c0b0bfc1b]
+link WAIT to VERIFY--><g id="link_WAIT_VERIFY"><path d="M429,156.26 C429,179.82 429,211.06 429,234.28 " fill="none" id="WAIT-to-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="429,239.08,433,230.08,429,234.08,425,230.08,429,239.08" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="66" x="430" y="199.5684">movement</text></g><!--MD5=[83cbf45037cf2de952ab7e71b595dd83]
+reverse link SETUP to VERIFY--><g id="link_SETUP_VERIFY"><path d="M278.73,152.01 C312.99,178.11 362.49,215.82 395.19,240.74 " fill="none" id="SETUP-backto-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="274.99,149.16,279.721,157.7982,278.9658,152.1919,284.5721,151.4368,274.99,149.16" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="342" y="199.5684">timeout</text></g><!--MD5=[5fae03f5ad6213cb7591ffac7acfe40b]
+reverse link SIGNALING to VERIFY--><g id="link_SIGNALING_VERIFY"><path d="M261.87,267.5 C292.81,267.5 327.84,267.5 357.81,267.5 " fill="none" id="SIGNALING-backto-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="257.26,267.5,266.26,271.5,262.26,267.5,266.26,263.5,257.26,267.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="66" x="273.75" y="261.0684">movement</text></g><!--MD5=[d2f17398eabdb593d85a201ad110f4a5]
+reverse link PAUSE to SIGNALING--><g id="link_PAUSE_SIGNALING"><path d="M77.95,267.5 C87.34,267.5 96.72,267.5 106.11,267.5 " fill="none" id="PAUSE-backto-SIGNALING" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="72.96,267.5,81.96,271.5,77.96,267.5,81.96,263.5,72.96,267.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[e2d7299a96f3968927366b39a697e265]
+reverse link SETUP to PAUSE--><g id="link_SETUP_PAUSE"><path d="M199.09,151.81 C161.34,178.85 106.04,218.47 71.3,243.36 " fill="none" id="SETUP-backto-PAUSE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="202.83,149.13,193.1867,151.1319,198.7691,152.047,197.8539,157.6293,202.83,149.13" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="147" y="199.5684">timeout</text></g><!--MD5=[34c2898c3802766895f7bc31a18874be]
+@startuml movement_detection_state_machine
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+' folder "state: RPi-Control - Movement-Detection - State-Machine" 
+
+'***************************************************************************
+
+[*] - -> SETUP
+SETUP : enty / activate sensor
+
+SETUP -right-> WAIT
+WAIT : do / check sensor
+WAIT : exit / start timer
+
+WAIT -down-> VERIFY : movement
+VERIFY : do / check sensor
+VERIFY -left-> SETUP : timeout
+
+VERIFY -left-> SIGNALING : movement
+SIGNALING : do / send signal
+SIGNALING : exit / start timeout
+SIGNALING -left-> PAUSE
+
+PAUSE -up-> SETUP : timeout
+
+'***************************************************************************
+
+@enduml
+
+@startuml movement_detection_state_machine
+
+
+skinparam monochrome true
+
+
+
+
+[*] - -> SETUP
+SETUP : enty / activate sensor
+
+SETUP -right-> WAIT
+WAIT : do / check sensor
+WAIT : exit / start timer
+
+WAIT -down-> VERIFY : movement
+VERIFY : do / check sensor
+VERIFY -left-> SETUP : timeout
+
+VERIFY -left-> SIGNALING : movement
+SIGNALING : do / send signal
+SIGNALING : exit / start timeout
+SIGNALING -left-> PAUSE
+
+PAUSE -up-> SETUP : timeout
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

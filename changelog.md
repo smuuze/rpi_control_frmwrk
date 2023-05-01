@@ -8,7 +8,7 @@ Date: ***NOT RELEASED***
 
 **New Feature:**
 
- - none
+ - [Module](src/modules/movement_detection/readme/readme_movement_detection.md)  for motion etection
 
 **Bug Fixes:**
 

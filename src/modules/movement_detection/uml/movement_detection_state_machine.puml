@@ -1,0 +1,34 @@
+@startuml movement_detection_state_machine
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+' folder "state: RPi-Control - Movement-Detection - State-Machine" 
+
+'***************************************************************************
+
+[*] --> SETUP
+SETUP : enty / activate sensor
+
+SETUP -right-> WAIT
+WAIT : do / check sensor
+WAIT : exit / start timer
+
+WAIT -down-> VERIFY : movement
+VERIFY : do / check sensor
+VERIFY -left-> SETUP : timeout
+
+VERIFY -left-> SIGNALING : movement
+SIGNALING : do / send signal
+SIGNALING : exit / start timeout
+SIGNALING -left-> PAUSE
+
+PAUSE -up-> SETUP : timeout
+
+'***************************************************************************
+
+@enduml

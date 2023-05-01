@@ -2,6 +2,9 @@
 
 [Signal-Slot-Interface]: ../../../../readme/readme_signal_slot.md "SW-IRQ based communication system used in the rpi-control firmware"
 
+### Section
+
+Readme | [Changelog](../../../../changelog.md)
 
 ### Location
 [frmwrk](../../../../README.md) / [modules](../../readme_modules.md) / MOVEMENT-DETECTION
@@ -17,7 +20,9 @@
 [Features](#features)\
 [Solution Strategy](#solution-strategy)\
 [Structure](#structure)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Context](#context)\
 [Runtime](#runtime)\
+&nbsp;&nbsp;&nbsp;&nbsp;[State-Machine](#state-machine)\
 [Integration](#integration)\
 &nbsp;&nbsp;&nbsp;&nbsp;[Makefile](#makefile)\
 [Usage](#usage)\
@@ -76,12 +81,24 @@ This section describes how to realize each requirement.
 ## Structure
 [[TOP]]
 
-![structure_context](../../../modules/movement_detection/uml/img/movement_detection_context.png )
+### Context
+
+![structure_context](../../../modules/movement_detection/uml/img/movement_detection_context.svg )
 
 ## Runtime
 [[TOP]]
 
-... comming soon ...
+### State-Machine
+
+![runteim_statemachine](../../../modules/movement_detection/uml/img/movement_detection_state_machine.svg )
+
+| State     | Description |
+|-----------|-------------|
+| SETUP     | Activate the movement-dectection sensor. |
+| WAIT      | Wait for a movement by checking the sensor periodically. If a movement was detected a timeout is started on elaving this state |
+| VERIFY    | Check once again if the first event can be aproved. Go back to the IDLE state if the timeout triggers. |
+| SIGNALING | A movement was detected and verified. A signal is send via the msg-bus system.  |
+| PAUSE     | Wait for a time-interval before start checking fo the next movement. The sensor is deactivated in this state  |
 
 ## Integration
 [[TOP]]
