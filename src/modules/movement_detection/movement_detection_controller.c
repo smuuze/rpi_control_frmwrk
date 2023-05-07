@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -43,15 +43,14 @@
 // --------------------------------------------------------------------------------
 
 #include "mcu_task_interface.h"
-#include "signal_slot_interface"
+#include "signal_slot_interface.h"
 #include "time_management/time_management.h"
+#include "local_module_status.h"
 
 // --------------------------------------------------------------------------------
 
-/**
- * @brief Interval at which the controller checks the sensor for detected movement
- */
-#define MOVEMENT_DETECTION_CONTROLLER_SCHEDULE_INTERVAL_MS              100
+#include "modules/movement_detection/movement_detection_controller.h"
+#include "modules/movement_detection/movement_detect_sensor_interface.h"
 
 // --------------------------------------------------------------------------------
 
@@ -59,14 +58,73 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(MOVE_DETECT_TIMER)
 
 // --------------------------------------------------------------------------------
 
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MOVEMENT_DETECT_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MOVEMENT_DETECT_POWER_DOWN_SIGNAL)
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MOVEMENT_DETECT_POWER_UP_SIGNAL)
+
+// --------------------------------------------------------------------------------
+
+#define MOVMENT_DETECTION_STATUS_ENTER_POWER_DOWN ( 1 << 0 )
+#define MOVMENT_DETECTION_STATUS_LEAVE_POWER_DOWN ( 1 << 1 )
+
+BUILD_MODULE_STATUS_U8(MOVMENT_DETECTION_STATUS)
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Callback to enter the power down mode
+ * 
+ * @param p_argument is ignored
+ */
+static void movement_detect_signal_power_down_callback(const void* p_argument) {
+    (void) p_argument;
+
+    DEBUG_PASS("movement_detect_signal_power_down_callback()");
+    MOVMENT_DETECTION_STATUS_set(MOVMENT_DETECTION_STATUS_ENTER_POWER_DOWN);
+}
+
+/**
+ * @brief Callback to leave power down mode.
+ * 
+ * @param p_argument is ignored
+ */
+static void movement_detect_signal_power_up_callback(const void* p_argument) {
+    (void) p_argument;
+
+    DEBUG_PASS("movement_detect_signal_power_up_callback()");
+    MOVMENT_DETECTION_STATUS_set(MOVMENT_DETECTION_STATUS_LEAVE_POWER_DOWN);
+}
+
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(
+    MOVEMENT_DETECT_POWER_DOWN_SIGNAL,
+    MOVEMENT_DETECT_POWER_DOWN_SLOT,
+    movement_detect_signal_power_down_callback
+)
+
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(
+    MOVEMENT_DETECT_POWER_UP_SIGNAL,
+    MOVEMENT_DETECT_POWER_UP_SLOT,
+    movement_detect_signal_power_up_callback
+)
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief States of the state-machine
+ */
 typedef enum {
     MOVEMENT_DETECTION_STATE_SETUP = 0,
-    MOVEMENT_DETECTION_STATE_WAIT,
+    MOVEMENT_DETECTION_STATE_WAIT_FOR_MOVEMENT,
+    MOVEMENT_DETECTION_STATE_WAIT_TO_VERIFY,
     MOVEMENT_DETECTION_STATE_VERIFY,
     MOVEMENT_DETECTION_STATE_SIGNALING,
-    MOVEMENT_DETECTION_STATE_PAUSE
+    MOVEMENT_DETECTION_STATE_PAUSE,
+    MOVEMENT_DETECTION_STATE_POWER_DOWN
 } MOVEMENT_DETECTION_CONTROLLER_STATES;
 
+/**
+ * @brief Current state of the state-machine
+ */
 static MOVEMENT_DETECTION_CONTROLLER_STATES move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
 
 // --------------------------------------------------------------------------------
@@ -75,7 +133,7 @@ static MOVEMENT_DETECTION_CONTROLLER_STATES move_detect_state = MOVEMENT_DETECTI
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.start
  */
 static void MOVEMENT_DETECT_CONTROLLER_TASK_start(void) {
-    
+    move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
 }
 
 /**
@@ -89,7 +147,8 @@ static u16 MOVEMENT_DETECT_CONTROLLER_TASK_get_schedule_interval(void) {
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_state
  */
 static MCU_TASK_INTERFACE_TASK_STATE MOVEMENT_DETECT_CONTROLLER_task_get_state(void) {
-    
+
+    return MCU_TASK_RUNNING;
 }
 
 /**
@@ -101,28 +160,91 @@ static void MOVEMENT_DETECT_CONTROLLER_TASK_execute(void) {
 
         default:
             move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
-            break;
+            // no break;
 
         case MOVEMENT_DETECTION_STATE_SETUP:
-            move_detect_state = MOVEMENT_DETECTION_STATE_WAIT;
+
+            DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - SETUP -> WAIT_FOR_MOVEMENT");
+            move_detect_state = MOVEMENT_DETECTION_STATE_WAIT_FOR_MOVEMENT;
             break;
 
-        case MOVEMENT_DETECTION_STATE_WAIT:
-            move_detect_state = MOVEMENT_DETECTION_STATE_VERIFY;
+        case MOVEMENT_DETECTION_STATE_WAIT_FOR_MOVEMENT:
+
+            if (MOVMENT_DETECTION_STATUS_is_set(MOVMENT_DETECTION_STATUS_ENTER_POWER_DOWN)) {
+
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - SETUP -> POWER_DOWN");
+                move_detect_state = MOVEMENT_DETECTION_STATE_POWER_DOWN;
+
+            } else if (movement_detect_sensor_is_movement() != 0) {
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - WAIT_FOR_MOVEMENT -> WAIT_TO_VERIFY");
+                move_detect_state = MOVEMENT_DETECTION_STATE_WAIT_TO_VERIFY;
+                MOVE_DETECT_TIMER_start();
+            }
+
+            break;
+
+        case MOVEMENT_DETECTION_STATE_WAIT_TO_VERIFY:
+
+            if (MOVE_DETECT_TIMER_is_up(MOVEMENT_DETECTION_CONTROLLER_WAIT_TO_VERIFY_TIMEOUT_MS)) {
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - WAIT_TO_VERIFY -> VERFIY");
+                move_detect_state = MOVEMENT_DETECTION_STATE_VERIFY;
+                MOVE_DETECT_TIMER_start();
+            }
+
             break;
 
         case MOVEMENT_DETECTION_STATE_VERIFY:
-            move_detect_state = MOVEMENT_DETECTION_STATE_SIGNALING;
+            
+            if (MOVE_DETECT_TIMER_is_up(MOVEMENT_DETECTION_CONTROLLER_VERIFY_TIMEOUT_MS)) {
+                
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - VERFIY -> SETUP");
+                move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
+                MOVE_DETECT_TIMER_stop();
+
+            } else if (movement_detect_sensor_is_movement()) {
+
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - VERFIY -> SIGNALING");
+                move_detect_state = MOVEMENT_DETECTION_STATE_SIGNALING;
+                MOVE_DETECT_TIMER_stop();
+            }
+
             break;
 
         case MOVEMENT_DETECTION_STATE_SIGNALING:
+
+            MOVEMENT_DETECT_SIGNAL_send(NULL);
+
+            MOVE_DETECT_TIMER_start();
+            DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - SIGNALING -> PAUSE");
             move_detect_state = MOVEMENT_DETECTION_STATE_PAUSE;
             break;
 
         case MOVEMENT_DETECTION_STATE_PAUSE:
-            move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
+            
+            if (MOVE_DETECT_TIMER_is_up(MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS)) {
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - PAUSE -> SETUP");
+                move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
+            }
+
             break;
 
+        case MOVEMENT_DETECTION_STATE_POWER_DOWN:
+
+            if (MOVMENT_DETECTION_STATUS_is_set(MOVMENT_DETECTION_STATUS_ENTER_POWER_DOWN)) {
+                MOVMENT_DETECTION_STATUS_unset(MOVMENT_DETECTION_STATUS_ENTER_POWER_DOWN);
+                movement_detect_sensor_power_down();
+            }
+
+            if (MOVMENT_DETECTION_STATUS_is_set(MOVMENT_DETECTION_STATUS_LEAVE_POWER_DOWN)) {
+
+                MOVMENT_DETECTION_STATUS_unset(MOVMENT_DETECTION_STATUS_LEAVE_POWER_DOWN);
+                movement_detect_sensor_power_up();
+
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - POWER_DOWN -> SETUP");
+                move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
+            }
+
+            break;
     }
 }
 
@@ -151,6 +273,16 @@ TASK_CREATE(
  * @see movement_detection_interface.h#init
  */
 void movement_detection_controller_init(void) {
+
+    DEBUG_PASS("movement_detection_controller_init()");
+
+    MOVEMENT_DETECT_SIGNAL_init();
+    MOVEMENT_DETECT_POWER_DOWN_SIGNAL_init();
+    MOVEMENT_DETECT_POWER_UP_SIGNAL_init();
+
+    MOVEMENT_DETECT_POWER_DOWN_SLOT_connect();
+    MOVEMENT_DETECT_POWER_UP_SLOT_connect();
+
     MOVEMENT_DETECT_CONTROLLER_TASK_init();
 }
 

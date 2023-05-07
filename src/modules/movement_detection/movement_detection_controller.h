@@ -26,6 +26,60 @@
 
 // --------------------------------------------------------------------------------
 
+#include "signal_slot_interface.h"
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Interval at which the controller checks
+ * the sensor for detected movement
+ */
+#ifndef MOVEMENT_DETECTION_CONTROLLER_SCHEDULE_INTERVAL_MS
+#define MOVEMENT_DETECTION_CONTROLLER_SCHEDULE_INTERVAL_MS              100
+#endif
+
+/**
+ * @brief Time in milliseconds to wait before verify a movement.
+ */
+#ifndef MOVEMENT_DETECTION_CONTROLLER_WAIT_TO_VERIFY_TIMEOUT_MS
+#define MOVEMENT_DETECTION_CONTROLLER_WAIT_TO_VERIFY_TIMEOUT_MS         500
+#endif
+
+/**
+ * @brief Time in milliseconds to verify a movement.
+ * If this time is up, there is no movement.
+ */
+#ifndef MOVEMENT_DETECTION_CONTROLLER_VERIFY_TIMEOUT_MS
+#define MOVEMENT_DETECTION_CONTROLLER_VERIFY_TIMEOUT_MS                 1000
+#endif
+
+/**
+ * @brief Pause interval in milliseconds
+ * after a successful movement detection.
+ */
+#ifndef MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS
+#define MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS                     1000
+#endif
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Sendind this signal will enable the power down mode
+ * of the movement-detection controller. While in power down
+ * no movement can be detected. An currently on going operation
+ * is finished before the power down mode is entered.
+ */
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(MOVEMENT_DETECT_POWER_DOWN_SIGNAL)
+
+/**
+ * @brief Sending this signal will disable an currently active power down mode
+ * of the movment-detection controller. If the power down mode is not active
+ * right now, nothing happens.
+ */
+SIGNAL_SLOT_INTERFACE_INCLUDE_SIGNAL(MOVEMENT_DETECT_POWER_UP_SIGNAL)
+
+// --------------------------------------------------------------------------------
+
 /**
  * @brief Initializes the movement-detection module and starts it.
  */

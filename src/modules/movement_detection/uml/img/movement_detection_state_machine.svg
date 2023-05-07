@@ -1,11 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="308px" preserveAspectRatio="none" style="width:507px;height:308px;background:#FFFFFF;" version="1.1" viewBox="0 0 507 308" width="507px" zoomAndPan="magnify"><defs/><g><ellipse cx="240" cy="16" fill="#222222" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><g id="SETUP"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="166" x="157" y="95"/><line style="stroke:#181818;stroke-width:0.5;" x1="157" x2="323" y1="121.4883" y2="121.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="43" x="218.5" y="113.5352">SETUP</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="146" x="162" y="140.0234">enty / activate sensor</text></g><g id="WAIT"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="142" x="358" y="87"/><line style="stroke:#181818;stroke-width:0.5;" x1="358" x2="500" y1="113.4883" y2="113.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="35" x="411.5" y="105.5352">WAIT</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="363" y="132.0234">do / check sensor</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="363" y="148.5117">exit / start timer</text></g><g id="VERIFY"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="142" x="358" y="241"/><line style="stroke:#181818;stroke-width:0.5;" x1="358" x2="500" y1="267.4883" y2="267.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47" x="405.5" y="259.5352">VERIFY</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="363" y="286.0234">do / check sensor</text></g><g id="SIGNALING"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="149" x="106.5" y="233"/><line style="stroke:#181818;stroke-width:0.5;" x1="106.5" x2="255.5" y1="259.4883" y2="259.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="73" x="144.5" y="251.5352">SIGNALING</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="111" x="111.5" y="278.0234">do / send signal</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129" x="111.5" y="294.5117">exit / start timeout</text></g><g id="PAUSE"><rect fill="#F1F1F1" height="50" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="64" x="7" y="242.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="7" x2="71" y1="268.9883" y2="268.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="44" x="17" y="261.0352">PAUSE</text></g><!--MD5=[8dc3e60f12b37178e62eaf910578e60d]
-link *start to SETUP--><g id="link_*start_SETUP"><path d="M240,26.18 C240,39.99 240,66.78 240,88.29 " fill="none" id="*start-to-SETUP" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="240,93.26,244,84.26,240,88.26,236,84.26,240,93.26" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[a6b65912f52811289e6a8fff08ec5dcd]
-link SETUP to WAIT--><g id="link_SETUP_WAIT"><path d="M323.43,121.5 C332.7,121.5 341.97,121.5 351.24,121.5 " fill="none" id="SETUP-to-WAIT" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="356.14,121.5,347.14,117.5,351.14,121.5,347.14,125.5,356.14,121.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[4519a432183f74df94213f8c0b0bfc1b]
-link WAIT to VERIFY--><g id="link_WAIT_VERIFY"><path d="M429,156.26 C429,179.82 429,211.06 429,234.28 " fill="none" id="WAIT-to-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="429,239.08,433,230.08,429,234.08,425,230.08,429,239.08" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="66" x="430" y="199.5684">movement</text></g><!--MD5=[83cbf45037cf2de952ab7e71b595dd83]
-reverse link SETUP to VERIFY--><g id="link_SETUP_VERIFY"><path d="M278.73,152.01 C312.99,178.11 362.49,215.82 395.19,240.74 " fill="none" id="SETUP-backto-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="274.99,149.16,279.721,157.7982,278.9658,152.1919,284.5721,151.4368,274.99,149.16" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="342" y="199.5684">timeout</text></g><!--MD5=[5fae03f5ad6213cb7591ffac7acfe40b]
-reverse link SIGNALING to VERIFY--><g id="link_SIGNALING_VERIFY"><path d="M261.87,267.5 C292.81,267.5 327.84,267.5 357.81,267.5 " fill="none" id="SIGNALING-backto-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="257.26,267.5,266.26,271.5,262.26,267.5,266.26,263.5,257.26,267.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="66" x="273.75" y="261.0684">movement</text></g><!--MD5=[d2f17398eabdb593d85a201ad110f4a5]
-reverse link PAUSE to SIGNALING--><g id="link_PAUSE_SIGNALING"><path d="M77.95,267.5 C87.34,267.5 96.72,267.5 106.11,267.5 " fill="none" id="PAUSE-backto-SIGNALING" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="72.96,267.5,81.96,271.5,77.96,267.5,81.96,263.5,72.96,267.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[e2d7299a96f3968927366b39a697e265]
-reverse link SETUP to PAUSE--><g id="link_SETUP_PAUSE"><path d="M199.09,151.81 C161.34,178.85 106.04,218.47 71.3,243.36 " fill="none" id="SETUP-backto-PAUSE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="202.83,149.13,193.1867,151.1319,198.7691,152.047,197.8539,157.6293,202.83,149.13" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="147" y="199.5684">timeout</text></g><!--MD5=[34c2898c3802766895f7bc31a18874be]
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="391px" preserveAspectRatio="none" style="width:641px;height:391px;background:#FFFFFF;" version="1.1" viewBox="0 0 641 391" width="641px" zoomAndPan="magnify"><defs/><g><ellipse cx="499.5" cy="50" fill="#222222" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><g id="SETUP"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="172" x="243.5" y="178"/><line style="stroke:#181818;stroke-width:0.5;" x1="243.5" x2="415.5" y1="204.4883" y2="204.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="43" x="308" y="196.5352">SETUP</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="152" x="248.5" y="223.0234">entry / activate sensor</text></g><g id="WAIT_FOR_MOVEMENT"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="176" x="458.5" y="170"/><line style="stroke:#181818;stroke-width:0.5;" x1="458.5" x2="634.5" y1="196.4883" y2="196.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="156" x="468.5" y="188.5352">WAIT_FOR_MOVEMENT</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="463.5" y="215.0234">do / check sensor</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="463.5" y="231.5117">exit / start timer</text></g><g id="WAIT_TO_VERIFY"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="136" x="486.5" y="316"/><line style="stroke:#181818;stroke-width:0.5;" x1="486.5" x2="622.5" y1="342.4883" y2="342.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="116" x="496.5" y="334.5352">WAIT_TO_VERIFY</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="491.5" y="361.0234">do / check timer</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="491.5" y="377.5117">exit / start timer</text></g><g id="VERIFY"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="142" x="258.5" y="324"/><line style="stroke:#181818;stroke-width:0.5;" x1="258.5" x2="400.5" y1="350.4883" y2="350.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47" x="306" y="342.5352">VERIFY</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="263.5" y="369.0234">do / check sensor</text></g><g id="SIGNALING"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="149" x="7" y="316"/><line style="stroke:#181818;stroke-width:0.5;" x1="7" x2="156" y1="342.4883" y2="342.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="73" x="45" y="334.5352">SIGNALING</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="111" x="12" y="361.0234">do / send signal</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129" x="12" y="377.5117">exit / start timeout</text></g><g id="PAUSE"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="20.5" y="178"/><line style="stroke:#181818;stroke-width:0.5;" x1="20.5" x2="152.5" y1="204.4883" y2="204.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="44" x="64.5" y="196.5352">PAUSE</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="25.5" y="223.0234">do / check timer</text></g><g id="POWER_DOWN"><rect fill="#F1F1F1" height="85.9531" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="241" x="128" y="7"/><line style="stroke:#181818;stroke-width:0.5;" x1="128" x2="369" y1="33.4883" y2="33.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="98" x="199.5" y="25.5352">POWER_DOWN</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="185" x="133" y="52.0234">entry / power down sensor</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="221" x="133" y="68.5117">do / wait for SIGNAL(POWER_UP)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="156" x="133" y="85">exit / power up sensor</text></g><!--MD5=[8dc3e60f12b37178e62eaf910578e60d]
+link *start to SETUP--><g id="link_*start_SETUP"><path d="M496.92,59.94 C491.5,77.35 477.4,116.19 453.5,140 C439.45,154 421.67,165.55 404,174.78 " fill="none" id="*start-to-SETUP" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="399.87,176.88,409.705,176.3574,404.3249,174.6097,406.0726,169.2296,399.87,176.88" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[cdf3be2d8ff89efabc2c8c77bc064ccb]
+link SETUP to WAIT_FOR_MOVEMENT--><g id="link_SETUP_WAIT_FOR_MOVEMENT"><path d="M415.96,204.5 C427.9,204.5 439.84,204.5 451.78,204.5 " fill="none" id="SETUP-to-WAIT_FOR_MOVEMENT" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="456.52,204.5,447.52,200.5,451.52,204.5,447.52,208.5,456.52,204.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[320d24a9a7705219a9f0f7adb2e3716f]
+link WAIT_FOR_MOVEMENT to WAIT_TO_VERIFY--><g id="link_WAIT_FOR_MOVEMENT_WAIT_TO_VERIFY"><path d="M548.38,239.26 C549.54,260.3 551.05,287.46 552.28,309.56 " fill="none" id="WAIT_FOR_MOVEMENT-to-WAIT_TO_VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="552.55,314.44,556.0548,305.2359,552.2782,309.4474,548.0667,305.6708,552.55,314.44" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="66" x="551.5" y="282.5684">movement</text></g><!--MD5=[134b3e6eeb14dc2d486bebae1bbc2f0f]
+reverse link VERIFY to WAIT_TO_VERIFY--><g id="link_VERIFY_WAIT_TO_VERIFY"><path d="M407.15,350.5 C432.81,350.5 461.16,350.5 486.08,350.5 " fill="none" id="VERIFY-backto-WAIT_TO_VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="402.2,350.5,411.2,354.5,407.2,350.5,411.2,346.5,402.2,350.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="419" y="344.0684">timeout</text></g><!--MD5=[83cbf45037cf2de952ab7e71b595dd83]
+reverse link SETUP to VERIFY--><g id="link_SETUP_VERIFY"><path d="M329.5,237.63 C329.5,263.68 329.5,299.89 329.5,323.98 " fill="none" id="SETUP-backto-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="329.5,232.76,325.5,241.76,329.5,237.76,333.5,241.76,329.5,232.76" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="330.5" y="282.5684">timeout</text></g><!--MD5=[5fae03f5ad6213cb7591ffac7acfe40b]
+reverse link SIGNALING to VERIFY--><g id="link_SIGNALING_VERIFY"><path d="M162.37,350.5 C193.31,350.5 228.34,350.5 258.31,350.5 " fill="none" id="SIGNALING-backto-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="157.76,350.5,166.76,354.5,162.76,350.5,166.76,346.5,157.76,350.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="66" x="174.25" y="344.0684">movement</text></g><!--MD5=[d2f17398eabdb593d85a201ad110f4a5]
+reverse link PAUSE to SIGNALING--><g id="link_PAUSE_SIGNALING"><path d="M85.39,237.55 C84.58,260.73 83.5,291.99 82.68,315.58 " fill="none" id="PAUSE-backto-SIGNALING" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="85.55,232.76,81.244,241.6177,85.3787,237.7571,89.2393,241.8918,85.55,232.76" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[e525c8eda5143dff6606b5d9ae4eebdc]
+link PAUSE to SETUP--><g id="link_PAUSE_SETUP"><path d="M152.9,204.5 C178.77,204.5 208.86,204.5 236.8,204.5 " fill="none" id="PAUSE-to-SETUP" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="241.59,204.5,232.59,200.5,236.59,204.5,232.59,208.5,241.59,204.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="173.5" y="198.0684">timeout</text></g><!--MD5=[df93f938ffac675cd55991691725bbe9]
+reverse link POWER_DOWN to SETUP--><g id="link_POWER_DOWN_SETUP"><path d="M277.09,98.83 C281.68,106.84 286.3,115.11 290.5,123 C300.07,140.95 310.06,161.61 317.53,177.51 " fill="none" id="POWER_DOWN-backto-SETUP" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="274.68,94.65,275.7174,104.4441,277.1807,98.9797,282.645,100.443,274.68,94.65" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="145" x="299.5" y="136.5684">SIGNAL(POWER_DOWN)</text></g><!--MD5=[8592f31b159231239f3c603aac3daceb]
+link POWER_DOWN to SETUP--><g id="link_POWER_DOWN_SETUP"><path d="M172.66,93.32 C157.37,107.27 149.06,123.48 160.5,140 C178.32,165.73 207.94,181.05 237.46,190.16 " fill="none" id="POWER_DOWN-to-SETUP" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="241.9,191.47,234.3975,185.0894,237.1039,190.0569,232.1364,192.7632,241.9,191.47" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="120" x="161.5" y="136.5684">SIGNAL(POWER_UP)</text></g><!--MD5=[b55b4bbcd5248e301d20ba904dab0409]
 @startuml movement_detection_state_machine
 
 '***************************************************************************
@@ -20,22 +23,33 @@ skinparam monochrome true
 '***************************************************************************
 
 [*] - -> SETUP
-SETUP : enty / activate sensor
+SETUP : entry / activate sensor
 
-SETUP -right-> WAIT
-WAIT : do / check sensor
-WAIT : exit / start timer
+SETUP -right-> WAIT_FOR_MOVEMENT
+WAIT_FOR_MOVEMENT : do / check sensor
+WAIT_FOR_MOVEMENT : exit / start timer
 
-WAIT -down-> VERIFY : movement
+WAIT_FOR_MOVEMENT -down-> WAIT_TO_VERIFY : movement
+WAIT_TO_VERIFY : do / check timer
+WAIT_TO_VERIFY : exit / start timer
+WAIT_TO_VERIFY -left-> VERIFY : timeout
+
 VERIFY : do / check sensor
 VERIFY -left-> SETUP : timeout
 
 VERIFY -left-> SIGNALING : movement
 SIGNALING : do / send signal
 SIGNALING : exit / start timeout
-SIGNALING -left-> PAUSE
+SIGNALING -up-> PAUSE
 
-PAUSE -up-> SETUP : timeout
+PAUSE -right-> SETUP : timeout
+PAUSE : do / check timer
+
+SETUP -up-> POWER_DOWN : SIGNAL(POWER_DOWN)
+POWER_DOWN : entry / power down sensor
+POWER_DOWN : do / wait for SIGNAL(POWER_UP)
+POWER_DOWN : exit / power up sensor
+POWER_DOWN - -> SETUP : SIGNAL(POWER_UP)
 
 '***************************************************************************
 
@@ -50,22 +64,33 @@ skinparam monochrome true
 
 
 [*] - -> SETUP
-SETUP : enty / activate sensor
+SETUP : entry / activate sensor
 
-SETUP -right-> WAIT
-WAIT : do / check sensor
-WAIT : exit / start timer
+SETUP -right-> WAIT_FOR_MOVEMENT
+WAIT_FOR_MOVEMENT : do / check sensor
+WAIT_FOR_MOVEMENT : exit / start timer
 
-WAIT -down-> VERIFY : movement
+WAIT_FOR_MOVEMENT -down-> WAIT_TO_VERIFY : movement
+WAIT_TO_VERIFY : do / check timer
+WAIT_TO_VERIFY : exit / start timer
+WAIT_TO_VERIFY -left-> VERIFY : timeout
+
 VERIFY : do / check sensor
 VERIFY -left-> SETUP : timeout
 
 VERIFY -left-> SIGNALING : movement
 SIGNALING : do / send signal
 SIGNALING : exit / start timeout
-SIGNALING -left-> PAUSE
+SIGNALING -up-> PAUSE
 
-PAUSE -up-> SETUP : timeout
+PAUSE -right-> SETUP : timeout
+PAUSE : do / check timer
+
+SETUP -up-> POWER_DOWN : SIGNAL(POWER_DOWN)
+POWER_DOWN : entry / power down sensor
+POWER_DOWN : do / wait for SIGNAL(POWER_UP)
+POWER_DOWN : exit / power up sensor
+POWER_DOWN - -> SETUP : SIGNAL(POWER_UP)
 
 
 @enduml
