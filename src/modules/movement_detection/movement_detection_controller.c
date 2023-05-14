@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -130,6 +130,17 @@ static MOVEMENT_DETECTION_CONTROLLER_STATES move_detect_state = MOVEMENT_DETECTI
 // --------------------------------------------------------------------------------
 
 /**
+ * @brief Configures the sensor to the values of use for the current project
+ */
+static inline void movement_detect_controller_configure_sensor(void) {
+    
+    MOVEMENT_DETECT_SENSOR_CFG movement_sensor_config;
+    movement_detect_sensor_configure(&movement_sensor_config);
+}
+
+// --------------------------------------------------------------------------------
+
+/**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.start
  */
 static void MOVEMENT_DETECT_CONTROLLER_TASK_start(void) {
@@ -165,6 +176,7 @@ static void MOVEMENT_DETECT_CONTROLLER_TASK_execute(void) {
         case MOVEMENT_DETECTION_STATE_SETUP:
 
             DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - SETUP -> WAIT_FOR_MOVEMENT");
+            movement_detect_controller_configure_sensor();
             move_detect_state = MOVEMENT_DETECTION_STATE_WAIT_FOR_MOVEMENT;
             break;
 
@@ -197,8 +209,8 @@ static void MOVEMENT_DETECT_CONTROLLER_TASK_execute(void) {
             
             if (MOVE_DETECT_TIMER_is_up(MOVEMENT_DETECTION_CONTROLLER_VERIFY_TIMEOUT_MS)) {
                 
-                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - VERFIY -> SETUP");
-                move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - VERFIY -> WAIT_FOR_MOVEMENT");
+                move_detect_state = MOVEMENT_DETECTION_STATE_WAIT_FOR_MOVEMENT;
                 MOVE_DETECT_TIMER_stop();
 
             } else if (movement_detect_sensor_is_movement()) {
@@ -222,8 +234,8 @@ static void MOVEMENT_DETECT_CONTROLLER_TASK_execute(void) {
         case MOVEMENT_DETECTION_STATE_PAUSE:
             
             if (MOVE_DETECT_TIMER_is_up(MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS)) {
-                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - PAUSE -> SETUP");
-                move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - PAUSE -> WAIT_FOR_MOVEMENT");
+                move_detect_state = MOVEMENT_DETECTION_STATE_WAIT_FOR_MOVEMENT;
             }
 
             break;
@@ -240,8 +252,8 @@ static void MOVEMENT_DETECT_CONTROLLER_TASK_execute(void) {
                 MOVMENT_DETECTION_STATUS_unset(MOVMENT_DETECTION_STATUS_LEAVE_POWER_DOWN);
                 movement_detect_sensor_power_up();
 
-                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - POWER_DOWN -> SETUP");
-                move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
+                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - POWER_DOWN -> WAIT_FOR_MOVEMENT");
+                move_detect_state = MOVEMENT_DETECTION_STATE_WAIT_FOR_MOVEMENT;
             }
 
             break;

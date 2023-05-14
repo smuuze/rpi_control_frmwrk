@@ -24,6 +24,7 @@ source_dir_list=(
     keypad_3x4
     log_interface
     math_module
+    movement_detection_controller
     mqtt_interface
     msg_executer
     parse_trace_object

@@ -11,34 +11,34 @@ skinparam monochrome true
 
 '***************************************************************************
 
-[*] --> SETUP
+[*] -right-> SETUP
 SETUP : entry / activate sensor
 
-SETUP -right-> WAIT_FOR_MOVEMENT
+SETUP -down-> WAIT_FOR_MOVEMENT
 WAIT_FOR_MOVEMENT : do / check sensor
 WAIT_FOR_MOVEMENT : exit / start timer
 
-WAIT_FOR_MOVEMENT -down-> WAIT_TO_VERIFY : movement
+WAIT_FOR_MOVEMENT -down-> WAIT_TO_VERIFY : is movement
 WAIT_TO_VERIFY : do / check timer
 WAIT_TO_VERIFY : exit / start timer
 WAIT_TO_VERIFY -left-> VERIFY : timeout
 
 VERIFY : do / check sensor
-VERIFY -left-> SETUP : timeout
+VERIFY -left-> WAIT_FOR_MOVEMENT : timeout
 
-VERIFY -left-> SIGNALING : movement
+VERIFY -left-> SIGNALING : is movement
 SIGNALING : do / send signal
 SIGNALING : exit / start timeout
 SIGNALING -up-> PAUSE
 
-PAUSE -right-> SETUP : timeout
+PAUSE -right-> WAIT_FOR_MOVEMENT : timeout
 PAUSE : do / check timer
 
-SETUP -up-> POWER_DOWN : SIGNAL(POWER_DOWN)
+WAIT_FOR_MOVEMENT -right-> POWER_DOWN : SIGNAL(POWER_DOWN)
 POWER_DOWN : entry / power down sensor
 POWER_DOWN : do / wait for SIGNAL(POWER_UP)
 POWER_DOWN : exit / power up sensor
-POWER_DOWN --> SETUP : SIGNAL(POWER_UP)
+POWER_DOWN -left-> WAIT_FOR_MOVEMENT : SIGNAL(POWER_UP)
 
 '***************************************************************************
 

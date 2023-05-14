@@ -60,11 +60,11 @@ E.g. via a PIR sensor. If an object was recognized a signal is generated and sen
 
 | ID | Title | Description | *Status |
 |----|-------|-------------|--------|
-| [REQ_MOVEMENT_01_DECT_MOVMENT] | Detect Movement | The movement-detection module must detect movement in front of the system.  | DEFINED |
-| [REQ_MOVEMENT_02_VERIFY_DETECTION] | Verify-Detection  | If a movement was detected the module shall check if the movement is still present after a short amount of time. (50ms <= t <= 1 sek). It is possible that there occur false positives. E.g. temperature variations. | DEFINED |
-| [REQ_MOVEMENT_03_SENSOR_INDEPENDENCE] | Independend from sensor | The movement-detection mudle must not depend on a specific sensor-model. The movement-detection module shall not be modified if the sensor-model has changed. | DEFINED |
-| [REQ_MOVEMENT_04_USE_SYSTEM_MSG_BUS] | Use system msg-bus | In case a movement was detected and verified a signal shall be send via the system message-bus. The information in that message is formated as a JSON string. The Fields of that string are defined by the movment-detection module. The data may include the following information. Timestamp, Location | DEFINED |
-| [REQ_MOVEMENT_05_POWER_DOWN_MODE] | ENABLE/DISABLE power down | The module has the ability to enter a power down mode. In this mode movement-detection is disabled. The power-down mode is used in sittuations where movement detection is not needed. | DEFINED |
+| [REQ_MOVEMENT_01_DECT_MOVMENT] | Detect Movement | The movement-detection module must detect movement in front of the system.  | CONCEPT |
+| [REQ_MOVEMENT_02_VERIFY_DETECTION] | Verify-Detection  | If a movement was detected the module shall check if the movement is still present after a short amount of time. (50ms <= t <= 1 sek). It is possible that there occur false positives. E.g. temperature variations. | IMPLEMENTED |
+| [REQ_MOVEMENT_03_SENSOR_INDEPENDENCE] | Independend from sensor | The movement-detection module must not depend on a specific sensor-model. The movement-detection module shall not be modified if the sensor-model has changed. | CONCEPT |
+| [REQ_MOVEMENT_04_USE_SYSTEM_MSG_BUS] | Use system msg-bus | In case a movement was detected and verified a signal shall be send via the system message-bus. The information in that message is formated as a JSON string. The Fields of that string are defined by the movment-detection module. The data may include the following information. Timestamp, Location | IMPLEMENTED |
+| [REQ_MOVEMENT_05_POWER_DOWN_MODE] | ENABLE/DISABLE power down | The module has the ability to enter a power down mode. In this mode movement-detection is disabled. The power-down mode is used in sittuations where movement detection is not needed. | CONCEPT |
 
 ****Status***: the following states apply on the status field
 - **DEFINED** - The requirement has been defined only.
@@ -80,10 +80,10 @@ This section describes how to realize each requirement.
 | ID | Concept | Solution |
 |----|-------|-------------|
 | [REQ_MOVEMENT_01_DECT_MOVMENT] | The movement-detection sensor is accessed via a interface to check if there was a movement in front of the system | - |
-| [REQ_MOVEMENT_02_VERIFY_DETECTION] | The movement-detection module is implemented as a state-machine if there is a movement event in the idle state the state machine will go into a verify state. If there is one more movement event, the movement has been verified and a signal is send | - |
-| [REQ_MOVEMENT_03_SENSOR_INDEPENDENCE] | The sensor-HW is accessed via a interface. There is no direction communication between the movement-detection module and the sensor-HW. The interface is defined by the movement-detection module and implemetned by the sensor driver. | - |
-| [REQ_MOVEMENT_04_USE_SYSTEM_MSG_BUS] | The [Signal-Slot-Interface] is used to gneereate system-signals | - |
-| [REQ_MOVEMENT_05_POWER_DOWN_MODE] | Using an additional state where movement-detection is disabled. The state is entered/leaved by receiving signals | 
+| [REQ_MOVEMENT_02_VERIFY_DETECTION] | The movement-detection module is implemented as a state-machine if there is a movement event in the idle state the state machine will go into a verify state. If there is one more movement event, the movement has been verified and a signal is send | See MOVEMENT_DETECT_CONTROLLER_TASK_execute in movement_detection_controll.c |
+| [REQ_MOVEMENT_03_SENSOR_INDEPENDENCE] | The sensor-HW is accessed via a interface. There is no direction communication between the movement-detection module and the sensor-HW. The interface is defined by the movement-detection module and implemetned by the sensor driver. | See movement_detect_sensor_interface.h |
+| [REQ_MOVEMENT_04_USE_SYSTEM_MSG_BUS] | The [Signal-Slot-Interface] is used to gneereate system-signals | See declaration of MOVEMENT_DETECT_SIGNAL in movement_detection_controller.c |
+| [REQ_MOVEMENT_05_POWER_DOWN_MODE] | Using an additional state where movement-detection is disabled. The state is entered/leaved by receiving signals | See state MOVEMENT_DETECTION_STATE_POWER_DOWN in movement_detection_controller.c |
 
 ## Structure
 [[TOP]]
@@ -99,10 +99,10 @@ This section describes how to realize each requirement.
 
 ![runteim_statemachine](../../../modules/movement_detection/uml/img/movement_detection_state_machine.svg )
 
-| State     | Description |
-|-----------|-------------|
+| State              | Description |
+|--------------------|-------------|
 | SETUP              | Activate the movement-dectection sensor. |
-| WAIT_FOR_MOVEMENT | Wait for a movement by checking the sensor periodically. |
+| WAIT_FOR_MOVEMENT  | Wait for a movement by checking the sensor periodically. |
 | WAIT_TO_VERIFY     | Wait a short amount of time. Before verifying the movment. If a movement was detected a timeout is started on elaving this state |
 | VERIFY             | Check once again if the first event can be aproved. Go back to the IDLE state if the timeout triggers. |
 | SIGNALING          | A movement was detected and verified. A signal is send via the msg-bus system.  |
@@ -118,10 +118,10 @@ See [modules/movement_detection/movement_detect_sensor_interface.h](../../../mod
 
 | Function          | Description                                   |
 |-------------------|-----------------------------------------------|
-| power up          | Wakes up the sensor from power down mode |
+| power up          | Wakes up the sensor from power down mode      |
 | power down        | Enters the power down mdoe to safe energy. The current sensor maybe does not has a power down mode. |
 | is movement       | checks if there is a movement detected or not. |
-| configure         | Configures the sensor with proj |
+| configure         | Configures the sensor with proj               |
 | reset             | Resets the sensor to its default state. The sensor maybe needs to be reconfigured. |
 
 ### Signals

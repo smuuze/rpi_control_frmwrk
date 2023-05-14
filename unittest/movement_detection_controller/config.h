@@ -15,7 +15,7 @@
 #define MOVEMENT_DETECTION_CONTROLLER_SCHEDULE_INTERVAL_MS              100
 #define MOVEMENT_DETECTION_CONTROLLER_WAIT_TO_VERIFY_TIMEOUT_MS         100
 #define MOVEMENT_DETECTION_CONTROLLER_VERIFY_TIMEOUT_MS                 1000
-#define MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS                     100
+#define MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS                     99
 
 //-------------------------------------------------------------------------
 
