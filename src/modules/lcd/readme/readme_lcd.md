@@ -2,10 +2,36 @@
 ### Location
 [frmwrk](../../../../README.md) / [modules](../../readme_modules.md) / LCD
 
+<br>
+<br>
+
+### Content
+
+<details>
+<summary> Click to open</summary>
+
+[Brief](#brief)\
+[Features](#features)\
+[Integration](#integration)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Makefile](#makefile)\
+[Usage](#usage)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Initialization](#initialization)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Write text](#write-text)\
+[Structure](#structure)\
+[Runtime](#runtime)
+
+</details>
+
+<br>
+<br>
+
 # LCD
 
 ## Brief
 [[TOP](#location)]
+
+## Features
+[[TOP](#features)]
 
 The LCD-controller is used to write text on a connected LCD.
 The LCD-Controller implements the LCD-interface.
@@ -25,6 +51,7 @@ USER_INTERFACE_CFG += LCD_16X2
 ```
 
 ## Usage
+[[TOP](#features)]
 
 To use the LCD-controller the header file needs to be included. See below
 

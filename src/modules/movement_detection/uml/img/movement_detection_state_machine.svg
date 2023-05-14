@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="359px" preserveAspectRatio="none" style="width:862px;height:359px;background:#FFFFFF;" version="1.1" viewBox="0 0 862 359" width="862px" zoomAndPan="magnify"><defs/><g><ellipse cx="213.5" cy="33.5" fill="#222222" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><g id="SETUP"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="172" x="258.5" y="7"/><line style="stroke:#181818;stroke-width:0.5;" x1="258.5" x2="430.5" y1="33.4883" y2="33.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="43" x="323" y="25.5352">SETUP</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="152" x="263.5" y="52.0234">entry / activate sensor</text></g><g id="WAIT_FOR_MOVEMENT"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="176" x="256.5" y="129.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="256.5" x2="432.5" y1="155.9883" y2="155.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="156" x="266.5" y="148.0352">WAIT_FOR_MOVEMENT</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="261.5" y="174.5234">do / check sensor</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="261.5" y="191.0117">exit / start timer</text></g><g id="WAIT_TO_VERIFY"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="136" x="501.5" y="284"/><line style="stroke:#181818;stroke-width:0.5;" x1="501.5" x2="637.5" y1="310.4883" y2="310.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="116" x="511.5" y="302.5352">WAIT_TO_VERIFY</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="506.5" y="329.0234">do / check timer</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="506.5" y="345.5117">exit / start timer</text></g><g id="VERIFY"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="142" x="273.5" y="292"/><line style="stroke:#181818;stroke-width:0.5;" x1="273.5" x2="415.5" y1="318.4883" y2="318.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47" x="321" y="310.5352">VERIFY</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="278.5" y="337.0234">do / check sensor</text></g><g id="SIGNALING"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="149" x="7" y="284"/><line style="stroke:#181818;stroke-width:0.5;" x1="7" x2="156" y1="310.4883" y2="310.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="73" x="45" y="302.5352">SIGNALING</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="111" x="12" y="329.0234">do / send signal</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129" x="12" y="345.5117">exit / start timeout</text></g><g id="PAUSE"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="27.5" y="137.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="27.5" x2="159.5" y1="163.9883" y2="163.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="44" x="71.5" y="156.0352">PAUSE</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="32.5" y="182.5234">do / check timer</text></g><g id="POWER_DOWN"><rect fill="#F1F1F1" height="85.9531" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="241" x="614" y="121"/><line style="stroke:#181818;stroke-width:0.5;" x1="614" x2="855" y1="147.4883" y2="147.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="98" x="685.5" y="139.5352">POWER_DOWN</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="185" x="619" y="166.0234">entry / power down sensor</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="221" x="619" y="182.5117">do / wait for SIGNAL(POWER_UP)</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="156" x="619" y="199">exit / power up sensor</text></g><!--MD5=[8dc3e60f12b37178e62eaf910578e60d]
+link *start to SETUP--><g id="link_*start_SETUP"><path d="M223.99,33.5 C233.3,33.5 242.6,33.5 251.91,33.5 " fill="none" id="*start-to-SETUP" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="256.84,33.5,247.84,29.5,251.84,33.5,247.84,37.5,256.84,33.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[cdf3be2d8ff89efabc2c8c77bc064ccb]
+link SETUP to WAIT_FOR_MOVEMENT--><g id="link_SETUP_WAIT_FOR_MOVEMENT"><path d="M344.5,60.2 C344.5,78.04 344.5,102.18 344.5,122.58 " fill="none" id="SETUP-to-WAIT_FOR_MOVEMENT" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="344.5,127.55,348.5,118.55,344.5,122.55,340.5,118.55,344.5,127.55" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[320d24a9a7705219a9f0f7adb2e3716f]
+link WAIT_FOR_MOVEMENT to WAIT_TO_VERIFY--><g id="link_WAIT_FOR_MOVEMENT_WAIT_TO_VERIFY"><path d="M394.43,198.84 C429.97,222.93 477.73,255.3 514.38,280.14 " fill="none" id="WAIT_FOR_MOVEMENT-to-WAIT_TO_VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="518.45,282.9,513.2466,274.5379,514.3119,280.0935,508.7563,281.1589,518.45,282.9" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="81" x="470.5" y="250.5684">is movement</text></g><!--MD5=[134b3e6eeb14dc2d486bebae1bbc2f0f]
+reverse link VERIFY to WAIT_TO_VERIFY--><g id="link_VERIFY_WAIT_TO_VERIFY"><path d="M422.15,318.5 C447.81,318.5 476.16,318.5 501.08,318.5 " fill="none" id="VERIFY-backto-WAIT_TO_VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="417.2,318.5,426.2,322.5,422.2,318.5,426.2,314.5,417.2,318.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="434" y="312.0684">timeout</text></g><!--MD5=[2440f04446e899326521fe27f30058f7]
+reverse link WAIT_FOR_MOVEMENT to VERIFY--><g id="link_WAIT_FOR_MOVEMENT_VERIFY"><path d="M344.5,205.27 C344.5,232.69 344.5,268.15 344.5,291.8 " fill="none" id="WAIT_FOR_MOVEMENT-backto-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="344.5,200.36,340.5,209.36,344.5,205.36,348.5,209.36,344.5,200.36" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="345.5" y="250.5684">timeout</text></g><!--MD5=[5fae03f5ad6213cb7591ffac7acfe40b]
+reverse link SIGNALING to VERIFY--><g id="link_SIGNALING_VERIFY"><path d="M162.25,318.5 C197.71,318.5 238.98,318.5 273.27,318.5 " fill="none" id="SIGNALING-backto-VERIFY" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="157.68,318.5,166.68,322.5,162.68,318.5,166.68,314.5,157.68,318.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="81" x="174.25" y="312.0684">is movement</text></g><!--MD5=[d2f17398eabdb593d85a201ad110f4a5]
+reverse link PAUSE to SIGNALING--><g id="link_PAUSE_SIGNALING"><path d="M90.97,197.1 C88.97,222.52 86.19,257.91 84.16,283.74 " fill="none" id="PAUSE-backto-SIGNALING" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="91.35,192.38,86.6677,201.0447,90.9643,197.3651,94.6439,201.6617,91.35,192.38" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[9fea1a79d625bd3649b7ea4fe706bf07]
+link PAUSE to WAIT_FOR_MOVEMENT--><g id="link_PAUSE_WAIT_FOR_MOVEMENT"><path d="M159.78,164 C187.3,164 219.76,164 249.73,164 " fill="none" id="PAUSE-to-WAIT_FOR_MOVEMENT" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="254.57,164,245.57,160,249.57,164,245.57,168,254.57,164" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="183.5" y="157.5684">timeout</text></g><!--MD5=[7dcb8a00d9882d642d978041346e9ec3]
+link WAIT_FOR_MOVEMENT to POWER_DOWN--><g id="link_WAIT_FOR_MOVEMENT_POWER_DOWN"><path d="M433,164 C484.6,164 550.57,164 607.63,164 " fill="none" id="WAIT_FOR_MOVEMENT-to-POWER_DOWN" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="612.32,164,603.32,160,607.32,164,603.32,168,612.32,164" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="145" x="450.75" y="157.5684">SIGNAL(POWER_DOWN)</text></g><!--MD5=[590ae66bb5af7fa7fd7b14f2301c80a0]
+reverse link WAIT_FOR_MOVEMENT to POWER_DOWN--><g id="link_WAIT_FOR_MOVEMENT_POWER_DOWN"><path d="M438.76,181.45 C446.69,182.48 454.59,183.35 462.25,184 C516.28,188.56 530.15,187.59 584.25,184 C593.83,183.36 603.74,182.5 613.68,181.5 " fill="none" id="WAIT_FOR_MOVEMENT-backto-POWER_DOWN" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="434.2,180.83,442.5817,186.0018,439.1548,181.5011,443.6554,178.0742,434.2,180.83" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="120" x="463.25" y="180.5684">SIGNAL(POWER_UP)</text></g><!--MD5=[138d0126ae01be4e3818e688b5ff766d]
+@startuml movement_detection_state_machine
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+' folder "state: RPi-Control - Movement-Detection - State-Machine" 
+
+'***************************************************************************
+
+[*] -right-> SETUP
+SETUP : entry / activate sensor
+
+SETUP -down-> WAIT_FOR_MOVEMENT
+WAIT_FOR_MOVEMENT : do / check sensor
+WAIT_FOR_MOVEMENT : exit / start timer
+
+WAIT_FOR_MOVEMENT -down-> WAIT_TO_VERIFY : is movement
+WAIT_TO_VERIFY : do / check timer
+WAIT_TO_VERIFY : exit / start timer
+WAIT_TO_VERIFY -left-> VERIFY : timeout
+
+VERIFY : do / check sensor
+VERIFY -left-> WAIT_FOR_MOVEMENT : timeout
+
+VERIFY -left-> SIGNALING : is movement
+SIGNALING : do / send signal
+SIGNALING : exit / start timeout
+SIGNALING -up-> PAUSE
+
+PAUSE -right-> WAIT_FOR_MOVEMENT : timeout
+PAUSE : do / check timer
+
+WAIT_FOR_MOVEMENT -right-> POWER_DOWN : SIGNAL(POWER_DOWN)
+POWER_DOWN : entry / power down sensor
+POWER_DOWN : do / wait for SIGNAL(POWER_UP)
+POWER_DOWN : exit / power up sensor
+POWER_DOWN -left-> WAIT_FOR_MOVEMENT : SIGNAL(POWER_UP)
+
+'***************************************************************************
+
+@enduml
+
+@startuml movement_detection_state_machine
+
+
+skinparam monochrome true
+
+
+
+
+[*] -right-> SETUP
+SETUP : entry / activate sensor
+
+SETUP -down-> WAIT_FOR_MOVEMENT
+WAIT_FOR_MOVEMENT : do / check sensor
+WAIT_FOR_MOVEMENT : exit / start timer
+
+WAIT_FOR_MOVEMENT -down-> WAIT_TO_VERIFY : is movement
+WAIT_TO_VERIFY : do / check timer
+WAIT_TO_VERIFY : exit / start timer
+WAIT_TO_VERIFY -left-> VERIFY : timeout
+
+VERIFY : do / check sensor
+VERIFY -left-> WAIT_FOR_MOVEMENT : timeout
+
+VERIFY -left-> SIGNALING : is movement
+SIGNALING : do / send signal
+SIGNALING : exit / start timeout
+SIGNALING -up-> PAUSE
+
+PAUSE -right-> WAIT_FOR_MOVEMENT : timeout
+PAUSE : do / check timer
+
+WAIT_FOR_MOVEMENT -right-> POWER_DOWN : SIGNAL(POWER_DOWN)
+POWER_DOWN : entry / power down sensor
+POWER_DOWN : do / wait for SIGNAL(POWER_UP)
+POWER_DOWN : exit / power up sensor
+POWER_DOWN -left-> WAIT_FOR_MOVEMENT : SIGNAL(POWER_UP)
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>
