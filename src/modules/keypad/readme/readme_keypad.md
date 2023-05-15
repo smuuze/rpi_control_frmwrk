@@ -1,3 +1,8 @@
+[TOP]: #section "Go to the top of the page"
+
+### Section
+
+Readme | [Changelog](../../../../changelog.md)
 
 ### Location
 [frmwrk](../../../../README.md) / [modules](../../readme_modules.md) / KEYPAD
@@ -5,12 +10,12 @@
 # LCD
 
 ## Brief
-[[TOP](#location)]
+[[TOP]]
 
 Interface to handle a keypad.
 
 ## Integration
-[[TOP](#location)]
+[[TOP]]
 
 ### Makefile
 
@@ -75,12 +80,12 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(KEY_0_PRESSED_SIGNAL, MY_KES_0_PRESSED_SIGNAL_
 ## Scheduling
 
 ## Structure
-[[TOP](#location)]
+[[TOP]]
 
 ![Structure](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_component_lcd_controller.svg )
 
 ## Runtime
-[[TOP](#location)]
+[[TOP]]
 
 ![Runtime](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_sequence_lcd_controller.svg )
 

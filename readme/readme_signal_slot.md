@@ -1,3 +1,8 @@
+[TOP]: #section "Go to the top of the page"
+
+### Section
+
+Readme | [Changelog](../changelog.md)
 
 ### Location
 [frmwrk](../README.md) / [kernel](../readme/readme_kernel.md) / signal_slot
@@ -5,7 +10,7 @@
 # Signal Slot
 
 ## Brief
-[[TOP](#location)]
+[[TOP]]
 
 The Signal Slot module is sued to transfer data from a application-task to another
 without having a dependency between both task.
@@ -13,7 +18,7 @@ The basic principle consists of two aspects `sending a signal` and `receiving vi
 transfered via arguments.
 
 ## Integration
-[[TOP](#location)]
+[[TOP]]
 
 ### Makefile
 
@@ -95,7 +100,7 @@ that the provided reference is not valid anymore after sending of the signal has
 The data shall be copied into a local memory to access the data at a later time.
 
 ## Structure
-[[TOP](#location)]
+[[TOP]]
 
 ![Context](../uml/img/rpi_control_frmwrk_diagram_component_signal_slot.svg )
 

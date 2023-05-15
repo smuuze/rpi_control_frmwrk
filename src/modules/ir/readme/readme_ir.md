@@ -1,3 +1,8 @@
+[TOP]: #section "Go to the top of the page"
+
+### Section
+
+Readme | [Changelog](../../../../changelog.md)
 
 ### Location
 [frmwrk](../../../../README.md) / [modules](../../readme_modules.md) / IR
@@ -5,12 +10,12 @@
 # IR
 
 ## Brief
-[[TOP](#location)]
+[[TOP]]
 
 
 
 ## Integration
-[[TOP](#location)]
+[[TOP]]
 
 ### Makefile
 
@@ -38,7 +43,7 @@ ir_protocol_init();
 ## Add Protocol
 
 ## Structure
-[[TOP](#location)]
+[[TOP]]
 
 ### IR Protocol
 
@@ -49,6 +54,6 @@ ir_protocol_init();
 ![Structure](../../../modules/ir/uml/img/rpi_control_frmwrk_diagrm_component_ir_protocol_cmd_handler.svg )
 
 ## Runtime
-[[TOP](#location)]
+[[TOP]]
 
 ![Runtime](../../../modules/ir/uml/img/rpi_control_frmwrk_uml_runtime_sequence_ir_protocol_interface.svg )
