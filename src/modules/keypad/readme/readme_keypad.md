@@ -7,12 +7,109 @@ Readme | [Changelog](../../../../changelog.md)
 ### Location
 [frmwrk](../../../../README.md) / [modules](../../readme_modules.md) / KEYPAD
 
+<br>
+
+### Content
+
+<details>
+<summary> Click to open</summary>
+
+[Brief](#brief)\
+[Features](#features)\
+[Solution Strategy](#solution-strategy)\
+[Structure](#structure)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Context](#context)\
+[Runtime](#runtime)\
+&nbsp;&nbsp;&nbsp;&nbsp;[State-Machine](#state-machine)\
+[Interface](#interface)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Signals](#signals)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Configuration Macros](#configuration-macros)\
+[Integration](#integration)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Makefile](#makefile)\
+[Usage](#usage)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Initialization](#initialization)
+
+</details>
+
+<br>
+
 # LCD
 
 ## Brief
 [[TOP]]
 
 Interface to handle a keypad.
+
+## Features
+[[TOP]]
+
+... comming soon ...
+
+## Requirements
+[[TOP]]
+
+[REQ_KEYPAD_01_USE_SYSTEM_MSG_BUS]: #REQ_KEYPAD_01_USE_SYSTEM_MSG_BUS "Requirement that the current system-wide message bus is used for sending signals and information"
+[REQ_KEYPAD_02_KEY_STATES]: #REQ_KEYPAD_02_KEY_STATES "Requirement that a key can have one of three states RELEASED / PRESSED / RELEASED"
+[REQ_KEYPAD_03_STATE_EVENTS]: #REQ_KEYPAD_03_STATE_EVENTS "Requirement that there is a event generate in case a key has changed its state."
+[REQ_KEYPAD_04_KEYPAD_INDEPENDENCE]: #REQ_KEYPAD_04_KEYPAD_INDEPENDENCE "Requirement that keypad controller does not depend on a specific type of keypad-hw"
+
+| ID | Title | Description | *Status |
+|----|-------|-------------|---------|
+| [REQ_KEYPAD_01_USE_SYSTEM_MSG_BUS] | Use system msg-bus | - | DEFINED |
+| [REQ_KEYPAD_02_KEY_STATES] | A key can have have different states | Every key can have one of the following states. A key can always be in only one state at a time.<ul><li>RELEASE - key is not used at this moment</li><li>PRESSED - the key was just pressed, this state is left automatically</li><li>DOWN - The key is hold down by the user.</li></ul> | DEFINED |
+| [REQ_KEYPAD_03_STATE_EVENTS] | Generate key state events. | In case the state of a key is changed (see the list below) a event is generated transmitted via the system msg-bus. The events are generated for each key individually. <br><ul><li>RELEASED -> PRESSED</li><li>PRESSED -> DOWN</li><li>DOWN -> RELEASED</li></ul> | DEFINED |
+| [REQ_KEYPAD_04_KEYPAD_INDEPENDENCE] | Independence of Keypad-HW | The keypad controller doesn not depends on a specific type of keypad. The HW can be changed without changing the keypad-controller | DEFINED |
+
+****Status***: the following states apply on the status field
+- **DEFINED** - The requirement has been defined only.
+- **CONCEPT** - There is a concept available how to realize the requirement
+- **IMPLEMENTED** - The requirement has been implemented. There is a test-system available
+- **VERIFIED** - The funcitonality of the reuirement has been verified. E.g. there is a unittest available and the feature was tested over a long period on the test-system.
+
+## Solution Strategy
+[[TOP]]
+
+This section describes how to realize each requirement.
+
+| ID | Concept | Solution |
+|----|---------|-------------|
+| [REQ_KEYPAD_01_USE_SYSTEM_MSG_BUS] | - | - |
+
+## Structure
+[[TOP]]
+
+### Context
+
+![structure_context](../../../modules/movement_detection/uml/img/movement_detection_context.svg )
+
+## Runtime
+[[TOP]]
+
+### State-Machine
+
+![runteim_statemachine](../../../modules/movement_detection/uml/img/movement_detection_state_machine.svg )
+
+| State              | Description |
+|--------------------|-------------|
+| SETUP              | - |
+
+## Interface
+[[TOP]]
+
+### Signals
+
+| Signal-Name                         | Direction | Arguments | Description |
+|-------------------------------------|-----------|-----------|-------------|
+| `MOVEMENT_DETECT_SIGNAL`            | -      | -      | - |
+
+### Configuration Macros
+
+The following values can be defined as a macro. E.g. in your project specific `config.h`\
+See [modules/movement_detection/movement_detection_controller.h](../../../modules/movement_detection/movement_detection_controller.h)
+
+| Configuration Macro                                       | Default Value | Description                 |
+|-----------------------------------------------------------|---------------|-----------------------------|
+| `MOVEMENT_DETECTION_CONTROLLER_SCHEDULE_INTERVAL_MS`      | -           | - |
 
 ## Integration
 [[TOP]]
