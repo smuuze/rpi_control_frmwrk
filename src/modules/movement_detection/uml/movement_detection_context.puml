@@ -13,36 +13,40 @@ frame "class: RPi-Control - Movement-Detection - Context" {
 
     folder "kernel" {
 
-        interface Task {
+        interface task_interface {
 
         }
 
-        interface singal_slot {
-
-        }
-    }
-
-    folder "driver" {
-        class sensor_driver {
+        interface signal_slot_interface {
 
         }
     }
 
-    folder "modules" {
+    folder "driver/movement_detection" {
+
+        component sensor_driver #DDDDDD [
+            <<component>>
+            Sensor Driver
+        ]
+
         interface sensor_interface {
 
         }
-
-        class movement_detection  {
-
-        }
     }
 
-    movement_detection .up.|> Task
-    movement_detection .up.> singal_slot : <uses>
-    movement_detection .right.> sensor_interface : <uses>
+    folder "modules/movement_detection" {
 
-    sensor_driver -down-|> sensor_interface
+        component movement_detection #DDDDDD [
+            <<component>>
+            Movement Detection Controller
+        ]
+    }
+
+    movement_detection .down.|> task_interface
+    movement_detection .down.> signal_slot_interface : <uses>
+    movement_detection .down.> sensor_interface : <uses>
+
+    sensor_driver .up.|> sensor_interface
 
 '***************************************************************************
 

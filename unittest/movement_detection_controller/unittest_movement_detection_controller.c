@@ -53,7 +53,7 @@
 // --------------------------------------------------------------------------------
 
 #include "modules/movement_detection/movement_detection_controller.h"
-#include "modules/movement_detection/movement_detect_sensor_interface.h"
+#include "driver/movement_detection/movement_detect_sensor_interface.h"
 
 // --------------------------------------------------------------------------------
 
