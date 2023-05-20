@@ -59,10 +59,6 @@
 #define KEYPAD_CONTROLLER_3X4_SCHEDULE_INTERVAL_MS                              50
 #endif
 
-#ifndef KEYPAD_CONTROLLER_3X4_PAUSE_TIME_MS
-#define KEYPAD_CONTROLLER_3X4_PAUSE_TIME_MS                                     100
-#endif
-
 // --------------------------------------------------------------------------------
 
 /**
@@ -70,8 +66,7 @@
  */
 typedef enum {
     KEYPAD_3X4_TASK_STATE_IDLE,
-    KEYPAD_3X4_TASK_STATE_GET_KEYS,
-    KEYPAD_3X4_TASK_STATE_PAUSE
+    KEYPAD_3X4_TASK_STATE_GET_KEYS
 } KEYPAD_3X4_TASK_STATE_TYPE;
 
 // --------------------------------------------------------------------------------
@@ -309,6 +304,11 @@ static MCU_TASK_INTERFACE_TASK_STATE keypad_task_get_state(void) {
 static void keypad_task_run(void) {
     
     switch (keypad_task_state) {
+
+        default:
+            keypad_task_state = KEYPAD_3X4_TASK_STATE_IDLE;
+            // no break;
+
         case KEYPAD_3X4_TASK_STATE_IDLE:
 
             if (keypad_controller_is_key_pressed(&keypad_driver_key_list) != 0) {
@@ -329,9 +329,6 @@ static void keypad_task_run(void) {
             DEBUG_PASS("keypad_task_run() - STATE_GET_KEYS -> STATE_IDLE");
             keypad_task_state = KEYPAD_3X4_TASK_STATE_IDLE;
 
-            break;
-
-        case KEYPAD_3X4_TASK_STATE_PAUSE:
             break;
     }
 }
