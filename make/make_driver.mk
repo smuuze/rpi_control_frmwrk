@@ -231,3 +231,10 @@ include $(SOC_PATH)/make/make_driver.mk
 endif
 
 #-----------------------------------------------------------------------------
+
+ifneq '' '$(findstring THE_PI_HUT_PIR,$(DRIVER_MODULE_CFG))'
+	DEFS += -D HAS_DRIVER_THE_PI_HUT_PIR=1
+	CSRCS += $(APP_PATH)/driver/movement_detection/the_pi_hut_pir_sensor.c
+endif
+
+#-----------------------------------------------------------------------------

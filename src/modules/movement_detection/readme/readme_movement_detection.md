@@ -1,6 +1,7 @@
 [TOP]: #section "Go to the top of the page"
 
 [Signal-Slot-Interface]: ../../../../readme/readme_signal_slot.md "SW-IRQ based communication system used in the rpi-control firmware"
+[Movement-Detection-Drivers]: ../../../driver/movement_detection/readme/readme_movement_detection.md#section "List of drivers to be used by the movement-detection controller"
 
 ### Section
 
@@ -90,14 +91,14 @@ This section describes how to realize each requirement.
 
 ### Context
 
-![structure_context](../../../modules/movement_detection/uml/img/movement_detection_context.svg )
+![structure_context](../../../modules/movement_detection/readme/uml/img/movement_detection_context.svg )
 
 ## Runtime
 [[TOP]]
 
 ### State-Machine
 
-![runteim_statemachine](../../../modules/movement_detection/uml/img/movement_detection_state_machine.svg )
+![runteim_statemachine](../../../modules/movement_detection/readme/uml/img/movement_detection_state_machine.svg )
 
 | State              | Description |
 |--------------------|-------------|
@@ -149,11 +150,38 @@ See [modules/movement_detection/movement_detection_controller.h](../../../module
 
 ### Makefile
 
-... comming soon ...
+Add the following statement to your project makefile. Remember to also select a
+suitable movement-detection driver, see [Movement-Detection-Drivers].
+This will define the macro `MOVEMENT_DETECTION_CONTROLLER_AVAILABLE`
+
+```make
+MODULES_CFG += MOVEMENT_DETECTION
+```
 
 ## Usage
 [[TOP]]
 
 ### Initialization
 
-... comming soon ...
+Add the following code block to your initialization routine.
+Do not forget to include the header file.
+
+```c
+#include "modules/movement_detection/movement_detection_controller.h"
+```
+
+```c
+#ifdef MOVEMENT_DETECTION_CONTROLLER_AVAILABLE
+{
+    movement_detection_controller_init();
+}
+#endif
+```
+
+The following drivers and modules need to be initialized before.
+- System
+    - Clock
+    - RTC
+    - GPIO 
+    - Signal-Slot
+- Task
