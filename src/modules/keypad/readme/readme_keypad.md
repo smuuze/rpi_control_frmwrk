@@ -85,7 +85,7 @@ This section describes how to realize each requirement.
 
 ### Context
 
-![structure_context](../../../modules/movement_detection/uml/img/movement_detection_context.svg )
+![structure_context](../../../modules/keypad/readme/uml/img/keypad_controller_context.svg )
 
 ## Runtime
 [[TOP]]
@@ -94,7 +94,7 @@ This section describes how to realize each requirement.
 
 #### Controller States
 
-![runteim_statemachine](../../../modules/movement_detection/uml/img/movement_detection_state_machine.svg )
+![runteim_statemachine](../../../modules/movement_detection/readme/uml/img/movement_detection_state_machine.svg )
 
 | State      | Description |
 |------------|-------------|
@@ -212,16 +212,3 @@ void MY_KEY_0_PRESSED_SIGNAL_HANDLER(void) {
 
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(KEY_0_PRESSED_SIGNAL, MY_KES_0_PRESSED_SIGNAL_SLOT, MY_KEY_0_PRESSED_SIGNAL_HANDLER)
 ```
-
-## Scheduling
-
-## Structure
-[[TOP]]
-
-![Structure](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_component_lcd_controller.svg )
-
-## Runtime
-[[TOP]]
-
-![Runtime](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_sequence_lcd_controller.svg )
-

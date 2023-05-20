@@ -1,0 +1,57 @@
+@startuml keypad_controller_context
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: RP-Control - Keypad-Controller - Context" {
+
+'***************************************************************************
+
+    folder "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface signal_slot_interface {
+
+        }
+    }
+
+    folder "driver/keypad" {
+
+        interface keypad_driver_interface {
+
+        }
+
+        component keypad_driver #DDDDDD [
+            <<component>>
+            Keypad-Driver
+        ]
+    }
+
+    folder "modules/keypad" {
+
+        component keypad_controller #DDDDDD [
+            <<component>>
+            Keypad-Controller
+        ]
+    }
+
+    keypad_controller .down.|> task_interface
+    keypad_controller .down.> signal_slot_interface : <uses>
+    keypad_controller .down.> keypad_driver_interface : <uses>
+
+    keypad_driver .up.|> keypad_driver_interface
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
