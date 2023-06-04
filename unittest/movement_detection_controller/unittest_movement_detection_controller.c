@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -137,6 +137,27 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(
     UT_MOVEMENT_DETECT_SLOT,
     unittest_movement_detect_signal_callback
 )
+
+// --------------------------------------------------------------------------------
+
+static void ut_mqtt_message_to_send_CALLBACK(const void* p_argument) {
+
+    if (p_argument == NULL) {
+        DEBUG_PASS("ut_mqtt_message_to_send_CALLBACK() - NULL_POINTER_EXCEPTION !!! ---");
+        return;
+    }
+
+    const char* msg_to_send = (const char*) p_argument;
+    DEBUG_TRACE_STR(msg_to_send, "ut_mqtt_message_to_send_CALLBACK() - New Mmessage to send");
+}
+
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(
+    MQTT_MESSAGE_TO_SEND_SIGNAL,
+    UT_MQTT_MESSAGE_TO_SEND_SLOT,
+    ut_mqtt_message_to_send_CALLBACK
+)
+
+SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(MQTT_MESSAGE_TO_SEND_SIGNAL)
 
 // --------------------------------------------------------------------------------
 
@@ -363,6 +384,9 @@ static void UNITTEST_movement_detect_verify_failed(void) {
 int main(void) {
 
     //TRACER_DISABLE();
+
+    MQTT_MESSAGE_TO_SEND_SIGNAL_init();
+    UT_MQTT_MESSAGE_TO_SEND_SLOT_connect();
 
     UT_START_TESTBENCH("Welcome the the UNITTEST for log-interface v1.0")
     {

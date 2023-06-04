@@ -36,7 +36,7 @@ CSRCS += unittest_movement_detection_controller.c
 COMMON_MODULES =
 # COMMON_MODULES += QEUE
 # COMMON_MODULES += DATETIME
-# COMMON_MODULES += STRING
+COMMON_MODULES += STRING
 
 #-----------------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ APP_TASK_CFG =
 MODULES_CFG = 
 #MODULES_CFG += LCD_16X2
 # MODULES_CFG += KEYPAD_3X4
-MODULES_CFG += MOVEMENT_DETECTION
+MODULES_CFG += MOVEMENT_DETECTION_MQTT
 
 #-----------------------------------------------------------------------------
 
@@ -76,6 +76,7 @@ DRIVER_MODULE_CFG += CLK
 #-----------------------------------------------------------------------------
 
 PROTOCOL_CFG =
+PROTOCOL_CFG += JSON_PARSER
 #PROTOCOL_CFG += RPI_PROTOCOL_CLIENT
 
 #-----------------------------------------------------------------------------

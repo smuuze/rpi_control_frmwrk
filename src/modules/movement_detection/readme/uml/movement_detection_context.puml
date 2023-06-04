@@ -34,6 +34,17 @@ frame "class: RPi-Control - Movement-Detection - Context" {
         }
     }
 
+    folder "protocol" {
+
+        interface json_parser {
+
+        }
+
+        interface mqtt_interface {
+
+        }
+    }
+
     folder "modules/movement_detection" {
 
         component movement_detection #DDDDDD [
@@ -45,6 +56,8 @@ frame "class: RPi-Control - Movement-Detection - Context" {
     movement_detection .down.|> task_interface
     movement_detection .down.> signal_slot_interface : <uses>
     movement_detection .down.> sensor_interface : <uses>
+    movement_detection .down.> json_parser : <uses>
+    movement_detection .down.> mqtt_interface : <uses>
 
     sensor_driver .up.|> sensor_interface
 
