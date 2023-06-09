@@ -44,6 +44,7 @@
 
 #include "common/signal_slot_interface.h"
 #include "mcu_task_management/mcu_task_interface.h"
+#include "common_tools_string.h"
 
 #include "ui/file_interface/file_interface.h"
 #include "ui/console/ui_console.h"
@@ -54,6 +55,7 @@
 
 #include "modules/movement_detection/movement_detection_controller.h"
 #include "driver/movement_detection/movement_detect_sensor_interface.h"
+#include "protocol_management/json/protocol_json_parser.h"
 
 // --------------------------------------------------------------------------------
 
@@ -78,16 +80,30 @@ u8 counter_SENSOR_IS_MOVEMENT = 0;
 u8 counter_SENSOR_CONFIGURE = 0;
 u8 counter_SENSOR_RESET = 0;
 u8 counter_SIGNAL_MOVEMENT_DETECT = 0;
+u8 counter_MQTT_MSG_SENT = 0;
+
+// --------------------------------------------------------------------------------
+
+// data storage
+
+static char ut_mqtt_msg_to_send[1024];
+static u32 ut_mqtt_msg_timestamp = 0;
+
+JSON_PARSER_CREATE_OBJECT(UNITTEST_MQTT_MSG)
 
 // --------------------------------------------------------------------------------
 
 static void unittest_reset_counter(void) {
+
     counter_SENSOR_POWER_DOWN = 0;
     counter_SENSOR_POWER_UP = 0;
     counter_SENSOR_IS_MOVEMENT = 0;
     counter_SENSOR_CONFIGURE = 0;
     counter_SENSOR_RESET = 0;
     counter_SIGNAL_MOVEMENT_DETECT = 0;
+    counter_MQTT_MSG_SENT = 0;
+
+    common_tools_string_clear(ut_mqtt_msg_to_send, sizeof(ut_mqtt_msg_to_send));
 }
 
 // --------------------------------------------------------------------------------
@@ -149,6 +165,22 @@ static void ut_mqtt_message_to_send_CALLBACK(const void* p_argument) {
 
     const char* msg_to_send = (const char*) p_argument;
     DEBUG_TRACE_STR(msg_to_send, "ut_mqtt_message_to_send_CALLBACK() - New Mmessage to send");
+
+    if (common_tools_string_length(msg_to_send) > sizeof(ut_mqtt_msg_to_send)) {
+        DEBUG_TRACE_word(
+            common_tools_string_length(msg_to_send),
+            "ut_mqtt_message_to_send_CALLBACK() - OVERFLOW - MAX IS 1024 - LENGTH:"
+        );
+        return;
+    }
+
+    common_tools_string_copy_string(
+        ut_mqtt_msg_to_send,
+        msg_to_send,
+        sizeof(ut_mqtt_msg_to_send)
+    );
+
+    ut_mqtt_msg_timestamp = time_mgmnt_gettime_u32();
 }
 
 SIGNAL_SLOT_INTERFACE_CREATE_SLOT(
@@ -166,7 +198,7 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(UNITTEST_TIMER)
 // --------------------------------------------------------------------------------
 
 static void UNITTEST_movement_detect_ctrl_init(void) {
-    
+
     UT_START_TEST_CASE("Movement-Detect-Ctrl - Initialize")
     {    
         UT_SET_TEST_CASE_ID(TEST_CASE_ID_INITIALIZE);
@@ -191,6 +223,12 @@ static void UNITTEST_movement_detect_ctrl_init(void) {
         UT_CHECK_IS_EQUAL(counter_SENSOR_CONFIGURE, 1);
         UT_CHECK_IS_EQUAL(counter_SENSOR_RESET, 0);
         UT_CHECK_IS_EQUAL(counter_SIGNAL_MOVEMENT_DETECT, 0);
+        UT_CHECK_IS_EQUAL(counter_MQTT_MSG_SENT, 0);
+        UT_CHECK_IS_EQUAL (
+            common_tools_string_length(ut_mqtt_msg_to_send),
+            0
+        );
+
     }
     UT_END_TEST_CASE()
 }
@@ -235,6 +273,11 @@ static void UNITTEST_movement_detect_ctrl_power_down(void) {
         UT_CHECK_IS_EQUAL(counter_SENSOR_CONFIGURE, 0);
         UT_CHECK_IS_EQUAL(counter_SENSOR_RESET, 0);
         UT_CHECK_IS_EQUAL(counter_SIGNAL_MOVEMENT_DETECT, 0);
+        UT_CHECK_IS_EQUAL(counter_MQTT_MSG_SENT, 0);
+        UT_CHECK_IS_EQUAL (
+            common_tools_string_length(ut_mqtt_msg_to_send),
+            0
+        );
     }
     UT_END_TEST_CASE()
 }
@@ -311,7 +354,24 @@ static void UNITTEST_movement_detect_is_movement(void) {
         UT_CHECK_IS_EQUAL(counter_SENSOR_CONFIGURE, 0);
         UT_CHECK_IS_EQUAL(counter_SENSOR_RESET, 0);
         UT_CHECK_IS_EQUAL(counter_SIGNAL_MOVEMENT_DETECT, 1);
-        
+        UT_CHECK_IS_EQUAL(counter_MQTT_MSG_SENT, 0);
+
+        UNITTEST_MQTT_MSG_initialize();
+        UNITTEST_MQTT_MSG_start_group("MOVEMENT");
+        UNITTEST_MQTT_MSG_add_string("LOCATION", "UNITTEST");
+        UNITTEST_MQTT_MSG_add_integer("TIMESTAMP", ut_mqtt_msg_timestamp);
+        UNITTEST_MQTT_MSG_finish();
+
+        UT_CHECK_IS_EQUAL (
+            common_tools_string_length(ut_mqtt_msg_to_send),
+            UNITTEST_MQTT_MSG_get_length()
+        );
+
+        UT_COMPARE_STRING (
+            ut_mqtt_msg_to_send,
+            UNITTEST_MQTT_MSG_to_string()
+        );
+
         UNITTEST_TIMER_stop();
     }
     UT_END_TEST_CASE()
@@ -375,6 +435,11 @@ static void UNITTEST_movement_detect_verify_failed(void) {
         UT_CHECK_IS_EQUAL(counter_SENSOR_CONFIGURE, 0);
         UT_CHECK_IS_EQUAL(counter_SENSOR_RESET, 0);
         UT_CHECK_IS_EQUAL(counter_SIGNAL_MOVEMENT_DETECT, 0);
+        UT_CHECK_IS_EQUAL(counter_MQTT_MSG_SENT, 0);
+        UT_CHECK_IS_EQUAL (
+            common_tools_string_length(ut_mqtt_msg_to_send),
+            0
+        );
     }
     UT_END_TEST_CASE()
 }
