@@ -124,9 +124,9 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(
 
 // --------------------------------------------------------------------------------
 
-//#ifdef MOVEMENT_DETECTION_MQTT_AVAILABLE
+#ifdef MOVEMENT_DETECTION_MQTT_AVAILABLE
 JSON_PARSER_CREATE_OBJECT(MOVE_DETECT_MQTT_MSG)
-//#endif
+#endif
 
 // --------------------------------------------------------------------------------
 
@@ -168,7 +168,7 @@ static inline void movement_detect_controller_send_signals(void) {
 
     MOVEMENT_DETECT_SIGNAL_send(NULL);
 
-    //#ifdef MOVEMENT_DETECTION_MQTT_AVAILABLE
+    #ifdef MOVEMENT_DETECTION_MQTT_AVAILABLE
     {
         MOVE_DETECT_MQTT_MSG_initialize();
         MOVE_DETECT_MQTT_MSG_start_group(MOVEMENT_DETECTION_MOVEMENT_STR);
@@ -177,7 +177,7 @@ static inline void movement_detect_controller_send_signals(void) {
         MOVE_DETECT_MQTT_MSG_finish();
         MQTT_MESSAGE_TO_SEND_SIGNAL_send(MOVE_DETECT_MQTT_MSG_to_string());
     }
-    //#endif
+    #endif
 }
 
 // --------------------------------------------------------------------------------
