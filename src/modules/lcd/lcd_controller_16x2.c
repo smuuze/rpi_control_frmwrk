@@ -360,7 +360,12 @@ static void lcd_task_init(void) {
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_schedule_interval
  */
 static u16 lcd_task_get_schedule_interval(void) {
-    return LCD_TASK_SCHEDULE_INTERVAL_MS;
+
+    if (LCD_LINE_QUEUE_is_empty() == 0) {
+        return 0;
+    } else {
+        return LCD_TASK_SCHEDULE_INTERVAL_MS;
+    }
 }
 
 /**

@@ -16,7 +16,7 @@ Date: ***NOT RELEASED***
 
 **Misc:**
 
- - none
+ - LCD improved - faster update of display if smooth update is not used
 
 **Known Bus:**
 
