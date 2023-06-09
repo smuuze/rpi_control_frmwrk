@@ -1,0 +1,44 @@
+@startuml driver_the_pi_hut_pir_sensor_structure
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: RPI-Control - Driver - The PI-HUT PIR-Sensor" {
+
+'***************************************************************************
+
+folder "driver" {
+    folder "movement_detection" {
+
+        interface sensor_interface {
+
+        }
+
+        component sensor_driver [
+            <<driver>>
+            The PI-HUT PIR-Sensor
+        ]
+
+        sensor_driver -right-|> sensor_interface
+    }
+
+    folder "gpio" {
+        interface gpio_interface {
+
+        }
+    }
+
+    sensor_driver .left.> gpio_interface : <uses>
+}
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml

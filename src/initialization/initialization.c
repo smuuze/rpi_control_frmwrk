@@ -66,6 +66,7 @@
 #include "modules/lcd/lcd_interface.h"
 #include "modules/keypad/keypad_interface.h"
 #include "modules/ir/ir_protocol_task.h"
+#include "modules/movement_detection/movement_detection_controller.h"
 
 //-----------------------------------------------------------------------------
 
@@ -158,6 +159,11 @@ void initialization(void) {
     }
     #endif
 
+    #ifdef MOVEMENT_DETECTION_CONTROLLER_AVAILABLE
+    {
+        movement_detection_controller_init();
+    }
+    #endif
 }
 
 //-----------------------------------------------------------------------------

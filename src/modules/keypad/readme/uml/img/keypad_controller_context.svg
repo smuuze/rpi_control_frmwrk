@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="468px" preserveAspectRatio="none" style="width:680px;height:468px;background:#FFFFFF;" version="1.1" viewBox="0 0 680 468" width="680px" zoomAndPan="magnify"><defs/><g><!--MD5=[8b30599db9feca9364188cf24a93593f]
+cluster component: RP-Control - Keypad-Controller - Context--><g id="cluster_component: RP-Control - Keypad-Controller - Context"><rect fill="none" height="455" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="667" x="7" y="7"/><path d="M415,7 L415,16.4883 L405,26.4883 L7,26.4883 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="398" x="10" y="21.5352">component: RP-Control - Keypad-Controller - Context</text></g><!--MD5=[f04600f0575a07dfe97362a654bdaa04]
+cluster kernel--><g id="cluster_kernel"><path d="M33.5,213 L79.5,213 A3.75,3.75 0 0 1 82,215.5 L89,235.4883 L395.5,235.4883 A2.5,2.5 0 0 1 398,237.9883 L398,309.5 A2.5,2.5 0 0 1 395.5,312 L33.5,312 A2.5,2.5 0 0 1 31,309.5 L31,215.5 A2.5,2.5 0 0 1 33.5,213 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="89" y1="235.4883" y2="235.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="45" x="35" y="228.5352">kernel</text></g><!--MD5=[d40789246b3c815c1e12caec6092354c]
+cluster driver/keypad--><g id="cluster_driver/keypad"><path d="M424.5,213 L526.5,213 A3.75,3.75 0 0 1 529,215.5 L536,235.4883 L647.5,235.4883 A2.5,2.5 0 0 1 650,237.9883 L650,435.5 A2.5,2.5 0 0 1 647.5,438 L424.5,438 A2.5,2.5 0 0 1 422,435.5 L422,215.5 A2.5,2.5 0 0 1 424.5,213 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="422" x2="536" y1="235.4883" y2="235.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="101" x="426" y="228.5352">driver/keypad</text></g><!--MD5=[dfa79ad2ff427cbe5289aeb767aef2a2]
+cluster modules/keypad--><g id="cluster_modules/keypad"><path d="M198.5,50 L320.5,50 A3.75,3.75 0 0 1 323,52.5 L330,72.4883 L393.5,72.4883 A2.5,2.5 0 0 1 396,74.9883 L396,161.5 A2.5,2.5 0 0 1 393.5,164 L198.5,164 A2.5,2.5 0 0 1 196,161.5 L196,52.5 A2.5,2.5 0 0 1 198.5,50 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="196" x2="330" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="121" x="200" y="65.5352">modules/keypad</text></g><!--MD5=[dd9a97e507cc1d516dfc0b3e9e9c1789]
+class task_interface--><g id="elem_task_interface"><rect codeLine="15" fill="#F1F1F1" height="48" id="task_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="127" x="47.5" y="248"/><ellipse cx="62.5" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M58.9277,260.2651 L58.9277,258.1069 L66.3071,258.1069 L66.3071,260.2651 L63.8418,260.2651 L63.8418,268.3418 L66.3071,268.3418 L66.3071,270.5 L58.9277,270.5 L58.9277,268.3418 L61.3931,268.3418 L61.3931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="95" x="76.5" y="269.291">task_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="48.5" x2="173.5" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="48.5" x2="173.5" y1="288" y2="288"/></g><!--MD5=[0a36e66a645a439e9db5de35c7103aeb]
+class signal_slot_interface--><g id="elem_signal_slot_interface"><rect codeLine="19" fill="#F1F1F1" height="48" id="signal_slot_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="172" x="210" y="248"/><ellipse cx="225" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M221.4277,260.2651 L221.4277,258.1069 L228.8071,258.1069 L228.8071,260.2651 L226.3418,260.2651 L226.3418,268.3418 L228.8071,268.3418 L228.8071,270.5 L221.4277,270.5 L221.4277,268.3418 L223.8931,268.3418 L223.8931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="140" x="239" y="269.291">signal_slot_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="211" x2="381" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="211" x2="381" y1="288" y2="288"/></g><!--MD5=[c7d31fec30b397c975004cc795020aaf]
+class keypad_driver_interface--><g id="elem_keypad_driver_interface"><rect codeLine="26" fill="#F1F1F1" height="48" id="keypad_driver_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="195" x="438.5" y="248"/><ellipse cx="453.5" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M449.9277,260.2651 L449.9277,258.1069 L457.3071,258.1069 L457.3071,260.2651 L454.8418,260.2651 L454.8418,268.3418 L457.3071,268.3418 L457.3071,270.5 L449.9277,270.5 L449.9277,268.3418 L452.3931,268.3418 L452.3931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="163" x="467.5" y="269.291">keypad_driver_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="439.5" x2="632.5" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="439.5" x2="632.5" y1="288" y2="288"/></g><!--MD5=[b16b037f219dd0a7aa4492be19268130]
+entity keypad_driver--><g id="elem_keypad_driver"><rect fill="#DDDDDD" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="139" x="466.5" y="359"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="585.5" y="364"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="583.5" y="366"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="583.5" y="370"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="481.5" y="392.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="99" x="481.5" y="409.0234">Keypad-Driver</text></g><!--MD5=[9fafd1d3ebe111031ef0093d0fdaf490]
+entity keypad_controller--><g id="elem_keypad_controller"><rect fill="#DDDDDD" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="168" x="212" y="85"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="360" y="90"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="358" y="92"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="358" y="96"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="227" y="118.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="128" x="227" y="135.0234">Keypad-Controller</text></g><!--MD5=[857abbde8234ce7641f0e57a21a9c649]
+link keypad_controller to task_interface--><g id="link_keypad_controller_task_interface"><path codeLine="44" d="M259.01,148.19 C229.2,172.92 187.2,207.78 155.55,234.04 " fill="none" id="keypad_controller-to-task_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="160.2,239.28,140.34,246.66,151.26,228.5,160.2,239.28" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[55de8143b499f9f3907bbf2b6cfbd7a5]
+link keypad_controller to signal_slot_interface--><g id="link_keypad_controller_signal_slot_interface"><path codeLine="45" d="M296,148.19 C296,175.41 296,214.88 296,241.68 " fill="none" id="keypad_controller-to-signal_slot_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="296,246.35,300,237.35,296,241.35,292,237.35,296,246.35" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="297" y="193.5684">&lt;uses&gt;</text></g><!--MD5=[17d457df4baafd9bf935e90ea920cad5]
+link keypad_controller to keypad_driver_interface--><g id="link_keypad_controller_keypad_driver_interface"><path codeLine="46" d="M344.28,148.38 C388.25,176.5 452.53,217.61 494.31,244.34 " fill="none" id="keypad_controller-to-keypad_driver_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="498.27,246.87,492.8497,238.6468,494.0599,244.1727,488.5341,245.3829,498.27,246.87" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="417" y="193.5684">&lt;uses&gt;</text></g><!--MD5=[41384b9948fe53d2924da79a0309171d]
+reverse link keypad_driver_interface to keypad_driver--><g id="link_keypad_driver_interface_keypad_driver"><path codeLine="48" d="M536,317.77 C536,331.46 536,346.2 536,358.73 " fill="none" id="keypad_driver_interface-backto-keypad_driver" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="529,317.81,536,297.81,543,317.81,529,317.81" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[1605561ca891c1b206369f14dea17afa]
+@startuml keypad_controller_context
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: RP-Control - Keypad-Controller - Context" {
+
+'***************************************************************************
+
+    folder "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface signal_slot_interface {
+
+        }
+    }
+
+    folder "driver/keypad" {
+
+        interface keypad_driver_interface {
+
+        }
+
+        component keypad_driver #DDDDDD [
+            <<component>>
+            Keypad-Driver
+        ]
+    }
+
+    folder "modules/keypad" {
+
+        component keypad_controller #DDDDDD [
+            <<component>>
+            Keypad-Controller
+        ]
+    }
+
+    keypad_controller .down.|> task_interface
+    keypad_controller .down.> signal_slot_interface : <uses>
+    keypad_controller .down.> keypad_driver_interface : <uses>
+
+    keypad_driver .up.|> keypad_driver_interface
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
+
+@startuml keypad_controller_context
+
+
+skinparam monochrome true
+
+
+frame "component: RP-Control - Keypad-Controller - Context" {
+
+
+    folder "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface signal_slot_interface {
+
+        }
+    }
+
+    folder "driver/keypad" {
+
+        interface keypad_driver_interface {
+
+        }
+
+        component keypad_driver #DDDDDD [
+            <<component>>
+            Keypad-Driver
+        ]
+    }
+
+    folder "modules/keypad" {
+
+        component keypad_controller #DDDDDD [
+            <<component>>
+            Keypad-Controller
+        ]
+    }
+
+    keypad_controller .down.|> task_interface
+    keypad_controller .down.> signal_slot_interface : <uses>
+    keypad_controller .down.> keypad_driver_interface : <uses>
+
+    keypad_driver .up.|> keypad_driver_interface
+
+
+}
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

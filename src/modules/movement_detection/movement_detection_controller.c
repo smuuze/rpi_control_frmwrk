@@ -47,10 +47,25 @@
 #include "time_management/time_management.h"
 #include "local_module_status.h"
 
+#include "protocol_management/mqtt/mqtt_interface.h"
+#include "protocol_management/json/protocol_json_parser.h"
+
 // --------------------------------------------------------------------------------
 
 #include "modules/movement_detection/movement_detection_controller.h"
-#include "modules/movement_detection/movement_detect_sensor_interface.h"
+#include "driver/movement_detection/movement_detect_sensor_interface.h"
+
+// --------------------------------------------------------------------------------
+
+#define MOVEMENT_DETECTION_MOVEMENT_STR             "MOVEMENT"
+#define MOVEMENT_DETECTION_LOCATION_STR             "LOCATION"
+#define MOVEMENT_DETECTION_TIMSTAMP_STR             "TIMESTAMP"
+
+// --------------------------------------------------------------------------------
+
+#ifndef MOVEMENT_DETECTION_LOCATION_NAME
+#define MOVEMENT_DETECTION_LOCATION_NAME            "UNKNOWN"
+#endif
 
 // --------------------------------------------------------------------------------
 
@@ -109,6 +124,12 @@ SIGNAL_SLOT_INTERFACE_CREATE_SLOT(
 
 // --------------------------------------------------------------------------------
 
+//#ifdef MOVEMENT_DETECTION_MQTT_AVAILABLE
+JSON_PARSER_CREATE_OBJECT(MOVE_DETECT_MQTT_MSG)
+//#endif
+
+// --------------------------------------------------------------------------------
+
 /**
  * @brief States of the state-machine
  */
@@ -136,6 +157,27 @@ static inline void movement_detect_controller_configure_sensor(void) {
     
     MOVEMENT_DETECT_SENSOR_CFG movement_sensor_config;
     movement_detect_sensor_configure(&movement_sensor_config);
+}
+
+/**
+ * @brief Sends the following signals in case of detected movement
+ * - MOVEMENT_DETECT_SIGNAL
+ * - MQTT_MESSAGE_TO_SEND_SIGNAL
+ */
+static inline void movement_detect_controller_send_signals(void) {
+
+    MOVEMENT_DETECT_SIGNAL_send(NULL);
+
+    //#ifdef MOVEMENT_DETECTION_MQTT_AVAILABLE
+    {
+        MOVE_DETECT_MQTT_MSG_initialize();
+        MOVE_DETECT_MQTT_MSG_start_group(MOVEMENT_DETECTION_MOVEMENT_STR);
+        MOVE_DETECT_MQTT_MSG_add_string(MOVEMENT_DETECTION_LOCATION_STR, MOVEMENT_DETECTION_LOCATION_NAME);
+        MOVE_DETECT_MQTT_MSG_add_integer(MOVEMENT_DETECTION_TIMSTAMP_STR, time_mgmnt_gettime_u32());
+        MOVE_DETECT_MQTT_MSG_finish();
+        MQTT_MESSAGE_TO_SEND_SIGNAL_send(MOVE_DETECT_MQTT_MSG_to_string());
+    }
+    //#endif
 }
 
 // --------------------------------------------------------------------------------
@@ -166,7 +208,7 @@ static MCU_TASK_INTERFACE_TASK_STATE MOVEMENT_DETECT_CONTROLLER_task_get_state(v
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.run
  */
 static void MOVEMENT_DETECT_CONTROLLER_TASK_execute(void) {
-    
+
     switch (move_detect_state) {
 
         default:
@@ -224,11 +266,12 @@ static void MOVEMENT_DETECT_CONTROLLER_TASK_execute(void) {
 
         case MOVEMENT_DETECTION_STATE_SIGNALING:
 
-            MOVEMENT_DETECT_SIGNAL_send(NULL);
-
+            movement_detect_controller_send_signals();
             MOVE_DETECT_TIMER_start();
+
             DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - SIGNALING -> PAUSE");
             move_detect_state = MOVEMENT_DETECTION_STATE_PAUSE;
+
             break;
 
         case MOVEMENT_DETECTION_STATE_PAUSE:

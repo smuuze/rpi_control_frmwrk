@@ -1,3 +1,5 @@
+[TOP]: #section "Go to the top of the page"
+
 ### Section
 
 Readme | [Changelog](changelog.md)
@@ -30,7 +32,7 @@ data from one module to another.
 | Application                                   |             |
 | App-Task                                      |             |
 | Command-Handling                              |             |
-| Driver                                        |             |
-| [kernel](readme/readme_kernel.md#location)    | Contains the basic operating system and all of it's sub-components            |
-| [modules](src/modules/readme_modules.md#location)  | Sub-Modules realizing special functions, e.g. LCD-Controller, Logger, File-Controller  |
+| [driver](src/driver/readme_driver.md#section) |             |
+| [kernel](readme/readme_kernel.md#section)             | Contains the basic operating system and all of it's sub-components           |
+| [modules](src/modules/readme_modules.md#section)  | Sub-Modules realizing special functions, e.g. LCD-Controller, Logger, File-Controller  |
 | Protocol                                      |             |

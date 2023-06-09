@@ -1,3 +1,8 @@
+[TOP]: #section "Go to the top of the page"
+
+### Section
+
+Readme | [Changelog](../../../../changelog.md)
 
 ### Location
 [frmwrk](../../../../README.md) / [modules](../../readme_modules.md) / LCD
@@ -28,10 +33,10 @@
 # LCD
 
 ## Brief
-[[TOP](#location)]
+[[TOP]]
 
 ## Features
-[[TOP](#features)]
+[[TOP]]
 
 The LCD-controller is used to write text on a connected LCD.
 The LCD-Controller implements the LCD-interface.
@@ -39,7 +44,7 @@ This interface does not specify a definitve type of LCD.
 This means there can be different implementations of the LCD-Controller.
 
 ## Integration
-[[TOP](#location)]
+[[TOP]]
 
 ### Makefile
 
@@ -51,7 +56,7 @@ USER_INTERFACE_CFG += LCD_16X2
 ```
 
 ## Usage
-[[TOP](#features)]
+[[TOP]]
 
 To use the LCD-controller the header file needs to be included. See below
 
@@ -94,12 +99,12 @@ on executing the lcd-task. If all currently buffered lines have been written, th
  `SIGNAL_LCD_UPDATED` signal. You can connect to this signal to get informed of a finished operation.
 
 ## Structure
-[[TOP](#location)]
+[[TOP]]
 
 ![Structure](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_component_lcd_controller.svg )
 
 ## Runtime
-[[TOP](#location)]
+[[TOP]]
 
 ![Runtime](../../../modules/lcd/uml/img/rpi_control_frmwrk_diagram_sequence_lcd_controller.svg )
 

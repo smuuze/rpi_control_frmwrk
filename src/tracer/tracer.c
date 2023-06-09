@@ -323,6 +323,15 @@ void tracer_trace_n(const char* str, const char* file_name, u16 line_id, u16 len
     p_com_driver->start_tx();
 }
 
+void tracer_trace_string(
+    const char* str,
+    const char* file_name,
+    u16 line_id,
+    const char* p_string
+) {
+    tracer_trace_n(str, file_name, line_id, _get_string_length(p_string), p_string);
+}
+
 void tracer_enable(u8 enable) {
 
     if (_is_initialized == 0) {

@@ -78,7 +78,7 @@
     BUILD_GPIO ( GPIO_04,       GPIO_PORT_A,    GPIO_PIN_4,     GPIO_FUNCTION_1             ) //    SPI0 - RX
     BUILD_GPIO ( GPIO_05,       GPIO_PORT_A,    GPIO_PIN_5,     GPIO_FUNCTION_1             ) //    SPI0 - CS
     BUILD_GPIO ( GPIO_06,       GPIO_PORT_A,    GPIO_PIN_6,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_07,       GPIO_PORT_A,    GPIO_PIN_7,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
+    BUILD_GPIO ( GPIO_07,       GPIO_PORT_A,    GPIO_PIN_7,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    PIR_SENSOR
 
 //-----------------------------------------------------------------------------
 // PORT B
@@ -86,24 +86,24 @@
 
     BUILD_GPIO ( GPIO_08,       GPIO_PORT_B,    GPIO_PIN_0,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
     BUILD_GPIO ( GPIO_09,       GPIO_PORT_B,    GPIO_PIN_1,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_10,       GPIO_PORT_B,    GPIO_PIN_2,     GPIO_INPUT | GPIO_IDLE_HIGH ) // 
-    BUILD_GPIO ( GPIO_11,       GPIO_PORT_B,    GPIO_PIN_3,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_12,       GPIO_PORT_B,    GPIO_PIN_4,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_13,       GPIO_PORT_B,    GPIO_PIN_5,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_14,       GPIO_PORT_B,    GPIO_PIN_6,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_15,       GPIO_PORT_B,    GPIO_PIN_7,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
+    BUILD_GPIO ( GPIO_10,       GPIO_PORT_B,    GPIO_PIN_2,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    LCD_D7
+    BUILD_GPIO ( GPIO_11,       GPIO_PORT_B,    GPIO_PIN_3,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    LCD_D6
+    BUILD_GPIO ( GPIO_12,       GPIO_PORT_B,    GPIO_PIN_4,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    LCD_D5
+    BUILD_GPIO ( GPIO_13,       GPIO_PORT_B,    GPIO_PIN_5,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    LCD_D4
+    BUILD_GPIO ( GPIO_14,       GPIO_PORT_B,    GPIO_PIN_6,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    LCD_EN
+    BUILD_GPIO ( GPIO_15,       GPIO_PORT_B,    GPIO_PIN_7,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    LCD_RS
 
 //-----------------------------------------------------------------------------
 // PORT C
 //---------     Name,           Port,           Bit,            Pin-Cfg                             FUNCTION
 
-    BUILD_GPIO ( GPIO_16,       GPIO_PORT_C,    GPIO_PIN_0,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_17,       GPIO_PORT_C,    GPIO_PIN_1,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_18,       GPIO_PORT_C,    GPIO_PIN_2,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_19,       GPIO_PORT_C,    GPIO_PIN_3,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_20,       GPIO_PORT_C,    GPIO_PIN_4,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_21,       GPIO_PORT_C,    GPIO_PIN_5,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_22,       GPIO_PORT_C,    GPIO_PIN_6,     GPIO_INPUT | GPIO_IDLE_HIGH ) // 
+    BUILD_GPIO ( GPIO_16,       GPIO_PORT_C,    GPIO_PIN_0,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    KEY_ROW_4
+    BUILD_GPIO ( GPIO_17,       GPIO_PORT_C,    GPIO_PIN_1,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    KEY_ROW_3
+    BUILD_GPIO ( GPIO_18,       GPIO_PORT_C,    GPIO_PIN_2,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    KEY_ROW_2
+    BUILD_GPIO ( GPIO_19,       GPIO_PORT_C,    GPIO_PIN_3,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    KEY_ROW_1
+    BUILD_GPIO ( GPIO_20,       GPIO_PORT_C,    GPIO_PIN_4,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    KEY_COL_3
+    BUILD_GPIO ( GPIO_21,       GPIO_PORT_C,    GPIO_PIN_5,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    KEY_COL_2
+    BUILD_GPIO ( GPIO_22,       GPIO_PORT_C,    GPIO_PIN_6,     GPIO_INPUT | GPIO_IDLE_HIGH ) //    KEY_COL_1
     BUILD_GPIO ( GPIO_23,       GPIO_PORT_C,    GPIO_PIN_7,     GPIO_INPUT | GPIO_IDLE_HIGH ) // 
 
 //-----------------------------------------------------------------------------
@@ -111,7 +111,7 @@
 //---------     Name,           Port,           Bit,            Pin-Cfg                             FUNCTION
 
     BUILD_GPIO ( GPIO_24,       GPIO_PORT_D,    GPIO_PIN_0,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
-    BUILD_GPIO ( GPIO_25,       GPIO_PORT_D,    GPIO_PIN_1,     GPIO_OUTPUT | GPIO_IDLE_HIGH ) //   ON_BOARD LED
+    BUILD_GPIO ( GPIO_25,       GPIO_PORT_D,    GPIO_PIN_1,     GPIO_OUTPUT | GPIO_IDLE_HIGH ) //   LED_ON_BOARD
     BUILD_GPIO ( GPIO_26,       GPIO_PORT_D,    GPIO_PIN_2,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
     BUILD_GPIO ( GPIO_27,       GPIO_PORT_D,    GPIO_PIN_3,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
     BUILD_GPIO ( GPIO_28,       GPIO_PORT_D,    GPIO_PIN_4,     GPIO_INPUT | GPIO_IDLE_HIGH ) //
@@ -141,6 +141,12 @@ GPIO_ALIAS ( KEY_ROW_4,	GPIO_16 )
 
 // ALIAS - ON BOARD LED
 
-GPIO_ALIAS ( LED_ON_BOARD,	GPIO_25 )
+GPIO_ALIAS ( LED_ON_BOARD, GPIO_25 )
+
+//-----------------------------------------------------------------------------
+
+// ALIAS - PIR SENSOR
+
+GPIO_ALIAS ( PIR_SENSOR, GPIO_07 )
 
 //-----------------------------------------------------------------------------

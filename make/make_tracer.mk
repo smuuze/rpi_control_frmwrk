@@ -48,3 +48,19 @@ TRACER_VERSION	= 1.1
 TRACER_EXE_FILE = Tracer.exe
 TRACER_BIN_PATH = ../../Tracer/Release/$(TRACER_VERSION)
 TRACER_WORKING_PATH = ../../../../RPi_Hat_Derivate/$(notdir $(CURDIR))/
+
+ifeq ($(OS),Windows_NT)
+
+else 
+
+	UNAME_S := $(shell uname -s)
+	CROSS_COMPILER_PREFIX = arm-none-eabi-
+
+	ifeq ($(UNAME_S),Linux)
+		TRACER_PATH := $(BASE_PATH)/rpi_control_projects/cfg_TRACER/shcTracer
+	endif
+
+	ifeq ($(UNAME_S),Darwin)
+		TRACER_PATH := $(BASE_PATH)/rpi_control_projects/cfg_TRACER_darwin/shcTracer.app
+	endif
+endif
