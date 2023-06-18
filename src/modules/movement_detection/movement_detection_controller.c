@@ -214,6 +214,7 @@ static void MOVEMENT_DETECT_CONTROLLER_TASK_execute(void) {
         default:
             move_detect_state = MOVEMENT_DETECTION_STATE_SETUP;
             // no break;
+            /* fall through */
 
         case MOVEMENT_DETECTION_STATE_SETUP:
 

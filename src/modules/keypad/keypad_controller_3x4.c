@@ -308,6 +308,7 @@ static void keypad_task_run(void) {
         default:
             keypad_task_state = KEYPAD_3X4_TASK_STATE_IDLE;
             // no break;
+            /* fall through */
 
         case KEYPAD_3X4_TASK_STATE_IDLE:
 
