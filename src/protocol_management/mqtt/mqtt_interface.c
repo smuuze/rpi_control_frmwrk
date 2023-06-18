@@ -275,6 +275,8 @@ void connectionLost_Callback(void *context, char* cause) {
 
 int messageArrived_Callback(void* context, char* topicName, int topcLength, MQTTClient_message* message) {
 
+    (void) topcLength;
+
     if (context == NULL) {
     
         DEBUG_PASS("messageArrived_Callback() - Context is zero !!! ---");
@@ -312,6 +314,8 @@ int messageArrived_Callback(void* context, char* topicName, int topcLength, MQTT
 }
 
 void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token) {
+
+    (void) token;
 
     if (context == NULL) {
         return;
