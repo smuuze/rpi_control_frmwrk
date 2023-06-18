@@ -439,7 +439,7 @@ void spi0_driver_clear_tx_buffer(void) {
 
 
 void spi0_driver_set_address (u8 addr) {
-
+    (void) addr;
 }
 
 u8 spi0_driver_mutex_request(void) {
