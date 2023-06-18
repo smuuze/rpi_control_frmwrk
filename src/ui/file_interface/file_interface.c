@@ -70,7 +70,7 @@ u8 file_has_changed(FILE_INTERFACE* p_file) {
     if (stat(p_file->path, &file_attribute) == 0) {
         return 0;
         
-    } else if ((u32)file_attribute.st_mtime > (p_file->timestamp_last_modified) {
+    } else if ((u32)file_attribute.st_mtime > p_file->timestamp_last_modified) {
         return 1;
     }
     
