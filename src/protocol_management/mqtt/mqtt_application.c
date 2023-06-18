@@ -350,6 +350,7 @@ static void mqtt_interface_task_run(void) {
 
 			mqtt_task_state = MQTT_APPLICATION_TASK_STATE_IDLE;
 			// no break;
+            /* fall through */
 
 		case MQTT_APPLICATION_TASK_STATE_WAIT_FOR_USER_CONFIGURATION :
 
@@ -363,6 +364,7 @@ static void mqtt_interface_task_run(void) {
 			mqtt_task_state = MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION;
 
 			// no break;
+            /* fall through */
 
 		case MQTT_APPLICATION_TASK_STATE_CLOSE_CONNECTION :
 
@@ -581,6 +583,8 @@ static void mqtt_new_cfg_object_CALLBACK(const void* p_argument) {
 }
 
 static void mqtt_cfg_complete_CALLBACK(const void* p_argument) {
+
+    (void) p_argument;
 
 	DEBUG_PASS("mqtt_cfg_complete_CALLBACK()");
 	MQTT_STATUS_set(MQTT_STATUS_USER_CFG_SET);
