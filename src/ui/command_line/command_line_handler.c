@@ -46,6 +46,7 @@
 
 // --------------------------------------------------------------------------------
 
+#include "common/common_types.h"
 #include "common/signal_slot_interface.h"
 #include "ui/command_line/command_line_interface.h"
 #include "common/common_tools_string.h"
