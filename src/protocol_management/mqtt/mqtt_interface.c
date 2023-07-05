@@ -51,13 +51,20 @@ void trace_Callback(enum MQTTCLIENT_TRACE_LEVELS level, char* message);
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief Here we store the last message sent.
+ * THe message we maybe receive this message, because
+ * we are conencted to the same topic this message was send.
+ * Comparing the received msg with the last message sent will
+ * avoid incorrect message handling.
  */
 static char last_msg_send[MQTT_INTERFACE_MAX_MSG_LENGTH];
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @see mqtt_interface.h#mqtt_configure
+ */
 void mqtt_configure(MQTT_INTERFACE* p_mqtt_interface, const char* p_host_addr, const char* p_topic_name, const char* p_client_name) {
     
     if (p_host_addr != NULL) {
@@ -82,6 +89,9 @@ void mqtt_configure(MQTT_INTERFACE* p_mqtt_interface, const char* p_host_addr, c
     }
 }
 
+/**
+ * @see mqtt_interface.h#mqtt_init
+ */
 u8 mqtt_init(MQTT_INTERFACE* p_mqtt_interface) {
 
     #ifdef DEBUG_ENABLED
@@ -100,6 +110,9 @@ u8 mqtt_init(MQTT_INTERFACE* p_mqtt_interface) {
     return MQTT_NO_ERROR;
 }
 
+/**
+ * @see mqtt_interface.h#mqtt_connect
+ */
 u8 mqtt_connect(MQTT_INTERFACE* p_mqtt_interface) {
         
     DEBUG_PASS("mqtt_connect()");
@@ -131,6 +144,9 @@ u8 mqtt_connect(MQTT_INTERFACE* p_mqtt_interface) {
     return MQTT_NO_ERROR;
 }
 
+/**
+ * @see mqtt_interface.h#mqtt_disconnect
+ */
 u8 mqtt_disconnect(MQTT_INTERFACE* p_mqtt_interface) {
 
     DEBUG_PASS("mqtt_disconnect()");
@@ -150,6 +166,9 @@ u8 mqtt_disconnect(MQTT_INTERFACE* p_mqtt_interface) {
     return MQTT_NO_ERROR;
 }
 
+/**
+ * @see mqtt_interface.h#mqtt_send_next_message
+ */
 u8 mqtt_send_next_message(MQTT_INTERFACE* p_mqtt_interface) {
 
     if (p_mqtt_interface->tx_qeue.is_empty()) {
@@ -185,18 +204,30 @@ u8 mqtt_send_next_message(MQTT_INTERFACE* p_mqtt_interface) {
     return MQTT_NO_ERROR;
 }
 
+/**
+ * @see mqtt_interface.h#mqtt_msg_pending
+ */
 u8 mqtt_msg_pending(MQTT_INTERFACE* p_mqtt_interface) {
     return p_mqtt_interface->rx_qeue.is_empty() == 0;
 }
 
+/**
+ * @see mqtt_interface.h#mqtt_tx_msg_pending
+ */
 u8 mqtt_tx_msg_pending(MQTT_INTERFACE* p_mqtt_interface) {
     return p_mqtt_interface->tx_qeue.is_empty() == 0;
 }
 
+/**
+ * @see mqtt_interface.h#mqtt_connection_lost
+ */
 u8 mqtt_connection_lost(MQTT_INTERFACE* p_mqtt_interface) {
     return p_mqtt_interface->connection_lost;
 }
 
+/**
+ * @see mqtt_interface.h#mqtt_get_next_msg
+ */
 u16 mqtt_get_next_msg(MQTT_INTERFACE* p_mqtt_interface, char* p_msg_to, u16 max_length) {
 
     if (p_mqtt_interface->rx_qeue.is_empty()) {
@@ -226,6 +257,9 @@ u16 mqtt_get_next_msg(MQTT_INTERFACE* p_mqtt_interface, char* p_msg_to, u16 max_
     }
 }
 
+/**
+ * @see mqtt_interface.h#mqtt_enqeue_message
+ */
 u8 mqtt_enqeue_message(MQTT_INTERFACE* p_mqtt_interface, const char* p_msg_from) {
 
     if (p_mqtt_interface->tx_qeue.max_message_length < common_tools_string_length(p_msg_from)) {
@@ -239,6 +273,9 @@ u8 mqtt_enqeue_message(MQTT_INTERFACE* p_mqtt_interface, const char* p_msg_from)
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @see mqtt_interface.h#mqtt_keep_alive
+ */
 void mqtt_keep_alive(void) {
 
     DEBUG_PASS("mqtt_keep_alive()");
@@ -247,12 +284,25 @@ void mqtt_keep_alive(void) {
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Callback from mqtt subsystem for trace messages
+ * if debug is enabled traces are forwarded to debug-outputs.
+ * 
+ * @param level is ignored
+ * @param message message from mqtt-swubsyste, to output.
+ */
 void trace_Callback(enum MQTTCLIENT_TRACE_LEVELS level, char* message) {
     (void) level;
     (void) message;
     DEBUG_TRACE_STR(message, "mqtt_interface.trace_Callback() - ");
 }
 
+/**
+ * @brief Callback if a conenction is lost.
+ * 
+ * @param context mqtt-context where the connection is lost.
+ * @param cause reason of connection lost
+ */
 void connectionLost_Callback(void *context, char* cause) {
 
     if (context == NULL) {
@@ -273,6 +323,15 @@ void connectionLost_Callback(void *context, char* cause) {
 
 }
 
+/**
+ * @brief Callback for new messages that have just received.
+ * 
+ * @param context mqtt-context where the message was received.
+ * @param topicName name of the topic at from which the message was received
+ * @param topcLength number of char of topicName
+ * @param message message that was received.
+ * @return 1 in every case
+ */
 int messageArrived_Callback(void* context, char* topicName, int topcLength, MQTTClient_message* message) {
 
     (void) topcLength;
@@ -313,6 +372,12 @@ int messageArrived_Callback(void* context, char* topicName, int topcLength, MQTT
     return 1;
 }
 
+/**
+ * @brief Callback for a complete transfer.
+ * 
+ * @param context mqtt context where a new messge was sent
+ * @param token is ignored.
+ */
 void deliveryComplete_Callback(void* context, MQTTClient_deliveryToken token) {
 
     (void) token;
