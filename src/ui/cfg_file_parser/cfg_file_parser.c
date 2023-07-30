@@ -167,7 +167,7 @@ static void cfg_file_parser_parse_configuration_line(char* line) {
 
     DEBUG_TRACE_STR(line, "cfg_file_parser_parse_configuration_line()");
 
-    if (strlen(line) == 0) {
+    if (common_tools_string_length(line) == 0) {
         DEBUG_PASS("cfg_file_parser_parse_configuration_line() - Length of line is zero");
         return;
     }
@@ -188,17 +188,17 @@ static void cfg_file_parser_parse_configuration_line(char* line) {
         CFG_FILE_PARSER_KEY_VALUE_SPLITTER,
         line,
         cfg_object.key,
-        CFG_FILE_PARSER_MAX_LINE_LENGTH,
+        CFG_FILE_PARSER_MAX_LENGTH_CFG_KEY,
         cfg_object.value,
-        CFG_FILE_PARSER_MAX_LINE_LENGTH
+        CFG_FILE_PARSER_MAX_LENGTH_CFG_VALUE
     );
 
-    if (strlen(cfg_object.key) == 0) {
+    if (common_tools_string_length(cfg_object.key) == 0) {
         DEBUG_PASS("cfg_file_parser_parse_configuration_line() - no key in line");
         return;
     }
 
-    if (strlen(cfg_object.value) == 0) {
+    if (common_tools_string_length(cfg_object.value) == 0) {
         DEBUG_PASS("cfg_file_parser_parse_configuration_line() - no value in line");
         return;
     }
@@ -338,6 +338,8 @@ void cfg_file_parser_task_run(void) {
 
             CFG_FILE_PARSER_STATUS_unset(CFG_FILE_PARSER_STATUS_TIMEOUT_ACTIVE);
             CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMER_stop();
+
+            DEBUG_PASS("SENDING SIGNAL");
             CFG_PARSER_CFG_COMPLETE_SIGNAL_send(NULL);
 
             DEBUG_PASS("cfg_file_parser_task_run() - CFG_FILE_PARSER_TASK_STATE_SIGNAL_COMPLETE > CFG_FILE_PARSER_WAIT_FOR_FILE");
