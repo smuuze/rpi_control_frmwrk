@@ -8,7 +8,7 @@
  * --------------------------------------------------------------------------------
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 // --------------------------------------------------------------------------------
 
@@ -114,11 +114,12 @@ u8 file_is_readable(FILE_INTERFACE* p_file) {
 
 u8 file_is_existing(FILE_INTERFACE* p_file) {
 
-	DEBUG_PASS("file_is_existing()");
-
-	if (test_case_counter == TEST_CASE_ID_FILE_NOT_EXISITING) {
+	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_FILE_NOT_EXISITING) {
+	    DEBUG_PASS("file_is_existing() - NOT EXISTING");
 		return 0;
 	}
+
+	DEBUG_PASS("file_is_existing() - EXISTING");
 	
 	return 1;
 }
@@ -157,7 +158,7 @@ u8 file_open(FILE_INTERFACE* p_file) {
 		return 0;
 	}
 
-	if (test_case_counter == TEST_CASE_ID_FILE_NOT_OPEN) {
+	if (UT_GET_TEST_CASE_ID() == TEST_CASE_ID_FILE_NOT_OPEN) {
 
 		DEBUG_TRACE_STR(p_file->path, "file_open() - FAILED !!! ---");
 		return 0;
@@ -335,12 +336,18 @@ static void TEST_CASE_file_not_existing(void) {
 		const char cfg_file_path[] = UNITTEST_CFG_FILE_PATH;
 
 		CLI_CONFIGURATION_SIGNAL_send((void*)cfg_file_path);
-		cfg_file_parser_task_get_state();
-		cfg_file_parser_task_run();
 
-		//UT_CHECK_IS_EQUAL(counter_RESPONSE_RECEIVED_SIGANL, 0);
-		//UT_CHECK_IS_EQUAL(counter_COMMAND_TIMEOUT_SIGNAL, 0);
-		//UT_CHECK_IS_EQUAL(counter_COMMAND_NOT_FOUND_SIGNAL, 1);
+		UNITTEST_TIMER_start();
+		while (UNITTEST_TIMER_is_up(5000) == 0) {
+			mcu_task_controller_schedule();
+
+            if (counter_CFG_COMPLETE_SIGNAL != 0) {
+                break;
+            }
+		}
+
+		UT_CHECK_IS_EQUAL(counter_NEW_CFG_OBJECT_RECEIVED, 0);
+		UT_CHECK_IS_EQUAL(counter_CFG_COMPLETE_SIGNAL, 1);
 	}
 	UT_END_TEST_CASE()
 }
@@ -355,12 +362,18 @@ static void TEST_CASE_file_existing(void) {
 		const char cfg_file_path[] = UNITTEST_CFG_FILE_PATH;
 
 		CLI_CONFIGURATION_SIGNAL_send((void*)cfg_file_path);
-		cfg_file_parser_task_get_state();
-		cfg_file_parser_task_run();
 
-		//UT_CHECK_IS_EQUAL(counter_RESPONSE_RECEIVED_SIGANL, 0);
-		//UT_CHECK_IS_EQUAL(counter_COMMAND_TIMEOUT_SIGNAL, 0);
-		//UT_CHECK_IS_EQUAL(counter_COMMAND_NOT_FOUND_SIGNAL, 1);
+		UNITTEST_TIMER_start();
+		while (UNITTEST_TIMER_is_up(5000) == 0) {
+			mcu_task_controller_schedule();
+
+            if (counter_CFG_COMPLETE_SIGNAL != 0) {
+                break;
+            }
+		}
+
+		UT_CHECK_IS_EQUAL(counter_NEW_CFG_OBJECT_RECEIVED, 2);
+		UT_CHECK_IS_EQUAL(counter_CFG_COMPLETE_SIGNAL, 1);
 	}
 	UT_END_TEST_CASE()
 }
