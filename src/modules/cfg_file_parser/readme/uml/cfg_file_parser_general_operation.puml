@@ -16,11 +16,10 @@ start
 while (task is running)
     :Wait for signal<
     :Open File;
-    if (not <EOF>) then (yes)
+    while (line available) is (yes)
         :Parse Object;
         :Send Signal>
-    else (no)
-    endif
+    endwhile (no)
     :Close File;
     :Send Complete>
 endwhile
