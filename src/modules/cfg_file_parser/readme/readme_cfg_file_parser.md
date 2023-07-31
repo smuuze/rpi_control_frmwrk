@@ -177,7 +177,7 @@ Data type that are availalbe via the interface of the CFG-File-Parser. See `cfg_
 ### Configuration Macros
 
 The following values can be defined as a macro. E.g. in your project specific `config.h`\
-See [modules/movement_detection/movement_detection_controller.h](../../../modules/movement_detection/movement_detection_controller.h)
+See [modules/cfg_file_parser/cfg_file_parser.h](../../../ui/cfg_file_parser/cfg_file_parser.h)
 
 | Configuration Macro                            | Default Value | Description                 |
 |------------------------------------------------|---------------|-----------------------------|
@@ -200,7 +200,7 @@ See [modules/movement_detection/movement_detection_controller.h](../../../module
 ### Makefile
 
 Add the following statement to your project makefile.
-This will define the macro `MOVEMENT_DETECTION_CONTROLLER_AVAILABLE`.
+This will define the macro `CFG_FILE_PARSER_AVAILABLE`.
 
 ```makefile
 USER_INTERFACE_CFG += CFG_FILE_PARSER
