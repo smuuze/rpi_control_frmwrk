@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -234,23 +234,23 @@ static void cfg_file_parser_parse_configuration_file(void) {
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.init
  */
-void cfg_file_parser_task_init(void) {
+static void cfg_file_parser_task_start(void) {
     
-    DEBUG_PASS("cfg_file_parser_task_init()");
+    DEBUG_PASS("cfg_file_parser_task_start()");
     app_task_state = CFG_FILE_PARSER_TASK_STATE_IDLE;
 }
 
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_schedule_interval
  */
-u16 cfg_file_parser_task_get_schedule_interval(void) {
+static u16 cfg_file_parser_task_get_schedule_interval(void) {
     return CFG_FILE_PARSER_TASK_RUN_INTERVAL_MS;
 }
 
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.get_task_state
  */
-MCU_TASK_INTERFACE_TASK_STATE cfg_file_parser_task_get_state(void) {
+static MCU_TASK_INTERFACE_TASK_STATE cfg_file_parser_task_get_state(void) {
 
     if (CFG_FILE_PARSER_STATUS_is_set(CFG_FILE_PARSER_NEW_CFG_FILE_SET)) {
         DEBUG_PASS("cfg_file_parser_task_get_state() - New file has been set");
@@ -265,8 +265,6 @@ MCU_TASK_INTERFACE_TASK_STATE cfg_file_parser_task_get_state(void) {
     if (app_task_state != CFG_FILE_PARSER_WAIT_FOR_FILE) {
         return MCU_TASK_RUNNING;
     }
-
-    //DEBUG_PASS("cfg_file_parser_task_get_state() - SLEEPING");
     
     return MCU_TASK_SLEEPING;
 }
@@ -274,7 +272,7 @@ MCU_TASK_INTERFACE_TASK_STATE cfg_file_parser_task_get_state(void) {
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.run
  */
-void cfg_file_parser_task_run(void) {
+static void cfg_file_parser_task_run(void) {
     
     DEBUG_PASS("cfg_file_parser_task_run()");
 
@@ -358,62 +356,26 @@ void cfg_file_parser_task_run(void) {
 
             break;
     }
-
-}
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.background_run
- */
-void cfg_file_parser_task_background_run(void) {
-
-}
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.sleep
- */
-void cfg_file_parser_task_sleep(void) {
-
-}
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.wakeup
- */
-void cfg_file_parser_task_wakeup(void) {
-
-}
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.finish
- */
-void cfg_file_parser_task_finish(void) {
-
 }
 
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.terminate
  */
-void cfg_file_parser_task_terminate(void) {
+static void cfg_file_parser_task_terminate(void) {
 
 }
 
 // --------------------------------------------------------------------------------
 
-static MCU_TASK_INTERFACE cfg_file_parser_task = {
-
-    0,                                              // u8 identifier,
-    0,                                              // u16 new_run_timeout,
-    0,                                              // u16 last_run_time,
-    &cfg_file_parser_task_init,                     // MCU_TASK_INTERFACE_INIT_CALLBACK         init,
-    &cfg_file_parser_task_get_schedule_interval,    // MCU_TASK_INTERFACE_INIT_CALLBACK         init,
-    &cfg_file_parser_task_get_state,                // MCU_TASK_INTERFACE_GET_STATE_CALLBACK    get_sate,
-    &cfg_file_parser_task_run,                      // MCU_TASK_INTERFACE_RUN_CALLBACK          run,
-    0,                                              // MCU_TASK_INTERFACE_BG_RUN_CALLBACK       background_run,
-    0,                                              // MCU_TASK_INTERFACE_SLEEP_CALLBACK        sleep,
-    0,                                              // MCU_TASK_INTERFACE_WAKEUP_CALLBACK       wakeup,
-    &cfg_file_parser_task_finish,                   // MCU_TASK_INTERFACE_FINISH_CALLBACK       finish,
-    &cfg_file_parser_task_terminate,                // MCU_TASK_INTERFACE_TERMINATE_CALLBACK    terminate,
-    0                                               // next-task
-};
+TASK_CREATE (
+    CFG_FILE_PARSER_TASK, 
+    TASK_PRIORITY_MIDDLE,
+    cfg_file_parser_task_get_schedule_interval,
+    cfg_file_parser_task_start,
+    cfg_file_parser_task_run,
+    cfg_file_parser_task_get_state,
+    cfg_file_parser_task_terminate
+)
 
 // --------------------------------------------------------------------------------
 
@@ -436,7 +398,7 @@ void cfg_file_parser_init(void) {
     CFG_PARSER_CFG_FILE_SLOT_connect();
 
     DEBUG_PASS("cfg_file_parser_init() - mcu_task_controller_register_task()");
-    mcu_task_controller_register_task(&cfg_file_parser_task);
+    CFG_FILE_PARSER_TASK_init();
 
     CFG_FILE_PARSER_WAIT_FOR_CFG_FILE_TIMER_start();
 
