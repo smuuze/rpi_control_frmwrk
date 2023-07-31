@@ -40,7 +40,7 @@
  * 
  *  1.  declare task callbacks. Implementation is made somewhere else
  * 
- *      static void my_task_init(void);
+ *      static void my_task_start(void);
  *      static u16 my_task_get_schedule_interval(void);
  *      static MCU_TASK_INTERFACE_TASK_STATE my_task_get_state(void);
  *      static void my_task_run(void);
@@ -51,7 +51,7 @@
  *      TASK_CREATE (
  *          MY_TASK,
  *          my_task_get_schedule_interval,
- *          my_task_init,
+ *          my_task_start,
  *          my_task_run,
  *          my_task_get_state,
  *          my_task_terminate
