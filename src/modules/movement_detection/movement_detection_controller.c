@@ -47,8 +47,12 @@
 #include "time_management/time_management.h"
 #include "local_module_status.h"
 
+// --------------------------------------------------------------------------------
+
+#ifdef MOVEMENT_DETECTION_MQTT_AVAILABLE
 #include "protocol_management/mqtt/mqtt_interface.h"
 #include "protocol_management/json/protocol_json_parser.h"
+#endif // MOVEMENT_DETECTION_MQTT_AVAILABLE
 
 // --------------------------------------------------------------------------------
 
