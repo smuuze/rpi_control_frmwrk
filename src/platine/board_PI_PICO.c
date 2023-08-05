@@ -36,8 +36,8 @@
 // |            | GPIO  5 |  7 || 34 | GPIO 28 |            |
 // |            | GND     |  8 || 33 | GND     |            |
 // |            | GPIO  6 |  9 || 32 | GPIO 27 |            |
-// |            | GPIO  7 | 10 || 31 | GPIO 26 |            |
-// |            | GPIO  8 | 11 || 30 | RUN     |            |
+// | PIR_SENSOR | GPIO  7 | 10 || 31 | GPIO 26 |            |
+// | REQ_CLIENT | GPIO  8 | 11 || 30 | RUN     |            |
 // |            | GPIO  9 | 12 || 29 | GPIO 22 | KEY_COL_1  |
 // |            | GND     | 13 || 28 | GND     |            |
 // | LCD_D7     | GPIO 10 | 14 || 27 | GPIO 21 | KEY_COL_2  |
@@ -148,5 +148,11 @@ GPIO_ALIAS ( LED_ON_BOARD, GPIO_25 )
 // ALIAS - PIR SENSOR
 
 GPIO_ALIAS ( PIR_SENSOR, GPIO_07 )
+
+//-----------------------------------------------------------------------------
+
+// ALIAS - REQUEST_CLIENT (RPI-PROTOCOL)
+
+GPIO_ALIAS ( REQUEST_CLIENT, GPIO_08 )
 
 //-----------------------------------------------------------------------------
