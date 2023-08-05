@@ -329,7 +329,7 @@ void tracer_trace_string(
     u16 line_id,
     const char* p_string
 ) {
-    tracer_trace_n(str, file_name, line_id, _get_string_length(p_string), p_string);
+    tracer_trace_n(str, file_name, line_id, _get_string_length(p_string), (const unsigned char*)p_string);
 }
 
 void tracer_enable(u8 enable) {
