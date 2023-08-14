@@ -2,6 +2,28 @@
 
 [Readme](README.md) | Changelog
 
+# Version 7.1.0
+
+Date: **NOT RELEASED**
+
+**New Feature:**
+
+ - none
+
+**Bug Fixes:**
+
+ - none
+
+**Misc:**
+
+ - none
+
+**Known Bus:**
+
+ - none
+
+[TOP](#section)
+
 # Version 7.0.0
 
 Date: 2023 / 08 / 14
