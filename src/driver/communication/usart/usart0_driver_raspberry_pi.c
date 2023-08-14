@@ -81,7 +81,7 @@ static void usart0_driver_raspberry_pi_init(void);
  * the usart interface
  * 
  */
-static void* usart0_driver_raspberry_pi_background_read(void* p_arg);
+static THREAD_INTERFACE_EXIT_STATUS usart0_driver_raspberry_pi_background_read(void);
 
 /**
  * @brief Termiantes the thread of this module
@@ -91,7 +91,13 @@ static void usart0_driver_raspberry_pi_thread_terminate(void);
 
 // ------------------------------------------------------------------------------
 
-THREAD_INTERFACE_BUILD_THREAD(USART0_DRIVER_RPI_RX_THREAD, THREAD_PRIORITY_MIDDLE, usart0_driver_raspberry_pi_init, usart0_driver_raspberry_pi_background_read, usart0_driver_raspberry_pi_thread_terminate)
+THREAD_INTERFACE_BUILD_THREAD(
+    USART0_DRIVER_RPI_RX_THREAD,
+    THREAD_PRIORITY_MIDDLE,
+    usart0_driver_raspberry_pi_init,
+    usart0_driver_raspberry_pi_background_read,
+    usart0_driver_raspberry_pi_thread_terminate
+)
 
 // --------------------------------------------------------------------------------
 
@@ -334,9 +340,7 @@ static void usart0_driver_raspberry_pi_init(void) {
 	DEBUG_PASS("usart0_driver_raspberry_pi_init()");
 }
 
-static void* usart0_driver_raspberry_pi_background_read(void* p_arg) {
-
-	(void) p_arg;
+static THREAD_INTERFACE_EXIT_STATUS usart0_driver_raspberry_pi_background_read(void) {
 
 	DEBUG_PASS("usart0_driver_raspberry_pi_background_read() - Thread started");
 
@@ -368,7 +372,8 @@ static void* usart0_driver_raspberry_pi_background_read(void* p_arg) {
 	close(device_handle_id);
 	USART0_STATUS_unset(USART0_STATUS_INITIALIZED);
 
-	return NULL;
+	DEBUG_PASS("usart0_driver_raspberry_pi_background_read() - FINISHED");
+	return 0;
 }
 
 static void usart0_driver_raspberry_pi_thread_terminate(void) {

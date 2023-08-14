@@ -1,18 +1,9 @@
+
 CPU_FAMILY = avr
 
 INC_PATH += ../../rpi_control_frmwrk/src/common/cpu/avr
-INC_PATH += $(AVR_INCLUDE_PATH)
 
-MCU_FLAG = -mmcu=$(MCU_NAME)
-CROSS_COMPILER_PREFIX = avr-
-
-MCU_SIZE_FLAGS = --mcu=$(MCU_NAME)
-
-LDFLAGS = -Wl,-Map,$(OBJECT_DIRECTORY)/$(TARGET).map
-LD_EXTRA_FLAGS += -Wl,--gc-sections,--relax
-DEFS 		+= -D__avr__
-
-include $(FRMWRK_PATH)/make/make_cpu_avr_atmega1284p.mk
+DEFS += -D__avr__
 
 #MCU_TARGET     = at90s2313
 #MCU_TARGET     = at90s2333

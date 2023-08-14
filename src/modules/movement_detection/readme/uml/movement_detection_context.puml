@@ -1,0 +1,70 @@
+@startuml movement_detection_context
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "class: RPi-Control - Movement-Detection - Context" {
+
+'***************************************************************************
+
+    folder "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface signal_slot_interface {
+
+        }
+    }
+
+    folder "driver/movement_detection" {
+
+        component sensor_driver #DDDDDD [
+            <<component>>
+            Sensor Driver
+        ]
+
+        interface sensor_interface {
+
+        }
+    }
+
+    folder "protocol" {
+
+        interface json_parser {
+
+        }
+
+        interface mqtt_interface {
+
+        }
+    }
+
+    folder "modules/movement_detection" {
+
+        component movement_detection #DDDDDD [
+            <<component>>
+            Movement Detection Controller
+        ]
+    }
+
+    movement_detection .down.|> task_interface
+    movement_detection .down.> signal_slot_interface : <uses>
+    movement_detection .down.> sensor_interface : <uses>
+    movement_detection .down.> json_parser : <uses>
+    movement_detection .down.> mqtt_interface : <uses>
+
+    sensor_driver .up.|> sensor_interface
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml

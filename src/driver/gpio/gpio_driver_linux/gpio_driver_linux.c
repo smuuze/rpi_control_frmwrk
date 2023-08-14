@@ -106,51 +106,61 @@ static GPIO_DRIVER_RW_CMD gpio_command;
  * @param p_pin_descr gpio descriptor of the gpio pin
  * @return number of the gpio-pin on the actual system referenced by p_pin_descr
  */
-static u8 gpio_driver_get_pin_id(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+static u8 gpio_driver_get_pin_id(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
-    u8 pin_num = 0xFF;
+    static u8 gpio_num_array[5][8] = {
+    
+        /* Port / Pin   0       1       2       3       4       5       6       7  */
+        /*/ Port A */ { 0xFF,   0xFF,   2,      0xFF,   3,      0xFF,   4,      14   }, 
+        /*/ Port B */ { 0xFF,   15,     17,     18,     27,     0xFF,   22,     23   }, 
+        /*/ Port C */ { 0xFF,   24,     10,     0xFF,   9,      25,     11,     8    },
+        /*/ Port D */ { 0xFF,   7,      0xFF,   0xFF,   5,      0xFF,   6,      12   },
+        /*/ Port E */ { 13,     0xFF,   19,     16,     26,     20,     0xFF,   21   }
+    };
 
-    if (p_pin_descr->port_id == GPIO_PORT_A) {
+    u8 pin_num = gpio_num_array[p_pin_descr->port_id][p_pin_descr->pin_id];
 
-        if (p_pin_descr->pin_id == GPIO_PIN_2) { pin_num = 2; }
-        if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 3; }
-        if (p_pin_descr->pin_id == GPIO_PIN_6) { pin_num = 4; }
-        if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 14; }
+    // if (p_pin_descr->port_id == GPIO_PORT_A) {
 
-    } else if (p_pin_descr->port_id == GPIO_PORT_B) {
+    //     if (p_pin_descr->pin_id == GPIO_PIN_2) { pin_num = 2; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 3; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_6) { pin_num = 4; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 14; }
 
-        if (p_pin_descr->pin_id == GPIO_PIN_1) { pin_num = 15; }
-        if (p_pin_descr->pin_id == GPIO_PIN_2) { pin_num = 17; }
-        if (p_pin_descr->pin_id == GPIO_PIN_3) { pin_num = 18; }
-        if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 27; }
-        if (p_pin_descr->pin_id == GPIO_PIN_6) { pin_num = 22; }
-        if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 23; }
+    // } else if (p_pin_descr->port_id == GPIO_PORT_B) {
 
-    } else if (p_pin_descr->port_id == GPIO_PORT_C) {
+    //     if (p_pin_descr->pin_id == GPIO_PIN_1) { pin_num = 15; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_2) { pin_num = 17; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_3) { pin_num = 18; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 27; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_6) { pin_num = 22; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 23; }
 
-        if (p_pin_descr->pin_id == GPIO_PIN_1) { pin_num = 24; }
-        if (p_pin_descr->pin_id == GPIO_PIN_2) { pin_num = 10; }
-        if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 9; }
-        if (p_pin_descr->pin_id == GPIO_PIN_5) { pin_num = 25; }
-        if (p_pin_descr->pin_id == GPIO_PIN_6) { pin_num = 11; }
-        if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 8; }
+    // } else if (p_pin_descr->port_id == GPIO_PORT_C) {
 
-    } else if (p_pin_descr->port_id == GPIO_PORT_D) {
+    //     if (p_pin_descr->pin_id == GPIO_PIN_1) { pin_num = 24; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_2) { pin_num = 10; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 9; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_5) { pin_num = 25; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_6) { pin_num = 11; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 8; }
 
-        if (p_pin_descr->pin_id == GPIO_PIN_1) { pin_num = 7; }
-        if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 5; }
-        if (p_pin_descr->pin_id == GPIO_PIN_6) { pin_num = 6; }
-        if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 12; }
+    // } else if (p_pin_descr->port_id == GPIO_PORT_D) {
 
-    } else if (p_pin_descr->port_id == GPIO_PORT_E) {
+    //     if (p_pin_descr->pin_id == GPIO_PIN_1) { pin_num = 7; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 5; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_6) { pin_num = 6; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 12; }
 
-        if (p_pin_descr->pin_id == GPIO_PIN_0) { pin_num = 13; }
-        if (p_pin_descr->pin_id == GPIO_PIN_2) { pin_num = 19; }
-        if (p_pin_descr->pin_id == GPIO_PIN_3) { pin_num = 16; }
-        if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 26; }
-        if (p_pin_descr->pin_id == GPIO_PIN_5) { pin_num = 20; }
-        if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 21; }
-    }
+    // } else if (p_pin_descr->port_id == GPIO_PORT_E) {
+
+    //     if (p_pin_descr->pin_id == GPIO_PIN_0) { pin_num = 13; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_2) { pin_num = 19; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_3) { pin_num = 16; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_4) { pin_num = 26; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_5) { pin_num = 20; }
+    //     if (p_pin_descr->pin_id == GPIO_PIN_7) { pin_num = 21; }
+    // }
 
     return pin_num;
 }
@@ -216,7 +226,7 @@ void gpio_driver_deinit(void) {
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+void gpio_driver_init_pin(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
     #ifdef TRACER_ON
     {
@@ -262,7 +272,7 @@ void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) {
+void gpio_driver_set_direction(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) {
 
     if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
         return;
@@ -288,7 +298,7 @@ void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GP
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) {
+void gpio_driver_set_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) {
 
     if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
         DEBUG_TRACE_byte(gpio_driver_get_pin_id(p_pin_descr),   "gpio_driver_set_level() - DEACTIVATED - PIN:");
@@ -322,7 +332,7 @@ void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_D
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+void gpio_driver_toggle_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     
     if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
         return;
@@ -347,7 +357,7 @@ void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
 
 // --------------------------------------------------------------------------------
 
-GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+GPIO_DRIVER_LEVEL gpio_driver_get_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     
     if (GPIO_DRIVER_PIN_IS_DEACTIVATED(p_pin_descr) != 0) {
         return GPIO_LEVEL_HIGH_Z;
@@ -377,7 +387,7 @@ GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_
 
 // --------------------------------------------------------------------------------
 
-void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+void gpio_driver_print_pin_state(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     (void) p_pin_descr;
 }
 

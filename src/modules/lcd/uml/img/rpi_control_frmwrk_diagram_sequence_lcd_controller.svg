@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="652px" preserveAspectRatio="none" style="width:646px;height:652px;" version="1.1" viewBox="0 0 646 652" width="646px" zoomAndPan="magnify"><defs><filter height="300%" id="f10wijtl5zsphz" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><rect fill="#FFFFFF" filter="url(#f10wijtl5zsphz)" height="635.123" style="stroke:#000000;stroke-width:1.0;" width="634" x="0" y="5"/><path d="M405,5 L405,14.4883 L395,24.4883 L0,24.4883 " fill="none" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="395" x="3" y="19.5352">sequence: rpi_control_frmwrk - runtime - LCD-Controller</text><rect fill="#FFFFFF" filter="url(#f10wijtl5zsphz)" height="117.2422" style="stroke:#383838;stroke-width:1.0;" width="10" x="64" y="98.2871"/><rect fill="#FFFFFF" filter="url(#f10wijtl5zsphz)" height="87.9316" style="stroke:#383838;stroke-width:1.0;" width="10" x="247" y="272.8398"/><rect fill="#FFFFFF" filter="url(#f10wijtl5zsphz)" height="117.2422" style="stroke:#383838;stroke-width:1.0;" width="10" x="247" y="457.3926"/><line style="stroke:#383838;stroke-width:1.0;" x1="69" x2="69" y1="66.9766" y2="223.5293"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="69" x2="69" y1="223.5293" y2="251.5293"/><line style="stroke:#383838;stroke-width:1.0;" x1="69" x2="69" y1="251.5293" y2="368.7715"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="69" x2="69" y1="368.7715" y2="396.7715"/><line style="stroke:#383838;stroke-width:1.0;" x1="69" x2="69" y1="396.7715" y2="592.6348"/><line style="stroke:#383838;stroke-width:1.0;" x1="251.5" x2="251.5" y1="66.9766" y2="223.5293"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="251.5" x2="251.5" y1="223.5293" y2="251.5293"/><line style="stroke:#383838;stroke-width:1.0;" x1="251.5" x2="251.5" y1="251.5293" y2="368.7715"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="251.5" x2="251.5" y1="368.7715" y2="396.7715"/><line style="stroke:#383838;stroke-width:1.0;" x1="251.5" x2="251.5" y1="396.7715" y2="592.6348"/><line style="stroke:#383838;stroke-width:1.0;" x1="348.5" x2="348.5" y1="66.9766" y2="223.5293"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="348.5" x2="348.5" y1="223.5293" y2="251.5293"/><line style="stroke:#383838;stroke-width:1.0;" x1="348.5" x2="348.5" y1="251.5293" y2="368.7715"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="348.5" x2="348.5" y1="368.7715" y2="396.7715"/><line style="stroke:#383838;stroke-width:1.0;" x1="348.5" x2="348.5" y1="396.7715" y2="592.6348"/><line style="stroke:#383838;stroke-width:1.0;" x1="466" x2="466" y1="66.9766" y2="223.5293"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="466" x2="466" y1="223.5293" y2="251.5293"/><line style="stroke:#383838;stroke-width:1.0;" x1="466" x2="466" y1="251.5293" y2="368.7715"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="466" x2="466" y1="368.7715" y2="396.7715"/><line style="stroke:#383838;stroke-width:1.0;" x1="466" x2="466" y1="396.7715" y2="592.6348"/><line style="stroke:#383838;stroke-width:1.0;" x1="575" x2="575" y1="66.9766" y2="223.5293"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="575" x2="575" y1="223.5293" y2="251.5293"/><line style="stroke:#383838;stroke-width:1.0;" x1="575" x2="575" y1="251.5293" y2="368.7715"/><line style="stroke:#383838;stroke-width:1.0;stroke-dasharray:1.0,4.0;" x1="575" x2="575" y1="368.7715" y2="396.7715"/><line style="stroke:#383838;stroke-width:1.0;" x1="575" x2="575" y1="396.7715" y2="592.6348"/><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="96" x="19" y="31.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="82" x="26" y="52.0234">:Application</text><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="96" x="19" y="591.6348"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="82" x="26" y="612.1699">:Application</text><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="85" x="207.5" y="31.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="71" x="214.5" y="52.0234">:LCD-Task</text><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="85" x="207.5" y="591.6348"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="71" x="214.5" y="612.1699">:LCD-Task</text><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="80" x="306.5" y="31.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="66" x="313.5" y="52.0234">:Line-Slot</text><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="80" x="306.5" y="591.6348"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="66" x="313.5" y="612.1699">:Line-Slot</text><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="95" x="417" y="31.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="81" x="424" y="52.0234">:Line-Buffer</text><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="95" x="417" y="591.6348"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="81" x="424" y="612.1699">:Line-Buffer</text><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="94" x="526" y="31.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80" x="533" y="52.0234">:LCD-Driver</text><rect fill="#F8F8F8" filter="url(#f10wijtl5zsphz)" height="30.4883" style="stroke:#383838;stroke-width:1.5;" width="94" x="526" y="591.6348"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80" x="533" y="612.1699">:LCD-Driver</text><rect fill="#FFFFFF" filter="url(#f10wijtl5zsphz)" height="117.2422" style="stroke:#383838;stroke-width:1.0;" width="10" x="64" y="98.2871"/><rect fill="#FFFFFF" filter="url(#f10wijtl5zsphz)" height="87.9316" style="stroke:#383838;stroke-width:1.0;" width="10" x="247" y="272.8398"/><rect fill="#FFFFFF" filter="url(#f10wijtl5zsphz)" height="117.2422" style="stroke:#383838;stroke-width:1.0;" width="10" x="247" y="457.3926"/><polygon fill="#383838" points="52,94.2871,62,98.2871,52,102.2871,56,98.2871" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="5" x2="58" y1="98.2871" y2="98.2871"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="29" x="12" y="93.5449">run()</text><polygon fill="#383838" points="336.5,123.5977,346.5,127.5977,336.5,131.5977,340.5,127.5977" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="74" x2="342.5" y1="127.5977" y2="127.5977"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="155" x="81" y="122.8555">SIGNAL_LCD_LINE(text1)</text><polygon fill="#383838" points="454.5,152.9082,464.5,156.9082,454.5,160.9082,458.5,156.9082" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="348.5" x2="460.5" y1="156.9082" y2="156.9082"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="94" x="355.5" y="152.166">enqueue(text1)</text><polygon fill="#383838" points="336.5,182.2188,346.5,186.2188,336.5,190.2188,340.5,186.2188" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="74" x2="342.5" y1="186.2188" y2="186.2188"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="155" x="81" y="181.4766">SIGNAL_LCD_LINE(text2)</text><polygon fill="#383838" points="454.5,211.5293,464.5,215.5293,454.5,219.5293,458.5,215.5293" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="348.5" x2="460.5" y1="215.5293" y2="215.5293"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="94" x="355.5" y="210.7871">enqueue(text2)</text><polygon fill="#383838" points="235,268.8398,245,272.8398,235,276.8398,239,272.8398" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="5" x2="241" y1="272.8398" y2="272.8398"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="29" x="12" y="268.0977">run()</text><polygon fill="#383838" points="454.5,298.1504,464.5,302.1504,454.5,306.1504,458.5,302.1504" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="257" x2="460.5" y1="302.1504" y2="302.1504"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="94" x="264" y="297.4082">dequeue(text1)</text><polygon fill="#383838" points="563,327.4609,573,331.4609,563,335.4609,567,331.4609" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="257" x2="569" y1="331.4609" y2="331.4609"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="90" x="264" y="326.7188">set_line(text1)</text><polygon fill="#383838" points="563,356.7715,573,360.7715,563,364.7715,567,360.7715" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="252" x2="569" y1="360.7715" y2="360.7715"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="106" x="259" y="356.0293">update_content()</text><path d="M10,401.7715 L10,426.7715 L243,426.7715 L243,411.7715 L233,401.7715 L10,401.7715 " fill="#ECECEC" filter="url(#f10wijtl5zsphz)" style="stroke:#383838;stroke-width:1.0;"/><path d="M233,401.7715 L233,411.7715 L243,411.7715 L233,401.7715 " fill="#ECECEC" style="stroke:#383838;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="212" x="16" y="419.3398">Update timeout (3sec) has passed</text><polygon fill="#383838" points="235,453.3926,245,457.3926,235,461.3926,239,457.3926" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="5" x2="241" y1="457.3926" y2="457.3926"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="29" x="12" y="452.6504">run()</text><polygon fill="#383838" points="454.5,482.7031,464.5,486.7031,454.5,490.7031,458.5,486.7031" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="257" x2="460.5" y1="486.7031" y2="486.7031"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="94" x="264" y="481.9609">dequeue(text2)</text><polygon fill="#383838" points="563,512.0137,573,516.0137,563,520.0137,567,516.0137" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="257" x2="569" y1="516.0137" y2="516.0137"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="90" x="264" y="511.2715">set_line(text2)</text><polygon fill="#383838" points="563,541.3242,573,545.3242,563,549.3242,567,545.3242" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="257" x2="569" y1="545.3242" y2="545.3242"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="106" x="264" y="540.582">update_content()</text><polygon fill="#383838" points="80,570.6348,70,574.6348,80,578.6348,76,574.6348" style="stroke:#383838;stroke-width:1.0;"/><line style="stroke:#383838;stroke-width:1.0;" x1="74" x2="251" y1="574.6348" y2="574.6348"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="154" x="86" y="569.8926">SIGNAL_LCD_UPDATED()</text><!--MD5=[7d001956e6796ad7424a406b941a6c94]
+@startuml rpi_control_frmwrk_diagram_sequence_lcd_controller
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+mainframe sequence: rpi_control_frmwrk - runtime - LCD-Controller
+
+'***************************************************************************
+
+participant ":Application" as application
+participant ":LCD-Task" as lcd_task
+participant ":Line-Slot" as line_slot
+participant ":Line-Buffer" as line_buffer
+participant ":LCD-Driver" as lcd_driver
+
+'***************************************************************************
+
+[-> application : run()
+activate application
+    application -> line_slot : SIGNAL_LCD_LINE(text1)
+    line_slot -> line_buffer : enqueue(text1)
+    application -> line_slot : SIGNAL_LCD_LINE(text2)
+    line_slot -> line_buffer : enqueue(text2)
+deactivate application
+
+...
+
+[-> lcd_task : run()
+activate lcd_task
+    lcd_task -> line_buffer : dequeue(text1)
+    lcd_task -> lcd_driver  : set_line(text1)
+    lcd_task -> lcd_driver  : update_content()
+deactivate lcd_task
+
+...
+
+note left of lcd_task
+    Update timeout (3sec) has passed
+end note
+
+[-> lcd_task : run()
+activate lcd_task
+    lcd_task -> line_buffer : dequeue(text2)
+    lcd_task -> lcd_driver  : set_line(text2)
+    lcd_task -> lcd_driver  : update_content()
+    lcd_task -> application : SIGNAL_LCD_UPDATED()
+deactivate lcd_task
+
+'***************************************************************************
+
+@enduml
+
+@startuml rpi_control_frmwrk_diagram_sequence_lcd_controller
+
+
+skinparam monochrome true
+skinparam linetype ortho
+
+
+mainframe sequence: rpi_control_frmwrk - runtime - LCD-Controller
+
+
+participant ":Application" as application
+participant ":LCD-Task" as lcd_task
+participant ":Line-Slot" as line_slot
+participant ":Line-Buffer" as line_buffer
+participant ":LCD-Driver" as lcd_driver
+
+
+[-> application : run()
+activate application
+    application -> line_slot : SIGNAL_LCD_LINE(text1)
+    line_slot -> line_buffer : enqueue(text1)
+    application -> line_slot : SIGNAL_LCD_LINE(text2)
+    line_slot -> line_buffer : enqueue(text2)
+deactivate application
+
+...
+
+[-> lcd_task : run()
+activate lcd_task
+    lcd_task -> line_buffer : dequeue(text1)
+    lcd_task -> lcd_driver  : set_line(text1)
+    lcd_task -> lcd_driver  : update_content()
+deactivate lcd_task
+
+...
+
+note left of lcd_task
+    Update timeout (3sec) has passed
+end note
+
+[-> lcd_task : run()
+activate lcd_task
+    lcd_task -> line_buffer : dequeue(text2)
+    lcd_task -> lcd_driver  : set_line(text2)
+    lcd_task -> lcd_driver  : update_content()
+    lcd_task -> application : SIGNAL_LCD_UPDATED()
+deactivate lcd_task
+
+
+@enduml
+
+PlantUML version 1.2021.00(Sun Jan 10 11:25:05 CET 2021)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

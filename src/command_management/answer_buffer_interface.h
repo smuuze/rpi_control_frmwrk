@@ -17,7 +17,7 @@ typedef u8 (*ANSWER_BUFFER_INTERFACE_START_WRITE_CALLBACK)	(void);
 typedef void (*ANSWER_BUFFER_INTERFACE_ADD_BYTE_CALLBACK) 	(u8);
 typedef void (*ANSWER_BUFFER_INTERFACE_ADD_WORD_CALLBACK)	(u16);
 typedef void (*ANSWER_BUFFER_INTERFACE_ADD_LONG_CALLBACK)	(u32);
-typedef void (*ANSWER_BUFFER_INTERFACE_ADD_N_BYTES_CALLBACK)	(u16, const u8*);
+typedef u16 (*ANSWER_BUFFER_INTERFACE_ADD_N_BYTES_CALLBACK)	(u16, const u8*);
 typedef void (*ANSWER_BUFFER_INTERFACE_STOP_WRITE_CALLBACK)	(void);
 
 // --------------------------------------------------------------------------------

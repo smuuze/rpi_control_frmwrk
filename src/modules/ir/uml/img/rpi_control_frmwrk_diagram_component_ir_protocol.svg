@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="557px" preserveAspectRatio="none" style="width:625px;height:557px;background:#FFFFFF;" version="1.1" viewBox="0 0 625 557" width="625px" zoomAndPan="magnify"><defs/><g><!--MD5=[61aba2dbc655bde12e6e13b6d4111e79]
+cluster component: rpi_control_frmwrk - structure - IR-Protocol--><g id="cluster_component: rpi_control_frmwrk - structure - IR-Protocol"><rect fill="none" height="544" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="612" x="7" y="7"/><path d="M430,7 L430,16.4883 L420,26.4883 L7,26.4883 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="413" x="10" y="21.5352">component: rpi_control_frmwrk - structure - IR-Protocol</text></g><!--MD5=[7552260fd2021a323855cf929da74f79]
+cluster modules--><g id="cluster_modules"><path d="M33.5,198 L96.5,198 A3.75,3.75 0 0 1 99,200.5 L106,220.4883 L560.5,220.4883 A2.5,2.5 0 0 1 563,222.9883 L563,524.5 A2.5,2.5 0 0 1 560.5,527 L33.5,527 A2.5,2.5 0 0 1 31,524.5 L31,200.5 A2.5,2.5 0 0 1 33.5,198 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="106" y1="220.4883" y2="220.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="62" x="35" y="213.5352">modules</text></g><!--MD5=[e277e9ff7a44edf2122be1a2b465bc97]
+cluster IR_Protocol--><g id="cluster_IR_Protocol"><rect fill="#DDDDDD" height="262" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="484" x="55" y="241"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:1.0;" width="15" x="519" y="246"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:1.0;" width="4" x="517" y="248"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:1.0;" width="4" x="517" y="252"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="82" x="256" y="267.5352">IR_Protocol</text></g><!--MD5=[61c41a14a0f790ada34cbd71756aea65]
+cluster Driver--><g id="cluster_Driver"><path d="M387.5,50 L432.5,50 A3.75,3.75 0 0 1 435,52.5 L442,72.4883 L592.5,72.4883 A2.5,2.5 0 0 1 595,74.9883 L595,146.5 A2.5,2.5 0 0 1 592.5,149 L387.5,149 A2.5,2.5 0 0 1 385,146.5 L385,52.5 A2.5,2.5 0 0 1 387.5,50 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="385" x2="442" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="44" x="389" y="65.5352">Driver</text></g><!--MD5=[f04600f0575a07dfe97362a654bdaa04]
+cluster kernel--><g id="cluster_kernel"><path d="M33.5,50 L79.5,50 A3.75,3.75 0 0 1 82,52.5 L89,72.4883 L358.5,72.4883 A2.5,2.5 0 0 1 361,74.9883 L361,146.5 A2.5,2.5 0 0 1 358.5,149 L33.5,149 A2.5,2.5 0 0 1 31,146.5 L31,52.5 A2.5,2.5 0 0 1 33.5,50 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="89" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="45" x="35" y="65.5352">kernel</text></g><!--MD5=[91ee16f17274a2f6c2fccf15d7b9aeb5]
+entity ir_protocol_task--><g id="elem_ir_protocol_task"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="154" x="71" y="280"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="205" y="285"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="203" y="287"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="203" y="291"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="46" x="86" y="313.5352">«Task»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="114" x="86" y="330.0234">IR-Protocol Task</text></g><!--MD5=[09e3aabdda226baebd999043036bd8b3]
+class ir_protocol_interface--><g id="elem_ir_protocol_interface"><rect codeLine="21" fill="#F1F1F1" height="48" id="ir_protocol_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="174" x="71" y="431.5"/><ellipse cx="86" cy="447.5" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M82.4277,443.7651 L82.4277,441.6069 L89.8071,441.6069 L89.8071,443.7651 L87.3418,443.7651 L87.3418,451.8418 L89.8071,451.8418 L89.8071,454 L82.4277,454 L82.4277,451.8418 L84.8931,451.8418 L84.8931,443.7651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="142" x="100" y="452.791">ir_protocol_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="72" x2="244" y1="463.5" y2="463.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="72" x2="244" y1="471.5" y2="471.5"/></g><!--MD5=[bbe5c695c89049a39ca4496607973f25]
+entity ir_protocol_transmit_buffer--><g id="elem_ir_protocol_transmit_buffer"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="171" x="280.5" y="424"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="431.5" y="429"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="429.5" y="431"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="429.5" y="435"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="55" x="295.5" y="457.5352">«Buffer»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="131" x="295.5" y="474.0234">IR-Transmit-Buffer</text></g><!--MD5=[d83fea62142346a6923ff9a1dba1b2f6]
+entity ir_protocol--><g id="elem_ir_protocol"><rect fill="#F1F1F1" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="260" y="280"/><rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="372" y="285"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="370" y="287"/><rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="370" y="291"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="275" y="313.5352">«IR-Protocol»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="78" x="275" y="330.0234">IR-Protocol</text></g><g id="elem_GMN9"><path d="M427.5,276 L427.5,307.5 L392.35,311.5 L427.5,315.5 L427.5,347.2422 A0,0 0 0 0 427.5,347.2422 L522.5,347.2422 A0,0 0 0 0 522.5,347.2422 L522.5,286 L512.5,276 L427.5,276 A0,0 0 0 0 427.5,276 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><path d="M512.5,276 L512.5,286 L522.5,286 L512.5,276 " fill="#FAFAFA" style="stroke:#181818;stroke-width:0.5;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="47" x="433.5" y="293.5684">- SONY</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="33" x="433.5" y="308.8789">- JVC</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="74" x="433.5" y="324.1895">- SAMSUNG</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="38" x="433.5" y="339.5">- NEC</text></g><!--MD5=[c1b53d39c6b26d338eeb148066e7d374]
+class gpio_driver_interface--><g id="elem_gpio_driver_interface"><rect codeLine="51" fill="#F1F1F1" height="48" id="gpio_driver_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="177" x="401.5" y="85"/><ellipse cx="416.5" cy="101" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M412.9277,97.2651 L412.9277,95.1069 L420.3071,95.1069 L420.3071,97.2651 L417.8418,97.2651 L417.8418,105.3418 L420.3071,105.3418 L420.3071,107.5 L412.9277,107.5 L412.9277,105.3418 L415.3931,105.3418 L415.3931,97.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="145" x="430.5" y="106.291">gpio_driver_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="402.5" x2="577.5" y1="117" y2="117"/><line style="stroke:#181818;stroke-width:0.5;" x1="402.5" x2="577.5" y1="125" y2="125"/></g><!--MD5=[dd9a97e507cc1d516dfc0b3e9e9c1789]
+class task_interface--><g id="elem_task_interface"><rect codeLine="58" fill="#F1F1F1" height="48" id="task_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="127" x="47.5" y="85"/><ellipse cx="62.5" cy="101" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M58.9277,97.2651 L58.9277,95.1069 L66.3071,95.1069 L66.3071,97.2651 L63.8418,97.2651 L63.8418,105.3418 L66.3071,105.3418 L66.3071,107.5 L58.9277,107.5 L58.9277,105.3418 L61.3931,105.3418 L61.3931,97.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="95" x="76.5" y="106.291">task_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="48.5" x2="173.5" y1="117" y2="117"/><line style="stroke:#181818;stroke-width:0.5;" x1="48.5" x2="173.5" y1="125" y2="125"/></g><!--MD5=[7b03b2a36e9a56321a05e0b4794d7de4]
+class timer_interface--><g id="elem_timer_interface"><rect codeLine="62" fill="#F1F1F1" height="48" id="timer_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="135" x="209.5" y="85"/><ellipse cx="224.5" cy="101" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M220.9277,97.2651 L220.9277,95.1069 L228.3071,95.1069 L228.3071,97.2651 L225.8418,97.2651 L225.8418,105.3418 L228.3071,105.3418 L228.3071,107.5 L220.9277,107.5 L220.9277,105.3418 L223.3931,105.3418 L223.3931,97.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="103" x="238.5" y="106.291">timer_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="210.5" x2="343.5" y1="117" y2="117"/><line style="stroke:#181818;stroke-width:0.5;" x1="210.5" x2="343.5" y1="125" y2="125"/></g><!--MD5=[ca7146ab03693d2e89f4c54177178b7b]
+link ir_protocol_task to ir_protocol_interface--><g id="link_ir_protocol_task_ir_protocol_interface"><path codeLine="41" d="M150.17,343.31 C151.87,367.47 154.22,400.88 155.91,424.76 " fill="none" id="ir_protocol_task-to-ir_protocol_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="156.25,429.72,159.6231,420.4668,155.907,424.7318,151.642,421.0156,156.25,429.72" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="154" y="390.5684">&lt;uses&gt;</text></g><!--MD5=[9a0c31500f23d26205a12a858fbdb95e]
+link ir_protocol to ir_protocol_interface--><g id="link_ir_protocol_ir_protocol_interface"><path codeLine="43" d="M289.55,343.31 C263.85,365.03 229.32,394.22 202.08,417.25 " fill="none" id="ir_protocol-to-ir_protocol_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="206.75,422.46,186.96,430.03,197.71,411.77,206.75,422.46" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[0521d7e771b5d6792f9e38a9019aeecd]
+link ir_protocol to ir_protocol_transmit_buffer--><g id="link_ir_protocol_ir_protocol_transmit_buffer"><path codeLine="45" d="M334.68,343.31 C340.84,365.18 349.13,394.62 355.64,417.72 " fill="none" id="ir_protocol-to-ir_protocol_transmit_buffer" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="356.93,422.29,358.338,412.5423,355.5734,417.4776,350.6381,414.7129,356.93,422.29" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="349" y="390.5684">&lt;uses&gt;</text></g><!--MD5=[31e1ac00ba23d1b2544182829934a67c]
+reverse link gpio_driver_interface to ir_protocol--><g id="link_gpio_driver_interface_ir_protocol"><path codeLine="67" d="M459.62,137.91 C444.1,152.77 425.31,171.71 410,190 C385.77,218.94 361.48,254.69 345.3,279.71 " fill="none" id="gpio_driver_interface-backto-ir_protocol" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="463.23,134.48,453.948,137.773,459.6029,137.9215,459.4544,143.5764,463.23,134.48" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="431" y="178.5684">&lt;uses&gt;</text></g><!--MD5=[26c84e376be913e28a2732f3ffc81b77]
+reverse link task_interface to ir_protocol_task--><g id="link_task_interface_ir_protocol_task"><path codeLine="69" d="M119.21,154.47 C126.23,192.51 136.15,246.28 142.32,279.73 " fill="none" id="task_interface-backto-ir_protocol_task" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="112.34,155.82,115.59,134.88,126.1,153.28,112.34,155.82" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[2633b18821161fbd2c9c5e19df78a9db]
+reverse link timer_interface to ir_protocol--><g id="link_timer_interface_ir_protocol"><path codeLine="71" d="M284.24,139.63 C293.42,177.19 309.17,241.64 318.48,279.73 " fill="none" id="timer_interface-backto-ir_protocol" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="283.08,134.86,281.3554,144.5567,284.2792,139.7141,289.1219,142.6379,283.08,134.86" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="295" y="178.5684">&lt;uses&gt;</text></g><!--MD5=[585a40b83e0fb79b08342e0ab1ddd009]
+@startuml rpi_control_frmwrk_diagram_component_ir_protocol
+
+'***************************************************************************
+
+skinparam monochrome true
+'skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: rpi_control_frmwrk - structure - IR-Protocol" {
+
+'***************************************************************************
+
+    package "modules" {
+        component IR_Protocol #DDDDDD {
+
+            component ir_protocol_task [
+                <<Task>>
+                IR-Protocol Task
+            ]
+
+            interface ir_protocol_interface {
+
+            }
+
+            component ir_protocol_transmit_buffer [
+                <<Buffer>>
+                IR-Transmit-Buffer
+            ]
+
+            component ir_protocol [
+                <<IR-Protocol>>
+                IR-Protocol
+            ]
+            note right
+            - SONY
+            - JVC
+            - SAMSUNG
+            - NEC
+            end note
+
+            ir_protocol_task .down.> ir_protocol_interface : <uses>
+
+            ir_protocol .down.|> ir_protocol_interface
+
+            ir_protocol_transmit_buffer <.up. ir_protocol : <uses>
+
+        }
+    }
+
+    package "Driver" {
+        interface gpio_driver_interface {
+
+        }
+    }
+
+    package "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface timer_interface {
+
+        }
+    }
+
+    ir_protocol .up.> gpio_driver_interface : <uses>
+
+    ir_protocol_task .up.|> task_interface
+
+    ir_protocol .up.> timer_interface : <uses>
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
+
+@startuml rpi_control_frmwrk_diagram_component_ir_protocol
+
+
+skinparam monochrome true
+
+
+frame "component: rpi_control_frmwrk - structure - IR-Protocol" {
+
+
+    package "modules" {
+        component IR_Protocol #DDDDDD {
+
+            component ir_protocol_task [
+                <<Task>>
+                IR-Protocol Task
+            ]
+
+            interface ir_protocol_interface {
+
+            }
+
+            component ir_protocol_transmit_buffer [
+                <<Buffer>>
+                IR-Transmit-Buffer
+            ]
+
+            component ir_protocol [
+                <<IR-Protocol>>
+                IR-Protocol
+            ]
+            note right
+            - SONY
+            - JVC
+            - SAMSUNG
+            - NEC
+            end note
+
+            ir_protocol_task .down.> ir_protocol_interface : <uses>
+
+            ir_protocol .down.|> ir_protocol_interface
+
+            ir_protocol_transmit_buffer <.up. ir_protocol : <uses>
+
+        }
+    }
+
+    package "Driver" {
+        interface gpio_driver_interface {
+
+        }
+    }
+
+    package "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface timer_interface {
+
+        }
+    }
+
+    ir_protocol .up.> gpio_driver_interface : <uses>
+
+    ir_protocol_task .up.|> task_interface
+
+    ir_protocol .up.> timer_interface : <uses>
+
+
+}
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

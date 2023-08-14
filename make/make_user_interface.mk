@@ -11,14 +11,6 @@ endif
 
 # --------------------------------------------------------------------------------
 
-LCD_INTERFACE_PATH = $(USER_INTERFACE_PATH)/lcd
-
-ifneq '' '$(findstring LCD_16X2,$(USER_INTERFACE_CFG))'
-	CSRCS += $(LCD_INTERFACE_PATH)/ui_lcd_16x2.c
-endif
-
-# --------------------------------------------------------------------------------
-
 CFG_FILE_PARSER_PATH = $(USER_INTERFACE_PATH)/cfg_file_parser
 
 ifneq '' '$(findstring CFG_FILE_PARSER,$(USER_INTERFACE_CFG))'

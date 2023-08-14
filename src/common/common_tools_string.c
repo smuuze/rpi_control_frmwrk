@@ -56,8 +56,8 @@
 void common_tools_hex_dump(const u8* p_buffer, u16 length) {
 
 	u16 i = 0;
-	u8 buffer_index = 0;
-	u8 character_index = 0;
+	u16 buffer_index = 0;
+	u16 character_index = 0;
 	u16 address = 0;
 	u8 line_size = 16;
 	u8 end_of_line = 0;
@@ -79,7 +79,7 @@ void common_tools_hex_dump(const u8* p_buffer, u16 length) {
 
 		if ( !(++i % line_size) ) {
 			
-			printf(" |  ");	
+			printf(" |  ");
 
 			while (character_index < buffer_index) {
 				

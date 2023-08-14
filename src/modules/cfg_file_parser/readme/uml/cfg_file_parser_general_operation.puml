@@ -1,0 +1,31 @@
+@startuml cfg_file_parser_general_operation
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+mainframe activity: CFG-File-Parser - Runtime - General Operation
+
+'***************************************************************************
+
+start
+:Initialize;
+while (task is running)
+    :Wait for signal<
+    :Open File;
+    while (line available) is (yes)
+        :Parse Object;
+        :Send Signal>
+    endwhile (no)
+    :Close File;
+    :Send Complete>
+endwhile
+  -[hidden]->
+  detach
+
+'***************************************************************************
+
+@enduml

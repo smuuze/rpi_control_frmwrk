@@ -1,5 +1,5 @@
 
-#include "platine/board_common_config.h"
+#include "driver/gpio/gpio_interface.h"
 
 // --------------------------------------------------------------------------------
 

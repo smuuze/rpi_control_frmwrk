@@ -1,37 +1,12 @@
 
+#-----------------------------------------------------------------------------
 
-ifeq ($(OS),Windows_NT)
+CFLAGS += -g
 
-	AVR_INCLUDE_PATH = $(BASE_PATH)/bin/arv/winavr/20100110/avr/include
-    
-else
+#-----------------------------------------------------------------------------
 
-	UNAME_S := $(shell uname -s)
-    
-	ifeq ($(UNAME_S),Linux)
-
-		CROSS_COMPILER_PATH   = /usr/bin
-		AVR_INCLUDE_PATH = /usr/lib/avr/include
-
-	else
-
-		ifeq ($(UNAME_S),Darwin)
-			CCFLAGS += -D OSX
-		endif
-	endif
-    
-endif
-
-
-MCU ?=
-MCU_FLAG ?=
-CROSS_COMPILER_PREFIX ?= 
-LD_EXTRA_FLAGS ?=
-
-MCU_SIZE_FLAGS ?=
-
-ifeq ($(MCU), ATMEGA1284P)
-include $(FRMWRK_PATH)/make/make_cpu_avr.mk
+ifeq ($(MCU), atmega1284p)
+include $(FRMWRK_PATH)/make/make_cpu_avr_atmega1284p.mk
 endif
 
 ifeq ($(MCU), RASPBERRY_PI)
@@ -42,6 +17,29 @@ ifeq ($(MCU), UNITTEST)
 include $(FRMWRK_PATH)/make/make_cpu_unittest.mk
 endif
 
+ifeq ($(MCU), UNIVERSAL)
+include $(FRMWRK_PATH)/make/make_cpu_universal.mk
+endif
+
+ifeq ($(MCU), MACOS)
+include $(FRMWRK_PATH)/make/make_cpu_macos.mk
+endif
+
+#-----------------------------------------------------------------------------
+
+# Platform specific driver implementation is loaded
+# via the SOC_PATH
+
+#-----------------------------------------------------------------------------
+
+ifdef SOC_PATH
+include $(SOC_PATH)/make/make_cpu.mk
+else
+INC_PATH 	+= $(FRMWRK_PATH)/src/common/cpu/$(CPU_FAMILY)/$(MCU_NAME)
+endif
+
+#-----------------------------------------------------------------------------
+
 SECTIONS =
 SECTIONS += -j .text
 SECTIONS += -j .data
@@ -50,8 +48,10 @@ SECTIONS += -j .data
 #SECTIONS += -R.lock
 #SECTIONS += -R.eeprom
 #SECTIONS += -R.iblchif
-#SECTIONS += -R.fuse     
+#SECTIONS += -R.fuse
 
-CSLAGS += -g
+#-----------------------------------------------------------------------------
 
 LDFLAGS += $(LD_EXTRA_FLAGS)
+
+#-----------------------------------------------------------------------------

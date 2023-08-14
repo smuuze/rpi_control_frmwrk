@@ -2,6 +2,33 @@ FRAMEKWORK - CHANGELOG
 
 -----------------------------------------------------------
 
+Version:	6.06
+
+Date: 		< NOT RELEASED>
+Author:		Sebastian Lesse
+
+New-Features:
+
+    -   Thread-Interface now supports exit-status of thread after it has been terminated
+
+    -   Unittest script can now be run on raspberry pi plattform
+
+Bugfixes:
+
+    -   Thread interface - avoid NULL-POINTER exception on terminating threads
+
+Misc:
+
+    -   SONY ir-protocol implemenation now uses ir-interface (common-ir-command-type / ir-transmit-buffer)
+
+    -   modified makefiles to compile projects using gcc (Raspbian 10.2.1-6+rpi1) 10.2.1 20210110
+
+Known-Bugs:
+
+    -
+
+-----------------------------------------------------------
+
 Version:	6.05
 
 Date: 		2022 / 07 / 02

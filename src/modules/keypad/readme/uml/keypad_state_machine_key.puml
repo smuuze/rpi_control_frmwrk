@@ -1,0 +1,22 @@
+@startuml keypad_state_machine_key
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+mainframe state: RPi-Control - Keypad - Task State-Machine
+
+'***************************************************************************
+
+[*] -right-> RELEASED
+RELEASED -right-> PRESSED : user hits key
+PRESSED -right-> DOWN
+DOWN --> DOWN : user keeps pressing key
+DOWN -> RELEASED : user releases key
+
+'***************************************************************************
+
+@enduml

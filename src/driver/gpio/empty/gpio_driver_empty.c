@@ -45,7 +45,6 @@
 
 // --------------------------------------------------------------------------------
 
-#include "platine/board_common_config.h"
 #include "system/system_interface.h"
 #include "driver/gpio/gpio_interface.h"
 
@@ -67,7 +66,7 @@ void gpio_driver_deinit(void) {
  * @see driver/gpio/gpio_interface.h#gpio_driver_init_pin
  * 
  */
-void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+void gpio_driver_init_pin(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     (void) p_pin_descr;
     DEBUG_PASS("gpio_driver_init_pin() - EMPTY");
 }
@@ -76,7 +75,7 @@ void gpio_driver_init_pin(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
  * @see driver/gpio/gpio_interface.h#gpio_driver_set_direction
  * 
  */
-void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) {
+void gpio_driver_set_direction(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_DIRECTION direction) {
     (void) p_pin_descr;
     (void) direction;
     DEBUG_PASS("gpio_driver_set_direction() - EMPTY");
@@ -86,7 +85,7 @@ void gpio_driver_set_direction(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GP
  * @see driver/gpio/gpio_interface.h#gpio_driver_set_level
  * 
  */
-void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) {
+void gpio_driver_set_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_DRIVER_LEVEL level) {
     (void) p_pin_descr;
     (void) level;
     DEBUG_PASS("gpio_driver_set_level() - EMPTY");
@@ -96,7 +95,7 @@ void gpio_driver_set_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr, GPIO_D
  * @see driver/gpio/gpio_interface.h#gpio_driver_toggle_level
  * 
  */
-void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+void gpio_driver_toggle_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     (void) p_pin_descr;
     DEBUG_PASS("gpio_driver_toggle_level() - EMPTY");
 }
@@ -105,7 +104,7 @@ void gpio_driver_toggle_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
  * @see driver/gpio/gpio_interface.h#gpio_driver_get_level
  * 
  */
-GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+GPIO_DRIVER_LEVEL gpio_driver_get_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     (void) p_pin_descr;
     DEBUG_PASS("gpio_driver_get_level() - EMPTY");
     return GPIO_LEVEL_HIGH_Z;
@@ -115,7 +114,7 @@ GPIO_DRIVER_LEVEL gpio_driver_get_level(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_
  * @see driver/gpio/gpio_interface.h#gpio_driver_print_pin_state
  * 
  */
-void gpio_driver_print_pin_state(const GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
+void gpio_driver_print_pin_state(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr) {
     (void) p_pin_descr;
     DEBUG_PASS("gpio_driver_get_level() - EMPTY");
 }

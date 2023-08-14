@@ -58,11 +58,15 @@
 
 #include "app_tasks/message_executer_task.h"
 #include "app_tasks/cli_executer_task.h"
+#include "app_tasks/keypad_to_lcd_task.h"
+#include "app_tasks/led_blinker_task.h"
 
 #include "power_management/power_management_interface.h"
 
-#include "3rdparty/ir_protocol/ir_protocol_nec.h"
-#include "3rdparty/ir_protocol/ir_protocol_sony.h"
+#include "modules/lcd/lcd_interface.h"
+#include "modules/keypad/keypad_interface.h"
+#include "modules/ir/ir_protocol_task.h"
+#include "modules/movement_detection/movement_detection_controller.h"
 
 //-----------------------------------------------------------------------------
 
@@ -125,15 +129,39 @@ void initialization(void) {
 	}
 	#endif
 
-    #ifdef HAS_IR_PROTOCOL_NEC
+    #ifdef LCD_CONTROLLER_AVAILABLE
     {
-        ir_protocol_nec_init();
+        lcd_init();
     }
     #endif
 
-    #ifdef HAS_IR_PROTOCOL_SONY
+    #ifdef KEYPAD_3x4_CONTROLLER_AVAILABLE
     {
-        ir_protocol_sony_init();
+        keypad_init();
+    }
+    #endif
+
+    #ifdef IR_PROTOCOL_AVAILABLE
+    {
+        ir_protocol_init();
+    }
+    #endif
+
+    #ifdef HAS_APP_TASK_LED_BLINKER
+    {
+        led_blinker_init();
+    }
+    #endif
+
+    #ifdef HAS_APP_TASK_KEY_2_LCD
+    {
+        key_2_lcd_init();
+    }
+    #endif
+
+    #ifdef MOVEMENT_DETECTION_CONTROLLER_AVAILABLE
+    {
+        movement_detection_controller_init();
     }
     #endif
 }

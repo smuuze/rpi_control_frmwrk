@@ -1,0 +1,23 @@
+@startuml rpi_control_frmwrk_diagram_sequence_signal_slot
+
+skinparam monochrome true
+skinparam linetype ortho
+skinparam style strictuml
+
+mainframe component: rpi_control_frmwrk - behaviour - signal-slot
+
+participant task1 as "Task 1\n:Task"
+participant signal_slot as ":Signal_Slot"
+participant task2 as "Task 2\n:Task"
+participant task3 as "Task 3\n:Task"
+
+task1 -> signal_slot : signal_init(signal_context)
+task2 -> signal_slot : slot_connect(signal_name, slot_context)
+task3 -> signal_slot : slot_connect(signal_name, slot_context)
+
+task1 -> signal_slot : signal_send(argument)
+signal_slot -> task2 : slot_callback(argument)
+signal_slot -> task3 : slot_callback(argument)
+
+
+@enduml

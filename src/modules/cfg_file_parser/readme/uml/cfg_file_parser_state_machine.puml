@@ -1,0 +1,36 @@
+@startuml cfg_file_parser_state_machine
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+' folder "state: RPi-Control - Movement-Detection - State-Machine" 
+
+'***************************************************************************
+
+[*] -right-> IDLE
+IDLE : entry / start timeout
+IDLE : do / check status
+IDLE -right-> SIGNAL_COMPLETE : timeout
+
+IDLE -down-> OPEN_FILE :  status: file available
+OPEN_FILE : do / open file if accessable
+OPEN_FILE : exit / start timer
+OPEN_FILE --> SIGNAL_COMPLETE : file not accessable
+
+OPEN_FILE -left-> LOAD_CONFIGURATION
+LOAD_CONFIGURATION : do / read file
+
+LOAD_CONFIGURATION -left-> SIGNAL_COMPLETE : end of file
+SIGNAL_COMPLETE : do / send signal
+
+SIGNAL_COMPLETE -right-> WAIT_FOR_FILE
+WAIT_FOR_FILE : do / check status
+WAIT_FOR_FILE -down-> OPEN_FILE :  status: file available
+
+'***************************************************************************
+
+@enduml

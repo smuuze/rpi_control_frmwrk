@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="264px" preserveAspectRatio="none" style="width:742px;height:264px;background:#FFFFFF;" version="1.1" viewBox="0 0 742 264" width="742px" zoomAndPan="magnify"><defs/><g><ellipse cx="16" cy="41.5" fill="#222222" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><g id="IDLE"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="158" x="61" y="7"/><line style="stroke:#181818;stroke-width:0.5;" x1="61" x2="219" y1="33.4883" y2="33.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29" x="125.5" y="25.5352">IDLE</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="138" x="66" y="52.0234">entry / start timeout</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="117" x="66" y="68.5117">do / check status</text></g><g id="SIGNAL_COMPLETE"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="149" x="352.5" y="15"/><line style="stroke:#181818;stroke-width:0.5;" x1="352.5" x2="501.5" y1="41.4883" y2="41.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129" x="362.5" y="33.5352">SIGNAL_COMPLETE</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="111" x="357.5" y="60.0234">do / send signal</text></g><g id="OPEN_FILE"><rect fill="#F1F1F1" height="69.4648" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="203" x="314.5" y="189"/><line style="stroke:#181818;stroke-width:0.5;" x1="314.5" x2="517.5" y1="215.4883" y2="215.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="71" x="380.5" y="207.5352">OPEN_FILE</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="183" x="319.5" y="234.0234">do / open file if accessable</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="112" x="319.5" y="250.5117">exit / start timer</text></g><g id="LOAD_CONFIGURATION"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="181" x="260.5" y="106"/><line style="stroke:#181818;stroke-width:0.5;" x1="260.5" x2="441.5" y1="132.4883" y2="132.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="161" x="270.5" y="124.5352">LOAD_CONFIGURATION</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="89" x="265.5" y="151.0234">do / read file</text></g><g id="WAIT_FOR_FILE"><rect fill="#F1F1F1" height="52.9766" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="137" x="560.5" y="15"/><line style="stroke:#181818;stroke-width:0.5;" x1="560.5" x2="697.5" y1="41.4883" y2="41.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="104" x="577" y="33.5352">WAIT_FOR_FILE</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="117" x="565.5" y="60.0234">do / check status</text></g><!--MD5=[9c5673dd9f569fe24504060ab78be963]
+link *start to IDLE--><g id="link_*start_IDLE"><path d="M26.17,41.5 C35.56,41.5 44.96,41.5 54.35,41.5 " fill="none" id="*start-to-IDLE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="59.34,41.5,50.34,37.5,54.34,41.5,50.34,45.5,59.34,41.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[57ab57ea156646844cd61fb6c2136b9c]
+link IDLE to SIGNAL_COMPLETE--><g id="link_IDLE_SIGNAL_COMPLETE"><path d="M219.18,41.5 C258.56,41.5 306.08,41.5 345.73,41.5 " fill="none" id="IDLE-to-SIGNAL_COMPLETE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="350.51,41.5,341.51,37.5,345.51,41.5,341.51,45.5,350.51,41.5" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="261.25" y="35.0684">timeout</text></g><!--MD5=[bf3d35be412d1f976fc0eb797a7b5d89]
+link IDLE to OPEN_FILE--><g id="link_IDLE_OPEN_FILE"><path d="M119.19,76.34 C106.56,101.66 96.17,135.78 115,159 C139.26,188.91 231.68,205.27 307.79,213.86 " fill="none" id="IDLE-to-OPEN_FILE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="312.67,214.4,304.1715,209.4225,307.7011,213.8431,303.2805,217.3728,312.67,214.4" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126" x="116" y="137.5684">status: file available</text></g><!--MD5=[fffe3b7e7806f07f02aa70c93c9a9e84]
+link OPEN_FILE to SIGNAL_COMPLETE--><g id="link_OPEN_FILE_SIGNAL_COMPLETE"><path d="M433.33,188.71 C437.31,179.33 440.97,168.98 443,159 C448.8,130.54 443.21,97.72 437.1,74.19 " fill="none" id="OPEN_FILE-to-SIGNAL_COMPLETE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="435.85,69.57,434.3541,79.3046,437.1632,74.3945,442.0733,77.2035,435.85,69.57" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="117" x="446" y="137.5684">file not accessable</text></g><!--MD5=[f1e666d9196f7491bfe2d58a81fce918]
+reverse link LOAD_CONFIGURATION to OPEN_FILE--><g id="link_LOAD_CONFIGURATION_OPEN_FILE"><path d="M373.32,164.06 C379.08,171.94 385.31,180.48 391.19,188.53 " fill="none" id="LOAD_CONFIGURATION-backto-OPEN_FILE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="370.69,160.46,372.7526,170.0904,373.6326,164.5024,379.2206,165.3824,370.69,160.46" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[c7fc22621cd9a453554ed21a05834f5c]
+reverse link SIGNAL_COMPLETE to LOAD_CONFIGURATION--><g id="link_SIGNAL_COMPLETE_LOAD_CONFIGURATION"><path d="M400.95,73.01 C391.92,83.58 381.89,95.33 373.2,105.51 " fill="none" id="SIGNAL_COMPLETE-backto-LOAD_CONFIGURATION" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="404.03,69.39,395.1451,73.6394,400.7843,73.1933,401.2304,78.8326,404.03,69.39" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[0ecb4475880753a40d9427b0b5ef4819]
+link SIGNAL_COMPLETE to WAIT_FOR_FILE--><g id="link_SIGNAL_COMPLETE_WAIT_FOR_FILE"><path d="M501.96,41.5 C519.2,41.5 536.43,41.5 553.67,41.5 " fill="none" id="SIGNAL_COMPLETE-to-WAIT_FOR_FILE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="558.51,41.5,549.51,37.5,553.51,41.5,549.51,45.5,558.51,41.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[c4907eb6d70bd7531888cff5650db45b]
+link WAIT_FOR_FILE to OPEN_FILE--><g id="link_WAIT_FOR_FILE_OPEN_FILE"><path d="M622.37,68.02 C614.4,94.06 598.66,134.1 572,159 C557.96,172.11 540.85,182.68 523.17,191.14 " fill="none" id="WAIT_FOR_FILE-to-OPEN_FILE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="519.04,193.06,528.8878,192.9144,523.5785,190.962,525.531,185.6528,519.04,193.06" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="126" x="608" y="137.5684">status: file available</text></g><!--MD5=[01fe7ffcfed9b212be65d7154b95e53e]
+@startuml cfg_file_parser_state_machine
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+' folder "state: RPi-Control - Movement-Detection - State-Machine" 
+
+'***************************************************************************
+
+[*] -right-> IDLE
+IDLE : entry / start timeout
+IDLE : do / check status
+IDLE -right-> SIGNAL_COMPLETE : timeout
+
+IDLE -down-> OPEN_FILE :  status: file available
+OPEN_FILE : do / open file if accessable
+OPEN_FILE : exit / start timer
+OPEN_FILE - -> SIGNAL_COMPLETE : file not accessable
+
+OPEN_FILE -left-> LOAD_CONFIGURATION
+LOAD_CONFIGURATION : do / read file
+
+LOAD_CONFIGURATION -left-> SIGNAL_COMPLETE : end of file
+SIGNAL_COMPLETE : do / send signal
+
+SIGNAL_COMPLETE -right-> WAIT_FOR_FILE
+WAIT_FOR_FILE : do / check status
+WAIT_FOR_FILE -down-> OPEN_FILE :  status: file available
+
+'***************************************************************************
+
+@enduml
+
+@startuml cfg_file_parser_state_machine
+
+
+skinparam monochrome true
+
+
+
+
+[*] -right-> IDLE
+IDLE : entry / start timeout
+IDLE : do / check status
+IDLE -right-> SIGNAL_COMPLETE : timeout
+
+IDLE -down-> OPEN_FILE :  status: file available
+OPEN_FILE : do / open file if accessable
+OPEN_FILE : exit / start timer
+OPEN_FILE - -> SIGNAL_COMPLETE : file not accessable
+
+OPEN_FILE -left-> LOAD_CONFIGURATION
+LOAD_CONFIGURATION : do / read file
+
+LOAD_CONFIGURATION -left-> SIGNAL_COMPLETE : end of file
+SIGNAL_COMPLETE : do / send signal
+
+SIGNAL_COMPLETE -right-> WAIT_FOR_FILE
+WAIT_FOR_FILE : do / check status
+WAIT_FOR_FILE -down-> OPEN_FILE :  status: file available
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

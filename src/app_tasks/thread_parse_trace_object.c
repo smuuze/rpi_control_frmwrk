@@ -57,7 +57,7 @@ void thread_parse_trace_object_init(void) {
 	DEBUG_PASS("thread_parse_trace_object_init()");
 }
 
-void* thread_parse_trace_object_run(void* p_arg) {
+THREAD_INTERFACE_EXIT_STATUS thread_parse_trace_object_run(void) {
 
 	DEBUG_PASS("thread_parse_trace_object_run() - Thread started");
 	    
@@ -114,8 +114,7 @@ void* thread_parse_trace_object_run(void* p_arg) {
 	}
 
 	DEBUG_PASS("thread_parse_trace_object_run() - THREAD FINISHED");
-
-	return NULL;
+    return 0;
 }
 
 void thread_parse_trace_object_terminate(void) {
@@ -125,4 +124,12 @@ void thread_parse_trace_object_terminate(void) {
 
 // ------------------------------------------------------------------------------
 
-THREAD_INTERFACE_BUILD_THREAD(PARSE_TRACE_OBJECT_THREAD, THREAD_PRIORITY_MIDDLE, thread_parse_trace_object_init, thread_parse_trace_object_run, thread_parse_trace_object_terminate)
+THREAD_INTERFACE_BUILD_THREAD(
+    PARSE_TRACE_OBJECT_THREAD,
+    THREAD_PRIORITY_MIDDLE,
+    thread_parse_trace_object_init,
+    thread_parse_trace_object_run,
+    thread_parse_trace_object_terminate
+)
+
+// ------------------------------------------------------------------------------

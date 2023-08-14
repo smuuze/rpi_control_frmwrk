@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="342px" preserveAspectRatio="none" style="width:583px;height:342px;background:#FFFFFF;" version="1.1" viewBox="0 0 583 342" width="583px" zoomAndPan="magnify"><defs/><g><!--MD5=[9577b92c1a49f34c07055ad468f4d7ea]
+cluster class: RPi-Control - CFG-FILE-PARSER - Context--><g id="cluster_class: RPi-Control - CFG-FILE-PARSER - Context"><rect fill="none" height="329" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="570" x="7" y="7"/><path d="M372,7 L372,16.4883 L362,26.4883 L7,26.4883 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="355" x="10" y="21.5352">class: RPi-Control - CFG-FILE-PARSER - Context</text></g><!--MD5=[f04600f0575a07dfe97362a654bdaa04]
+cluster kernel--><g id="cluster_kernel"><path d="M33.5,213 L79.5,213 A3.75,3.75 0 0 1 82,215.5 L89,235.4883 L550.5,235.4883 A2.5,2.5 0 0 1 553,237.9883 L553,309.5 A2.5,2.5 0 0 1 550.5,312 L33.5,312 A2.5,2.5 0 0 1 31,309.5 L31,215.5 A2.5,2.5 0 0 1 33.5,213 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="89" y1="235.4883" y2="235.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="45" x="35" y="228.5352">kernel</text></g><!--MD5=[0138a0ffda1d31bc827bb1d9c73663f9]
+cluster modules/cfg_file_parser--><g id="cluster_modules/cfg_file_parser"><path d="M200.5,50 L376.5,50 A3.75,3.75 0 0 1 379,52.5 L386,72.4883 L391.5,72.4883 A2.5,2.5 0 0 1 394,74.9883 L394,161.5 A2.5,2.5 0 0 1 391.5,164 L200.5,164 A2.5,2.5 0 0 1 198,161.5 L198,52.5 A2.5,2.5 0 0 1 200.5,50 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="198" x2="386" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="175" x="202" y="65.5352">modules/cfg_file_parser</text></g><!--MD5=[dd9a97e507cc1d516dfc0b3e9e9c1789]
+class task_interface--><g id="elem_task_interface"><rect codeLine="15" fill="#F1F1F1" height="48" id="task_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="127" x="47.5" y="248"/><ellipse cx="62.5" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M58.9277,260.2651 L58.9277,258.1069 L66.3071,258.1069 L66.3071,260.2651 L63.8418,260.2651 L63.8418,268.3418 L66.3071,268.3418 L66.3071,270.5 L58.9277,270.5 L58.9277,268.3418 L61.3931,268.3418 L61.3931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="95" x="76.5" y="269.291">task_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="48.5" x2="173.5" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="48.5" x2="173.5" y1="288" y2="288"/></g><!--MD5=[0a36e66a645a439e9db5de35c7103aeb]
+class signal_slot_interface--><g id="elem_signal_slot_interface"><rect codeLine="19" fill="#F1F1F1" height="48" id="signal_slot_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="172" x="210" y="248"/><ellipse cx="225" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M221.4277,260.2651 L221.4277,258.1069 L228.8071,258.1069 L228.8071,260.2651 L226.3418,260.2651 L226.3418,268.3418 L228.8071,268.3418 L228.8071,270.5 L221.4277,270.5 L221.4277,268.3418 L223.8931,268.3418 L223.8931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="140" x="239" y="269.291">signal_slot_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="211" x2="381" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="211" x2="381" y1="288" y2="288"/></g><!--MD5=[b9b2ef7fde3d52ebce7725399c86e14f]
+class file_interface--><g id="elem_file_interface"><rect codeLine="23" fill="#F1F1F1" height="48" id="file_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="120" x="417" y="248"/><ellipse cx="432" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M428.4277,260.2651 L428.4277,258.1069 L435.8071,258.1069 L435.8071,260.2651 L433.3418,260.2651 L433.3418,268.3418 L435.8071,268.3418 L435.8071,270.5 L428.4277,270.5 L428.4277,268.3418 L430.8931,268.3418 L430.8931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="88" x="446" y="269.291">file_interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="418" x2="536" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="418" x2="536" y1="288" y2="288"/></g><!--MD5=[69c41b4178e4d2f64d0ce061e16a2de1]
+entity cfg_file_parser--><g id="elem_cfg_file_parser"><rect fill="#DDDDDD" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="163" x="214.5" y="85"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="357.5" y="90"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="355.5" y="92"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="355.5" y="96"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="229.5" y="118.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="123" x="229.5" y="135.0234">CFG-FILE-PARSER</text></g><!--MD5=[3bc61f28d98e245cec06925cd5bfc700]
+link cfg_file_parser to task_interface--><g id="link_cfg_file_parser_task_interface"><path codeLine="36" d="M259.01,148.19 C229.2,172.92 187.2,207.78 155.55,234.04 " fill="none" id="cfg_file_parser-to-task_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="160.2,239.28,140.34,246.66,151.26,228.5,160.2,239.28" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[7d821915affd94aab5b463200656ef78]
+link cfg_file_parser to signal_slot_interface--><g id="link_cfg_file_parser_signal_slot_interface"><path codeLine="37" d="M296,148.19 C296,175.41 296,214.88 296,241.68 " fill="none" id="cfg_file_parser-to-signal_slot_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="296,246.35,300,237.35,296,241.35,292,237.35,296,246.35" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="297" y="193.5684">&lt;uses&gt;</text></g><!--MD5=[04410b69126cab8788856dd34f77978e]
+link cfg_file_parser to file_interface--><g id="link_cfg_file_parser_file_interface"><path codeLine="38" d="M332.65,148.19 C352.6,164.94 377.7,186.06 400,205 C414.95,217.7 431.47,231.84 445.36,243.77 " fill="none" id="cfg_file_parser-to-file_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="448.82,246.74,444.5899,237.8459,445.0237,243.486,439.3835,243.9199,448.82,246.74" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="389" y="193.5684">&lt;uses&gt;</text></g><!--MD5=[342c5f77b1e4fd15041fc1ba2b839d03]
+@startuml cfg_file_parser_context
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "class: RPi-Control - CFG-FILE-PARSER - Context" {
+
+'***************************************************************************
+
+    folder "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface signal_slot_interface {
+
+        }
+
+        interface file_interface {
+
+        }
+    }
+
+    folder "modules/cfg_file_parser" {
+
+        component cfg_file_parser #DDDDDD [
+            <<component>>
+            CFG-FILE-PARSER
+        ]
+    }
+
+    cfg_file_parser .down.|> task_interface
+    cfg_file_parser .down.> signal_slot_interface : <uses>
+    cfg_file_parser .down.> file_interface : <uses>
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
+
+@startuml cfg_file_parser_context
+
+
+skinparam monochrome true
+
+
+frame "class: RPi-Control - CFG-FILE-PARSER - Context" {
+
+
+    folder "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface signal_slot_interface {
+
+        }
+
+        interface file_interface {
+
+        }
+    }
+
+    folder "modules/cfg_file_parser" {
+
+        component cfg_file_parser #DDDDDD [
+            <<component>>
+            CFG-FILE-PARSER
+        ]
+    }
+
+    cfg_file_parser .down.|> task_interface
+    cfg_file_parser .down.> signal_slot_interface : <uses>
+    cfg_file_parser .down.> file_interface : <uses>
+
+
+}
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

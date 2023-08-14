@@ -1,0 +1,83 @@
+@startuml rpi_control_frmwrk_diagram_component_lcd_controller
+
+'***************************************************************************
+
+skinparam monochrome true
+'skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: rpi_control_frmwrk - structure - LCD-Controller" {
+
+'***************************************************************************
+
+    package "modules" {
+        component LCD_Controller #DDDDDD {
+
+            component lcd_task [
+                <<Task>>
+                LCD Task
+            ]
+
+            component controller [
+                <<Controller>>
+                Controller
+            ]
+
+            component line_buffer [
+                <<Queue>>
+                Line Buffer
+            ]
+
+            component line_slot [
+                <<Slot>>
+                LCD Line Slot
+            ]
+
+            interface lcd_interface {
+                lcd_init()
+                lcd_enable(en)
+                SIGNAL_LCD_LINE
+            }
+
+            lcd_task ..> line_buffer : <uses>
+            line_slot ..> line_buffer : <uses>
+
+            controller .up.|> lcd_interface
+            'controller ..> lcd_task : <uses>
+        }
+    }
+
+    package "Driver" {
+        interface lcd_driver_interface {
+
+        }
+    }
+    
+    package "APP-Task" {
+        component application [
+            <<Task>>
+            Application
+        ]
+    }
+
+    package "kernel" {
+        interface task_interface {
+
+        }
+    }
+
+    LCD_Controller .up.> lcd_driver_interface : <uses>
+
+    application .down.> lcd_interface : <uses>
+    application .down.> line_slot : SIGNAL_LCD_LINE
+
+    lcd_task .up.|> task_interface
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml

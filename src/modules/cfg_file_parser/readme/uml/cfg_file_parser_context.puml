@@ -1,0 +1,47 @@
+@startuml cfg_file_parser_context
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "class: RPi-Control - CFG-FILE-PARSER - Context" {
+
+'***************************************************************************
+
+    folder "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface signal_slot_interface {
+
+        }
+
+        interface file_interface {
+
+        }
+    }
+
+    folder "modules/cfg_file_parser" {
+
+        component cfg_file_parser #DDDDDD [
+            <<component>>
+            CFG-FILE-PARSER
+        ]
+    }
+
+    cfg_file_parser .down.|> task_interface
+    cfg_file_parser .down.> signal_slot_interface : <uses>
+    cfg_file_parser .down.> file_interface : <uses>
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml

@@ -46,6 +46,7 @@
 
 // --------------------------------------------------------------------------------
 
+#include "common/common_types.h"
 #include "common/signal_slot_interface.h"
 #include "ui/command_line/command_line_interface.h"
 #include "common/common_tools_string.h"
@@ -103,6 +104,7 @@ void command_line_handler_lcd(const char* parameter) {
 // --------------------------------------------------------------------------------
 
 void command_line_handler_console(const char* parameter) {
+    (void) parameter;
     DEBUG_PASS("command_line_handler_console()");
     CLI_CONSOLE_ACTIVATED_SIGNAL_send(NULL);
 }
@@ -159,12 +161,14 @@ void command_line_handler_command(const char* parameter) {
 }
 
 void command_line_handler_controller(const char* parameter) {
+    (void) parameter;
     DEBUG_PASS("command_line_handler_command()");
 }
 
 // --------------------------------------------------------------------------------
 
 void command_line_handler_help(const char* parameter) {
+    (void) parameter;
     DEBUG_PASS("command_line_handler_help()");
     CLI_HELP_REQUESTED_SIGNAL_send(NULL);
 }

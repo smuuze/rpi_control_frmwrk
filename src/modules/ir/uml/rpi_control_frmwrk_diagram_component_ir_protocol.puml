@@ -1,0 +1,80 @@
+@startuml rpi_control_frmwrk_diagram_component_ir_protocol
+
+'***************************************************************************
+
+skinparam monochrome true
+'skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: rpi_control_frmwrk - structure - IR-Protocol" {
+
+'***************************************************************************
+
+    package "modules" {
+        component IR_Protocol #DDDDDD {
+
+            component ir_protocol_task [
+                <<Task>>
+                IR-Protocol Task
+            ]
+
+            interface ir_protocol_interface {
+
+            }
+
+            component ir_protocol_transmit_buffer [
+                <<Buffer>>
+                IR-Transmit-Buffer
+            ]
+
+            component ir_protocol [
+                <<IR-Protocol>>
+                IR-Protocol
+            ]
+            note right
+            - SONY
+            - JVC
+            - SAMSUNG
+            - NEC
+            end note
+
+            ir_protocol_task .down.> ir_protocol_interface : <uses>
+
+            ir_protocol .down.|> ir_protocol_interface
+
+            ir_protocol_transmit_buffer <.up. ir_protocol : <uses>
+
+        }
+    }
+
+    package "Driver" {
+        interface gpio_driver_interface {
+
+        }
+    }
+
+    package "kernel" {
+
+        interface task_interface {
+
+        }
+
+        interface timer_interface {
+
+        }
+    }
+
+    ir_protocol .up.> gpio_driver_interface : <uses>
+
+    ir_protocol_task .up.|> task_interface
+
+    ir_protocol .up.> timer_interface : <uses>
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml

@@ -1,0 +1,43 @@
+@startuml rpi_control_frmwrk_diagram_component_kernel
+
+skinparam monochrome true
+skinparam linetype ortho
+skinparam style strictuml
+
+frame "component: rpi_frmwark - structure - kernel" {
+
+    component kernel {
+
+        folder interfaces {
+            
+        }
+
+        component signal_slot [
+            <<component>>
+            Signal-Slot
+        ]
+
+        component timer [
+            <<component>>
+            Timer
+        ]
+
+        component task_comtrol [
+            <<component>>
+            Task-Control
+        ]
+
+        component modules [
+            <<component>>
+            Modules
+        ]
+
+        component io [
+            <<component>>
+            Input Output
+        ]
+
+        url of signal_slot is [[../../readme/readme_signal_slot.md {Click: Go to}]]
+    }
+}
+@enduml
