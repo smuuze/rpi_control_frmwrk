@@ -16,7 +16,7 @@
  * @file    rpi_protocol_handler_host.c
  * @author  Sebastian Lesse
  * @date    2023 / 08 / 05
- * @brief   Short description of this file
+ * @brief   Implementation of the RPI-Protocol for Host
  * 
  */
 
