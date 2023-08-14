@@ -4,7 +4,7 @@
 
 # Version 7.0.0
 
-Date: ***NOT RELEASED***
+Date: 2023 / 08 / 14
 
 **New Feature:**
 
