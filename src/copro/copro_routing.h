@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @file    copro_routing_mcu_task.h
+ * @file    copro_routing.h
  * @author  Sebastian Lesse
  * @date    2022 / 02 / 20
  * @brief   Sends a given byte-array to the requested copro-unit
@@ -51,15 +51,13 @@
 
 /**
  * @brief Interval at which the task is executed
- * 
  */
 #ifndef COPRO_ROUTING_TASK_RUN_INTERVAL_MS
-#define COPRO_ROUTING_TASK_RUN_INTERVAL_MS              0
+#define COPRO_ROUTING_TASK_RUN_INTERVAL_MS              50
 #endif
 
 /**
  * @brief 
- * 
  */
 #ifndef COPRO_ROUTING_TASK_POWER_UP_TIMEOUT_MS
 #define COPRO_ROUTING_TASK_POWER_UP_TIMEOUT_MS          5
@@ -68,7 +66,6 @@
 /**
  * @brief Timeout in milliseconds of the copro preapre phase
  * E.g. request copro-mutex
- * 
  */
 #ifndef COPRO_ROUTING_TASK_PREPARE_TIMEOUT_MS
 #define COPRO_ROUTING_TASK_PREPARE_TIMEOUT_MS           250
@@ -104,7 +101,6 @@
 /**
  * @brief Maximum number of bytes of the
  * response of the copro-interfaces
- * 
  */
 #ifndef COPRO_ROUTING_TASK_TEMP_DATA_BUFFER_SIZE
 #define COPRO_ROUTING_TASK_TEMP_DATA_BUFFER_SIZE        64
@@ -112,50 +108,10 @@
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief Initializes and starts the copro routing.
  */
-void copro_routing_task_init(void);
-
-/*!
- *
- */
-u16 copro_routing_task_get_schedule_interval(void);
-
-/*!
- *
- */
-MCU_TASK_INTERFACE_TASK_STATE copro_routing_task_get_state(void);
-
-/*!
- *
- */
-void copro_routing_task_run(void);
-
-/*!
- *
- */
-void copro_routing_task_background_run(void);
-
-/*!
- *
- */
-void copro_routing_task_sleep(void);
-
-/*!
- *
- */
-void copro_routing_task_wakeup(void);
-
-/*!
- *
- */
-void copro_routing_task_finish(void);
-
-/*!
- *
- */
-void copro_routing_task_terminate(void);
+void copro_routing_init(void);
 
 // --------------------------------------------------------------------------------
 

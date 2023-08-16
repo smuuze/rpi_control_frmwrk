@@ -144,11 +144,6 @@ DEFS += -D HAS_APP_TASK_TEST_TRACER=1
 CSRCS += $(APP_TASK_INC_PATH)/test_tracer_mcu_task.c
 endif
 
-ifneq '' '$(findstring COPRO_ROUTING,$(APP_TASK_CFG))'
-DEFS += -D HAS_APP_TASK_COPRO_ROUTING=1
-CSRCS += $(APP_TASK_INC_PATH)/copro_routing_mcu_task.c
-endif
-
 ifneq '' '$(findstring MSG_EXECUTER,$(APP_TASK_CFG))'
 DEFS += -D HAS_APP_TASK_MSG_EXECUTER=1
 CSRCS += $(APP_TASK_INC_PATH)/message_executer_task.c
