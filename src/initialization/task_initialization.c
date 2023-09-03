@@ -266,11 +266,6 @@ void task_initialization(void) {
     DEBUG_PASS("task_initialization() - IO output-controller task");
     mcu_task_controller_register_task(&io_output_controller_task);
     #endif
-
-    #if defined (HAS_APP_TASK_COPRO_ROUTING) && (HAS_APP_TASK_COPRO_ROUTING) == 1
-    DEBUG_PASS("task_initialization() - copro-routing task");
-    copro_routing_init();
-    #endif
 }
 
 // --------------------------------------------------------------------------------

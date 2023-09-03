@@ -50,6 +50,8 @@
 
 #include "driver/cfg_driver_interface.h"
 
+#include "copro/copro_routing.h"
+
 // --------------------------------------------------------------------------------
 
 #ifndef COPRO1_DEFAULT_ADDRESS
@@ -135,6 +137,12 @@ void copro_interface_initialize(void) {
         #endif
 
         COPRO1_set_address(COPRO1_DEFAULT_ADDRESS);
+    }
+    #endif
+
+    #ifdef HAS_COPRO_ROUTING
+    {
+        copro_routing_init();
     }
     #endif
 }
