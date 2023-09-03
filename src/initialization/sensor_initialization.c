@@ -14,34 +14,33 @@
 
 #include "system_interface.h"
 
-#if defined (HAS_LIGHT_SENSOR_GM5528) && ((HAS_LIGHT_SENSOR_GM5528) == 1)
-#include "driver/sensor/light_resistor_gm5528.h"
-#endif
-
-#include "expansion/local_ads1115_mcu_task.h"
-#include "expansion/local_sht31_mcu_task.h"
+#include "sensor/ads1115/ads1115_driver.h"
+#include "sensor/sht31/sht31_driver.h"
+#include "sensor/gm5528/gm5528_driver.h"
 
 //-----------------------------------------------------------------------------
 
 void sensor_initialization(void) {
 
-	DEBUG_PASS("sensor_initialization()");
+    #ifdef HAS_SENSOR_ADS1115
+    {
+        DEBUG_PASS("sensor_initialization() - ads1115_driver_init()");
+        ads1115_driver_init(i_system.driver.i2c0);
+    }
+    #endif
+        
+    #ifdef HAS_SENSOR_SHT31
+    {
+        DEBUG_PASS("sensor_initialization() - sht31_driver_init()");
+        sht31_driver_init(i_system.driver.i2c0);
+    }
+    #endif    
 
-	#ifdef HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115
-	{
-		DEBUG_PASS("protocol_initialization() - local_ads1115_module_init()");
-		local_ads1115_module_init(i_system.driver.i2c0);
-		
-		DEBUG_PASS("protocol_initialization() - local_sht31_module_init()");
-		local_sht31_module_init(i_system.driver.i2c0);
-	}
-	#endif	
-
-	#if defined (HAS_LIGHT_SENSOR_GM5528) && ((HAS_LIGHT_SENSOR_GM5528) == 1)
-	{
-		DEBUG_PASS("sensor_initialization() - light_resistor_gm5528_init()");
-		light_resistor_gm5528_init();
-	}
-	#endif
+    #if HAS_LIGHT_SENSOR_GM5528
+    {
+        DEBUG_PASS("sensor_initialization() - gm5528_driver_init()");
+        gm5528_driver_init();
+    }
+    #endif
 
 }

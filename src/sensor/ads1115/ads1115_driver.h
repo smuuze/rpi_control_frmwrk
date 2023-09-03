@@ -8,7 +8,7 @@
  *
  * @param p_driver
  */
-void local_ads1115_module_init (TRX_DRIVER_INTERFACE* p_driver);
+void ads1115_driver_init (TRX_DRIVER_INTERFACE* p_driver);
 
 /*!
  *

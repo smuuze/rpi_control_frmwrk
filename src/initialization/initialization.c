@@ -68,7 +68,7 @@
 #include "modules/ir/ir_protocol_task.h"
 #include "modules/movement_detection/movement_detection_controller.h"
 
-#include "sensor/sht32/sht31_interface.h"
+#include "copro/copro_interface.h"
 
 //-----------------------------------------------------------------------------
 
@@ -167,9 +167,9 @@ void initialization(void) {
     }
     #endif
 
-    #ifdef HAS_SENSOR_SHT31
+    #if COPRO_INTERFACE_AVAILABLE
     {
-        sht31_intrface_init();
+        copro_interface_initialize();
     }
     #endif
 }

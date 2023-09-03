@@ -58,7 +58,7 @@
 
 // --------------------------------------------------------------------------------
 
-#include "sht31_interface.h"
+#include "sensor/sht31/sht31_driver.h"
 
 // --------------------------------------------------------------------------------
 
@@ -141,7 +141,7 @@ static u8 com_driver_mutex_id = 0;
 /**
  * @see mch_task_management/mcu_task_interface#MCU_TASK_INTERFACE.init
  */
-static void local_st31_mcu_task_start(void) {
+static void sht31_task_start(void) {
 
     DEBUG_PASS("sht31_task_start()");
 
@@ -343,7 +343,7 @@ static void sht31_task_execute(void) {
 
             p_com_driver->get_N_bytes(SHT31_MEASRUEMENT_ANSWER_LENGTH, answer_buffer);
 
-            GET_SYSTEM(data).adc.temperature = (answer_buffer[SHT31_INDEX_OF_TEMPERATURE_MSB_IN_ANSWER] << 8 )      answer_buffer[SHT31_INDEX_OF_TEMPERATURE_LSB_IN_ANSWER];
+            GET_SYSTEM(data).adc.temperature = (answer_buffer[SHT31_INDEX_OF_TEMPERATURE_MSB_IN_ANSWER] << 8 ) | answer_buffer[SHT31_INDEX_OF_TEMPERATURE_LSB_IN_ANSWER];
             DEBUG_TRACE_word(GET_SYSTEM(data).adc.temperature, "sht31_task_execute() - actual raw-value of temperature");
 
             calculation_temp = (u32)GET_SYSTEM(data).adc.temperature * (u32)SHT31_TEMPERATURE_FIXPOINT_FACTOR_M;
@@ -364,7 +364,7 @@ static void sht31_task_execute(void) {
 
             DEBUG_PASS("sht31_task_execute() -  Humidity ------");
 
-            GET_SYSTEM(data).adc.humidity = (answer_buffer[SHT31_INDEX_OF_HUMIDITY_MSB_IN_ANSWER] << 8 )      answer_buffer[SHT31_INDEX_OF_HUMIDITY_LSB_IN_ANSWER];
+            GET_SYSTEM(data).adc.humidity = (answer_buffer[SHT31_INDEX_OF_HUMIDITY_MSB_IN_ANSWER] << 8 ) | answer_buffer[SHT31_INDEX_OF_HUMIDITY_LSB_IN_ANSWER];
             DEBUG_TRACE_N(2, (u8*)&GET_SYSTEM(data).adc.humidity, "sht31_task_execute() - raw value of humidity");
 
             calculation_temp = (u32)GET_SYSTEM(data).adc.humidity * (u32)SHT31_HUMIDITY_FIXPOINT_FACTOR_M;
@@ -440,7 +440,7 @@ TASK_CREATE(
     SHCT31_TASK,
     TASK_PRIORITY_MIDDLE,
     sht31_task_get_schedule_interval,
-    sht31_task_init,
+    sht31_task_start,
     sht31_task_execute,
     sht31_task_get_state,
     sht31_task_terminate
@@ -449,9 +449,9 @@ TASK_CREATE(
 // --------------------------------------------------------------------------------
 
 /**
- * @see sht32_interface.h#sht31_intrface_init
+ * @see sht32_driver.h#sht31_driver_init
  */
-void sht31_intrface_init(TRX_DRIVER_INTERFACE* p_driver) {
+void sht31_driver_init(TRX_DRIVER_INTERFACE* p_driver) {
 
     DEBUG_PASS("local_sht31_module_init()");
 

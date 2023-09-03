@@ -22,8 +22,8 @@
 
 // --------------------------------------------------------------------------------
 
-#ifndef _H_sht31_interface_
-#define _H_sht31_interface_
+#ifndef _H_sht31_driver_
+#define _H_sht31_driver_
 
 // --------------------------------------------------------------------------------
 
@@ -86,10 +86,10 @@
  *
  * @param p_driver
  */
-void sht31_intrface_init(TRX_DRIVER_INTERFACE* p_driver);
+void sht31_driver_init(TRX_DRIVER_INTERFACE* p_driver);
 
 // --------------------------------------------------------------------------------
 
-#endif // _H_sht31_interface_
+#endif // _H_sht31_driver_
 
 // --------------------------------------------------------------------------------
