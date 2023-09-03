@@ -92,26 +92,6 @@ static MCU_TASK_INTERFACE ads1115_mcu_task = {
     &local_ads1115_mcu_task_terminate,         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
     0                        // next-task
 };
-
-// --------------------------------------------------------------------------------
-
-#include "local_sht31_mcu_task.h"
-static MCU_TASK_INTERFACE sht31_mcu_task = {
-
-    0,                         // u8 identifier,
-    0,                         // u16 new_run_timeout,
-    0,                         // u16 last_run_time,
-    &local_sht31_mcu_task_init,             // MCU_TASK_INTERFACE_INIT_CALLBACK            init,
-    &local_sht31_mcu_task_get_schedule_interval,    // MCU_TASK_INTERFACE_INIT_CALLBACK            get_schedule_interval,
-    &local_sht31_mcu_task_get_state,         // MCU_TASK_INTERFACE_GET_STATE_CALLBACK        get_sate,
-    &local_sht31_mcu_task_run,             // MCU_TASK_INTERFACE_RUN_CALLBACK            run,
-    0,                        // MCU_TASK_INTERFACE_BG_RUN_CALLBACK            background_run,
-    0,                         // MCU_TASK_INTERFACE_SLEEP_CALLBACK            sleep,
-    0,                         // MCU_TASK_INTERFACE_WAKEUP_CALLBACK            wakeup,
-    &local_sht31_mcu_task_finish,             // MCU_TASK_INTERFACE_FINISH_CALLBACK            finish,
-    &local_sht31_mcu_task_terminate,         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
-    0                        // next-task
-};
 #endif
 
 // --------------------------------------------------------------------------------

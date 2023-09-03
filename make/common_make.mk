@@ -188,7 +188,6 @@ ifneq '' '$(findstring SENSOR_SHT31_ADS1115,$(EXPANSION_BOARD_CFG))'
 	DEFS  += -D HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115=1
 	
 	CSRCS += $(EXPANSION_BOARD_PATH)/local_ads1115_mcu_task.c
-	CSRCS += $(EXPANSION_BOARD_PATH)/local_sht31_mcu_task.c
 endif
 
 ifneq '' '$(findstring GPIO_PCA9670,$(EXPANSION_BOARD_CFG))'

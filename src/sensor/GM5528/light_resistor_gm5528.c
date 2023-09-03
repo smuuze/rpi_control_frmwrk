@@ -25,7 +25,7 @@
 
 #include "time_management/time_management.h"
 
-#include "driver/sensor/light_resistor_gm5528.h"
+#include "light_resistor_gm5528.h"
 
 //-----------------------------------------------------------------------------
 
