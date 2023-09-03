@@ -500,7 +500,7 @@ GPIO_DRIVER_LEVEL gpio_driver_get_level(GPIO_DRIVER_PIN_DESCRIPTOR* p_pin_descr)
 
     u8 pin_level = gpio_driver_atmega1284p_get_pin_level(
         p_pin_descr->port_id,
-        p_pin_descr->pin_id
+        gpio_driver_atmega1284p_get_pin_number(p_pin_descr->pin_id)
     );
 
     if (GPIO_DRIVER_PIN_IS_INVERTED(p_pin_descr) != 0) {
