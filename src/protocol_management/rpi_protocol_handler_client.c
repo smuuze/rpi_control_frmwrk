@@ -502,7 +502,6 @@ static void rpi_protocol_task_execute(void) {
 
             //DEBUG_PASS("rpi_protocol_task_execute() - RPI_STATE_PREPARE -> RPI_STATE_PREPARE");
 
-            p_com_driver->configure(&driver_cfg);
             p_com_driver->clear_rx_buffer();
             p_com_driver->start_rx(TRX_DRIVER_INTERFACE_UNLIMITED_RX_LENGTH);
 
