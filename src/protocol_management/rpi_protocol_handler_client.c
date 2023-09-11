@@ -74,33 +74,7 @@
  * @brief Bufersize for temporare operations
  * 
  */
-#define RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE            32
-
-/**
- * @brief Timeout
- * 
- */
-// #define RPI_PROTOCOL_HANDLER_DATA_EXCHANGE_TIMEOUT_MS        250
-
-/*!
- *
- */
-// #define RPI_PROTOCOL_HANDLER_START_DATA_EXCHANGE_TIMEOUT_MS    10
-
-/*!
- *
- */
-// #define RPI_PROTOCOL_HANDLER_WAIT_FOR_REQUEST_TIMEOUT_MS    250
-
-/*!
- *
- */
-// #define RPI_PROTOCOL_HANDLER_WAIT_FOR_DRIVER_TIMEOUT_MS        250
-
-/*!
- *
- */
-// #define RPI_PROTOCOL_HANDLER_WAIT_FOR_RELEASE_TIMEOUT_MS    15
+#define RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE                   32
 
 /**
  * @brief Timeout to wait for internal command processing
@@ -108,14 +82,14 @@
  * All operations are stopped. No response is send to the host
  * and the sleep state is entered
  */
-#define RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS        500
+#define RPI_PROTOCOL_HANDLER_CMD_PROCESSING_TIMEOUT_MS          500
 
 /**
  * @brief Interval in milliseconds at which this task is scheduled
  * The value is set to a low number to let it schedule every clock-tick.
  * Because the system enterns the mcu-sleep mode for a amount of time (e.g. 30ms)
  */
-#define RPI_PROTOCOL_HANDLER_SCHEDULE_INTERVAL_MS        5
+#define RPI_PROTOCOL_HANDLER_SCHEDULE_INTERVAL_MS               5
 
 // --------------------------------------------------------------------------------
 
@@ -152,8 +126,8 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(RPI_TRX_TIMER)
 
 // --------------------------------------------------------------------------------
 
-#define RPI_STATUS_COMMAND_PENDING        (1 << 0)
-#define RPI_STATUS_RESPONSE_PENDING        (1 << 1)
+#define RPI_STATUS_COMMAND_PENDING                                          (1 << 0)
+#define RPI_STATUS_RESPONSE_PENDING                                         (1 << 1)
 
 BUILD_MODULE_STATUS_U16(RPI_STATUS)
 
@@ -162,6 +136,10 @@ BUILD_MODULE_STATUS_U16(RPI_STATUS)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_PROTOCOL_LEAVE_SLEEP_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_PROTOCOL_ENTER_SLEEP_SIGNAL)
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_PROTOCOL_INVALID_COMMAND_RECEIVED_SIGNAL)
+
+/**
+ * @brief Construct a new signal slot interface create signal object
+ */
 SIGNAL_SLOT_INTERFACE_CREATE_SIGNAL(RPI_PROTOCOL_COMMAND_RECEIVED_SIGNAL)
 
 // --------------------------------------------------------------------------------
@@ -178,22 +156,10 @@ static void _set_finished_spi(u8 err_code);
 
 /**
  * @brief Pointer to the current used communication interface, e.g. spi.
- * 
+ * The device will be requested during startup and stays requested during the runtime.
+ * It will never be released to ensure an exclusive usage.
  */
 static TRX_DRIVER_INTERFACE* p_com_driver = 0;
-
-/**
- * @brief Configuration used for this implementation
- * to enabled communication on the current communicaiton interface.
- */
-static CFG_DRIVER_SPI _com_driver_cfg_spi = {
-    RPI_PROTOCOL_HANDLER_DRIVER_CFG
-};
-
-/*!
- *
- */
-static TRX_DRIVER_CONFIGURATION driver_cfg;
 
 /**
  * @brief Current state of the RPi-Protocol handler.
@@ -207,15 +173,16 @@ static MCU_TASK_INTERFACE_TASK_STATE current_state_task = MCU_TASK_UNINITIALIZED
 
 /**
  * @brief Current Mutex-ID of the communication-interface
- * Used to lock / unlock the usage of the communication interface
- * for other task if in a transmission.
+ * Used to lock the usage of the communication interface.
+ * Hint: the communication device remains requested during the runtime
  */
 u8 driver_mutex_id = 0;
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
 static COMMAND_BUFFER_INTERFACE rpi_cmd_handler_command_buffer = {
     &RPI_COMMAND_BUFFER_start_read,
@@ -281,23 +248,47 @@ static void _set_finished_spi(u8 err_code) {
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief Cancels receiving of a new command telegram.
+ * Writing into the command buffer is stopped.
+ * 
+ * @param state will be returned by this function
+ * @return state
+ */
+static inline RPI_TRX_STATE rpi_protocol_cancel_receive_command(RPI_TRX_STATE state) {
+    RPI_COMMAND_BUFFER_stop_write();
+    return state;
+}
+
+/**
+ * @brief Receives a new command via the communication device, if available.
+ * Receiving a telegram is devided into the following steps:
+ * 
+ *  - Receive the number of bytes of the incomming command telegram
+ * 
+ *  - Wait for communication device to receive some more bytes of the command telegram
+ * 
+ *  - Read received bytes of the command telegram from the communication device
+ *    and receive the rest of the command telegram, if necessary.
+ * 
+ *  - Set the module status RPI_STATUS_COMMAND_PENDING in
+ *    case a new command telegram was received successful
+ * 
+ * @return RPI_TRX_STATE 
  */
 static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
     rpi_protocol_spi_interface.command_length = 0;
 
     RPI_TRX_STATE error_code = RPI_TRX_STATE_COMPLETE;
-            
+
     RPI_TRX_TIMER_start();
 
     while (p_com_driver->bytes_available() != 0) {
 
         if (RPI_TRX_TIMER_is_up(5)) {
             DEBUG_PASS("rpi_protocol_receive_command() - Receiving command-length has FAILED (TIMEOUT) !!! ---");
-            error_code = RPI_TRX_STATE_TIMEOUT;
-            goto EXIT_rpi_protocol_receive_command;
+            return rpi_protocol_cancel_receive_command(RPI_TRX_STATE_TIMEOUT);
         }
 
         p_com_driver->get_N_bytes(1, (u8*)&rpi_protocol_spi_interface.command_length);
@@ -320,8 +311,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
     if (rpi_protocol_spi_interface.command_length == 0) {
         //DEBUG_PASS("rpi_protocol_receive_command() - No command-data received");
-        error_code = RPI_TRX_STATE_NO_DATA;
-        goto EXIT_rpi_protocol_receive_command;
+        return rpi_protocol_cancel_receive_command(RPI_TRX_STATE_NO_DATA);
     }
             
     RPI_TRX_TIMER_start();
@@ -330,8 +320,7 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
         if (RPI_TRX_TIMER_is_up(10)) {
             DEBUG_TRACE_byte(rpi_protocol_spi_interface.command_length, "rpi_protocol_receive_command() - Receiving command-data has FAILED (TIMEOUT) !!! ---");
-            error_code = RPI_TRX_STATE_TIMEOUT;
-            goto EXIT_rpi_protocol_receive_command;
+            return rpi_protocol_cancel_receive_command(RPI_TRX_STATE_TIMEOUT);
         }
     }
 
@@ -351,42 +340,35 @@ static RPI_TRX_STATE rpi_protocol_receive_command(void) {
 
         if (RPI_TRX_TIMER_is_up(50)) {
             DEBUG_TRACE_byte(rpi_protocol_spi_interface.command_length, "rpi_protocol_receive_command() - Receiving command-data has FAILED (TIMEOUT) !!! ---");
-            error_code = RPI_TRX_STATE_TIMEOUT;
-            goto EXIT_rpi_protocol_receive_command;
+            return rpi_protocol_cancel_receive_command(RPI_TRX_STATE_TIMEOUT);
         }
 
-        if (p_com_driver->bytes_available() == 0) {
-            continue;
+        if (p_com_driver->bytes_available() != 0) {
+            u8 t_buffer[RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE];
+            u16 read_count = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
+
+            if (read_count > p_com_driver->bytes_available()) {
+                read_count = p_com_driver->bytes_available();
+            }
+
+            if (read_count > bytes_remain) {
+                read_count = bytes_remain;
+            }
+
+            read_count = p_com_driver->get_N_bytes(read_count, t_buffer);
+            bytes_remain -= read_count;
+
+            RPI_COMMAND_BUFFER_add_N_bytes(read_count, t_buffer);
+
+            DEBUG_TRACE_N(read_count, t_buffer ,"rpi_protocol_receive_command() - Command-Data: ");
         }
-
-        u8 t_buffer[RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE];
-        u16 read_count = RPI_PROTOCOL_HANDLER_TEMP_BUFFER_SIZE;
-
-        if (read_count > p_com_driver->bytes_available()) {
-            read_count = p_com_driver->bytes_available();
-        }
-
-        if (read_count > bytes_remain) {
-            read_count = bytes_remain;
-        }
-
-        read_count = p_com_driver->get_N_bytes(read_count, t_buffer);
-        bytes_remain -= read_count;
-
-        RPI_COMMAND_BUFFER_add_N_bytes(read_count, t_buffer);
-
-        DEBUG_TRACE_N(read_count, t_buffer ,"rpi_protocol_receive_command() - Command-Data: ");
     }
 
     RPI_COMMAND_BUFFER_stop_write();
     RPI_STATUS_set(RPI_STATUS_COMMAND_PENDING);
 
-    EXIT_rpi_protocol_receive_command :
-    {
-        p_com_driver->mutex_rel(driver_mutex_id);
+    return error_code;
 
-        return error_code;
-    }
 }
 
 // --------------------------------------------------------------------------------
@@ -410,9 +392,9 @@ static RPI_TRX_STATE rpi_protocol_transmit_answer(void) {
     };
 
     p_com_driver->clear_tx_buffer();
-    p_com_driver->set_N_bytes(3, answer_header);
+    p_com_driver->set_N_bytes(RPI_PROTOCOL_HEADER_LENGTH_RESPONSE, answer_header);
 
-    u16 bytes_to_send = 3;
+    u16 bytes_to_send = RPI_PROTOCOL_HEADER_LENGTH_RESPONSE;
 
     RPI_ANSWER_BUFFER_start_read();
     u16 bytes_left = RPI_ANSWER_BUFFER_bytes_available();
@@ -646,7 +628,13 @@ void rpi_protocol_init(TRX_DRIVER_INTERFACE* p_driver) {
     RPI_PROTOCOL_ENTER_SLEEP_SIGNAL_init();
     RPI_PROTOCOL_INVALID_COMMAND_RECEIVED_SIGNAL_init();
 
-    driver_cfg.module.spi = _com_driver_cfg_spi;
+    TRX_DRIVER_CONFIGURATION driver_cfg = {
+        .module = {
+            .spi = {
+                RPI_PROTOCOL_HANDLER_DRIVER_CFG
+            }
+        }
+    };
 
     p_com_driver = p_driver;
 
