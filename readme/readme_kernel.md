@@ -31,7 +31,7 @@ Readme | [Changelog](../changelog.md)
 | Interfaces                                 |             |
 | Input Output                               |             |
 | Modules                                    |             |
-| Task Control                               |             |
+| [Task Control](../src/mcu_task_management/readme/readme_task_management.md#section)                               |             |
 | Timer                                      |             |
 | [Signal Slot](../readme/readme_signal_slot.md#section) |             |
 
