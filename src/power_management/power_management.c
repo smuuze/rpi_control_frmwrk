@@ -63,31 +63,21 @@ static POWER_MANAGEMENT_UNIT_TYPE* p_last_unit = 0;
 
 //-----------------------------------------------------------------------------
 
-static void power_management_task_init(void);
-static u16 local_sht31_mcu_task_get_schedule_interval(void);
+static void power_management_task_start(void);
+static u16 power_management_task_get_schedule_interval(void);
 static MCU_TASK_INTERFACE_TASK_STATE power_management_task_get_state(void);
-static void power_management_task_run(void);
-static void power_management_task_background_run(void);
-static void power_management_task_sleep(void);
-static void power_management_task_wakeup(void);
-static void power_management_task_finish(void);
+static void power_management_task_execute(void);
 static void power_management_task_terminate(void);
 
-static MCU_TASK_INTERFACE power_mngmnt_mcu_task = {
-	0, 						// u8 identifier,
-	0, 						// u16 new_run_timeout,
-	0, 						// u16 last_run_time,
-	&power_management_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
-	&local_sht31_mcu_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
-	&power_management_task_get_state, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
-	&power_management_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
-	&power_management_task_background_run,		// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
-	&power_management_task_sleep, 			// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
-	&power_management_task_wakeup, 			// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
-	&power_management_task_finish, 			// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
-	&power_management_task_terminate, 		// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
-	0						// next-task
-};
+TASK_CREATE(
+    POWER_MANAGEMENT_TASK,
+    TASK_PRIORITY_VERY_MIDDLE,
+    power_management_task_get_schedule_interval,
+    power_management_task_start,
+    power_management_task_execute,
+    power_management_task_get_state,
+    power_management_task_terminate
+)
 
 //-----------------------------------------------------------------------------
 
@@ -95,7 +85,7 @@ void power_mgmnt_init(void) {
 
 	DEBUG_PASS("power_mgmnt_init() - START");
 
-	mcu_task_controller_register_task(&power_mngmnt_mcu_task);
+    POWER_MANAGEMENT_TASK_init();
 
 	DEBUG_PASS("power_mgmnt_init() - DONE");
 }
@@ -210,13 +200,13 @@ u8 power_mgmnt_unit_is_on(POWER_MANAGEMENT_UNIT_TYPE* p_unit) {
 
 //-----------------------------------------------------------------------------
 
-static void power_management_task_init(void) {
+static void power_management_task_start(void) {
 
-	DEBUG_PASS("power_management_task_init()");
+	DEBUG_PASS("power_management_task_start()");
 	POWER_MGMNT_SCHEDULE_TIMER_start();
 }
 
-static u16 local_sht31_mcu_task_get_schedule_interval(void) {
+static u16 power_management_task_get_schedule_interval(void) {
 
 	if (POWER_MGNT_STATUS_is_set(POWER_MGNT_STATUS_ACTION_PENDING)) {
 		return 0;
@@ -241,7 +231,7 @@ static MCU_TASK_INTERFACE_TASK_STATE power_management_task_get_state(void) {
 	return MCU_TASK_SLEEPING;
 }
 
-static void power_management_task_run(void) {
+static void power_management_task_execute(void) {
 
 	POWER_MANAGEMENT_UNIT_TYPE* p_act_unit = p_first_unit;
 	
@@ -251,7 +241,7 @@ static void power_management_task_run(void) {
 
 			if (time_mgmnt_istimeup_raw_u16(p_act_unit->switch_timestamp, p_act_unit->power_up_time_ms)) {
 
-				DEBUG_PASS("power_management_task_run() - unit changed status from RAMP-UP to IS-ON");
+				DEBUG_PASS("power_management_task_execute() - unit changed status from RAMP-UP to IS-ON");
 				p_act_unit->status.is_on = 1;
 				p_act_unit->status.is_ramp_up = 0;
 
@@ -261,7 +251,7 @@ static void power_management_task_run(void) {
 
 			if (p_act_unit->status.is_ramp_down) {
 
-				DEBUG_PASS("power_management_task_run() - unit changed status from IS-ON to RAMP-DOWN");
+				DEBUG_PASS("power_management_task_execute() - unit changed status from IS-ON to RAMP-DOWN");
 				p_act_unit->status.is_on = 0;
 				p_act_unit->switch_timestamp = time_mgmnt_gettime_u16();
 			}
@@ -270,13 +260,13 @@ static void power_management_task_run(void) {
 
 			if (p_act_unit->request_counter != 0) {
 
-				DEBUG_PASS("power_management_task_run() - unit changed status from RAMP-DOWN to IS_ON");
+				DEBUG_PASS("power_management_task_execute() - unit changed status from RAMP-DOWN to IS_ON");
 				p_act_unit->status.is_ramp_down = 0;
 				p_act_unit->status.is_on = 1;
 
 			} else if (time_mgmnt_istimeup_raw_u16(p_act_unit->switch_timestamp, p_act_unit->power_down_time_ms)) {
 
-				DEBUG_PASS("power_management_task_run() - unit changed status from RAMP-DOWN to OFF");
+				DEBUG_PASS("power_management_task_execute() - unit changed status from RAMP-DOWN to OFF");
 				p_act_unit->status.is_ramp_down = 0;
 				p_act_unit->off();
 			}
@@ -286,22 +276,6 @@ static void power_management_task_run(void) {
 	}
 
 	POWER_MGNT_STATUS_unset(POWER_MGNT_STATUS_ACTION_PENDING);
-}
-
-static void power_management_task_background_run(void) {
-
-}
-
-static void power_management_task_sleep(void) {
-
-}
-
-static void power_management_task_wakeup(void) {
-
-}
-
-static void power_management_task_finish(void) {
-
 }
 
 static void power_management_task_terminate(void) {

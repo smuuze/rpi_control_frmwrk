@@ -1,73 +1,58 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	local_event_task.h
- * \brief
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    local_event_task.h
+ * @author  Sebastian Lesse
+ * @date    2021 / 03 / 21
+ * @brief   Short description of this file
+ * 
  */
 
-#ifndef _LOCAL_EVENT_MCU_TASK_H_
-#define _LOCAL_EVENT_MCU_TASK_H_
+// --------------------------------------------------------------------------------
+
+#ifndef _H_local_event_task_
+#define _H_local_event_task_
 
 // --------------------------------------------------------------------------------
 
 #include "system_interface.h"
-#include "mcu_task_interface.h"
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
+/**
+ * @brief 
+ * 
  */
-void local_event_mcu_task_init(void);
+void event_controller_init(void);
 
-/*!
- *
+/**
+ * @brief 
+ * 
+ * @param event 
  */
-u16 local_event_mcu_task_get_schedule_interval(void);
-
-/*!
- *
- */
-MCU_TASK_INTERFACE_TASK_STATE local_event_mcu_task_get_state(void);
-
-/*!
- *
- */
-void local_event_mcu_task_run(void);
-
-/*!
- *
- */
-void local_event_mcu_task_background_run(void);
-
-/*!
- *
- */
-void local_event_mcu_task_sleep(void);
-
-/*!
- *
- */
-void local_event_mcu_task_wakeup(void);
-
-/*!
- *
- */
-void local_event_mcu_task_finish(void);
-
-/*!
- *
- */
-void local_event_mcu_task_terminate(void);
-
-
 void local_event_add(SYSTEM_EVENT event);
 
-
+/**
+ * @brief 
+ * 
+ * @return SYSTEM_EVENT 
+ */
 SYSTEM_EVENT local_event_get_next(void);
 
+// --------------------------------------------------------------------------------
 
-#endif // _LOCAL_EVENT_MCU_TASK_H_
+#endif // _H_local_event_task_
+
+// --------------------------------------------------------------------------------

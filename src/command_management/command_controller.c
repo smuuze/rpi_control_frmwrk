@@ -1,14 +1,28 @@
-/*! 
- * --------------------------------------------------------------------------------
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * \file	command_controller.c
- * \brief
- * \author	sebastian lesse
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * --------------------------------------------------------------------------------
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file    command_controller.c
+ * @author  Sebastian Lesse
+ * @date    2023 / 10 / 03
+ * @brief   Short description of this file
+ * 
  */
 
 #define TRACER_OFF
+
+// --------------------------------------------------------------------------------
 
 #ifdef TRACER_ON
 #warning __WARNING__TRACER_ENABLED__WARNING__
@@ -24,6 +38,10 @@
 
 // --------------------------------------------------------------------------------
 
+#include "cpu.h"
+
+// --------------------------------------------------------------------------------
+
 #include "command_controller.h"
 #include "command_handler_interface.h"
 #include "local_context.h"
@@ -33,53 +51,7 @@
 
 // --------------------------------------------------------------------------------
 
-#define COMMAND_CONTROLLER_SCHEDULE_INTERVAL_MS		5
-
-// --------------------------------------------------------------------------------
-
-/*!
- *
- */
-static void command_controller_task_init(void);
-
-/*!
- *
- */
-static u16 command_controller_task_get_schedule_interval(void);
-
-/*!
- *
- */
-static MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void);
-
-/*!
- *
- */
-static void command_controller_task_run(void);
-
-/*!
- *
- */
-static void command_controller_task_background_run(void);
-
-// --------------------------------------------------------------------------------
-
-static MCU_TASK_INTERFACE cmd_mcu_task = {
-
-	0, 						// u8 identifier,
-	0, 						// u16 new_run_timeout,
-	0, 						// u16 last_run_time,
-	&command_controller_task_init, 			// MCU_TASK_INTERFACE_INIT_CALLBACK			init,
-	&command_controller_task_get_schedule_interval,	// MCU_TASK_INTERFACE_INIT_CALLBACK			get_schedule_interval,
-	&command_controller_task_get_state, 		// MCU_TASK_INTERFACE_GET_STATE_CALLBACK		get_sate,
-	&command_controller_task_run, 			// MCU_TASK_INTERFACE_RUN_CALLBACK			run,
-	&command_controller_task_background_run,	// MCU_TASK_INTERFACE_BG_RUN_CALLBACK			background_run,
-	0, 						// MCU_TASK_INTERFACE_SLEEP_CALLBACK			sleep,
-	0, 						// MCU_TASK_INTERFACE_WAKEUP_CALLBACK			wakeup,
-	0, 						// MCU_TASK_INTERFACE_FINISH_CALLBACK			finish,
-	0, 						// MCU_TASK_INTERFACE_TERMINATE_CALLBACK		terminate,
-	0						// next-task
-};
+#define COMMAND_CONTROLLER_SCHEDULE_INTERVAL_MS        5
 
 // --------------------------------------------------------------------------------
 
@@ -89,94 +61,129 @@ static COMMAND_HANDLER_INTERFACE* _last_cmd_handler = 0;
 
 // --------------------------------------------------------------------------------
 
-void command_controller_init(void) {
-	DEBUG_PASS("command_controller_init()");
-	mcu_task_controller_register_task(&cmd_mcu_task);
+/**
+ * @brief 
+ * 
+ */
+static void command_controller_task_start(void) {
+    DEBUG_PASS("command_controller_task_start()");
 }
+
+/**
+ * @brief 
+ * 
+ * @return u16 
+ */
+static u16 command_controller_task_get_schedule_interval(void) {
+    return COMMAND_CONTROLLER_SCHEDULE_INTERVAL_MS;
+}
+
+/**
+ * @brief 
+ * 
+ * @return MCU_TASK_INTERFACE_TASK_STATE 
+ */
+static MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void) {
+
+    _act_cmd_handler = _first_cmd_handler;
+
+    while (_act_cmd_handler != 0) {
+
+        if (_act_cmd_handler->is_requested()) {
+
+            DEBUG_PASS("command_controller_cmd_is_pending() - Command-Handler has been requested");
+            return MCU_TASK_RUNNING;
+        }
+
+        _act_cmd_handler = _act_cmd_handler->next;
+    }
+
+    return MCU_TASK_SLEEPING;
+}
+
+/**
+ * @brief 
+ * 
+ */
+static void command_controller_task_execute(void) {
+
+    DEBUG_PASS("command_controller_task_execute()");
+
+    if (_act_cmd_handler == 0) {
+        DEBUG_PASS("command_controller_task_execute() - No command-handler selected !!! ---");
+        return;
+    }
+
+    DEBUG_TRACE_byte(_act_cmd_handler->get_table_size(), "command_controller_task_execute() - Processing Command-Handler Table");
+
+    u8 cmd_id = _act_cmd_handler->get_cmd_code();
+    u8 cmd_ret_code = 0xFF;
+
+    u8 i = 0;
+    while (i < _act_cmd_handler->get_table_size()) {
+
+        if (_act_cmd_handler->command_handler_table[i].command_id == cmd_id) {
+
+            DEBUG_TRACE_byte(cmd_id, "command_controller_task_execute() - Running Command-Handler");
+            cmd_ret_code = _act_cmd_handler->command_handler_table[i].handle(_act_cmd_handler->get_protocol());
+            break;
+        }
+
+        i++;
+    }
+
+    if (cmd_ret_code == 0xFF) {
+        cmd_ret_code = _act_cmd_handler->default_handler(_act_cmd_handler->get_protocol());
+    }
+
+    _act_cmd_handler->unset_reqeust();
+
+    _act_cmd_handler = 0;
+}
+
+/**
+ * @brief 
+ * 
+ */
+static void command_controller_task_terminate(void) {
+
+}
+
+TASK_CREATE(
+    CMD_CTRL_TASK,
+    TASK_PRIORITY_MIDDLE,
+    command_controller_task_get_schedule_interval,
+    command_controller_task_start,
+    command_controller_task_execute,
+    command_controller_task_get_state,
+    command_controller_task_terminate
+)
 
 // --------------------------------------------------------------------------------
 
-static void command_controller_task_init(void) {
-	DEBUG_PASS("command_controller_task_init()");
+void command_controller_init(void) {
+    DEBUG_PASS("command_controller_init()");
+    CMD_CTRL_TASK_init();
 }
 
+/**
+ * @see command_controller.h#command_controller_register_handler
+ */
 void command_controller_register_handler(COMMAND_HANDLER_INTERFACE* p_handler) {
 
-	if (_first_cmd_handler == 0) {
+    if (_first_cmd_handler == 0) {
 
-		DEBUG_PASS("command_controller_register_handler() - First Handler");
-		_first_cmd_handler = p_handler;
+        DEBUG_PASS("command_controller_register_handler() - First Handler");
+        _first_cmd_handler = p_handler;
 
-	} else {
+    } else {
 
-		DEBUG_PASS("command_controller_register_handler() - New Handler");
-		_last_cmd_handler->next = p_handler;
-	}
+        DEBUG_PASS("command_controller_register_handler() - New Handler");
+        _last_cmd_handler->next = p_handler;
+    }
 
-	_last_cmd_handler = p_handler;
-	_last_cmd_handler->next = 0;
+    _last_cmd_handler = p_handler;
+    _last_cmd_handler->next = 0;
 }
 
-static u16 command_controller_task_get_schedule_interval(void) {
-	return COMMAND_CONTROLLER_SCHEDULE_INTERVAL_MS;
-}
-
-static MCU_TASK_INTERFACE_TASK_STATE command_controller_task_get_state(void) {
-
-	_act_cmd_handler = _first_cmd_handler;
-
-	while (_act_cmd_handler != 0) {
-
-		if (_act_cmd_handler->is_requested()) {
-
-			DEBUG_PASS("command_controller_cmd_is_pending() - Command-Handler has been requested");
-			return MCU_TASK_RUNNING;
-		}
-
-		_act_cmd_handler = _act_cmd_handler->next;
-	}
-
-	return MCU_TASK_SLEEPING;
-}
-
-static void command_controller_task_run(void) {
-
-	DEBUG_PASS("command_controller_task_run()");
-
-	if (_act_cmd_handler == 0) {
-		DEBUG_PASS("command_controller_task_run() - No command-handler selected !!! ---");
-		return;
-	}
-
-	DEBUG_TRACE_byte(_act_cmd_handler->get_table_size(), "command_controller_task_run() - Processing Command-Handler Table");
-
-	u8 cmd_id = _act_cmd_handler->get_cmd_code();
-	u8 cmd_ret_code = 0xFF;
-
-	u8 i = 0;
-	while (i < _act_cmd_handler->get_table_size()) {
-
-		if (_act_cmd_handler->command_handler_table[i].command_id == cmd_id) {
-
-			DEBUG_TRACE_byte(cmd_id, "command_controller_task_run() - Running Command-Handler");
-			cmd_ret_code = _act_cmd_handler->command_handler_table[i].handle(_act_cmd_handler->get_protocol());
-			break;
-		}
-
-		i++;
-	}
-
-	if (cmd_ret_code == 0xFF) {
-		cmd_ret_code = _act_cmd_handler->default_handler(_act_cmd_handler->get_protocol());
-	}
-
-	_act_cmd_handler->unset_reqeust();
-
-	_act_cmd_handler = 0;
-}
-
-static void command_controller_task_background_run(void) {
-
-}
-
-
+// --------------------------------------------------------------------------------
