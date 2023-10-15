@@ -188,3 +188,22 @@ void rtc_timer_delay(u32 delay_us) {
 }
 
 // --------------------------------------------------------------------------------
+
+/**
+ * @see driver/rtc/rtc_interface.h#rtc_timer_get_usec
+ */
+u64 rtc_timer_get_usec(void) {
+    struct timespec time_spec;
+
+    if (clock_gettime(CLOCK_MONOTONIC, &time_spec) == 0) {
+
+        u64 time_us = (u64)time_spec.tv_sec * 1000000;
+        time_us += time_spec.tv_nsec / 1000;
+        return time_us;
+
+    } else {
+        return 0;
+    }
+}
+
+// --------------------------------------------------------------------------------
