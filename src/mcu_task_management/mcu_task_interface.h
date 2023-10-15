@@ -45,6 +45,8 @@ typedef enum {
 
 typedef struct {
     u32 last_runtime;
+    u8 name_length;
+    const char* p_name;
 } TASK_CTRL_STATS;
 
 // --------------------------------------------------------------------------------
@@ -320,6 +322,11 @@ typedef struct MCU_TASK_INTERFACE {
 ITERATOR_INTERFACE_INCLUDE(MCU_TASK_ITERATOR_INTERFACE)
 
 // --------------------------------------------------------------------------------
+
+/**
+ * @brief Initializes the task controller module.
+ */
+void mcu_task_controller_init(void);
 
 /**
  * @brief Registers a new task to the system.

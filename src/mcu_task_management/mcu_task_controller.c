@@ -119,11 +119,15 @@ static u8 mcu_task_controller_iter_start(ITERATOR_INTERFACE* p_iterator, void* p
 
         TASK_CTRL_STATS* p_task = (TASK_CTRL_STATS*)p_data;
         p_task->last_runtime = _first_task->last_active_time;
+        p_task->name_length = _first_task->name_length;
+        p_task->p_name = _first_task->p_task_name;
 
         p_iterator->is_first = 1;
         p_iterator->is_last = 0;
         p_iterator->is_valid = 1;
         p_iterator->__element = _first_task;
+
+        DEBUG_TRACE_STR(p_task->p_name, "mcu_task_controller_iter_start() - Task-name:");
 
         return 1;
 
@@ -169,10 +173,14 @@ static u8 mcu_task_controller_iter_next(ITERATOR_INTERFACE* p_iterator, void* p_
 
     TASK_CTRL_STATS* p_task = (TASK_CTRL_STATS*)p_data;
     p_task->last_runtime = p_act_task->last_active_time;
+    p_task->name_length = p_act_task->name_length;
+    p_task->p_name = p_act_task->p_task_name;
 
     p_iterator->is_first = 0;
     p_iterator->is_last = p_iterator->__element != 0;
     p_iterator->is_valid = 1;
+
+    DEBUG_TRACE_STR(p_task->p_name, "mcu_task_controller_iter_next() - Task-name:");
 
     return 1;
 }
@@ -277,8 +285,10 @@ void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task) {
 
     DEBUG_TRACE_byte(
         _last_task->identifier,
-        "mcu_task_controller_register_task() - new task added"
+        "mcu_task_controller_register_task() - new task added - ID:"
     );
+
+    DEBUG_TRACE_STR("- Task-Name:", p_mcu_task->p_task_name);
 }
 
 // --------------------------------------------------------------------------------
@@ -299,7 +309,7 @@ void mcu_task_controller_schedule(void) {
 
         _update_last_run_time(act_task);
 
-        if (act_task->get_sate() != MCU_TASK_SLEEPING) {
+        if (act_task->get_sate() == MCU_TASK_SLEEPING) {
             //DEBUG_TRACE_byte(act_task->identifier, "mcu_task_controller_schedule() - Task is not runnable");
             goto SKIP_TASK_schedule;
         }
@@ -307,9 +317,10 @@ void mcu_task_controller_schedule(void) {
         //DEBUG_TRACE_byte(act_task->identifier, "mcu_task_controller_schedule() - Running Task");
  
         if (TASK_COMTROLLER_STATUS_is_set(TASK_CTRL_STATUS_STATS_ON)) {
-            act_task->last_active_time = rtc_timer_get_usec();
+            u64 time_now_u64 = rtc_timer_get_usec();
             act_task->run();
-            act_task->last_active_time += (rtc_timer_get_usec() - act_task->last_active_time);
+            act_task->last_active_time += (rtc_timer_get_usec() - time_now_u64);
+            // DEBUG_TRACE_long(act_task->last_active_time, "mcu_task_controller_schedule() - Task-Runtime:");
         } else {
             act_task->run();
         }
@@ -318,7 +329,7 @@ void mcu_task_controller_schedule(void) {
 
         if (act_task->get_sate() != MCU_TASK_SLEEPING) {
             system_is_on_idle = 0;
-            DEBUG_PASS("mcu_task_controller_schedule() - Task is still active");
+            // DEBUG_PASS("mcu_task_controller_schedule() - Task is still active");
         }
 
         /*
@@ -434,8 +445,10 @@ void test_iteration(void) {
  */
 void mcu_task_controller_enable_statistics(TASK_CTRL_STATISTIC_EN enable) {
     if (enable == TASK_CTRL_STATISTIC_ON) {
+        DEBUG_PASS("mcu_task_controller_enable_statistics() - ACTIVATED");
         TASK_COMTROLLER_STATUS_set(TASK_CTRL_STATUS_STATS_ON);
     } else {
+        DEBUG_PASS("mcu_task_controller_enable_statistics() - DEACTIVATED");
         TASK_COMTROLLER_STATUS_unset(TASK_CTRL_STATUS_STATS_ON);
     }
 }
