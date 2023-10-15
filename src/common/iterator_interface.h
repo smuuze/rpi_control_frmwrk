@@ -88,7 +88,7 @@ typedef struct ITERATOR_INTERFACE_CALLBACKS {
  *      ITERATOR_INTERFACE_INCLUDE(MY_ITERATOR)
  */
 #define ITERATOR_INTERFACE_INCLUDE(name)                                        \
-    const ITERATOR_INTERFACE_CALLBACKS* name##_get(void);
+    const ITERATOR_INTERFACE_CALLBACKS* name##_iter(void);
 
 // --------------------------------------------------------------------------------
 
