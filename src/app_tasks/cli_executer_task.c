@@ -156,26 +156,15 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(CLI_EXECUTER_OP_TIMER)
 
 // --------------------------------------------------------------------------------
 
-/**
- * @brief structure of the task-implementation of this module
- * 
- */
-static MCU_TASK_INTERFACE cli_executer_task = {
-
-    0,                                          //     identifier,
-    0,                                          //     new_run_timeout,
-    0,                                          //     last_run_time,
-    &cli_executer_task_init,                    //     init,
-    &cli_executer_task_get_schedule_interval,   //     get_schedule_interval,
-    &cli_executer_task_get_state,               //     get_sate,
-    &cli_executer_task_run,                     //     run,
-    0,                                          //     background_run,
-    0,                                          //     sleep,
-    0,                                          //     wakeup,
-    &cli_executer_task_finish,                  //     finish,
-    &cli_executer_task_terminate,               //     terminate,
-    0                                           //     next-task
-};
+TASK_CREATE (
+    CLI_EXE_TASK,
+    TASK_PRIORITY_MIDDLE,
+    cli_executer_task_get_schedule_interval,
+    cli_executer_task_init,
+    cli_executer_task_run,
+    cli_executer_task_get_state,
+    cli_executer_task_terminate
+)
 
 /**
  * @brief actual state of this task
@@ -251,7 +240,7 @@ void cli_executer_init(void) {
 
     DEBUG_PASS("cli_executer_init() - Register task");
 
-    mcu_task_controller_register_task(&cli_executer_task);
+    CLI_EXE_TASK_init();
 }
 
 // --------------------------------------------------------------------------------

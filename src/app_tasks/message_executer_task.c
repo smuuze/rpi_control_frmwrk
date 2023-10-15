@@ -216,13 +216,6 @@ static MCU_TASK_INTERFACE_TASK_STATE msg_executer_task_get_state(void);
  * 
  */
 static void msg_executer_task_run(void);
-
-/**
- * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.finish
- * 
- */
-static void msg_executer_task_finish(void);
-
 /**
  * @see  mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE.terminate
  * 
@@ -344,25 +337,15 @@ JSON_PARSER_CREATE_OBJECT(REPORT_JSON_OBJECT)
 
 // --------------------------------------------------------------------------------
 
-/*!
- *
- */
-static MCU_TASK_INTERFACE msg_executer_task = {
-
-    0,                                          //     identifier,
-    0,                                          //     new_run_timeout,
-    0,                                          //     last_run_time,
-    &msg_executer_task_init,                    //     init,
-    &msg_executer_task_get_schedule_interval,   //     get_schedule_interval,
-    &msg_executer_task_get_state,               //     get_sate,
-    &msg_executer_task_run,                     //     run,
-    0,                                          //     background_run,
-    0,                                          //     sleep,
-    0,                                          //     wakeup,
-    &msg_executer_task_finish,                  //     finish,
-    &msg_executer_task_terminate,               //     terminate,
-    0                                           //     next-task
-};
+TASK_CREATE (
+    MSG_EXE_TASK,
+    TASK_PRIORITY_MIDDLE,
+    msg_executer_task_get_schedule_interval,
+    msg_executer_task_init,
+    msg_executer_task_run,
+    msg_executer_task_get_state,
+    msg_executer_task_terminate
+)
 
 /**
  * @brief 
@@ -479,7 +462,7 @@ void msg_executer_init(void) {
 
     msg_executer_report_interval_timeout_ms = MSG_EXECUTER_DEFAULT_REPORT_INTERVAL_MS;
 
-    mcu_task_controller_register_task(&msg_executer_task);
+    MSG_EXE_TASK_init();
 }
 
 // --------------------------------------------------------------------------------
@@ -878,14 +861,6 @@ static void msg_executer_task_run(void) {
 
             break;
     }
-}
-
-/**
- * @see mcu_task_management/mcu_task_interface.h#MCU_TASK_INTERFACE::finish
- * 
- */
-static void msg_executer_task_finish(void) {
-
 }
 
 /**
