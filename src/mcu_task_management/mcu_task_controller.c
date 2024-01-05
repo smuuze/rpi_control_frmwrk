@@ -42,7 +42,8 @@
 
 // --------------------------------------------------------------------------------
 
-#include "system/system_interface.h"
+#include "driver/rtc/rtc_driver_interface.h"
+#include "common/local_module_status.h"
 
 #include "mcu_task_management/mcu_task_interface.h"
 #include "mcu_task_management/mcu_task_controller.h"
@@ -59,6 +60,21 @@ TASK_CREATE(
     mcu_idle_task_get_state,
     mcu_idle_task_terminate
 )
+
+// --------------------------------------------------------------------------------
+
+#define TASL_CONTROLLER_MODULE_STATUS_SIZE      2
+
+BUILD_MODULE_STATUS_FAST(
+    TASK_COMTROLLER_STATUS,
+    TASL_CONTROLLER_MODULE_STATUS_SIZE
+)
+
+/**
+ * @brief THis flag enables the task statistic feature
+ * E.g. measurement the runtime of a task.
+ */
+#define TASK_CTRL_STATUS_STATS_ON     0
 
 // --------------------------------------------------------------------------------
 
@@ -89,6 +105,144 @@ static u32 _minimum_taks_schedule_interval = 0xFFFFFFFF;
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Starts iteration over all available tasks.
+ * Sets the given iterator-interface to the first element, if available.
+ * 
+ * @param p_iterator reference to the iterater to be used 
+ * @param p_data reference to the memory where the first element is copied into
+ * @return 1 if there are at least one element is available, otherweise 0
+ */
+static u8 mcu_task_controller_iter_start(ITERATOR_INTERFACE* p_iterator, void* p_data) {
+
+    if (_first_task != 0) {
+
+        TASK_CTRL_STATS* p_task = (TASK_CTRL_STATS*)p_data;
+        p_task->last_runtime = _first_task->last_active_time;
+        p_task->name_length = _first_task->name_length;
+        p_task->p_name = _first_task->p_task_name;
+
+        p_iterator->is_first = 1;
+        p_iterator->is_last = 0;
+        p_iterator->is_valid = 1;
+        p_iterator->__element = _first_task;
+
+        DEBUG_TRACE_STR(p_task->p_name, "mcu_task_controller_iter_start() - Task-name:");
+
+        return 1;
+
+    } else {
+        return 0;
+    }
+}
+
+/**
+ * @brief Sets the given iterator to the next element in the current list, 
+ * if available.
+ * 
+ * @param p_iterator reference to the iterater to be used 
+ * @param p_data reference to the memory where the next element is copied into
+ * @return 1 if there is a next element available, otherwise 0
+ */
+static u8 mcu_task_controller_iter_next(ITERATOR_INTERFACE* p_iterator, void* p_data) {
+
+    if (p_iterator->is_valid == 0) {
+        return 0;
+    }
+
+    if (p_iterator->is_last) {
+        return 0;
+    }
+
+    if (p_iterator->__element == 0) {
+        return 0;
+    }
+
+    MCU_TASK_INTERFACE* p_act_task = (MCU_TASK_INTERFACE*)p_iterator->__element;
+    p_iterator->__element = p_act_task->next_task;
+
+    if (p_iterator->__element == 0) {
+
+        p_iterator->is_first = 0;
+        p_iterator->is_last = 0;
+        p_iterator->is_valid = 0;
+        return 0;
+    }
+
+    p_act_task = p_act_task->next_task;
+
+    TASK_CTRL_STATS* p_task = (TASK_CTRL_STATS*)p_data;
+    p_task->last_runtime = p_act_task->last_active_time;
+    p_task->name_length = p_act_task->name_length;
+    p_task->p_name = p_act_task->p_task_name;
+
+    p_iterator->is_first = 0;
+    p_iterator->is_last = p_iterator->__element != 0;
+    p_iterator->is_valid = 1;
+
+    DEBUG_TRACE_STR(p_task->p_name, "mcu_task_controller_iter_next() - Task-name:");
+
+    return 1;
+}
+
+ITERATOR_INTERFACE_CREATE(
+    MCU_TASK_ITERATOR_INTERFACE,
+    mcu_task_controller_iter_start,
+    mcu_task_controller_iter_next
+)
+
+// --------------------------------------------------------------------------------
+
+static u8 _has_task_interval_passed(MCU_TASK_INTERFACE* p_task) {
+
+    if (p_task->get_schedule_interval() == MCU_TASK_SCHEDULE_NO_TIMEOUT) {
+        return 1;
+    }
+
+    if (rtc_timer_istimeup_u16(p_task->last_run_time, p_task->new_run_timeout) == 0) {
+        return 0;
+    }
+
+    return 1;
+}
+
+// --------------------------------------------------------------------------------
+
+static void _update_last_run_time(MCU_TASK_INTERFACE* p_task) {
+
+    if (p_task->get_schedule_interval() == MCU_TASK_SCHEDULE_NO_TIMEOUT) {
+        return;
+    }
+
+    //DEBUG_PASS("_update_last_run_time() 
+
+    u16 actual_time_ms = rtc_timer_gettime_u16();
+//    p_task->new_run_timeout = p_task->get_schedule_interval();
+//    u16 jitter = actual_time_ms - p_task->last_run_time;
+//
+//    while (jitter > p_task->get_schedule_interval()) {
+//        jitter -= p_task->get_schedule_interval();
+//    }
+//
+//    DEBUG_TRACE_word(p_task->last_run_time, "last runtime");
+//    DEBUG_TRACE_word(actual_time_ms, "actual time");
+//    DEBUG_TRACE_word(p_task->get_schedule_interval(), "schedule interval");
+//    DEBUG_TRACE_word(jitter, "jitter");
+//
+//    u16 next_scheduled_run    = p_task->last_run_time - jitter;
+//    while (next_scheduled_run < actual_time_ms) {
+//        next_scheduled_run += p_task->get_schedule_interval();
+//    }
+
+    p_task->new_run_timeout = p_task->get_schedule_interval();// - jitter;
+    p_task->last_run_time    = actual_time_ms;
+
+//    DEBUG_TRACE_word(p_task->new_run_timeout, "new run timeout");
+//    DEBUG_TRACE_word(next_scheduled_run, "nest schedule run");
+}
+
+// --------------------------------------------------------------------------------
+
 void mcu_task_controller_init(void) {
 
     DEBUG_PASS("mcu_task_controller_init()");
@@ -111,7 +265,7 @@ void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task) {
         p_mcu_task->init();
     }
 
-    p_mcu_task->last_run_time = i_system.time.now_u16();
+    p_mcu_task->last_run_time = rtc_timer_gettime_u16();
     p_mcu_task->new_run_timeout = p_mcu_task->get_schedule_interval();
 
     if (p_mcu_task->get_schedule_interval() < _minimum_taks_schedule_interval) {
@@ -127,10 +281,14 @@ void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task) {
         _last_task = p_mcu_task;
     }
 
+    _last_task->last_active_time = 0;
+
     DEBUG_TRACE_byte(
         _last_task->identifier,
-        "mcu_task_controller_register_task() - new task added"
+        "mcu_task_controller_register_task() - new task added - ID:"
     );
+
+    DEBUG_TRACE_STR("- Task-Name:", p_mcu_task->p_task_name);
 }
 
 // --------------------------------------------------------------------------------
@@ -157,17 +315,21 @@ void mcu_task_controller_schedule(void) {
         }
 
         //DEBUG_TRACE_byte(act_task->identifier, "mcu_task_controller_schedule() - Running Task");
-
-        //act_task->last_run_time = i_system.time.now_u16();
-        act_task->run();
+ 
+        if (TASK_COMTROLLER_STATUS_is_set(TASK_CTRL_STATUS_STATS_ON)) {
+            u64 time_now_u64 = rtc_timer_get_usec();
+            act_task->run();
+            act_task->last_active_time += (rtc_timer_get_usec() - time_now_u64);
+            // DEBUG_TRACE_long(act_task->last_active_time, "mcu_task_controller_schedule() - Task-Runtime:");
+        } else {
+            act_task->run();
+        }
 
         //DEBUG_PASS("mcu_task_controller_schedule() - Task complete");
 
-        //SKIP_TASK_schedule :
-
         if (act_task->get_sate() != MCU_TASK_SLEEPING) {
             system_is_on_idle = 0;
-            DEBUG_PASS("mcu_task_controller_schedule() - Task is still active");
+            // DEBUG_PASS("mcu_task_controller_schedule() - Task is still active");
         }
 
         /*
@@ -265,52 +427,30 @@ void mcu_task_controller_background_run(void) {
 
 // --------------------------------------------------------------------------------
 
-static u8 _has_task_interval_passed(MCU_TASK_INTERFACE* p_task) {
+void test_iteration(void) {
 
-    if (p_task->get_schedule_interval() == MCU_TASK_SCHEDULE_NO_TIMEOUT) {
-        return 1;
-    }
+    ITERATE_FOR(
+        TASK_CTRL_STATS,
+        task_stats,
+        MCU_TASK_ITERATOR_INTERFACE_iter(),
 
-    if (i_system.time.isup_u16(p_task->last_run_time, p_task->new_run_timeout) == 0) {
-        return 0;
-    }
-
-    return 1;
+        do{}while(0);
+    )
 }
 
 // --------------------------------------------------------------------------------
 
-static void _update_last_run_time(MCU_TASK_INTERFACE* p_task) {
-
-    if (p_task->get_schedule_interval() == MCU_TASK_SCHEDULE_NO_TIMEOUT) {
-        return;
+/**
+ * @see mcu_task_controller.h#mcu_task_controller_enable_statistics
+ */
+void mcu_task_controller_enable_statistics(TASK_CTRL_STATISTIC_EN enable) {
+    if (enable == TASK_CTRL_STATISTIC_ON) {
+        DEBUG_PASS("mcu_task_controller_enable_statistics() - ACTIVATED");
+        TASK_COMTROLLER_STATUS_set(TASK_CTRL_STATUS_STATS_ON);
+    } else {
+        DEBUG_PASS("mcu_task_controller_enable_statistics() - DEACTIVATED");
+        TASK_COMTROLLER_STATUS_unset(TASK_CTRL_STATUS_STATS_ON);
     }
-
-    //DEBUG_PASS("_update_last_run_time() 
-
-    u16 actual_time_ms = i_system.time.now_u16();
-//    p_task->new_run_timeout = p_task->get_schedule_interval();
-//    u16 jitter = actual_time_ms - p_task->last_run_time;
-//
-//    while (jitter > p_task->get_schedule_interval()) {
-//        jitter -= p_task->get_schedule_interval();
-//    }
-//
-//    DEBUG_TRACE_word(p_task->last_run_time, "last runtime");
-//    DEBUG_TRACE_word(actual_time_ms, "actual time");
-//    DEBUG_TRACE_word(p_task->get_schedule_interval(), "schedule interval");
-//    DEBUG_TRACE_word(jitter, "jitter");
-//
-//    u16 next_scheduled_run    = p_task->last_run_time - jitter;
-//    while (next_scheduled_run < actual_time_ms) {
-//        next_scheduled_run += p_task->get_schedule_interval();
-//    }
-
-    p_task->new_run_timeout = p_task->get_schedule_interval();// - jitter;
-    p_task->last_run_time    = actual_time_ms;
-
-//    DEBUG_TRACE_word(p_task->new_run_timeout, "new run timeout");
-//    DEBUG_TRACE_word(next_scheduled_run, "nest schedule run");
 }
 
 // --------------------------------------------------------------------------------

@@ -149,6 +149,15 @@ void rtc_timer_delay(u32 delay_us);
 // --------------------------------------------------------------------------------
 
 /**
+ * @brief Gets the current system time in micro seconds.
+ * 
+ * @return The current system time in micro seconds.
+ */
+u64 rtc_timer_get_usec(void);
+
+// --------------------------------------------------------------------------------
+
+/**
  * @brief backwards compatibility
  * @see rtc_timer_power_off(void)
  */

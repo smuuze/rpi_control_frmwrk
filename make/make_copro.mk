@@ -17,6 +17,6 @@ ifneq '' '$(findstring COPRO_BASE,$(COPRO_INTERFACE_CFG))'
 endif
 
 ifneq '' '$(findstring COPRO_ROUTING,$(APP_TASK_CFG))'
-	DEFS += -D HAS_APP_TASK_COPRO_ROUTING=1
+	DEFS += -D HAS_COPRO_ROUTING=1
 	CSRCS += $(COPRO_SRC_PATH)/copro_routing.c
 endif

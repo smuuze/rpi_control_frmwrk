@@ -1,0 +1,49 @@
+@startuml task_control_structure_overview
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: Task-Control - Structure - Overview" {
+
+'***************************************************************************
+
+    folder "core" {
+        folder "Task" {
+            
+            interface TaskInterface {
+                start()
+                execute()
+                get_state()
+                terminate()
+                get_schedule_interval()
+            }
+
+            class TaskController {
+                TaskInterface taskList
+                register(TaskInterface)
+                schedule()
+            }
+
+            TaskController .left.> TaskInterface : <uses>
+        }
+    }
+
+    folder "extern" {
+        class Task as "<Task>" {
+
+        }
+    }
+
+    Task "n" -right-|> TaskInterface
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml

@@ -28,7 +28,7 @@
 
 #include "asic_information_ads115.h"
 
-#include "local_ads1115_mcu_task.h"
+#include "ads1115_driver.h"
 
 //-----------------------------------------------------------------------------
 
@@ -107,9 +107,9 @@ static const u8 adc_address_list[] = {ADS1115_CFG_CHANNEL_INDEX_0, ADS1115_CFG_C
 
 //-----------------------------------------------------------------------------
 
-void local_ads1115_module_init(TRX_DRIVER_INTERFACE* p_driver) {
+void ads1115_driver_init(TRX_DRIVER_INTERFACE* p_driver) {
 
-	PASS(); // local_ads1115_module_init()
+	PASS(); // ads1115_driver_init()
 
 	driver_cfg.module.i2c.answer_general_call = 0;
 	driver_cfg.module.i2c.bit_rate = DRIVER_I2C_BITRATE_1KHZ;

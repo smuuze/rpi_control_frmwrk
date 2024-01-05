@@ -25,7 +25,7 @@
 
 #include "time_management/time_management.h"
 
-#include "driver/sensor/light_resistor_gm5528.h"
+#include "sensor/gm5528/gm5528_driver.h"
 
 //-----------------------------------------------------------------------------
 
@@ -54,9 +54,9 @@ static u16 steigung = 0;
 
 //-----------------------------------------------------------------------------
 
-void light_resistor_gm5528_init(void) {
+void gm5528_driver_init(void) {
 
-	DEBUG_PASS("light_resistor_gm5528_init()");
+	DEBUG_PASS("gm5528_driver_init()");
 
 	GET_SYSTEM(data).light.maximal = 0;
 	GET_SYSTEM(data).light.minimal = 100;

@@ -13,46 +13,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @file    local_event_task.h
+ * @file    gm5528_driver.h
  * @author  Sebastian Lesse
- * @date    2021 / 03 / 21
+ * @date    2023 / 09 / 04
  * @brief   Short description of this file
  * 
  */
 
 // --------------------------------------------------------------------------------
 
-#ifndef _H_local_event_task_
-#define _H_local_event_task_
-
-// --------------------------------------------------------------------------------
-
-#include "system_interface.h"
+#ifndef _H_gm5528_driver_
+#define _H_gm5528_driver_
 
 // --------------------------------------------------------------------------------
 
 /**
- * @brief 
- * 
+ * @brief Initializes the GM5528 light resistor driver
  */
-void event_controller_init(void);
-
-/**
- * @brief 
- * 
- * @param event 
- */
-void local_event_add(SYSTEM_EVENT event);
-
-/**
- * @brief 
- * 
- * @return SYSTEM_EVENT 
- */
-SYSTEM_EVENT local_event_get_next(void);
+void gm5528_driver_init(void);
 
 // --------------------------------------------------------------------------------
 
-#endif // _H_local_event_task_
+#endif // _H_gm5528_driver_
 
 // --------------------------------------------------------------------------------

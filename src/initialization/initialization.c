@@ -42,6 +42,8 @@
 
 //-----------------------------------------------------------------------------
 
+#include "system/system_interface.h"
+
 #include "local_context.h"
 
 #include "initialization/system_initialization.h"
@@ -67,6 +69,10 @@
 #include "modules/keypad/keypad_interface.h"
 #include "modules/ir/ir_protocol_task.h"
 #include "modules/movement_detection/movement_detection_controller.h"
+
+#include "copro/copro_interface.h"
+
+#include "expansion/driver_PCA9670.h"
 
 //-----------------------------------------------------------------------------
 
@@ -163,6 +169,21 @@ void initialization(void) {
     {
         movement_detection_controller_init();
     }
+    #endif
+
+    #if COPRO_INTERFACE_AVAILABLE
+    {
+        copro_interface_initialize();
+    }
+    #endif
+
+    #ifdef HAS_EXPANSION_BOARD_GPIO_PCA9670
+    #if defined HAS_DRIVER_I2C0 && HAS_DRIVER_I2C0 == 1
+    {
+        // UNFINISHED - check if this is working correctly
+        // pca9670_init(i_system.driver.i2c0);
+    }
+    #endif
     #endif
 }
 

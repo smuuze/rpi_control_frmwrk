@@ -1,0 +1,24 @@
+@startuml shcp_runtime_state_machine_client
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+mainframe state: SHCP - Runtime - Client State Machine
+
+'***************************************************************************
+
+[*] --> State1
+State1 --> [*]
+State1 : this is a string
+State1 : this is another string
+
+State1 -> State2
+State2 --> [*]
+
+'***************************************************************************
+
+@enduml

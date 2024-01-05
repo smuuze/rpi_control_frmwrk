@@ -1,0 +1,176 @@
+[TOP]: #section "Go to the top of the page"
+
+[Signal-Slot-Interface]: ../../../../readme/readme_signal_slot.md#section "SW-IRQ based communication system used in the rpi-control firmware"
+
+[REQ_KEYPAD_01_USE_SYSTEM_MSG_BUS]: #REQ_KEYPAD_01_USE_SYSTEM_MSG_BUS "Requirement that the current system-wide message bus is used for sending signals and information"
+[REQ_KEYPAD_02_KEY_STATES]: #REQ_KEYPAD_02_KEY_STATES "Requirement that a key can have one of three states RELEASED / PRESSED / RELEASED"
+[REQ_KEYPAD_03_STATE_EVENTS]: #REQ_KEYPAD_03_STATE_EVENTS "Requirement that there is a event generate in case a key has changed its state."
+[REQ_KEYPAD_04_KEYPAD_INDEPENDENCE]: #REQ_KEYPAD_04_KEYPAD_INDEPENDENCE "Requirement that keypad controller does not depend on a specific type of keypad-hw"
+
+### Section
+
+Readme | [Changelog](../../../../changelog.md)
+
+### Location
+[frmwrk](../../../../README.md) / [modules](../../readme_protocol.md) / SHCP
+
+<br>
+
+### Content
+
+<details>
+<summary> Click to open</summary>
+
+[Brief](#brief)\
+[Features](#features)\
+[Solution Strategy](#solution-strategy)\
+[Structure](#structure)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Context](#context)\
+[Runtime](#runtime)\
+&nbsp;&nbsp;&nbsp;&nbsp;[State-Machine](#state-machine)\
+[Interface](#interface)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Signals](#signals)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Configuration Macros](#configuration-macros)\
+[Integration](#integration)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Makefile](#makefile)\
+[Usage](#usage)\
+&nbsp;&nbsp;&nbsp;&nbsp;[Initialization](#initialization)
+
+</details>
+
+<br>
+
+# Keypad
+
+## Brief
+[[TOP]]
+
+The Smart Home Communication Protocol enables interconnection between a SmartHomeClient devices and its extension boards.
+It defines a set of commands to execute several operations, like get current sensor values, control a ir device or control an IO-port.
+
+## Features
+[[TOP]]
+
+- Execute command on a extension board
+- Route commands through several devices
+- Transfer data between devices
+
+## Requirements
+[[TOP]]
+
+| ID | Title | Description | *Status |
+|----|-------|-------------|---------|
+| [REQ_SHCP_01_TRIGGER_OPERATION] | Use system msg-bus | Keyevents shall be published using the system wide message bus. | DEFINED |
+| [REQ_SHCP_02_ROUTE_COMMANDS] | A key can have have different states | Every key can have one of the following states. A key can always be in only one state at a time.<ul><li>RELEASED - key is not used at this moment</li><li>PRESSED - the key was just pressed, this state is left automatically</li><li>DOWN - The key is hold down by the user.</li></ul> | DEFINED |
+
+****Status***: the following states apply on the status field
+- **DEFINED** - The requirement has been defined only.
+- **CONCEPT** - There is a concept available how to realize the requirement
+- **IMPLEMENTED** - The requirement has been implemented. There is a test-system available
+- **VERIFIED** - The funcitonality of the reuirement has been verified. E.g. there is a unittest available and the feature was tested over a long period on the test-system.
+
+## Solution Strategy
+[[TOP]]
+
+This section describes how to realize each requirement.
+
+| ID | Concept | Solution |
+|----|---------|-------------|
+| [REQ_KEYPAD_01_USE_SYSTEM_MSG_BUS] | The [Signal-Slot-Interface] is used to gneereate system-signals | See section [Interface/Signals](#signals) |
+
+## Structure
+[[TOP]]
+
+### Context
+
+![structure_context](../../../modules/keypad/readme/uml/img/keypad_controller_context.svg )
+
+## Runtime
+[[TOP]]
+
+### State-Machine
+
+#### SHCP-Host
+
+![runteim_statemachine](../../../modules/movement_detection/readme/uml/img/movement_detection_state_machine.svg )
+
+| State      | Description |
+|------------|-------------|
+| IDLE       | - |
+| GET_KEYS   | - |
+
+#### SHCP Client
+
+![runteim_statemachine](../../../modules/keypad/uml/img/keypad_state_machine_key.svg )
+
+| State      | Description |
+|------------|-------------|
+| RELEASED   | The key is currently not activated in any way |
+| PRESSED    | The key was just pressed by the user, This state is left automatically, even if the user continous pressing the key |
+| DOWN       | As long a key is pressed by the user, the key will remain in this state. |
+
+## Interface
+[[TOP]]
+
+### Signals
+
+| Signal-Name           | Direction | Arguments | Description |
+|-----------------------|-----------|-----------|-------------|
+| `KEY_0_PRESSED`       | SEND      | none      | Is send if KEY_0 changes state from RELEASED to PRESSED |
+
+### Configuration Macros
+
+The following values can be defined as a macro. E.g. in your project specific `config.h`\
+See [modules/movement_detection/movement_detection_controller.h](../../../modules/movement_detection/movement_detection_controller.h)
+
+| Configuration Macro                            | Default Value | Description                 |
+|------------------------------------------------|---------------|-----------------------------|
+| `KEYPAD_CONTROLLER_3X4_SCHEDULE_INTERVAL_MS`   | 50            | Interval in milliseconds at which the keypad controller task is scheduled. |
+
+## Integration
+[[TOP]]
+
+### Makefile
+
+The KEYPAD-controller is integrated into a project by the Makefile. Depending on the type of KEYPAD to use
+the following line is added to the MODULE configuration. There is only support for a KEYAD with 7 pins. Three COLUMN pins are used as
+outputs to set a high level for detection. CUrrently pressed keys are read via the four ROW pins.
+
+```Makefile
+USER_INTERFACE_CFG += KEYPAD_3X4
+```
+
+## Usage
+
+To use the keypad-controller the header file needs to be included. See below
+
+```C
+#include "modules/keypad/keypad_interface.h"
+```
+
+### Initialization
+
+Befor the LCD can be used it needs to be initialized and enabled. See below.
+
+```C
+keypad_init();
+```
+
+### Connect Key Slots
+
+Keys are handled via Signals. If a key is pressed the 'PRESSED' signal of this key is send.
+If more than one key is pressed at a time. A seperate signal for every pressed key is send.
+To handle a key a slot mus be connected to its pressed-signal.
+See [Interface/Signals](#signals) for a list of all available signals
+
+The following example shows how to create a handler for KEY_0.
+
+```C
+void MY_KEY_0_PRESSED_SIGNAL_HANDLER(void) {
+    // do something
+}
+
+...
+
+SIGNAL_SLOT_INTERFACE_CREATE_SLOT(KEY_0_PRESSED_SIGNAL, MY_KES_0_PRESSED_SIGNAL_SLOT, MY_KEY_0_PRESSED_SIGNAL_HANDLER)
+```

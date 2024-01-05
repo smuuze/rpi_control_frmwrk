@@ -28,8 +28,26 @@
 // --------------------------------------------------------------------------------
 
 #include "config.h"
-
 #include "cpu.h"
+
+// --------------------------------------------------------------------------------
+
+#include "iterator_interface.h"
+
+// --------------------------------------------------------------------------------
+
+typedef enum {
+    TASK_CTRL_STATISTIC_OFF = 0,
+    TASK_CTRL_STATISTIC_ON = 1
+} TASK_CTRL_STATISTIC_EN;
+
+// --------------------------------------------------------------------------------
+
+typedef struct {
+    u32 last_runtime;
+    u8 name_length;
+    const char* p_name;
+} TASK_CTRL_STATS;
 
 // --------------------------------------------------------------------------------
 
@@ -62,6 +80,7 @@
  *      MY_TASK_init();
  * 
  * @param name Name of the new task 
+ * @param priority priority at which the task will run a lower number 
  * @param interval interval at which the tas is scheduled
  * @param start task initialization callback, is executed if this task is initialized
  * @param run callback to schedule this task
@@ -70,10 +89,15 @@
  */
 #define TASK_CREATE(name, priority, interval, start, run, state, terminate )        \
                                                                                     \
+    static const char __##name##__task_name[] = #name;                              \
+                                                                                    \
     static MCU_TASK_INTERFACE __##name##__task_context = {                          \
         0,                                                                          \
         0,                                                                          \
         0,                                                                          \
+        0,                                                                          \
+        __##name##__task_name,                                                      \
+        sizeof(__##name##__task_name),                                              \
         &start,                                                                     \
         &interval,                                                                  \
         &state,                                                                     \
@@ -170,30 +194,41 @@ typedef void (*MCU_TASK_INTERFACE_TERMINATE_CALLBACK) (void);
 typedef struct MCU_TASK_INTERFACE {
 
     /**
-     * @brief 
-     * 
-     */
+     * @brief Unique id of this task.
+     * Every task has its own unique id.
+     */ 
     u8 identifier;
 
     /**
      * @brief This variable is used by the task-controller
-     * to determine the next execution time of this task
-     * 
+     * to determine the next execution time of this task.
      */
     u16 new_run_timeout;
 
     /**
-     * @brief This variable is used by the task-controller
-     * to determine the next execution time of this task
-     * 
+     * @brief Contains the last time this task was scheduled.
      */
     u16 last_run_time;
+
+    /**
+     * @brief Number of usec this task was active at the last schedule.
+     */
+    u32 last_active_time;
+
+    /**
+     * @brief Reference to the name of this task
+     */
+    const char* p_task_name;
+
+    /**
+     * @brief Length of the tasks name.
+     */
+    u8 name_length;
         
     /**
      * @brief Callback to initialize a task.
      * This function is called immediately after
      * a task was registered to the task-controller.
-     * 
      */
     MCU_TASK_INTERFACE_INIT_CALLBACK init;
 
@@ -201,7 +236,6 @@ typedef struct MCU_TASK_INTERFACE {
      * @brief Returns the interval in milliseconds at which the task needs to be executed.
      * 
      * @return number of milliseconds between two following task-executions.
-     * 
      */
     MCU_TASK_INTERFACE_GET_SCHEDULE_INTERVAL_CALLBACK get_schedule_interval;
 
@@ -229,8 +263,7 @@ typedef struct MCU_TASK_INTERFACE {
     /**
      * @brief Executes the task. This function is blocking.
      * The task decides when it will give back cpu-time.
-     * A running task cannot be stopped. It can only be interrupted by an HW-IRQ
-     * 
+     * A running task cannot be stopped. It can only be interrupted by an HW-IRQ.
      */
     MCU_TASK_INTERFACE_RUN_CALLBACK run;
 
@@ -239,7 +272,6 @@ typedef struct MCU_TASK_INTERFACE {
      * A task can be run for a short time in the background.
      * This function can be used to update internal status-flags and timers.
      * A task is not allowed to execute complex opperations in this function
-     * 
      */
     MCU_TASK_INTERFACE_BG_RUN_CALLBACK background_run;
 
@@ -248,7 +280,6 @@ typedef struct MCU_TASK_INTERFACE {
      * If the system goes into low-power mode, this functions is called.
      * A task may perform special opperations to enter its low-power mode
      * E.g. a task needs to set the GPIOs into a low-power state.
-     * 
      */
     MCU_TASK_INTERFACE_SLEEP_CALLBACK sleep;
 
@@ -256,7 +287,6 @@ typedef struct MCU_TASK_INTERFACE {
      * @brief This function is optional for every task.
      * If the system is un low-power mode and returns to normal operation
      * this function is called.
-     * 
      */
     MCU_TASK_INTERFACE_WAKEUP_CALLBACK wakeup;
 
@@ -271,8 +301,7 @@ typedef struct MCU_TASK_INTERFACE {
      * If this function is called a task must clean
      * up itself and give back all allocated resources.
      * It then has to enter the MCU_TASK_TERMINATED state.
-     * The task is not allowed to leave this state.
-     * 
+     * The task is not allowed to leave this state. 
      */
     MCU_TASK_INTERFACE_TERMINATE_CALLBACK terminate;
 
@@ -290,6 +319,15 @@ typedef struct MCU_TASK_INTERFACE {
 
 // --------------------------------------------------------------------------------
 
+ITERATOR_INTERFACE_INCLUDE(MCU_TASK_ITERATOR_INTERFACE)
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Initializes the task controller module.
+ */
+void mcu_task_controller_init(void);
+
 /**
  * @brief Registers a new task to the system.
  * The task is added to tha current list of tasks in order of its priority
@@ -304,6 +342,17 @@ void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task);
  * 
  */
 void mcu_task_controller_schedule(void);
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief Enables or disables the task statistics.
+ * E.g. measuremnt of the runtime per task
+ * 
+ * @param enable TASK_CTRL_STATISTIC_ON  - task statistics are enabled
+ *               TASK_CTRL_STATISTIC_OFF - task statistics are disabled
+ */
+void mcu_task_controller_enable_statistics(TASK_CTRL_STATISTIC_EN enable);
 
 // --------------------------------------------------------------------------------
 

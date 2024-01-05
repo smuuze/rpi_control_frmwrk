@@ -47,6 +47,12 @@
 
 // --------------------------------------------------------------------------------
 
+#include "local_event_task.h"
+#include "io_management/io_input_controller.h"
+#include "io_management/io_output_controller.h"
+
+// --------------------------------------------------------------------------------
+
 #ifndef config_HAS_LED_MATRIX
 #define config_HAS_LED_MATRIX 0
 #endif
@@ -92,112 +98,6 @@ static MCU_TASK_INTERFACE ads1115_mcu_task = {
     &local_ads1115_mcu_task_terminate,         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
     0                        // next-task
 };
-
-// --------------------------------------------------------------------------------
-
-#include "local_sht31_mcu_task.h"
-static MCU_TASK_INTERFACE sht31_mcu_task = {
-
-    0,                         // u8 identifier,
-    0,                         // u16 new_run_timeout,
-    0,                         // u16 last_run_time,
-    &local_sht31_mcu_task_init,             // MCU_TASK_INTERFACE_INIT_CALLBACK            init,
-    &local_sht31_mcu_task_get_schedule_interval,    // MCU_TASK_INTERFACE_INIT_CALLBACK            get_schedule_interval,
-    &local_sht31_mcu_task_get_state,         // MCU_TASK_INTERFACE_GET_STATE_CALLBACK        get_sate,
-    &local_sht31_mcu_task_run,             // MCU_TASK_INTERFACE_RUN_CALLBACK            run,
-    0,                        // MCU_TASK_INTERFACE_BG_RUN_CALLBACK            background_run,
-    0,                         // MCU_TASK_INTERFACE_SLEEP_CALLBACK            sleep,
-    0,                         // MCU_TASK_INTERFACE_WAKEUP_CALLBACK            wakeup,
-    &local_sht31_mcu_task_finish,             // MCU_TASK_INTERFACE_FINISH_CALLBACK            finish,
-    &local_sht31_mcu_task_terminate,         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
-    0                        // next-task
-};
-#endif
-
-// --------------------------------------------------------------------------------
-
-#ifdef HAS_MANAGEMENT_MODULE_IO
-#include "io_management/io_input_controller.h"
-static MCU_TASK_INTERFACE io_input_controller_task = {
-
-    0,                         // u8 identifier,
-    0,                         // u16 new_run_timeout,
-    0,                         // u16 last_run_time,
-    &io_input_controller_task_init,         // MCU_TASK_INTERFACE_INIT_CALLBACK            init,
-    &io_input_controller_task_get_schedule_interval,// MCU_TASK_INTERFACE_INIT_CALLBACK            get_schedule_interval,
-    &io_input_controller_task_get_state,         // MCU_TASK_INTERFACE_GET_STATE_CALLBACK        get_sate,
-    &io_input_controller_task_run,             // MCU_TASK_INTERFACE_RUN_CALLBACK            run,
-    &io_input_controller_task_background_run,    // MCU_TASK_INTERFACE_BG_RUN_CALLBACK            background_run,
-    0,                         // MCU_TASK_INTERFACE_SLEEP_CALLBACK            sleep,
-    0,                         // MCU_TASK_INTERFACE_WAKEUP_CALLBACK            wakeup,
-    0,                         // MCU_TASK_INTERFACE_FINISH_CALLBACK            finish,
-    0,                         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
-    0                        // next-task
-};
-
-#include "io_management/io_output_controller.h"
-static MCU_TASK_INTERFACE io_output_controller_task = {
-
-    0,                         // u8 identifier,
-    0,                         // u16 new_run_timeout,
-    0,                         // u16 last_run_time,
-    &io_output_controller_task_init,         // MCU_TASK_INTERFACE_INIT_CALLBACK            init,
-    &io_output_controller_task_get_schedule_interval,// MCU_TASK_INTERFACE_INIT_CALLBACK            get_schedule_interval,
-    &io_output_controller_task_get_state,         // MCU_TASK_INTERFACE_GET_STATE_CALLBACK        get_sate,
-    &io_output_controller_task_run,         // MCU_TASK_INTERFACE_RUN_CALLBACK            run,
-    &io_output_controller_task_background_run,    // MCU_TASK_INTERFACE_BG_RUN_CALLBACK            background_run,
-    0,                         // MCU_TASK_INTERFACE_SLEEP_CALLBACK            sleep,
-    0,                         // MCU_TASK_INTERFACE_WAKEUP_CALLBACK            wakeup,
-    0,                         // MCU_TASK_INTERFACE_FINISH_CALLBACK            finish,
-    0,                         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
-    0                        // next-task
-};
-#endif
-
-// --------------------------------------------------------------------------------
-
-#ifdef HAS_MANAGEMENT_MODULE_RPI_PROTOCOL
-#include "protocol_management/rpi_protocol_handler.h"
-/*
-static MCU_TASK_INTERFACE rpi_protocol_task = {
-
-    0,                         // u8 identifier,
-    0,                         // u16 new_run_timeout,
-    0,                         // u16 last_run_time,
-    &rpi_protocol_task_init,             // MCU_TASK_INTERFACE_INIT_CALLBACK            init,
-    &rpi_protocol_task_get_schedule_interval,    // MCU_TASK_INTERFACE_INIT_CALLBACK            get_schedule_interval,
-    &rpi_protocol_task_get_state,             // MCU_TASK_INTERFACE_GET_STATE_CALLBACK        get_sate,
-    &rpi_protocol_task_run,             // MCU_TASK_INTERFACE_RUN_CALLBACK            run,
-    0,                        // MCU_TASK_INTERFACE_BG_RUN_CALLBACK            background_run,
-    0,                         // MCU_TASK_INTERFACE_SLEEP_CALLBACK            sleep,
-    0,                         // MCU_TASK_INTERFACE_WAKEUP_CALLBACK            wakeup,
-    0,                         // MCU_TASK_INTERFACE_FINISH_CALLBACK            finish,
-    0,                         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
-    0                        // next-task
-};
-*/
-#endif
-
-// --------------------------------------------------------------------------------
-
-#ifdef HAS_APP_TASK_EVENT
-#include "local_event_task.h"
-static MCU_TASK_INTERFACE event_task = {
-
-    0,                         // u8 identifier,
-    0,                         // u16 new_run_timeout,
-    0,                         // u16 last_run_time,
-    &local_event_mcu_task_init,             // MCU_TASK_INTERFACE_INIT_CALLBACK            init,
-    &local_event_mcu_task_get_schedule_interval,    // MCU_TASK_INTERFACE_INIT_CALLBACK            get_schedule_interval,
-    &local_event_mcu_task_get_state,         // MCU_TASK_INTERFACE_GET_STATE_CALLBACK        get_sate,
-    &local_event_mcu_task_run,             // MCU_TASK_INTERFACE_RUN_CALLBACK            run,
-    &local_event_mcu_task_background_run,        // MCU_TASK_INTERFACE_BG_RUN_CALLBACK            background_run,
-    &local_event_mcu_task_sleep,             // MCU_TASK_INTERFACE_SLEEP_CALLBACK            sleep,
-    &local_event_mcu_task_wakeup,             // MCU_TASK_INTERFACE_WAKEUP_CALLBACK            wakeup,
-    &local_event_mcu_task_finish,             // MCU_TASK_INTERFACE_FINISH_CALLBACK            finish,
-    &local_event_mcu_task_terminate,         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
-    0                        // next-task
-};
 #endif
 
 // --------------------------------------------------------------------------------
@@ -224,28 +124,6 @@ static MCU_TASK_INTERFACE test_tracer_task = {
 
 // --------------------------------------------------------------------------------
 
-#ifdef HAS_EXPANSION_BOARD_GPIO_PCA9670
-#include "driver_PCA9670.h"
-__UNUSED__ static MCU_TASK_INTERFACE pca9670_task = {
-
-    0,                         // u8 identifier,
-    0,                         // u16 new_run_timeout,
-    0,                         // u16 last_run_time,
-    &pca9670_task_init,                 // MCU_TASK_INTERFACE_INIT_CALLBACK            init,
-    &pca9670_task_get_schedule_interval,        // MCU_TASK_INTERFACE_INIT_CALLBACK            get_schedule_interval,
-    &pca9670_task_get_state,             // MCU_TASK_INTERFACE_GET_STATE_CALLBACK        get_sate,
-    &pca9670_task_run,                 // MCU_TASK_INTERFACE_RUN_CALLBACK            run,
-    &pca9670_task_background_run,            // MCU_TASK_INTERFACE_BG_RUN_CALLBACK            background_run,
-    0,                         // MCU_TASK_INTERFACE_SLEEP_CALLBACK            sleep,
-    0,                         // MCU_TASK_INTERFACE_WAKEUP_CALLBACK            wakeup,
-    0,                         // MCU_TASK_INTERFACE_FINISH_CALLBACK            finish,
-    0,                         // MCU_TASK_INTERFACE_TERMINATE_CALLBACK        terminate,
-    0                        // next-task
-};
-#endif
-
-// --------------------------------------------------------------------------------
-
 void task_initialization(void) {
 
     DEBUG_PASS("task_initialization()");
@@ -254,7 +132,7 @@ void task_initialization(void) {
 
     #ifdef HAS_MANAGEMENT_MODULE_IO
     DEBUG_PASS("task_initialization() - IO input-controller task");
-    mcu_task_controller_register_task(&io_input_controller_task);
+    io_input_controller_init();
     #endif
 
     #ifdef HAS_EXPANSION_BOARD_SENSOR_SHT31_ADS1115
@@ -274,22 +152,13 @@ void task_initialization(void) {
     mcu_task_controller_register_task(&led_mcu_task);
     #endif
 
-    #ifdef HAS_EXPANSION_BOARD_GPIO_PCA9670
-    //-- task is currupted mcu_task_controller_register_task(&pca9670_task);
-    #endif
-
     #ifdef HAS_APP_TASK_EVENT
-    mcu_task_controller_register_task(&event_task);
+    event_controller_init();
     #endif
 
     #ifdef HAS_MANAGEMENT_MODULE_IO
     DEBUG_PASS("task_initialization() - IO output-controller task");
-    mcu_task_controller_register_task(&io_output_controller_task);
-    #endif
-
-    #if defined (HAS_APP_TASK_COPRO_ROUTING) && (HAS_APP_TASK_COPRO_ROUTING) == 1
-    DEBUG_PASS("task_initialization() - copro-routing task");
-    copro_routing_init();
+    io_output_controller_init();
     #endif
 }
 

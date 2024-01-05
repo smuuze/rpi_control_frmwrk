@@ -126,12 +126,6 @@ static void mqtt_interface_task_run(void);
  * @brief 
  * 
  */
-static void mqtt_interface_task_finish(void);
-
-/**
- * @brief 
- * 
- */
 static void mqtt_interface_task_terminate(void);
 
 // --------------------------------------------------------------------------------
@@ -210,26 +204,15 @@ BUILD_MODULE_STATUS_U8(MQTT_STATUS)
 
 // --------------------------------------------------------------------------------
 
-/**
- * @brief 
- * 
- */
-static MCU_TASK_INTERFACE mqtt_interface_task = {
-
-    0,                                              //     identifier,
-    0,                                              //     new_run_timeout,
-    0,                                              //     last_run_time,
-    &mqtt_interface_task_init,                      //     init,
-    &mqtt_interface_task_get_schedule_interval,     //     get_schedule_interval,
-    &mqtt_interface_task_get_state,                 //     get_sate,
-    &mqtt_interface_task_run,                       //     run,
-    0,                                              //     background_run,
-    0,                                              //     sleep,
-    0,                                              //     wakeup,
-    &mqtt_interface_task_finish,                    //     finish,
-    &mqtt_interface_task_terminate,                 //     terminate,
-    0                                               //     next-task
-};
+TASK_CREATE (
+    MQTT_TASK,
+    TASK_PRIORITY_MIDDLE,
+    mqtt_interface_task_get_schedule_interval,
+    mqtt_interface_task_init,
+    mqtt_interface_task_run,
+    mqtt_interface_task_get_state,
+    mqtt_interface_task_terminate
+)
 
 /**
  * @brief 
@@ -285,8 +268,8 @@ void mqtt_interface_init(void) {
 
     MQTT_CLIENT_configure(MQTT_DEFAULT_HOST_ADDR, MQTT_DEFAULT_TOPIC, MQTT_DEFAULT_CLIENT_ID);
 
-    DEBUG_PASS("mqtt_interface_init() - mcu_task_controller_register_task(mqtt_interface_task)");
-    mcu_task_controller_register_task(&mqtt_interface_task);
+    DEBUG_PASS("mqtt_interface_init() - MQTT_TASK_init()");
+    MQTT_TASK_init();
 
     MQTT_CLIENT_init();
 
@@ -532,14 +515,6 @@ static void mqtt_interface_task_run(void) {
         case MQTT_APPLICATION_TASK_STATE_TERMINATED :
             break;
     }
-}
-
-/**
- * @brief 
- * 
- */
-static void mqtt_interface_task_finish(void) {
-
 }
 
 /**
