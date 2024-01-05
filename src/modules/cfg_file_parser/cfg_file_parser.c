@@ -51,7 +51,7 @@
 // --------------------------------------------------------------------------------
 
 #include "ui/file_interface/file_interface.h"
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "cfg_file_parser.h"
 
 // --------------------------------------------------------------------------------
 
