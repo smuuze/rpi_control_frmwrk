@@ -9,6 +9,7 @@ ifneq '' '$(findstring LCD_16X2,$(MODULES_CFG))'
 	CSRCS += $(MODULE_LCD_PATH)/lcd_controller_16x2.c
 
 	DRIVER_MODULE_CFG += LCD_16X2
+	INC_PATH += $(MODULE_LCD_PATH)
 endif
 
 # -----------------------------------------------------------------------
