@@ -55,7 +55,7 @@
 #include "initialization/sensor_initialization.h"
 
 #include "ui/command_line/command_line_interface.h"
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "modules/cfg_file_parser/cfg_file_parser.h"
 #include "ui/log_interface/log_interface.h"
 
 #include "app_tasks/message_executer_task.h"
