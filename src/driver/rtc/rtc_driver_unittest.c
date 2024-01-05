@@ -90,3 +90,12 @@ u64 rtc_timer_get_usec(void) {
         return 0;
     }
 }
+
+// --------------------------------------------------------------------------------
+
+/**
+ * @see driver/rtc/rtc_interface.h#rtc_timer_delay
+ */
+void rtc_timer_delay(u32 delay_us) {
+    usleep(delay_us);
+}
