@@ -454,7 +454,7 @@ static void log_interface_new_cfg_object_SLOT_CALLBACK(const void* p_argument) {
         return;
     }
 
-    CFG_FILE_PARSER_CFG_OBJECT_TYPE* p_cfg_object = (CFG_FILE_PARSER_CFG_OBJECT_TYPE*) p_argument;
+    const CFG_FILE_PARSER_CFG_OBJECT_TYPE* p_cfg_object = (const CFG_FILE_PARSER_CFG_OBJECT_TYPE*) p_argument;
 
     if (common_tools_string_compare(LOG_INTERFACE_CFG_NAME_LOG_FILE_PATH, p_cfg_object->key)) {
 
