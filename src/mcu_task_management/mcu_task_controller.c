@@ -118,7 +118,8 @@ static u8 mcu_task_controller_iter_start(ITERATOR_INTERFACE* p_iterator, void* p
     if (_first_task != 0) {
 
         TASK_CTRL_STATS* p_task = (TASK_CTRL_STATS*)p_data;
-        p_task->last_runtime = _first_task->last_active_time;
+        p_task->id = _first_task->identifier;
+        p_task->runtime = _first_task->last_active_time;
         p_task->name_length = _first_task->name_length;
         p_task->p_name = _first_task->p_task_name;
 
@@ -147,14 +148,17 @@ static u8 mcu_task_controller_iter_start(ITERATOR_INTERFACE* p_iterator, void* p
 static u8 mcu_task_controller_iter_next(ITERATOR_INTERFACE* p_iterator, void* p_data) {
 
     if (p_iterator->is_valid == 0) {
+        DEBUG_PASS("mcu_task_controller_iter_next() - invalid");
         return 0;
     }
 
     if (p_iterator->is_last) {
+        DEBUG_PASS("mcu_task_controller_iter_next() - is last");
         return 0;
     }
 
     if (p_iterator->__element == 0) {
+        DEBUG_PASS("mcu_task_controller_iter_next() - element is zero");
         return 0;
     }
 
@@ -166,18 +170,20 @@ static u8 mcu_task_controller_iter_next(ITERATOR_INTERFACE* p_iterator, void* p_
         p_iterator->is_first = 0;
         p_iterator->is_last = 0;
         p_iterator->is_valid = 0;
+        DEBUG_PASS("mcu_task_controller_iter_next() - next element is zero");
         return 0;
     }
 
     p_act_task = p_act_task->next_task;
 
     TASK_CTRL_STATS* p_task = (TASK_CTRL_STATS*)p_data;
-    p_task->last_runtime = p_act_task->last_active_time;
+    p_task->id = _first_task->identifier;
+    p_task->runtime = p_act_task->last_active_time;
     p_task->name_length = p_act_task->name_length;
     p_task->p_name = p_act_task->p_task_name;
 
     p_iterator->is_first = 0;
-    p_iterator->is_last = p_iterator->__element != 0;
+    p_iterator->is_last = p_act_task->next_task == 0;
     p_iterator->is_valid = 1;
 
     DEBUG_TRACE_STR(p_task->p_name, "mcu_task_controller_iter_next() - Task-name:");
@@ -249,6 +255,8 @@ void mcu_task_controller_init(void) {
 
     _first_task = 0;
     _last_task = 0;
+
+    IDLE_TASK_init();
 }
 
 // --------------------------------------------------------------------------------
@@ -293,9 +301,20 @@ void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task) {
 
 // --------------------------------------------------------------------------------
 
+u8 mcu_task_controller_task_count(void) {
+    return _last_task != 0 ? _last_task->identifier : 0;
+}
+
+// --------------------------------------------------------------------------------
+
 void mcu_task_controller_schedule(void) {
 
-    MCU_TASK_INTERFACE* act_task = _first_task;
+    if (_first_task == NULL) {
+        return;
+    }
+
+    // the first task is always the IDLE-task
+    MCU_TASK_INTERFACE* act_task = _first_task->next_task;
 
     u8 system_is_on_idle = 1;
 
@@ -320,7 +339,7 @@ void mcu_task_controller_schedule(void) {
             u64 time_now_u64 = rtc_timer_get_usec();
             act_task->run();
             act_task->last_active_time += (rtc_timer_get_usec() - time_now_u64);
-            // DEBUG_TRACE_long(act_task->last_active_time, "mcu_task_controller_schedule() - Task-Runtime:");
+            DEBUG_TRACE_long(act_task->last_active_time, "mcu_task_controller_schedule() - Task-Runtime:");
         } else {
             act_task->run();
         }
@@ -344,8 +363,17 @@ void mcu_task_controller_schedule(void) {
     }
 
     if (system_is_on_idle != 0) {
-        //DEBUG_PASS("mcu_task_controller_schedule() xxxxxxx SYSTEM GOING TO SLEEP xxxxxxxxxx");
-        IDLE_TASK_run();
+
+        // DEBUG_PASS("mcu_task_controller_schedule() xxxxxxx SYSTEM GOING TO SLEEP xxxxxxxxxx");
+        // the first task is always the idle-task
+ 
+        if (TASK_COMTROLLER_STATUS_is_set(TASK_CTRL_STATUS_STATS_ON)) {
+            u64 time_now_u64 = rtc_timer_get_usec();
+            _first_task->run();
+            _first_task->last_active_time += (rtc_timer_get_usec() - time_now_u64);
+        } else {
+            _first_task->run();
+        }
     }
 }
 
@@ -450,6 +478,19 @@ void mcu_task_controller_enable_statistics(TASK_CTRL_STATISTIC_EN enable) {
     } else {
         DEBUG_PASS("mcu_task_controller_enable_statistics() - DEACTIVATED");
         TASK_COMTROLLER_STATUS_unset(TASK_CTRL_STATUS_STATS_ON);
+    }
+}
+
+/**
+ * @see mcu_task_controller.h#mcu_task_controller_reset_statistics
+ */
+void mcu_task_controller_reset_statistics(void) {
+
+    MCU_TASK_INTERFACE* act_task = _first_task;
+
+    while (act_task != 0) {
+        act_task->last_active_time = 0;
+        act_task = act_task->next_task;
     }
 }
 

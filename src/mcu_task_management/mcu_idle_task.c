@@ -64,7 +64,7 @@
 // --------------------------------------------------------------------------------
 
 void mcu_idle_task_init(void) {
-    PASS(); // mcu_idle_task_init()
+    DEBUG_PASS("mcu_idle_task_init()");
 }
 
 u16 mcu_idle_task_get_schedule_interval(void) {
@@ -72,10 +72,11 @@ u16 mcu_idle_task_get_schedule_interval(void) {
 }
 
 MCU_TASK_INTERFACE_TASK_STATE mcu_idle_task_get_state(void) {
-    return MCU_TASK_RUNNING;
+    return MCU_TASK_SLEEPING;
 }
 
 void mcu_idle_task_run(void) {
+    DEBUG_PASS("mcu_idle_task_run()");
 
     #ifndef DISABLE_SLEEP_ON_IDLE
     {
