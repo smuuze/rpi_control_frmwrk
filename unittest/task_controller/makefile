@@ -55,6 +55,7 @@ MODULES_CFG =
 #MODULES_CFG += LCD_16X2
 # MODULES_CFG += KEYPAD_3X4
 # MODULES_CFG += MOVEMENT_DETECTION_MQTT
+MODULES_CFG += MCU_TOP
 
 #-----------------------------------------------------------------------------
 
@@ -107,7 +108,7 @@ COPRO_INTERFACE_CFG =
 #-----------------------------------------------------------------------------
 
 USER_INTERFACE_CFG =
-#USER_INTERFACE_CFG += CFG_FILE_PARSER
+# USER_INTERFACE_CFG += CFG_FILE_PARSER
 #USER_INTERFACE_CFG += CLI_ARG_DEVICE
 #USER_INTERFACE_CFG += CLI_ARG_COMMAND
 #USER_INTERFACE_CFG += CONSOLE

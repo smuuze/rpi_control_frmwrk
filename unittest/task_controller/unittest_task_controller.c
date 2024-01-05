@@ -163,12 +163,22 @@ static void UNITTEST_task_control_iterate_01(void) {
 
         u8 task_counter = 0;
 
+        const char task_names[2][11] = {
+            "UT_TASK_01\0",
+            "UT_TASK_02\0"
+        };
+
         ITERATE_FOR(
             TASK_CTRL_STATS,
             task_stats,
             MCU_TASK_ITERATOR_INTERFACE_iter(),
 
             UT_CHECK_IS_GREATER (task_stats.last_runtime, 0);
+
+            if (task_counter < 2) {
+                UT_COMPARE_STRING(task_names[task_counter], task_stats.p_name);
+            }
+
             task_counter += 1;
         )
 
