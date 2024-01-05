@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="342px" preserveAspectRatio="none" style="width:1023px;height:342px;background:#FFFFFF;" version="1.1" viewBox="0 0 1023 342" width="1023px" zoomAndPan="magnify"><defs/><g><!--MD5=[58f578a68a4f560a0293f4bd67f226cd]
+cluster component: MCU-TOP - Structure - Context (Interfaces)--><g id="cluster_component: MCU-TOP - Structure - Context (Interfaces)"><rect fill="none" height="329" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="1010" x="7" y="7"/><path d="M423,7 L423,16.4883 L413,26.4883 L7,26.4883 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="406" x="10" y="21.5352">component: MCU-TOP - Structure - Context (Interfaces)</text></g><!--MD5=[64e2e010ba86d7988e5cd73bd64f61f9]
+cluster ui--><g id="cluster_ui"><path d="M33.5,213 L48.5,213 A3.75,3.75 0 0 1 51,215.5 L58,235.4883 L216.5,235.4883 A2.5,2.5 0 0 1 219,237.9883 L219,309.5 A2.5,2.5 0 0 1 216.5,312 L33.5,312 A2.5,2.5 0 0 1 31,309.5 L31,215.5 A2.5,2.5 0 0 1 33.5,213 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="58" y1="235.4883" y2="235.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="14" x="35" y="228.5352">ui</text></g><!--MD5=[f04600f0575a07dfe97362a654bdaa04]
+cluster kernel--><g id="cluster_kernel"><path d="M245.5,213 L291.5,213 A3.75,3.75 0 0 1 294,215.5 L301,235.4883 L774.5,235.4883 A2.5,2.5 0 0 1 777,237.9883 L777,309.5 A2.5,2.5 0 0 1 774.5,312 L245.5,312 A2.5,2.5 0 0 1 243,309.5 L243,215.5 A2.5,2.5 0 0 1 245.5,213 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="243" x2="301" y1="235.4883" y2="235.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="45" x="247" y="228.5352">kernel</text></g><!--MD5=[b28fcb397abe995d6d4652e4c54b3002]
+cluster common--><g id="cluster_common"><path d="M803.5,213 L866.5,213 A3.75,3.75 0 0 1 869,215.5 L876,235.4883 L990.5,235.4883 A2.5,2.5 0 0 1 993,237.9883 L993,309.5 A2.5,2.5 0 0 1 990.5,312 L803.5,312 A2.5,2.5 0 0 1 801,309.5 L801,215.5 A2.5,2.5 0 0 1 803.5,213 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="801" x2="876" y1="235.4883" y2="235.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="62" x="805" y="228.5352">common</text></g><!--MD5=[7db2f38f51af09fc51b95fcb7dba2197]
+cluster modules/mcu_top--><g id="cluster_modules/mcu_top"><path d="M434.5,50 L566.5,50 A3.75,3.75 0 0 1 569,52.5 L576,72.4883 L593.5,72.4883 A2.5,2.5 0 0 1 596,74.9883 L596,161.5 A2.5,2.5 0 0 1 593.5,164 L434.5,164 A2.5,2.5 0 0 1 432,161.5 L432,52.5 A2.5,2.5 0 0 1 434.5,50 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="432" x2="576" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="131" x="436" y="65.5352">modules/mcu_top</text></g><!--MD5=[9fcaaa82b3459abd0fce4930a43f020b]
+class console_interface--><g id="elem_console_interface"><rect codeLine="15" fill="#F1F1F1" height="48" id="console_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="156" x="47" y="248"/><ellipse cx="62" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M58.4277,260.2651 L58.4277,258.1069 L65.8071,258.1069 L65.8071,260.2651 L63.3418,260.2651 L63.3418,268.3418 L65.8071,268.3418 L65.8071,270.5 L58.4277,270.5 L58.4277,268.3418 L60.8931,268.3418 L60.8931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="124" x="76" y="269.291">Console-Interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="48" x2="202" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="48" x2="202" y1="288" y2="288"/></g><!--MD5=[dd9a97e507cc1d516dfc0b3e9e9c1789]
+class task_interface--><g id="elem_task_interface"><rect codeLine="22" fill="#F1F1F1" height="48" id="task_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="259" y="248"/><ellipse cx="274" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M270.4277,260.2651 L270.4277,258.1069 L277.8071,258.1069 L277.8071,260.2651 L275.3418,260.2651 L275.3418,268.3418 L277.8071,268.3418 L277.8071,270.5 L270.4277,270.5 L270.4277,268.3418 L272.8931,268.3418 L272.8931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="100" x="288" y="269.291">Task-Interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="260" x2="390" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="260" x2="390" y1="288" y2="288"/></g><!--MD5=[0a36e66a645a439e9db5de35c7103aeb]
+class signal_slot_interface--><g id="elem_signal_slot_interface"><rect codeLine="26" fill="#F1F1F1" height="48" id="signal_slot_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="176" x="426" y="248"/><ellipse cx="441" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M437.4277,260.2651 L437.4277,258.1069 L444.8071,258.1069 L444.8071,260.2651 L442.3418,260.2651 L442.3418,268.3418 L444.8071,268.3418 L444.8071,270.5 L437.4277,270.5 L437.4277,268.3418 L439.8931,268.3418 L439.8931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="144" x="455" y="269.291">Signal-Slot-Interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="427" x2="601" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="427" x2="601" y1="288" y2="288"/></g><!--MD5=[b9b2ef7fde3d52ebce7725399c86e14f]
+class file_interface--><g id="elem_file_interface"><rect codeLine="30" fill="#F1F1F1" height="48" id="file_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="124" x="637" y="248"/><ellipse cx="652" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M648.4277,260.2651 L648.4277,258.1069 L655.8071,258.1069 L655.8071,260.2651 L653.3418,260.2651 L653.3418,268.3418 L655.8071,268.3418 L655.8071,270.5 L648.4277,270.5 L648.4277,268.3418 L650.8931,268.3418 L650.8931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="92" x="666" y="269.291">File-Interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="638" x2="760" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="638" x2="760" y1="288" y2="288"/></g><!--MD5=[bdc233c67c89838e5e01a40def02a99f]
+class iterator_interface--><g id="elem_iterator_interface"><rect codeLine="37" fill="#F1F1F1" height="48" id="iterator_interface" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="160" x="817" y="248"/><ellipse cx="832" cy="264" fill="#B1B1B1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M828.4277,260.2651 L828.4277,258.1069 L835.8071,258.1069 L835.8071,260.2651 L833.3418,260.2651 L833.3418,268.3418 L835.8071,268.3418 L835.8071,270.5 L828.4277,270.5 L828.4277,268.3418 L830.8931,268.3418 L830.8931,260.2651 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="128" x="846" y="269.291">Interator-Interface</text><line style="stroke:#181818;stroke-width:0.5;" x1="818" x2="976" y1="280" y2="280"/><line style="stroke:#181818;stroke-width:0.5;" x1="818" x2="976" y1="288" y2="288"/></g><!--MD5=[0326624c87ec1a68c7a10960fb185ff2]
+entity mcu_top--><g id="elem_mcu_top"><rect fill="#DDDDDD" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="448" y="85"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="560" y="90"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="558" y="92"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="558" y="96"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="463" y="118.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="68" x="463" y="135.0234">MCU-TOP</text></g><!--MD5=[4d4b2c87086c4a94be998b0b883dfff4]
+link mcu_top to console_interface--><g id="link_mcu_top_console_interface"><path codeLine="50" d="M447.78,134.92 C392.07,150.5 310.87,175.41 243,205 C217.21,216.24 189.71,231.42 167.75,244.39 " fill="none" id="mcu_top-to-console_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="163.59,246.86,173.37,245.6978,167.8875,244.3043,169.281,238.8218,163.59,246.86" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="301" y="193.5684">&lt;uses&gt;</text></g><!--MD5=[5bfe52133d084fb771de82acadf0b205]
+link mcu_top to task_interface--><g id="link_mcu_top_task_interface"><path codeLine="51" d="M476.21,148.19 C445.62,173.04 402.45,208.1 370.06,234.4 " fill="none" id="mcu_top-to-task_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="none" points="374.89,239.5,354.95,246.67,366.07,228.63,374.89,239.5" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[639964865d3f8718b2437e94485b1722]
+link mcu_top to signal_slot_interface--><g id="link_mcu_top_signal_slot_interface"><path codeLine="52" d="M514,148.19 C514,175.41 514,214.88 514,241.68 " fill="none" id="mcu_top-to-signal_slot_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="514,246.35,518,237.35,514,241.35,510,237.35,514,246.35" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="515" y="193.5684">&lt;uses&gt;</text></g><!--MD5=[800c61e9f92af42fbf1ea937df06e375]
+link mcu_top to iterator_interface--><g id="link_mcu_top_iterator_interface"><path codeLine="53" d="M580.36,135.93 C634.3,151.78 711.85,176.53 777,205 C803.01,216.37 830.86,231.49 853.17,244.38 " fill="none" id="mcu_top-to-iterator_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="857.41,246.85,851.6367,238.8707,853.0865,244.3386,847.6185,245.7884,857.41,246.85" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="757" y="193.5684">&lt;uses&gt;</text></g><!--MD5=[98a70d2fce0afceffec4f7582d5e00dd]
+link mcu_top to file_interface--><g id="link_mcu_top_file_interface"><path codeLine="54" d="M551.33,148.22 C571.66,164.98 597.24,186.1 620,205 C635.32,217.72 652.26,231.87 666.52,243.79 " fill="none" id="mcu_top-to-file_interface" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/><polygon fill="#181818" points="670.09,246.78,665.7335,237.947,666.2477,243.5805,660.6143,244.0947,670.09,246.78" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="49" x="609" y="193.5684">&lt;uses&gt;</text></g><!--MD5=[38b0c6eca1ebc0198643473ea3446ee6]
+@startuml mcu_top_context_interfaces
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: MCU-TOP - Structure - Context (Interfaces)" {
+
+'***************************************************************************
+
+    folder "ui" {
+
+        interface console_interface as "Console-Interface" {
+
+        }
+    }
+
+    folder "kernel" {
+
+        interface task_interface as "Task-Interface" {
+
+        }
+
+        interface signal_slot_interface as "Signal-Slot-Interface" {
+
+        }
+
+        interface file_interface as "File-Interface" {
+
+        }
+    }
+
+    folder "common" {
+
+        interface iterator_interface as "Interator-Interface" {
+
+        }
+    }
+
+    folder "modules/mcu_top" {
+
+        component mcu_top #DDDDDD [
+            <<component>>
+            MCU-TOP
+        ]
+    }
+
+    mcu_top .down.> console_interface : <uses>
+    mcu_top .down.|> task_interface
+    mcu_top .down.> signal_slot_interface : <uses>
+    mcu_top .down.> iterator_interface : <uses>
+    mcu_top .down.> file_interface : <uses>
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
+
+@startuml mcu_top_context_interfaces
+
+
+skinparam monochrome true
+
+
+frame "component: MCU-TOP - Structure - Context (Interfaces)" {
+
+
+    folder "ui" {
+
+        interface console_interface as "Console-Interface" {
+
+        }
+    }
+
+    folder "kernel" {
+
+        interface task_interface as "Task-Interface" {
+
+        }
+
+        interface signal_slot_interface as "Signal-Slot-Interface" {
+
+        }
+
+        interface file_interface as "File-Interface" {
+
+        }
+    }
+
+    folder "common" {
+
+        interface iterator_interface as "Interator-Interface" {
+
+        }
+    }
+
+    folder "modules/mcu_top" {
+
+        component mcu_top #DDDDDD [
+            <<component>>
+            MCU-TOP
+        ]
+    }
+
+    mcu_top .down.> console_interface : <uses>
+    mcu_top .down.|> task_interface
+    mcu_top .down.> signal_slot_interface : <uses>
+    mcu_top .down.> iterator_interface : <uses>
+    mcu_top .down.> file_interface : <uses>
+
+
+}
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

@@ -74,6 +74,8 @@
 
 #include "expansion/driver_PCA9670.h"
 
+#include "modules/mcu_top/mcu_top.h"
+
 //-----------------------------------------------------------------------------
 
 SYSTEM_T system_context;
@@ -184,6 +186,12 @@ void initialization(void) {
         // pca9670_init(i_system.driver.i2c0);
     }
     #endif
+    #endif
+
+    #ifdef MCU_TOP_AVAILABLE
+    {
+        mcu_top_init();
+    }
     #endif
 }
 

@@ -1,0 +1,63 @@
+@startuml mcu_top_context_interfaces
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: MCU-TOP - Structure - Context (Interfaces)" {
+
+'***************************************************************************
+
+    folder "ui" {
+
+        interface console_interface as "Console-Interface" {
+
+        }
+    }
+
+    folder "kernel" {
+
+        interface task_interface as "Task-Interface" {
+
+        }
+
+        interface signal_slot_interface as "Signal-Slot-Interface" {
+
+        }
+
+        interface file_interface as "File-Interface" {
+
+        }
+    }
+
+    folder "common" {
+
+        interface iterator_interface as "Interator-Interface" {
+
+        }
+    }
+
+    folder "modules/mcu_top" {
+
+        component mcu_top #DDDDDD [
+            <<component>>
+            MCU-TOP
+        ]
+    }
+
+    mcu_top .down.> console_interface : <uses>
+    mcu_top .down.|> task_interface
+    mcu_top .down.> signal_slot_interface : <uses>
+    mcu_top .down.> iterator_interface : <uses>
+    mcu_top .down.> file_interface : <uses>
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
