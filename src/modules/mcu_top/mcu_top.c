@@ -83,6 +83,16 @@
  */
 #define MCU_TOP_MAX_OUTPUT_LINE_LENGTH                  255
 
+/**
+ * @brief Maximum number of kBytes of the output file
+ */
+#define MCU_TOP_OUTPUT_FILE_SIZE_MAX                    10000
+
+/**
+ * @brief Minimum number of kBytes of the output file
+ */
+#define MCU_TOP_OUTPUT_FILE_SIZE_MIN                    100
+
 // --------------------------------------------------------------------------------
 
 /**

@@ -77,6 +77,7 @@ MCU-TOP also generates the current cpu usage in percent of all available tasks.
 [REQ_MCU_TOP_REMEMBER_LAST_RESULTS]: #REQ_MCU_TOP_REMEMBER_LAST_RESULTS "MCU-TOP stores the last statistics of a task temporarily"
 [REQ_MCU_TOP_SCHEDULE_INTERVAL]: #REQ_MCU_TOP_SCHEDULE_INTERVAL "MCU-TOP runs at a user defineable schedule interval"
 [REQ_MCU_TOP_PRINT_ON_CONSOLE]: #REQ_MCU_TOP_PRINT_ON_CONSOLE "MCU-TOP prints task statistics on the console, if activated"
+[REQ_MCU_TOP_CONFIGUREABLE_FILE_SIZE]: #REQ_MCU_TOP_PRINT_ON_CONSOLE "MCU-TOP lets the user define the maximum size of the output file."
 
 
 
@@ -85,7 +86,7 @@ MCU-TOP also generates the current cpu usage in percent of all available tasks.
 |                  | |
 |------------------|-|
 | **Title**:       | Iterate over list of all available task |
-| ***Status**:     | CONCEPT |
+| ***Status**:     | IMPLEMENTED |
 | **Description**: | MCU-TOP iterates over all available task of the current system configuration and reads its statistics. |
 
 <br>
@@ -95,7 +96,7 @@ MCU-TOP also generates the current cpu usage in percent of all available tasks.
 |                  | |
 |------------------|-|
 | **Title**:       | The schedule interval can be configured by the user. |
-| ***Status**:     | CONCEPT |
+| ***Status**:     | IMPLEMENTED |
 | **Description**: | MCU-TOP uses a schedule interval to get the statistics of the tasks. This interval can be configured by the user. |
 
 <br>
@@ -105,7 +106,7 @@ MCU-TOP also generates the current cpu usage in percent of all available tasks.
 |                  | |
 |------------------|-|
 | **Title**:       | Provide information about the current cpu-usage of a task in percent. |
-| ***Status**:     | CONCEPT |
+| ***Status**:     | IMPLEMENTED |
 | **Description**: | MCU-TOP generates and provides the cpu-usage of a task. |
 
 <br>
@@ -115,7 +116,7 @@ MCU-TOP also generates the current cpu usage in percent of all available tasks.
 |                  | |
 |------------------|-|
 | **Title**:       | Write task statistics into a user-defined file on the file system. |
-| ***Status**:     | CONCEPT |
+| ***Status**:     | IMPLEMENTED |
 | **Description**: | MCU-TOP writes the statistics of all task into a file. The file is defined by the user. If there is no file defined, no data is written. |
 
 <br>
@@ -125,7 +126,7 @@ MCU-TOP also generates the current cpu usage in percent of all available tasks.
 |                  | |
 |------------------|-|
 | **Title**:       | Print task statistics on the system console, if activated. |
-| ***Status**:     | CONCEPT |
+| ***Status**:     | IMPLEMENTED |
 | **Description**: | MCU-TOP writes the statistics of all task to the console. The user can enable / disable this feature. |
 
 <br>
@@ -137,6 +138,16 @@ MCU-TOP also generates the current cpu usage in percent of all available tasks.
 | **Title**:       | The results of the last schedule are stored temporaraily. |
 | ***Status**:     | CONCEPT |
 | **Description**: | MCU-TOP remembers the statistics of all task of the last schedule. The data is stored temporarily. |
+
+<br>
+
+### REQ_MCU_TOP_CONFIGUREABLE_FILE_SIZE
+
+|                  | |
+|------------------|-|
+| **Title**:       | Size of the output file can be configured by the user. |
+| ***Status**:     | CONCEPT |
+| **Description**: | The size of the output file shall be configurable via the configuration file. If the maximum file size is reached, an additional file shall be created and used. The previous file shall not be deleted. |
 
 <br>
 
@@ -162,6 +173,9 @@ This section describes how to realize each requirement.
 | [REQ_MCU_TOP_WRITE_INTO_FILE] | The file is written using the file-interface. The configuration is applied using the [CFG-File-Parser] |  |
 | [REQ_MCU_TOP_REMEMBER_LAST_RESULTS] |  |  |
 | [REQ_MCU_TOP_PRINT_ON_CONSOLE] | This feature is activated by the configuration file. |  |
+| [REQ_MCU_TOP_CONFIGUREABLE_FILE_SIZE] | The file size is configured via the cfg file interface. If the maximum file size is reached the file is renamed with an ascending number. MCU-TOP automatically checks for the next number to use by looking for exsiting file in the given directory. |  |
+
+
 
 <br>
 
@@ -258,7 +272,8 @@ The following names are used within a configuration file to configure MCU-TOP
 |-----------------------------|---------------------------------|---------------------------------------------------------------------|
 | `MCU_TOP_SCHEDULE_INTERVAL` | 500 - 65535                     | Interval in milliseconds at which the task statistics are computed.<br>Values out of range will re aligned to the maximum or minimum value. |
 | `MCU_TOP_OUTPUT_FILE`       | at maximum 255 ASCII characters | path to the file where the computed values are written to.          |
-| `MCO_TOP_OUTPUT_CONSOLE`    | 1 / 0                           | activates console output (1) or deactivates it (0)                  |
+| `MCO_TOP_OUTPUT_CONSOLE`    | 1 / 0                           | activates console output (1) or deactivates it (0). Other values will also deactivate the console output.                  |
+| `MCO_TOP_OUTPUT_FILE_SIZE`    | 100 - 10000                   | number of kBytes. Higher values will be limited to the maximum value, lower values will be set to the minimum value. |
 
 
 <br>
