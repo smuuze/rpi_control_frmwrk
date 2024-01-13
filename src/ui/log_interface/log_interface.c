@@ -48,7 +48,7 @@
 #include "common/common_tools_string.h"
 #include "common/common_tools_datetime.h"
 #include "common/qeue_interface.h"
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "modules/cfg_file_parser/cfg_file_parser.h"
 #include "time_management/time_management.h"
 
 // --------------------------------------------------------------------------------

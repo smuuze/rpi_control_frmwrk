@@ -59,7 +59,7 @@
 #include "command_management/protocol_interface.h"
 #include "time_management/time_management.h"
 #include "common/signal_slot_interface.h"
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "modules/cfg_file_parser/cfg_file_parser.h"
 
 #include "protocol_management/rpi_protocol_handler.h"
 

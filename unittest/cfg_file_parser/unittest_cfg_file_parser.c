@@ -27,7 +27,7 @@ UT_ACTIVATE()
 
 #include "common/signal_slot_interface.h"
 
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "modules/cfg_file_parser/cfg_file_parser.h"
 #include "ui/console/ui_console.h"
 #include "ui/file_interface/file_interface.h"
 #include "time_management/time_management.h"

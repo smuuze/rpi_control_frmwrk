@@ -23,7 +23,7 @@
 #include "common/signal_slot_interface.h"
 #include "mcu_task_management/mcu_task_interface.h"
 
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "modules/cfg_file_parser/cfg_file_parser.h"
 #include "ui/console/ui_console.h"
 
 #include "time_management/time_management.h"
