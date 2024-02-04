@@ -56,7 +56,7 @@ typedef enum {
 
 typedef struct {
     u8 id;
-    u32 runtime;
+    u64 runtime;
     u8 name_length;
     const char* p_name;
 } TASK_CTRL_STATS;
@@ -223,9 +223,9 @@ typedef struct MCU_TASK_INTERFACE {
     u16 last_run_time;
 
     /**
-     * @brief Number of usec this task was active at the last schedule.
+     * @brief Number of usec this task was active since system start (or reset statistics).
      */
-    u32 last_active_time;
+    u64 active_time;
 
     /**
      * @brief Reference to the name of this task

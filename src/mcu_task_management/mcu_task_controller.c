@@ -119,7 +119,7 @@ static u8 mcu_task_controller_iter_start(ITERATOR_INTERFACE* p_iterator, void* p
 
         TASK_CTRL_STATS* p_task = (TASK_CTRL_STATS*)p_data;
         p_task->id = _first_task->identifier;
-        p_task->runtime = _first_task->last_active_time;
+        p_task->runtime = _first_task->active_time;
         p_task->name_length = _first_task->name_length;
         p_task->p_name = _first_task->p_task_name;
 
@@ -178,7 +178,7 @@ static u8 mcu_task_controller_iter_next(ITERATOR_INTERFACE* p_iterator, void* p_
 
     TASK_CTRL_STATS* p_task = (TASK_CTRL_STATS*)p_data;
     p_task->id = _first_task->identifier;
-    p_task->runtime = p_act_task->last_active_time;
+    p_task->runtime = p_act_task->active_time;
     p_task->name_length = p_act_task->name_length;
     p_task->p_name = p_act_task->p_task_name;
 
@@ -289,7 +289,7 @@ void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task) {
         _last_task = p_mcu_task;
     }
 
-    _last_task->last_active_time = 0;
+    _last_task->active_time = 0;
 
     DEBUG_TRACE_byte(
         _last_task->identifier,
@@ -338,8 +338,8 @@ void mcu_task_controller_schedule(void) {
         if (TASK_COMTROLLER_STATUS_is_set(TASK_CTRL_STATUS_STATS_ON)) {
             u64 time_now_u64 = rtc_timer_get_usec();
             act_task->run();
-            act_task->last_active_time += (rtc_timer_get_usec() - time_now_u64);
-            DEBUG_TRACE_long(act_task->last_active_time, "mcu_task_controller_schedule() - Task-Runtime:");
+            act_task->active_time += (rtc_timer_get_usec() - time_now_u64);
+            DEBUG_TRACE_long(act_task->active_time, "mcu_task_controller_schedule() - Task-Runtime:");
         } else {
             act_task->run();
         }
@@ -370,7 +370,7 @@ void mcu_task_controller_schedule(void) {
         if (TASK_COMTROLLER_STATUS_is_set(TASK_CTRL_STATUS_STATS_ON)) {
             u64 time_now_u64 = rtc_timer_get_usec();
             _first_task->run();
-            _first_task->last_active_time += (rtc_timer_get_usec() - time_now_u64);
+            _first_task->active_time += (rtc_timer_get_usec() - time_now_u64);
         } else {
             _first_task->run();
         }
@@ -489,7 +489,7 @@ void mcu_task_controller_reset_statistics(void) {
     MCU_TASK_INTERFACE* act_task = _first_task;
 
     while (act_task != 0) {
-        act_task->last_active_time = 0;
+        act_task->active_time = 0;
         act_task = act_task->next_task;
     }
 }
