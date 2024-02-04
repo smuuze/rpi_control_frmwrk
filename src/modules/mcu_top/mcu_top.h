@@ -29,7 +29,8 @@
 
 #define MCU_TOP_CFG_NAME_SCHEDULE_INTERVAL              "MCU_TOP_SCHEDULE_INTERVAL"
 #define MCU_TOP_CFG_NAME_OUTPUT_FILE                    "MCU_TOP_OUTPUT_FILE"
-#define MCU_TOP_CFG_NAME_OUTPUT_CONSOLE                 "MCO_TOP_OUTPUT_CONSOLE"
+#define MCU_TOP_CFG_NAME_OUTPUT_CONSOLE                 "MCU_TOP_OUTPUT_CONSOLE"
+#define MCU_TOP_CFG_NAME_OUTPUT_MQTT                    "MCU_TOP_OUTPUT_MQTT"
 
 // --------------------------------------------------------------------------------
 

@@ -2,6 +2,7 @@
 [CFG_PARSER_CFG_COMPLETE_SIGNAL]: ../../cfg_file_parser/readme/readme_cfg_file_parser.md#signals "Signals send by the CFG-File-Parser after all configuration values have been read."
 [MCU-Task-Controller]: ../../../mcu_task_management/readme/readme_task_management.md#section "Component to manage task handling "
 [Signal-Slot-Interface]: ../../../../readme/readme_signal_slot.md "SW-IRQ based communication system used in the rpi-control firmware"
+[Task-Interface]: ../../../mcu_task_management/readme/readme_task_management.md "Interface to crate task."
 
 [TOP]: #section "Go to the top of the page"
 
@@ -27,21 +28,37 @@ Readme | [Changelog](../../../../changelog.md)
 <details>
 <summary> Click to open</summary>
 
-[Brief](#brief)\
-[Features](#features)\
-[Solution Strategy](#solution-strategy)\
-[Structure](#structure)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Context](#context)\
-[Runtime](#runtime)\
-&nbsp;&nbsp;&nbsp;&nbsp;[State-Machine](#state-machine)\
-[Interface](#interface)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Signals](#signals)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Configuration Macros](#configuration-macros)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Configuration Values](#configuration-values)\
-[Integration](#integration)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Makefile](#makefile)\
-[Usage](#usage)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Initialization](#initialization)
+- [MCU-TOP](#mcu-top)
+    - [Content](#content)
+  - [Brief](#brief)
+  - [Features](#features)
+  - [Requirements](#requirements)
+    - [REQ\_MCU\_TOP\_ITERATE\_TASK\_LIST](#req_mcu_top_iterate_task_list)
+    - [REQ\_MCU\_TOP\_SCHEDULE\_INTERVAL](#req_mcu_top_schedule_interval)
+    - [REQ\_MCU\_TOP\_PRINT\_CPU\_USAGE](#req_mcu_top_print_cpu_usage)
+    - [REQ\_MCU\_TOP\_WRITE\_INTO\_FILE](#req_mcu_top_write_into_file)
+    - [REQ\_MCU\_TOP\_PRINT\_ON\_CONSOLE](#req_mcu_top_print_on_console)
+    - [REQ\_MCU\_TOP\_REMEMBER\_LAST\_RESULTS](#req_mcu_top_remember_last_results)
+    - [REQ\_MCU\_TOP\_CONFIGUREABLE\_FILE\_SIZE](#req_mcu_top_configureable_file_size)
+      - [\*Status](#status)
+  - [Solution Strategy](#solution-strategy)
+  - [Structure](#structure)
+    - [Context](#context)
+    - [Interfaces dependencies](#interfaces-dependencies)
+  - [Runtime](#runtime)
+    - [Concept](#concept)
+    - [State-Machine](#state-machine)
+  - [Interfaces](#interfaces)
+    - [Signals](#signals)
+    - [Configuration Macros](#configuration-macros)
+    - [Configuration Values](#configuration-values)
+    - [MQTT-Output](#mqtt-output)
+    - [Console-Output](#console-output)
+  - [Integration](#integration)
+    - [Makefile](#makefile)
+  - [Usage](#usage)
+    - [Initialization](#initialization)
+
 
 </details>
 
@@ -173,7 +190,7 @@ This section describes how to realize each requirement.
 | [REQ_MCU_TOP_WRITE_INTO_FILE] | The file is written using the file-interface. The configuration is applied using the [CFG-File-Parser] |  |
 | [REQ_MCU_TOP_REMEMBER_LAST_RESULTS] |  |  |
 | [REQ_MCU_TOP_PRINT_ON_CONSOLE] | This feature is activated by the configuration file. |  |
-| [REQ_MCU_TOP_CONFIGUREABLE_FILE_SIZE] | The file size is configured via the cfg file interface. If the maximum file size is reached the file is renamed with an ascending number. MCU-TOP automatically checks for the next number to use by looking for exsiting file in the given directory. |  |
+| [REQ_MCU_TOP_CONFIGUREABLE_FILE_SIZE] | The maximum file size is configured via the cfg file interface. If the maximum file size is reached the file is renamed with an ascending number. MCU-TOP automatically checks for the next number to use by looking for exsiting file in the given directory. |  |
 
 
 
@@ -197,17 +214,18 @@ This section describes how to realize each requirement.
 
 <br>
 
-### Interfaces
+### Interfaces dependencies
 
 ![structure_context](../../../modules/mcu_top/readme/uml/img/mcu_top_context_interfaces.svg )
 
 | Node                    | Description                                          |
 |-------------------------|------------------------------------------------------|
-| Task-Interface          | MCU-TOP implements the task-interface to integrate it into the system |
+| [Task-Interface]        | MCU-TOP implements the task-interface to integrate it into the system |
 | [Signal-Slot-Interface] | MCU-TOP receives its configuration values from the Cfg-File-Parser via the Signal-Slot-Interface |
 | [Iterator-Interface]    | MCU-TOP reads the task statistics using the Iterator-Interface |
 | [File-Interface]        | MCU-TOP writes task statistics to a user defined file via the file interface |
 | [Console-Interface]     | MCU-TOP writes task statistics to the system console via the console interface |
+| [Mqtt-Interface]        | Interface to acces the MQTT message bus. | 
 
 <br>
 
@@ -238,7 +256,7 @@ The computed values are written to the console or and/or a file on the file syst
 
 <br>
 
-## Interface
+## Interfaces
 [[TOP]]
 
 <br>
@@ -272,16 +290,72 @@ The following names are used within a configuration file to configure MCU-TOP
 |-----------------------------|---------------------------------|---------------------------------------------------------------------|
 | `MCU_TOP_SCHEDULE_INTERVAL` | 500 - 65535                     | Interval in milliseconds at which the task statistics are computed.<br>Values out of range will re aligned to the maximum or minimum value. |
 | `MCU_TOP_OUTPUT_FILE`       | at maximum 255 ASCII characters | path to the file where the computed values are written to.          |
-| `MCO_TOP_OUTPUT_CONSOLE`    | 1 / 0                           | activates console output (1) or deactivates it (0). Other values will also deactivate the console output.                  |
-| `MCO_TOP_OUTPUT_FILE_SIZE`    | 100 - 10000                   | number of kBytes. Higher values will be limited to the maximum value, lower values will be set to the minimum value. |
+| `MCO_TOP_OUTPUT_CONSOLE`    | 1 / 0                           | activates console output (1) or deactivates it (0). Other values will also deactivate the console output. |
+| `MCO_TOP_OUTPUT_MQTT`       | 1 / 0                           | activates MQTT output (1) or deactivates it (0). Other values will also deactivate the MQTT output. See [MQTT-Output](#mqtt-output) |
+| `MCO_TOP_OUTPUT_FILE_SIZE`  | 100 - 10000                   | number of kBytes. Higher values will be limited to the maximum value, lower values will be set to the minimum value. |
 
+<br>
+
+### MQTT-Output
+
+If enabled MCU-TOP provides the following information via MQTT.
+
+| Information | description |
+|-------------|-------------|
+| summary of task load | The current system load in percentage that is caused by all task as a summary. This value does not contain the IDLE-TASK. |
+| single task load     | The current load of every task. This list also includes the ILDE-TASK |
+
+Example:
+
+```json
+{
+    "MCU_TOP":
+    {
+        "TASKS":
+        {
+            "IDLE_TASK":98,
+            "RPI_PROTOCOL_TASK":0,
+            "MQTT_TASK":1,
+            "CFG_FILE_PARSER_TASK":0,
+            "LOG_TASK":0,
+            "MSG_EXE_TASK":0,
+            "CLI_EXE_TASK":0,
+            "LCD_TASK":0,
+            "MCU_TOP_TASK":0
+        },
+        "TASK_LOAD_SUM":1
+    }
+}
+```
+
+### Console-Output
+
+If enabled MCU-TOP provides the following information via the system console.
+
+| Information | description |
+|-------------|-------------|
+| single task load     | The current load of every task. This list also includes the ILDE-TASK |
+
+Example:
+
+```
+| Task-Name            | Runtime[us] | Load[%] |
+|----------------------|-------------|---------|
+| IDLE_TASK            | 29595470    | 98      |
+| RPI_PROTOCOL_TASK    | 0           | 0       |
+| MQTT_TASK            | 400817      | 1       |
+| CFG_FILE_PARSER_TASK | 0           | 0       |
+| LOG_TASK             | 364         | 0       |
+| MSG_EXE_TASK         | 0           | 0       |
+| CLI_EXE_TASK         | 0           | 0       |
+| LCD_TASK             | 0           | 0       |
+| MCU_TOP_TASK         | 3812        | 0       |
+```
 
 <br>
 
 ## Integration
 [[TOP]]
-
-<br>
 
 ### Makefile
 

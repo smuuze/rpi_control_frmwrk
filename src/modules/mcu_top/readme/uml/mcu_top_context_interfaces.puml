@@ -40,6 +40,13 @@ frame "component: MCU-TOP - Structure - Context (Interfaces)" {
         }
     }
 
+    folder "protocol" {
+
+        interface mqtt_interface as "MQTT-Interface" {
+
+        }
+    }
+
     folder "modules/mcu_top" {
 
         component mcu_top #DDDDDD [
@@ -53,6 +60,7 @@ frame "component: MCU-TOP - Structure - Context (Interfaces)" {
     mcu_top .down.> signal_slot_interface : <uses>
     mcu_top .down.> iterator_interface : <uses>
     mcu_top .down.> file_interface : <uses>
+    mcu_top .down.> mqtt_interface : <uses>
 
 '***************************************************************************
 

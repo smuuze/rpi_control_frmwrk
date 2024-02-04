@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -45,6 +45,9 @@
 #include "signal_slot_interface.h"
 #include "iterator_interface.h"
 #include "mcu_task_interface.h"
+
+#include "protocol_management/json/protocol_json_parser.h"
+#include "protocol_management/mqtt/mqtt_interface.h"
 
 #include "common/local_module_status.h"
 #include "common/common_tools_string.h"
@@ -95,6 +98,12 @@
 
 // --------------------------------------------------------------------------------
 
+#define MCU_TOP_MQTT_GROUP_NAME                         "MCU_TOP"
+#define MCU_TOP_MQTT_TASKS_GROUP_NAME                   "TASKS"
+#define MCU_TOP_MQTT_NAME_TASK_LOAD_SUM                 "TASK_LOAD_SUM"
+
+// --------------------------------------------------------------------------------
+
 /**
  * @brief Maximum number of task the MCU-TOP module can handle.
  */
@@ -129,13 +138,13 @@ typedef struct {
     /**
      * @brief The overall runtime of a task given by the task-controller
      */
-    u32 runtime_overall;
+    u64 runtime_overall;
 
     /**
      * @brief The interval runtime of a task given by the task-controller
      * of the last schedule interval of the mcu-top module
      */
-    u32 runtime_interval;
+    u64 runtime_interval;
 
     /**
      * @brief The cpu-load caused by a task.
@@ -160,6 +169,7 @@ typedef struct {
 #define MCU_TOP_STATUS_CONSOLE_OUTPUT                                       (1 << 2)
 #define MCU_TOP_STATUS_IS_ENABLED                                           (1 << 3)
 #define MCU_TOP_STATUS_FILE_OUTPUT                                          (1 << 4)
+#define MCU_TOP_STATUS_MQTT_OUTPUT                                          (1 << 5)
 
 BUILD_MODULE_STATUS_U8(MCU_TOP_STATUS)
 
@@ -177,6 +187,10 @@ TIME_MGMN_BUILD_STATIC_TIMER_U16(MCU_TOP_TIMER)
 // --------------------------------------------------------------------------------
 
 FILE_INTERFACE_CREATE_FILE(MCU_TOP_OUTPUT_FILE)
+
+// --------------------------------------------------------------------------------
+
+JSON_PARSER_CREATE_OBJECT(MCU_TOP_JSON_OBJ)
 
 // --------------------------------------------------------------------------------
 
@@ -249,12 +263,36 @@ static void mcu_top_new_cfg_object_SLOT_CALLBACK(const void* p_argument) {
         MCU_TOP_STATUS_set(MCU_TOP_STATUS_FILE_OUTPUT);
     }
 
+    // check and apply mqtt output
+    if (common_tools_string_compare(MCU_TOP_CFG_NAME_OUTPUT_MQTT, p_cfg_object->key)) {
+
+        DEBUG_TRACE_STR(
+            p_cfg_object->value,
+            "mcu_top_new_cfg_object_SLOT_CALLBACK() - new value of MCU_TOP_OUTPUT_MQTT"
+        );
+
+        if ( ! common_tools_sting_is_number(p_cfg_object->value) ){
+            DEBUG_PASS("mcu_top_new_cfg_object_SLOT_CALLBACK() - not a number - apply default value");
+            MCU_TOP_STATUS_unset(MCU_TOP_STATUS_CONSOLE_OUTPUT);
+            return;
+        }
+
+        if (common_tools_string_to_u32(p_cfg_object->value) == 1u) {
+            MCU_TOP_STATUS_set(MCU_TOP_STATUS_MQTT_OUTPUT);
+            DEBUG_PASS("mcu_top_new_cfg_object_SLOT_CALLBACK() - mqtt output activated");
+
+        } else {
+            MCU_TOP_STATUS_unset(MCU_TOP_STATUS_MQTT_OUTPUT);
+            DEBUG_PASS("mcu_top_new_cfg_object_SLOT_CALLBACK() - mqtt output deactivated");
+        }
+    }
+
     // check and apply console output
     if (common_tools_string_compare(MCU_TOP_CFG_NAME_OUTPUT_CONSOLE, p_cfg_object->key)) {
 
         DEBUG_TRACE_STR(
             p_cfg_object->value,
-            "mcu_top_new_cfg_object_SLOT_CALLBACK() - new value of MCO_TOP_OUTPUT_CONSOLE"
+            "mcu_top_new_cfg_object_SLOT_CALLBACK() - new value of MCU_TOP_OUTPUT_CONSOLE"
         );
 
         if ( ! common_tools_sting_is_number(p_cfg_object->value) ){
@@ -450,6 +488,14 @@ static void mcu_top_write_values(void) {
         }
     }
 
+    if (MCU_TOP_STATUS_is_set(MCU_TOP_STATUS_MQTT_OUTPUT)) {
+        MCU_TOP_JSON_OBJ_start_group(MCU_TOP_MQTT_GROUP_NAME);
+        MCU_TOP_JSON_OBJ_start_group(MCU_TOP_MQTT_TASKS_GROUP_NAME);
+    }
+
+    // summarize the load of all task, except the idle-task
+    u32 task_load = 0;
+
     for (u8 index = 0; index < mcu_task_controller_task_count(); index += 1) {
 
         if (index >= MCU_TOP_MAX_NUMBER_OF_TASK) {
@@ -475,6 +521,29 @@ static void mcu_top_write_values(void) {
         if (file_existing != 0) {
             MCU_TOP_OUTPUT_FILE_append_line(line);
         }
+
+        if (MCU_TOP_STATUS_is_set(MCU_TOP_STATUS_MQTT_OUTPUT)) {
+            MCU_TOP_JSON_OBJ_add_integer(
+                task_stats_array[index].p_name,
+                task_stats_array[index].cpu_load
+            );
+        }
+
+        if (index != 0) {
+            // we ignore the idle-task here.
+            // The idle-task is always the first task in the list.
+            task_load += task_stats_array[index].cpu_load;
+        }
+    }
+
+    if (MCU_TOP_STATUS_is_set(MCU_TOP_STATUS_MQTT_OUTPUT)) {
+        MCU_TOP_JSON_OBJ_end_group(); // MCU_TOP_MQTT_TASKS_GROUP_NAME
+        MCU_TOP_JSON_OBJ_add_integer(
+            MCU_TOP_MQTT_NAME_TASK_LOAD_SUM,
+            task_load
+        );
+        MCU_TOP_JSON_OBJ_finish();
+        MQTT_MESSAGE_TO_SEND_SIGNAL_send(MCU_TOP_JSON_OBJ_to_string());
     }
 }
 
@@ -655,6 +724,8 @@ void mcu_top_init(void) {
 
     MCU_TOP_CFG_VALUE_SLOT_connect();
     MCU_TOP_CFG_COMPLETE_SLOT_connect();
+
+    MCU_TOP_JSON_OBJ_initialize();
 
     MCU_TOP_TIMER_stop();
     MCU_TOP_TASK_init();
