@@ -1,0 +1,47 @@
+@startuml mcu_top_context
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: MCU-TOP - Structure - Context" {
+
+'***************************************************************************
+
+    component mcu_top #DDDDDD [
+        <<component>>
+        MCU TOP
+    ]
+
+    node cfg_file [
+        Configuration
+    ]
+
+    node task_controller [
+        Task-Controller
+    ]
+
+    node out_file [
+        Output-File
+    ]
+
+    node console [
+        Console
+    ]
+
+    mcu_top -down- cfg_file
+    mcu_top -down- task_controller 
+    mcu_top -right- out_file 
+    mcu_top -left- console 
+
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml

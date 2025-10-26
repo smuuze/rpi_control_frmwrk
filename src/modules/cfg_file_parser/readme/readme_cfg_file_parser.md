@@ -177,7 +177,7 @@ Data type that are availalbe via the interface of the CFG-File-Parser. See `cfg_
 ### Configuration Macros
 
 The following values can be defined as a macro. E.g. in your project specific `config.h`\
-See [modules/cfg_file_parser/cfg_file_parser.h](../../../ui/cfg_file_parser/cfg_file_parser.h)
+See [modules/cfg_file_parser/cfg_file_parser.h](../../../modules/cfg_file_parser/cfg_file_parser.h)
 
 | Configuration Macro                            | Default Value | Description                 |
 |------------------------------------------------|---------------|-----------------------------|

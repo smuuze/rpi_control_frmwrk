@@ -26,7 +26,7 @@
 #define config_LOCAL_COMMAND_HANDLER_TABLE_FUNC_CALLBACK	\
 	{CMD_VERSION, &cmd_handler_version},
 
-#define SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS	0
+#define SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS	20
 
 //-------------------------------------------------------------------------
 

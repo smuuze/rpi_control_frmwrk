@@ -1,0 +1,1 @@
+include $(FRMWRK_SRC_PATH)/core/shared_memory/make/make_shared_memory.mk

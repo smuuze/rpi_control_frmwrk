@@ -177,7 +177,11 @@ void tracer_enable(u8 enable) {
 		printf("\n--- TRACER ENABLED ---\n");
 		is_enabled = 1;
 	} else {
-		printf("\n--- TRACER DISABLED ---\n");
+		printf("\n");
+		printf("\n*****************************\n");
+		printf("\n****** TRACER DISABLED ******\n");
+		printf("\n*****************************\n");
+		printf("\n");
 		is_enabled = 0;
 	}
 

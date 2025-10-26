@@ -32,6 +32,7 @@
 // --------------------------------------------------------------------------------
 
 #include "common/common_types.h"
+#include "core/shared_memory/shared_memory.h"
 
 // --------------------------------------------------------------------------------
 
@@ -50,20 +51,43 @@
  * 
  */
 typedef struct JSON_OBJECT_STRUCT {
-    char  string_buffer[PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH];
+    // char  string_buffer[PROTOCOL_JSON_PARSER_STRING_BUFFER_MAX_LENGTH];
     u16 length;
     u8 open_group_count;
     u8 status;
+    SHARED_MEMORY_CONTEXT memory_ctx;
 } JSON_OPJECT_TYPE;
 
 // --------------------------------------------------------------------------------
 
 /**
  * @brief Initialized the json-object for usage. Data of an already initialized object gets lost.
+ * This function needs to be called before the json object can be used.
+ * If the given json object is already initialized nothing happens.
  * 
  * @param p_json_object The json-object to initialize.
+ * 
+ * @return 1 if the object was initialized successful. Otherweise returns 0.
+ * In this case the caller shall try it once again after a few moments.
  */
-void json_parser_initialize(JSON_OPJECT_TYPE* p_json_object);
+u8 json_parser_initialize(JSON_OPJECT_TYPE* p_json_object);
+
+/**
+ * @brief Deactivates the given json object.
+ * Once the object is deactivated it cannot be used anymore.
+ * To make it reuseable again json_parser_initialize() must be called.
+ * 
+ * @param p_json_object The json-object to de-initialize.
+ */
+void json_parser_deinitialize(JSON_OPJECT_TYPE* p_json_object);
+
+/**
+ * @brief Clears the current content from the json string.
+ * The whole data is deleted. Values and groups are not available after calling this function
+ * 
+ * @param p_json_object The json-object to clear.
+ */
+void json_parser_clear(JSON_OPJECT_TYPE* p_json_object);
 
 /**
  * @brief Parses the response of a RPi-Protocol command into its json representation.
@@ -125,15 +149,15 @@ void json_parser_end_group(JSON_OPJECT_TYPE* p_json_object);
 void json_parser_finish(JSON_OPJECT_TYPE* p_json_object);
 
 /**
- * @brief Gets the actual string length of the json object
+ * @brief Gets the current string length of the json object
  * 
  * @param p_json_object Json object to get the length from
  */
 u16 json_parser_get_length(JSON_OPJECT_TYPE* p_json_object);
 
 /**
- * @brief Copies the actual content of the json-object into the given string.
- * If the lenght of p_String is below the conetnt of the json object no
+ * @brief Copies the current content of the json-object into the given string.
+ * If the lenght of p_string is below the conetnt of the json object no
  * data is copied and 0 is returned.
  * 
  * @param p_json_object The finished json-object
@@ -159,14 +183,30 @@ u8 json_parser_is_active(JSON_OPJECT_TYPE* p_json_object);
  */
 u8 json_parser_is_complete(JSON_OPJECT_TYPE* p_json_object);
 
+/**
+ * @brief Get the current content of the json object as a string.
+ * 
+ * @param p_json_object valid object to get the string from
+ * @return The current content as a string
+ */
+const char* json_parser_to_string(JSON_OPJECT_TYPE* p_json_object);
+
 // --------------------------------------------------------------------------------
 
 #define JSON_PARSER_CREATE_OBJECT(name)                                                     \
                                                                                             \
     static JSON_OPJECT_TYPE __##name##_json_object;                                         \
                                                                                             \
-    void name##_initialize(void) {                                                          \
-        json_parser_initialize(&__##name##_json_object);                                    \
+    u8 name##_initialize(void) {                                                            \
+        return json_parser_initialize(&__##name##_json_object);                             \
+    }                                                                                       \
+                                                                                            \
+    void name##_deinitialize(void) {                                                        \
+        json_parser_deinitialize(&__##name##_json_object);                                  \
+    }                                                                                       \
+                                                                                            \
+    void name##_clear(void) {                                                               \
+        json_parser_clear(&__##name##_json_object);                                         \
     }                                                                                       \
                                                                                             \
     void name##_append_pri_cmd_response(COMMON_GENERIC_BUFFER_TYPE* p_com_buffer) {         \
@@ -210,7 +250,8 @@ u8 json_parser_is_complete(JSON_OPJECT_TYPE* p_json_object);
     }                                                                                       \
                                                                                             \
     const char* name##_to_string(void) {                                                    \
-        return (const char*) __##name##_json_object.string_buffer;                          \
+        /*return (const char*) __##name##_json_object.string_buffer;*/                      \
+        return json_parser_to_string(&__##name##_json_object);                              \
     }                                                                                       \
                                                                                             \
     u8 name##_is_active(void) {                                                             \

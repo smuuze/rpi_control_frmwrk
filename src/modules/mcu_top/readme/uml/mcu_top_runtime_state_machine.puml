@@ -1,0 +1,47 @@
+@startuml mcu_top_runtime_state_machine
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+mainframe state: MCU-TOP - Runtime - State-Machine
+
+'***************************************************************************
+
+
+' receive cfg-value
+' wait for end of cfg
+' wait for schedule interval
+' iterate through task list
+' remember statistics
+' write statistics to file
+
+[*] -right-> SETUP
+SETUP : do / apply configuration
+
+SETUP -down-> DISABLED : SIGNAL(CFG_PARSER_CFG_COMPLETE_SIGNAL)
+DISABLED : exit / reset task statistics
+
+DISABLED -down-> IDLE : mcu_top_set_enabled(enabled)
+IDLE -down-> DISABLED : mcu_top_set_enabled(disabled)
+IDLE : do / check for schedule interval
+
+IDLE -down-> COLLECT_STATS : schdeule interval passed
+COLLECT_STATS : do / iterate over task-list \n        and remember values
+
+COLLECT_STATS -right-> COMPUTE_VALUES
+COMPUTE_VALUES : do / calculate cpu-usage
+
+COMPUTE_VALUES -right-> WRITE_VALUES
+WRITE_VALUES : entry / open file
+WRITE_VALUES : do / write values to file
+WRITE_VALUES : exit / close file
+
+WRITE_VALUES --> IDLE
+
+'***************************************************************************
+
+@enduml

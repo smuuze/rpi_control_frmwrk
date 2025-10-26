@@ -36,15 +36,27 @@
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Enumaration to activate / deaativate collecting task statistics on runtime.
+ */
 typedef enum {
+
+    /**
+     * @brief activate collecitng statistics of every task on runtime
+     */
     TASK_CTRL_STATISTIC_OFF = 0,
+
+    /**
+     * @brief deactivate collecting statistics on runtime.
+     */
     TASK_CTRL_STATISTIC_ON = 1
 } TASK_CTRL_STATISTIC_EN;
 
 // --------------------------------------------------------------------------------
 
 typedef struct {
-    u32 last_runtime;
+    u8 id;
+    u64 runtime;
     u8 name_length;
     const char* p_name;
 } TASK_CTRL_STATS;
@@ -211,9 +223,9 @@ typedef struct MCU_TASK_INTERFACE {
     u16 last_run_time;
 
     /**
-     * @brief Number of usec this task was active at the last schedule.
+     * @brief Number of usec this task was active since system start (or reset statistics).
      */
-    u32 last_active_time;
+    u64 active_time;
 
     /**
      * @brief Reference to the name of this task
@@ -343,6 +355,13 @@ void mcu_task_controller_register_task(MCU_TASK_INTERFACE* p_mcu_task);
  */
 void mcu_task_controller_schedule(void);
 
+/**
+ * @brief Gets the number of tasks that are currently registered to the mcu-task controller.
+ * 
+ * @return The number of tasks that are currently registered to the mcu-task controller.
+ */
+u8 mcu_task_controller_task_count(void);
+
 // --------------------------------------------------------------------------------
 
 /**
@@ -353,6 +372,12 @@ void mcu_task_controller_schedule(void);
  *               TASK_CTRL_STATISTIC_OFF - task statistics are disabled
  */
 void mcu_task_controller_enable_statistics(TASK_CTRL_STATISTIC_EN enable);
+
+/**
+ * @brief Reset the statistics of all availabel task.
+ * Statistics must be enabled to reset them. Otherwise nothing happens.
+ */
+void mcu_task_controller_reset_statistics(void);
 
 // --------------------------------------------------------------------------------
 

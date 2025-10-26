@@ -30,7 +30,7 @@
 
 // --------------------------------------------------------------------------------
 
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "modules/cfg_file_parser/cfg_file_parser.h"
 #include "ui/log_interface/log_interface.h"
 
 // --------------------------------------------------------------------------------

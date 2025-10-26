@@ -56,7 +56,7 @@ typedef struct ITERATOR_INTERFACE {
  * @param p_iterator reference to the iterator instance to use
  * @param p_data pointer to a valid memory region to store the iteration element.
  * 
- * @return 1 if there is an element avaialble, otherwise 0
+ * @return 1 if there is an element available, otherwise 0
  */
 typedef u8 (*ITERATOR_INTERFACE_CALLBACK_START) (ITERATOR_INTERFACE* p_iterator, void* p_data);
 
@@ -66,7 +66,7 @@ typedef u8 (*ITERATOR_INTERFACE_CALLBACK_START) (ITERATOR_INTERFACE* p_iterator,
  * @param p_iterator reference to the iterator instance to use
  * @param p_data pointer to a valid memory region to store the iteration element.
  * 
- * @return 1 if there is an element avaialble, otherwise 0
+ * @return 1 if there is an element available, otherwise 0
  */
 typedef u8 (*ITERATOR_INTERFACE_CALLBACK_NEXT) (ITERATOR_INTERFACE* p_iterator, void* p_data);
 
@@ -168,8 +168,33 @@ typedef struct ITERATOR_INTERFACE_CALLBACKS {
                                                                                 \
     while (ret_val != 0) {                                                      \
         code_block                                                              \
-        ret_val = i_iterator->next(&__##var_name##_iterator, &var_name);  \
+        ret_val = i_iterator->next(&__##var_name##_iterator, &var_name);        \
     }                                                                           \
+}
+
+// --------------------------------------------------------------------------------
+
+#define ITERATE_FOR_ARRAY(var_array, array_length, index, i_iterator, code_block)   \
+{                                                                                   \
+    ITERATOR_INTERFACE __##var_array##_iterator = {                                 \
+        0,                                                                          \
+        0,                                                                          \
+        0,                                                                          \
+        0                                                                           \
+    };                                                                              \
+                                                                                    \
+    u16 index = 0;                                                                  \
+    u8 ret_val = i_iterator->start(&__##var_array##_iterator, &var_array[index]);   \
+                                                                                    \
+    while (ret_val != 0) {                                                          \
+        code_block                                                                  \
+                                                                                    \
+        if (index < array_length) {                                                 \
+            index += 1;                                                             \
+            ret_val = i_iterator->next(&__##var_array##_iterator, &var_array[index]);\
+        }                                                                           \
+                                                                                    \
+    }                                                                               \
 }
 
 // --------------------------------------------------------------------------------

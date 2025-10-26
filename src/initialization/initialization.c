@@ -43,6 +43,7 @@
 //-----------------------------------------------------------------------------
 
 #include "system/system_interface.h"
+#include "core/shared_memory/shared_memory.h"
 
 #include "local_context.h"
 
@@ -55,7 +56,7 @@
 #include "initialization/sensor_initialization.h"
 
 #include "ui/command_line/command_line_interface.h"
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "modules/cfg_file_parser/cfg_file_parser.h"
 #include "ui/log_interface/log_interface.h"
 
 #include "app_tasks/message_executer_task.h"
@@ -74,6 +75,8 @@
 
 #include "expansion/driver_PCA9670.h"
 
+#include "modules/mcu_top/mcu_top.h"
+
 //-----------------------------------------------------------------------------
 
 SYSTEM_T system_context;
@@ -86,6 +89,8 @@ void initialization(void) {
 	watchdog();
 
 	system_initialization();
+
+    shared_memory_initialize();
 
 	task_initialization();
 
@@ -184,6 +189,12 @@ void initialization(void) {
         // pca9670_init(i_system.driver.i2c0);
     }
     #endif
+    #endif
+
+    #ifdef MCU_TOP_AVAILABLE
+    {
+        mcu_top_init();
+    }
     #endif
 }
 

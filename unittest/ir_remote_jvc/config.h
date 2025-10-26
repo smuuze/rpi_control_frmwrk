@@ -23,6 +23,15 @@
 	{CMD_VERSION, &cmd_handler_version},
 
 #define SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS	0
+//-------------------------------------------------------------------------
+
+#define SHARED_MEMORY_COUNT_64_BYTES          0
+#define SHARED_MEMORY_COUNT_128_BYTES         0
+#define SHARED_MEMORY_COUNT_256_BYTES         0
+#define SHARED_MEMORY_COUNT_512_BYTES         1
+#define SHARED_MEMORY_COUNT_1024_BYTES        0
+#define SHARED_MEMORY_COUNT_2048_BYTES        0
+#define SHARED_MEMORY_COUNT_4096_BYTES        0
 
 //-------------------------------------------------------------------------
 

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="233px" preserveAspectRatio="none" style="width:463px;height:233px;background:#FFFFFF;" version="1.1" viewBox="0 0 463 233" width="463px" zoomAndPan="magnify"><defs/><g><!--MD5=[6e23f4dc7448e240e22d5e6f1be0325f]
+cluster component: MCU-TOP - Structure - Context--><g id="cluster_component: MCU-TOP - Structure - Context"><rect fill="none" height="220" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="450" x="7" y="7"/><path d="M337,7 L337,16.4883 L327,26.4883 L7,26.4883 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="320" x="10" y="21.5352">component: MCU-TOP - Structure - Context</text></g><!--MD5=[0326624c87ec1a68c7a10960fb185ff2]
+entity mcu_top--><g id="elem_mcu_top"><rect fill="#DDDDDD" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="132" x="154" y="42"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="266" y="47"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="264" y="49"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="264" y="53"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="92" x="169" y="75.5352">«component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="64" x="169" y="92.0234">MCU TOP</text></g><!--MD5=[638631913304b6912632ef89f056c5f1]
+entity cfg_file--><g id="elem_cfg_file"><polygon fill="#F1F1F1" points="71,175,81,165,207,165,207,201.4883,197,211.4883,71,211.4883,71,175" style="stroke:#181818;stroke-width:0.5;"/><line style="stroke:#181818;stroke-width:0.5;" x1="197" x2="207" y1="175" y2="165"/><line style="stroke:#181818;stroke-width:0.5;" x1="71" x2="197" y1="175" y2="175"/><line style="stroke:#181818;stroke-width:0.5;" x1="197" x2="197" y1="175" y2="211.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="96" x="86" y="198.5352">Configuration</text></g><!--MD5=[273985dacfadf938551df6be5ab6c738]
+entity task_controller--><g id="elem_task_controller"><polygon fill="#F1F1F1" points="242,175,252,165,392,165,392,201.4883,382,211.4883,242,211.4883,242,175" style="stroke:#181818;stroke-width:0.5;"/><line style="stroke:#181818;stroke-width:0.5;" x1="382" x2="392" y1="175" y2="165"/><line style="stroke:#181818;stroke-width:0.5;" x1="242" x2="382" y1="175" y2="175"/><line style="stroke:#181818;stroke-width:0.5;" x1="382" x2="382" y1="175" y2="211.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="110" x="257" y="198.5352">Task-Controller</text></g><!--MD5=[033458cf97649bc3ee585dd809244223]
+entity out_file--><g id="elem_out_file"><polygon fill="#F1F1F1" points="321,60.5,331,50.5,441,50.5,441,86.9883,431,96.9883,321,96.9883,321,60.5" style="stroke:#181818;stroke-width:0.5;"/><line style="stroke:#181818;stroke-width:0.5;" x1="431" x2="441" y1="60.5" y2="50.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="321" x2="431" y1="60.5" y2="60.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="431" x2="431" y1="60.5" y2="96.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="80" x="336" y="84.0352">Output-File</text></g><!--MD5=[5ff5fa45ad236cb7c8993bec112332ca]
+entity console--><g id="elem_console"><polygon fill="#F1F1F1" points="23,60.5,33,50.5,119,50.5,119,86.9883,109,96.9883,23,96.9883,23,60.5" style="stroke:#181818;stroke-width:0.5;"/><line style="stroke:#181818;stroke-width:0.5;" x1="109" x2="119" y1="60.5" y2="50.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="23" x2="109" y1="60.5" y2="60.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="109" x2="109" y1="60.5" y2="96.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="56" x="38" y="84.0352">Console</text></g><!--MD5=[1cd994f77765b8b96e1d07de353d3da5]
+link mcu_top to cfg_file--><g id="link_mcu_top_cfg_file"><path codeLine="34" d="M197.87,105.24 C184.38,123.98 167.44,147.5 155.2,164.5 " fill="none" id="mcu_top-cfg_file" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[1ad2459aa645a68c0def1d84b8662c72]
+link mcu_top to task_controller--><g id="link_mcu_top_task_controller"><path codeLine="35" d="M246.51,105.24 C262.66,123.98 282.95,147.5 297.6,164.5 " fill="none" id="mcu_top-task_controller" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[722f4fd9cc321c303017367d19b624d7]
+link mcu_top to out_file--><g id="link_mcu_top_out_file"><path codeLine="36" d="M286.35,73.5 C297.81,73.5 309.27,73.5 320.73,73.5 " fill="none" id="mcu_top-out_file" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[8edb20cb9a661aded703fe33b4764014]
+link console to mcu_top--><g id="link_console_mcu_top"><path codeLine="37" d="M119.31,73.5 C130.72,73.5 142.12,73.5 153.53,73.5 " fill="none" id="console-mcu_top" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[31d6d13dc9775826431909c1ff54ac73]
+@startuml mcu_top_context
+
+'***************************************************************************
+
+skinparam monochrome true
+' skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: MCU-TOP - Structure - Context" {
+
+'***************************************************************************
+
+    component mcu_top #DDDDDD [
+        <<component>>
+        MCU TOP
+    ]
+
+    node cfg_file [
+        Configuration
+    ]
+
+    node task_controller [
+        Task-Controller
+    ]
+
+    node out_file [
+        Output-File
+    ]
+
+    node console [
+        Console
+    ]
+
+    mcu_top -down- cfg_file
+    mcu_top -down- task_controller 
+    mcu_top -right- out_file 
+    mcu_top -left- console 
+
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
+
+@startuml mcu_top_context
+
+
+skinparam monochrome true
+
+
+frame "component: MCU-TOP - Structure - Context" {
+
+
+    component mcu_top #DDDDDD [
+        <<component>>
+        MCU TOP
+    ]
+
+    node cfg_file [
+        Configuration
+    ]
+
+    node task_controller [
+        Task-Controller
+    ]
+
+    node out_file [
+        Output-File
+    ]
+
+    node console [
+        Console
+    ]
+
+    mcu_top -down- cfg_file
+    mcu_top -down- task_controller 
+    mcu_top -right- out_file 
+    mcu_top -left- console 
+
+
+
+}
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

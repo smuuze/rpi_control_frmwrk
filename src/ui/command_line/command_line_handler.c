@@ -51,7 +51,7 @@
 #include "ui/command_line/command_line_interface.h"
 #include "common/common_tools_string.h"
 
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "modules/cfg_file_parser/cfg_file_parser.h"
 
 #ifdef HAS_PROTOCOL_MQTT
 #include "protocol_management/mqtt/mqtt_interface.h"

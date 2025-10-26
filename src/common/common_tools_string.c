@@ -465,8 +465,8 @@ void common_tools_string_from_u8(char* string_to, u16 max_string_length, u8 numb
 
 // --------------------------------------------------------------------------------
 
-void common_tools_string_from_i32(char* string_to, u16 max_string_length, i32 number) {
-	snprintf(string_to, max_string_length, "%d", number);
+u8 common_tools_string_from_i32(char* string_to, u16 max_string_length, i32 number) {
+	return snprintf(string_to, max_string_length, "%d", number);
 }
 
 // --------------------------------------------------------------------------------

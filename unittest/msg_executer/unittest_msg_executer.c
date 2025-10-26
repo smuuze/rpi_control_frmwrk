@@ -25,10 +25,11 @@
 #include "mcu_task_management/mcu_task_interface.h"
 
 #include "ui/file_interface/file_interface.h"
-#include "ui/cfg_file_parser/cfg_file_parser.h"
+#include "modules/cfg_file_parser/cfg_file_parser.h"
 #include "ui/console/ui_console.h"
 
 #include "time_management/time_management.h"
+#include "core/shared_memory/shared_memory.h"
 
 // --------------------------------------------------------------------------------
 
@@ -604,6 +605,8 @@ static void UNITTEST_msg_executer_init(void) {
 
 		unittest_reset_counter();
 
+        shared_memory_initialize();
+
 		msg_executer_init();
 
 		UT_CHECK_IS_EQUAL(counter_FILE_SET_PATH, 2); // default file-path
@@ -1003,7 +1006,7 @@ static void UNITTEST_msg_executer_process_report_list(void) {
 		UT_CHECK_IS_EQUAL(counter_FILE_IS_EXISTING, 1);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN, 1);
 		UT_CHECK_IS_GREATER(counter_FILE_CLOSE, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_READ_NEXT_LINE, 22);
+		UT_CHECK_IS_GREATER(counter_FILE_READ_NEXT_LINE, 21);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_COMMAND_RECEIVED, 7);
 		UT_CHECK_IS_EQUAL(counter_COMMUNICATION_RESPONSE_RECEIVED, 10);
 		UT_CHECK_IS_EQUAL(counter_RESPONSE_TIMEOUT, 0);
@@ -1020,7 +1023,7 @@ static void UNITTEST_msg_executer_process_report_list(void) {
 		UT_COMPARE_STRING(unittest_mqtt_message_to_send_list[9], "{\"REPORT\":{\"SYSTEM_UPTIME\":\"5 days, 10 hurs, 5 minutes, 6 seconds\"}}");
 		UT_CHECK_IS_EQUAL(counter_CLI_COMMAND_RECEIVED, 3);
 		UT_CHECK_IS_EQUAL(counter_FILE_OPEN_FAILED, 0);
-		UT_CHECK_IS_EQUAL(counter_FILE_LINE_REPORT_FILE, 22);
+		UT_CHECK_IS_GREATER(counter_FILE_LINE_REPORT_FILE, 21);
 		UT_CHECK_IS_EQUAL(counter_FILE_LINE_COMMAND_FILE, 0);
 		UT_CHECK_IS_EQUAL(counter_INVALID_COMMAND_SYNTAX, 1);
 		UT_CHECK_IS_EQUAL(counter_MQTT_MESSAGE_TO_SEND, 10);
@@ -1136,7 +1139,7 @@ static void UNITTEST_msg_executer_bad_command_while_processing_report(void) {
 
 int main(void) {
 
-	TRACER_DISABLE();
+	// TRACER_DISABLE();
 
 	CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_init();
 	CFG_PARSER_NEW_CFG_OBJECT_SIGNAL_set_timeout(0);

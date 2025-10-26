@@ -326,7 +326,8 @@ void common_tools_string_from_u8(char* string_to, u16 max_string_length, u8 numb
  * 
  * @param string_to string where to store the number
  * @param number signed 32 bit integer value
+ * @return the string length of string_to
  */
-void common_tools_string_from_i32(char* string_to, u16 max_string_length, i32 number);
+u8 common_tools_string_from_i32(char* string_to, u16 max_string_length, i32 number);
 
 #endif // COMMON_TOOLS_STRING_H_
