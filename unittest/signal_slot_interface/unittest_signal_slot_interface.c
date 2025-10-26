@@ -8,7 +8,7 @@
  * ----------------------------------------------------------------------------
  */
 
-#define TRACER_OFF
+#define TRACER_ON
 
 //-----------------------------------------------------------------------------
 
@@ -124,10 +124,10 @@ static void UNITTEST_signal_send_ok(void) {
 
 		u8 test_byte = 8;
 
-		unittest_wait_ms(6);
+		unittest_wait_ms(SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS * 2);
 		UT_CASE_SEND_OK_SIGNAL_send(NULL);
 
-		unittest_wait_ms(6);
+		unittest_wait_ms(SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS * 2);
 		UT_CASE_SEND_OK_SIGNAL_send((const void*) &test_byte);
 
 		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_SIGNAL, 2);
@@ -149,8 +149,9 @@ static void UNITTEST_signal_send_in_signal_context(void) {
 
 		u32 test_variable = 8;
 
+		unittest_wait_ms(SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS * 2);
 		UT_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL_send(NULL);
-		unittest_wait_ms(6);
+		unittest_wait_ms(SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS * 2);
 		UT_CASE_SEND_IN_SIGNAL_CONTEXT_SIGNAL_send((const void*) &test_variable);
 
 		UT_CHECK_IS_EQUAL(counter_CASE_SEND_OK_SIGNAL, 0);
@@ -172,7 +173,7 @@ static void UNITTEST_signal_respect_send_timeout(void) {
 
 		u32 test_variable = 8;
 
-		unittest_wait_ms(6);
+		unittest_wait_ms(SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS * 2);
 		UT_CASE_SEND_OK_SIGNAL_send(NULL);
 		UT_CASE_SEND_OK_SIGNAL_send((const void*) &test_variable);
 

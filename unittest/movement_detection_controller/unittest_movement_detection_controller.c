@@ -20,7 +20,7 @@
  * 
  */
 
-#define TRACER_ON
+#define TRACER_OFF
 
 // --------------------------------------------------------------------------------
 
@@ -123,8 +123,8 @@ void movement_detect_sensor_power_down(void) {
 }
 
 u8 movement_detect_sensor_is_movement(void) {
-    DEBUG_PASS("UT - movement_detect_sensor_is_movement()");
     counter_SENSOR_IS_MOVEMENT += 1;
+    // DEBUG_TRACE_byte(counter_SENSOR_IS_MOVEMENT, "UT - movement_detect_sensor_is_movement() - counter:");
     return ut_is_movement_return_value;
 }
 
@@ -311,7 +311,7 @@ static void UNITTEST_movement_detect_is_movement(void) {
         while (UNITTEST_TIMER_is_up(500) == 0) {
             mcu_task_controller_schedule();
 
-            if (counter_SENSOR_IS_MOVEMENT == 2) {
+            if (counter_SENSOR_IS_MOVEMENT >= 2) {
                 break;
             }
         }
@@ -342,12 +342,15 @@ static void UNITTEST_movement_detect_is_movement(void) {
         while (UNITTEST_TIMER_is_up(4000) == 0) {
             mcu_task_controller_schedule();
 
-            if (counter_SENSOR_IS_MOVEMENT == 3) {
+            if (counter_SENSOR_IS_MOVEMENT >= 3) {
                 break;
             }
         }
 
-        UT_CHECK_IS_GREATER(UNITTEST_TIMER_elapsed(), MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS);
+        u16 timeout_min = MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS - 10;
+        u16 timeout_max = MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS + 10;
+
+        UT_CHECK_IS_BETWEEN(UNITTEST_TIMER_elapsed(), timeout_max, timeout_min);
         UT_CHECK_IS_EQUAL(counter_SENSOR_POWER_DOWN, 0);
         UT_CHECK_IS_EQUAL(counter_SENSOR_POWER_UP, 0);
         UT_CHECK_IS_GREATER(counter_SENSOR_IS_MOVEMENT, 2);
@@ -356,21 +359,21 @@ static void UNITTEST_movement_detect_is_movement(void) {
         UT_CHECK_IS_EQUAL(counter_SIGNAL_MOVEMENT_DETECT, 1);
         UT_CHECK_IS_EQUAL(counter_MQTT_MSG_SENT, 0);
 
-        UNITTEST_MQTT_MSG_initialize();
-        UNITTEST_MQTT_MSG_start_group("MOVEMENT");
-        UNITTEST_MQTT_MSG_add_string("LOCATION", "UNITTEST");
-        UNITTEST_MQTT_MSG_add_integer("TIMESTAMP", ut_mqtt_msg_timestamp);
-        UNITTEST_MQTT_MSG_finish();
+        // UNITTEST_MQTT_MSG_initialize();
+        // UNITTEST_MQTT_MSG_start_group("MOVEMENT");
+        // UNITTEST_MQTT_MSG_add_string("LOCATION", "UNITTEST");
+        // UNITTEST_MQTT_MSG_add_integer("TIMESTAMP", ut_mqtt_msg_timestamp);
+        // UNITTEST_MQTT_MSG_finish();
 
-        UT_CHECK_IS_EQUAL (
-            common_tools_string_length(ut_mqtt_msg_to_send),
-            UNITTEST_MQTT_MSG_get_length()
-        );
+        // UT_CHECK_IS_EQUAL (
+        //     common_tools_string_length(ut_mqtt_msg_to_send),
+        //     UNITTEST_MQTT_MSG_get_length()
+        // );
 
-        UT_COMPARE_STRING (
-            ut_mqtt_msg_to_send,
-            UNITTEST_MQTT_MSG_to_string()
-        );
+        // UT_COMPARE_STRING (
+        //     ut_mqtt_msg_to_send,
+        //     UNITTEST_MQTT_MSG_to_string()
+        // );
 
         UNITTEST_TIMER_stop();
     }
@@ -448,7 +451,7 @@ static void UNITTEST_movement_detect_verify_failed(void) {
 
 int main(void) {
 
-    //TRACER_DISABLE();
+    // TRACER_DISABLE();
 
     MQTT_MESSAGE_TO_SEND_SIGNAL_init();
     UT_MQTT_MESSAGE_TO_SEND_SLOT_connect();

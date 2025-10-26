@@ -55,8 +55,8 @@
 
 // --------------------------------------------------------------------------------------
 
-#ifndef SIGNAL_SLOT_INTERFACE_DEFAULT_SIGNAL_SEND_TIMEOUT_MS
-#define SIGNAL_SLOT_INTERFACE_DEFAULT_SIGNAL_SEND_TIMEOUT_MS			5
+#ifndef SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS
+#define SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS        50
 #endif
 
 // --------------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ void signal_slot_init(SIGNAL_SLOT_INTERFACE_SIGNAL_CONTEXT_TYPE* p_signal_contex
 
 	//p_signal_context->p_first_element = 0;
 	//p_signal_context->send_timeout_ms = 1;
-	p_signal_context->time_interval_ms = SIGNAL_SLOT_INTERFACE_DEFAULT_SIGNAL_SEND_TIMEOUT_MS;
+	p_signal_context->time_interval_ms = SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS;
 	p_signal_context->time_reference_ms = 0;
 }
 

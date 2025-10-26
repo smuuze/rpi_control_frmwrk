@@ -18,12 +18,6 @@
 
 // --------------------------------------------------------------------------------------
 
-#ifndef SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS
-#define SIGNAL_SLOT_INTERFACE_SIGNAL_SEND_TIMEOUT_MS            50
-#endif
-
-// --------------------------------------------------------------------------------------
-
 /**
  * @brief Type definition for the function callback of a slot
  * 

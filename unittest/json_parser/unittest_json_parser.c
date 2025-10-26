@@ -26,6 +26,8 @@ UT_ACTIVATE()
 
 // --------------------------------------------------------------------------------
 
+#include "core/shared_memory/shared_memory.h"
+
 #include "protocol_management/json/protocol_json_parser.h"
 
 // --------------------------------------------------------------------------------
@@ -62,6 +64,8 @@ JSON_PARSER_CREATE_OBJECT(UT_JASON_OBJECT)
 // --------------------------------------------------------------------------------
 
 static void TEST_CASE_initialize(void) {
+
+    shared_memory_initialize();
 
 	UT_START_TEST_CASE("initilize Json object")
 	{	

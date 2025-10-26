@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="194px" preserveAspectRatio="none" style="width:537px;height:194px;background:#FFFFFF;" version="1.1" viewBox="0 0 537 194" width="537px" zoomAndPan="magnify"><defs/><g><!--MD5=[1a717d47b83c8a4b79e5ad17a417aa97]
+cluster component: SHARED MEMORY - Structure - Context--><g id="cluster_component: SHARED MEMORY - Structure - Context"><rect fill="none" height="181" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1.0;" width="524" x="7" y="7"/><path d="M393,7 L393,16.4883 L383,26.4883 L7,26.4883 " fill="none" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="376" x="10" y="21.5352">component: SHARED MEMORY - Structure - Context</text></g><!--MD5=[01435ace8273dc3cae88e7f376e4d373]
+cluster core--><g id="cluster_core"><path d="M33.5,50 L64.5,50 A3.75,3.75 0 0 1 67,52.5 L74,72.4883 L504.5,72.4883 A2.5,2.5 0 0 1 507,74.9883 L507,161.5 A2.5,2.5 0 0 1 504.5,164 L33.5,164 A2.5,2.5 0 0 1 31,161.5 L31,52.5 A2.5,2.5 0 0 1 33.5,50 " fill="none" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="31" x2="74" y1="72.4883" y2="72.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="30" x="35" y="65.5352">core</text></g><!--MD5=[b50577eb38402145cc608987d892698d]
+entity shared_memory--><g id="elem_shared_memory"><rect fill="#DDDDDD" height="62.9766" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="160" x="178" y="85"/><rect fill="#DDDDDD" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="318" y="90"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="316" y="92"/><rect fill="#DDDDDD" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="316" y="96"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="95" x="193" y="118.5352">«Component»</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="120" x="193" y="135.0234">SHARED MEMORY</text></g><!--MD5=[bdfad404fdf3df882c3ac71aa5606f51]
+entity Memory--><g id="elem_Memory"><polygon fill="#F1F1F1" points="47.5,103.5,57.5,93.5,142.5,93.5,142.5,129.9883,132.5,139.9883,47.5,139.9883,47.5,103.5" style="stroke:#181818;stroke-width:0.5;"/><line style="stroke:#181818;stroke-width:0.5;" x1="132.5" x2="142.5" y1="103.5" y2="93.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="47.5" x2="132.5" y1="103.5" y2="103.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="132.5" x2="132.5" y1="103.5" y2="139.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="55" x="62.5" y="127.0352">Memory</text></g><!--MD5=[e5b7da8fa23ec8cac7d321a34f6e9ee1]
+entity Application--><g id="elem_Application"><polygon fill="#F1F1F1" points="373,103.5,383,93.5,491,93.5,491,129.9883,481,139.9883,373,139.9883,373,103.5" style="stroke:#181818;stroke-width:0.5;"/><line style="stroke:#181818;stroke-width:0.5;" x1="481" x2="491" y1="103.5" y2="93.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="373" x2="481" y1="103.5" y2="103.5"/><line style="stroke:#181818;stroke-width:0.5;" x1="481" x2="481" y1="103.5" y2="139.9883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="78" x="388" y="127.0352">Application</text></g><!--MD5=[ae57bdaee723e77ee71d4c6375960e2a]
+link Memory to shared_memory--><g id="link_Memory_shared_memory"><path d="M142.58,117 C153.58,117 165.58,117 177.54,117 " fill="none" id="Memory-shared_memory" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[5d2d833e141e1b6f482c8e06fd5290b6]
+link shared_memory to Application--><g id="link_shared_memory_Application"><path d="M338.38,117 C349.95,117 361.69,117 372.75,117 " fill="none" id="shared_memory-Application" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[10815a24fae517c9eadd6dd3f3619b58]
+@startuml shared_memory_context
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: SHARED MEMORY - Structure - Context" {
+
+'***************************************************************************
+
+folder "core" {
+
+    component shared_memory #DDDDDD [
+        <<Component>>
+        SHARED MEMORY
+    ]
+
+    node Memory
+    node Application
+
+    shared_memory -left- Memory
+    shared_memory -right- Application
+
+}
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml
+
+@startuml shared_memory_context
+
+
+skinparam monochrome true
+skinparam linetype ortho
+
+
+frame "component: SHARED MEMORY - Structure - Context" {
+
+
+folder "core" {
+
+    component shared_memory #DDDDDD [
+        <<Component>>
+        SHARED MEMORY
+    ]
+
+    node Memory
+    node Application
+
+    shared_memory -left- Memory
+    shared_memory -right- Application
+
+}
+
+
+}
+
+
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 19:01:30 CEST 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: DE
+--></g></svg>

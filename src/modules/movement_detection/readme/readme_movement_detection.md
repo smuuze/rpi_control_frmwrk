@@ -27,22 +27,26 @@ Readme | [Changelog](../../../../changelog.md)
 <details>
 <summary> Click to open</summary>
 
-[Brief](#brief)\
-[Features](#features)\
-[Solution Strategy](#solution-strategy)\
-[Structure](#structure)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Context](#context)\
-[Runtime](#runtime)\
-&nbsp;&nbsp;&nbsp;&nbsp;[State-Machine](#state-machine)\
-[Interface](#interface)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Sensor Interface](#sensor-interface)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Signals](#signals)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Configuration Macros](#configuration-macros)\
-&nbsp;&nbsp;&nbsp;&nbsp;[JSON message](#json-message)\
-[Integration](#integration)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Makefile](#makefile)\
-[Usage](#usage)\
-&nbsp;&nbsp;&nbsp;&nbsp;[Initialization](#initialization)
+- [MOVEMENT-DETECTION](#movement-detection)
+    - [Content](#content)
+  - [Brief](#brief)
+  - [Features](#features)
+  - [Requirements](#requirements)
+  - [Solution Strategy](#solution-strategy)
+  - [Structure](#structure)
+    - [Context](#context)
+  - [Runtime](#runtime)
+    - [State-Machine](#state-machine)
+  - [Interface](#interface)
+    - [Sensor Interface](#sensor-interface)
+    - [Signals](#signals)
+    - [Configuration Macros](#configuration-macros)
+    - [JSON message](#json-message)
+  - [Integration](#integration)
+    - [Makefile](#makefile)
+  - [Usage](#usage)
+    - [Initialization](#initialization)
+
 
 </details>
 
@@ -109,8 +113,6 @@ This section describes how to realize each requirement.
 ## Structure
 [[TOP]]
 
-<br>
-
 ### Context
 
 ![structure_context](../../../modules/movement_detection/readme/uml/img/movement_detection_context.svg )
@@ -119,8 +121,6 @@ This section describes how to realize each requirement.
 
 ## Runtime
 [[TOP]]
-
-<br>
 
 ### State-Machine
 
@@ -141,8 +141,6 @@ This section describes how to realize each requirement.
 ## Interface
 [[TOP]]
 
-<br>
-
 ### Sensor Interface
 
 See [modules/movement_detection/movement_detect_sensor_interface.h](../../../modules/movement_detection/movement_detect_sensor_interface.h) for details.
@@ -155,8 +153,6 @@ See [modules/movement_detection/movement_detect_sensor_interface.h](../../../mod
 | configure         | Configures the sensor with proj               |
 | reset             | Resets the sensor to its default state. The sensor maybe needs to be reconfigured. |
 
-<br>
-
 ### Signals
 
 | Signal-Name                         | Direction | Arguments | Description |
@@ -164,8 +160,6 @@ See [modules/movement_detection/movement_detect_sensor_interface.h](../../../mod
 | `MOVEMENT_DETECT_SIGNAL`            | SEND      | none      | Is send in case there was a movement detected and verified |
 | `MOVEMENT_DETECT_POWER_DOWN_SIGNAL` | RECEIVE   | none      | If this signal is received, the module goes into power down mode |
 | `MOVEMENT_DETECT_POWER_UP_SIGNAL`   | RECEIVE   | none      | If this signal is received the module leaves power down mode, if entered previously |
-
-<br>
 
 ### Configuration Macros
 
@@ -178,8 +172,6 @@ See [modules/movement_detection/movement_detection_controller.h](../../../module
 | `MOVEMENT_DETECTION_CONTROLLER_WAIT_TO_VERIFY_TIMEOUT_MS` | 500           | Time in milliseconds to wait before verify a movement. |
 | `MOVEMENT_DETECTION_CONTROLLER_VERIFY_TIMEOUT_MS`         | 1000          | Time in milliseconds to verify a movement. If this time is up, there is no movement. |
 | `MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS`             | 1000          | Pause interval in milliseconds after a successful movement detection. |
-
-<br>
 
 ### JSON message
 
@@ -201,8 +193,6 @@ The following format is used for the JSON message that is transfered via MQTT in
 
 ## Integration
 [[TOP]]
-
-<br>
 
 ### Makefile
 
@@ -228,8 +218,6 @@ MODULES_CFG += MOVEMENT_DETECTION_MQTT
 
 ## Usage
 [[TOP]]
-
-<br>
 
 ### Initialization
 

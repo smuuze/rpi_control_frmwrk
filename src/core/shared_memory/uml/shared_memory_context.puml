@@ -1,0 +1,35 @@
+@startuml shared_memory_context
+
+'***************************************************************************
+
+skinparam monochrome true
+skinparam linetype ortho
+
+'***************************************************************************
+
+frame "component: SHARED MEMORY - Structure - Context" {
+
+'***************************************************************************
+
+folder "core" {
+
+    component shared_memory #DDDDDD [
+        <<Component>>
+        SHARED MEMORY
+    ]
+
+    node Memory
+    node Application
+
+    shared_memory -left- Memory
+    shared_memory -right- Application
+
+}
+
+'***************************************************************************
+
+}
+
+'***************************************************************************
+
+@enduml

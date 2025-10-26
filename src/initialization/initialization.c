@@ -43,6 +43,7 @@
 //-----------------------------------------------------------------------------
 
 #include "system/system_interface.h"
+#include "core/shared_memory/shared_memory.h"
 
 #include "local_context.h"
 
@@ -88,6 +89,8 @@ void initialization(void) {
 	watchdog();
 
 	system_initialization();
+
+    shared_memory_initialize();
 
 	task_initialization();
 

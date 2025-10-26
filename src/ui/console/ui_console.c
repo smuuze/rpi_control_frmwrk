@@ -49,7 +49,7 @@ void console_write_number(i32 number) {
 	printf("%d", number);
 }
 
-void console_new_line() {
+void console_new_line(void) {
 	printf("\n");
 }
 

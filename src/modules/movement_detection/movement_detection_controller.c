@@ -73,6 +73,39 @@
 
 // --------------------------------------------------------------------------------
 
+/**
+ * @brief Interval at which the controller checks
+ * the sensor for detected movement
+ */
+#ifndef MOVEMENT_DETECTION_CONTROLLER_SCHEDULE_INTERVAL_MS
+#define MOVEMENT_DETECTION_CONTROLLER_SCHEDULE_INTERVAL_MS              100
+#endif
+
+/**
+ * @brief Time in milliseconds to wait before verify a movement.
+ */
+#ifndef MOVEMENT_DETECTION_CONTROLLER_WAIT_TO_VERIFY_TIMEOUT_MS
+#define MOVEMENT_DETECTION_CONTROLLER_WAIT_TO_VERIFY_TIMEOUT_MS         500
+#endif
+
+/**
+ * @brief Time in milliseconds to verify a movement.
+ * If this time is up, there is no movement.
+ */
+#ifndef MOVEMENT_DETECTION_CONTROLLER_VERIFY_TIMEOUT_MS
+#define MOVEMENT_DETECTION_CONTROLLER_VERIFY_TIMEOUT_MS                 1000
+#endif
+
+/**
+ * @brief Pause interval in milliseconds
+ * after a successful movement detection.
+ */
+#ifndef MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS
+#define MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS                     1000
+#endif
+
+// --------------------------------------------------------------------------------
+
 TIME_MGMN_BUILD_STATIC_TIMER_U16(MOVE_DETECT_TIMER)
 
 // --------------------------------------------------------------------------------
@@ -282,7 +315,7 @@ static void MOVEMENT_DETECT_CONTROLLER_TASK_execute(void) {
         case MOVEMENT_DETECTION_STATE_PAUSE:
             
             if (MOVE_DETECT_TIMER_is_up(MOVEMENT_DETECTION_CONTROLLER_PAUSE_TIME_MS)) {
-                DEBUG_PASS("MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - PAUSE -> WAIT_FOR_MOVEMENT");
+                DEBUG_TRACE_long(MOVE_DETECT_TIMER_elapsed(),"MOVEMENT_DETECT_CONTROLLER_TASK_execute() - CHANGE STATE - PAUSE -> WAIT_FOR_MOVEMENT - Time:");
                 move_detect_state = MOVEMENT_DETECTION_STATE_WAIT_FOR_MOVEMENT;
             }
 

@@ -193,6 +193,10 @@ endif
 
 include $(MAKE_PATH)/make_copro.mk
 
+# ---- CORE -------------------------------------------------------------
+
+include $(FRMWRK_SRC_PATH)/core/make_core.mk
+
 # ---- MODULES ----------------------------------------------------------
 
 include $(FRMWRK_SRC_PATH)/modules/make_modules.mk

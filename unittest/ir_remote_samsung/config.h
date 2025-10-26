@@ -26,6 +26,16 @@
 
 //-------------------------------------------------------------------------
 
+#define SHARED_MEMORY_COUNT_64_BYTES          0
+#define SHARED_MEMORY_COUNT_128_BYTES         0
+#define SHARED_MEMORY_COUNT_256_BYTES         0
+#define SHARED_MEMORY_COUNT_512_BYTES         1
+#define SHARED_MEMORY_COUNT_1024_BYTES        0
+#define SHARED_MEMORY_COUNT_2048_BYTES        0
+#define SHARED_MEMORY_COUNT_4096_BYTES        0
+
+//-------------------------------------------------------------------------
+
 #include "../src/config_default.h"
 
 #endif /* _config_H_ */
